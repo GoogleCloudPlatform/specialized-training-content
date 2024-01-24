@@ -1,0 +1,42 @@
+<h3>Google Cloud Shell 활성화하기</h3>
+<p>Google Cloud Shell은 다양한 개발 도구가 탑재된 가상 머신으로, 5GB의 영구 홈 디렉토리를 제공하며 Google Cloud에서 실행됩니다.
+Google Cloud Shell을 사용하면 명령줄을 통해 GCP 리소스에 액세스할 수 있습니다.</p>
+<ol>
+<li>
+<p>GCP Console의 오른쪽 상단 툴바에서 <strong>Cloud Shell 열기</strong> 버튼을 클릭합니다.</p>
+<p><img src="img/console_topbar_icon_cloudshell.png" alt="Cloud Shell 아이콘" /></p>
+</li>
+<li>
+<p>( 계속) <strong>Continue</strong>을 클릭하십시오.</p>
+<p><img src="img/cloudshell_continue.png" alt="cloudshell_continue" /></p>
+</li>
+</ol>
+<p>환경을 프로비저닝하고 연결하는 데 약간의 시간이 걸립니다. 연결되면 이미 인증되었으며 프로젝트는 <strong>PROJECT_ID </strong>로 설정됩니다. 예를 들면 다음과 같습니다.</p>
+<p><img src="img/welcome-to-cloud-shell.png" alt="Cloud Shell 터미널" /></p>
+<p><strong>gcloud</strong>는 Google Cloud Platform의 명령줄 도구입니다. Cloud Shell에 사전 설치되어 있으며 탭 자동 완성을 지원합니다.</p>
+<p>다음 명령어로 사용 중인 계정 이름 목록을 표시할 수 있습니다.</p>
+<pre><code>gcloud auth list
+</code></pre>
+<p>출력:</p>
+<pre><code class="language-output">Credentialed accounts:
+- &lt;myaccount>@&lt;mydomain>.com (active)
+</code></pre>
+<p>출력 예:</p>
+<pre><code class="language-Output">Credentialed accounts:
+- google1623327_student@qwiklabs.net
+</code></pre>
+<p>다음 명령어로 프로젝트 ID 목록을 표시할 수 있습니다.</p>
+<pre><code>gcloud config list project
+</code></pre>
+<p>출력:</p>
+<pre><code class="language-output">[core]
+project = &lt;project_ID>
+</code></pre>
+<p>출력 예:</p>
+<pre><code class="language-Output">[core]
+project = qwiklabs-gcp-44776a13dea667a6
+</code></pre>
+<aside>
+  <strong>gcloud</strong> 관련 전체 설명서는 <a href="https://cloud.google.com/sdk/gcloud">Google Cloud gcloud 개요</a>에서 확인할 수 있습니다.
+
+</aside>

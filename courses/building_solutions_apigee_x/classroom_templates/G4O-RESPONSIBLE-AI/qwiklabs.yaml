@@ -1,0 +1,76 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '1.0'
+classroom_type: Instructor-led
+course_code: T-RAI-I
+title: "Introduction to Responsible AI in Practice "
+description: 'In this course, you will do a high-level exploration of Google recommended best practices for responsible AI usage across different areas of focus, Fairness, Interpretability, Privacy and Safety. Along the way, you will learn how you can leverage different open-source tools and tools on Vertex AI to explore these concepts and spend time considering the different challenges that arise with generative AI.'
+objectives: 
+audience: 'In this course, you will do a high-level exploration of Google recommended best practices for responsible AI usage across different areas of focus, Fairness, Interpretability, Privacy and Safety. Along the way, you will learn how you can leverage different open-source tools and tools on Vertex AI to explore these concepts and spend time considering the different challenges that arise with generative AI.'
+prerequisites: 'To get the most out of this course, participants should have: Familiarity with basic concepts of machine learning Familiarity with basic concepts of generative AI on Google Cloud in Vertex AI'
+outline: 
+external_content_url: ''
+tags: 
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 1
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 1440
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources: 
+- id: responsible-ai-0
+  title: M0-Introduction to Responsible AI
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/GenAI%20Skilling%20for%20Orgs/ResponsibleAIPractioners/M0%20_%20Introduction%20to%20Responsible%20AI%20_%20Responsible%20AI%20v1.0.pdf
+- id: responsible-ai-1
+  title: M1-AI Principles and Responsible AI
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/GenAI%20Skilling%20for%20Orgs/ResponsibleAIPractioners/M1%20_%20AI%20Principles%20and%20Responsible%20AI%20_%20Responsible%20AI%20v1.0.pdf
+- id: responsible-ai-2
+  title: M2-Fairness in AI
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/GenAI%20Skilling%20for%20Orgs/ResponsibleAIPractioners/M2%20_%20Fairness%20in%20AI%20_%20Responsible%20AI%20v1.0.pdf
+- id: responsible-ai-3
+  title: M3-Interpretability of AI
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/GenAI%20Skilling%20for%20Orgs/ResponsibleAIPractioners/M3%20_%20Interpretability%20of%20AI%20_%20Responsible%20AI%20v1.0.pdf
+- id: responsible-ai-4
+  title: M4-Privacy in ML
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/GenAI%20Skilling%20for%20Orgs/ResponsibleAIPractioners/M4%20_%20Privacy%20in%20ML%20_%20Responsible%20AI%20v1.0.pdf
+- id: responsible-ai-5
+  title: M5-AI Safety
+  description: 'a'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/GenAI%20Skilling%20for%20Orgs/ResponsibleAIPractioners/M5%20_%20AI%20Safety%20_%20Responsible%20AI%20v1.0.pdf
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl047-fairness-with-tfdv-tfma
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl049-responsible-ai-with-gen-ai-studio
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl048-vertex-xai-text-classification
+
+ 

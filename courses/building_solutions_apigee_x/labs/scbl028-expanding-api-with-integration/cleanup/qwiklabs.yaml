@@ -1,0 +1,7 @@
+imports:
+- path: qwiklabs.jinja
+- path: cleanup-apigeex.sh
+resources:
+- name: qwiklabs 
+  type: qwiklabs.jinja
+  properties:

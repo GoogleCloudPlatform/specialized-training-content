@@ -1,0 +1,42 @@
+<h3>Mengaktifkan Google Cloud Shell</h3>
+<p>Google Cloud Shell adalah mesin virtual yang dimuat dengan fitur pengembangan. Mesin virtual ini menawarkan direktori beranda persisten sebesar 5 GB dan berjalan di Google Cloud.
+Google <span class="spelling-issue">Cloud</span> Shell menyediakan akses <span class="spelling-issue">command</span>-<span class="spelling-issue">line</span> ke <span class="spelling-issue">resource</span> <span class="spelling-issue">GCP</span>.</p>
+<ol>
+<li>
+<p>Di GCP console, pada toolbar kanan atas, klik <strong>tombol Buka Cloud Shell</strong>.</p>
+<p><img src="img/console_topbar_icon_cloudshell.png" alt="Ikon Cloud Shell"></p>
+</li>
+<li>
+<p>Klik <strong>Continue</strong> (Terus):</p>
+<p><img src="img/cloudshell_continue.png" alt="cloudshell_continue"></p>
+</li>
+</ol>
+<p>Butuh beberapa saat untuk penyediaan dan terhubung ke lingkungan. Ketika Anda terhubung, Anda sudah diautentikasi, dan proyek diatur ke <strong> PROJECT_ID </strong> Anda. Sebagai contoh:</p>
+<p><img src="img/welcome-to-cloud-shell.png" alt="Terminal Cloud Shell"></p>
+<p><strong>gcloud</strong> adalah fitur command-line untuk Google Cloud Platform. Fitur ini sudah terinstal di Cloud Shell dan mendukung penyelesaian tab.</p>
+<p>Anda dapat menampilkan daftar nama akun yang aktif dengan perintah ini:</p>
+<pre><code>gcloud auth list
+</code></pre>
+<p>Output:</p>
+<pre><code class="language-output">Credentialed accounts:
+- &lt;myaccount&gt;@&lt;mydomain&gt;.com (active)
+</code></pre>
+<p>Contoh output:</p>
+<pre><code class="language-Output">Credentialed accounts:
+ - google1623327_student@qwiklabs.net
+</code></pre>
+<p>Anda dapat menampilkan daftar ID project dengan perintah ini:</p>
+<pre><code>gcloud config list project
+</code></pre>
+<p>Output:</p>
+<pre><code class="language-output">[core]
+project = &lt;project_ID&gt;
+</code></pre>
+<p>Contoh output:</p>
+<pre><code class="language-Output">[core]
+project = qwiklabs-gcp-44776a13dea667a6
+</code></pre>
+<aside>
+  Dokumentasi lengkap <strong>gcloud</strong> tersedia di <a href="https://cloud.google.com/sdk/gcloud">Ringkasan gcloud Google Cloud</a>.
+
+</aside>

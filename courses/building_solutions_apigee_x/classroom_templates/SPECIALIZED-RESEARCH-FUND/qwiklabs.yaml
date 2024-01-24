@@ -1,0 +1,111 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '1.0'
+classroom_type: Instructor-led
+course_code: T-RESFUND-B
+title: "Google Cloud Fundamentals for Researchers"
+description: 'In this course, you learn how to use various tools in Google Cloud to ingest, manage, and leverage your data to derive insights in your research. You are introduced to tools used on Google Cloud by researchers, then you learn how to ingest your unstructured and structured data into Cloud Storage and BigQuery respectively. Next, you learn how to curate your data and understand costs in Google Cloud. Finally, you learn how to leverage notebook environments and other Google Cloud tools for descriptive and predictive analysis.'
+objectives: "."
+audience: '.'
+prerequisites: '.'
+outline: ''
+external_content_url: ''
+tags: 
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 1
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 2880
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources:
+- id: research-fund-student-notes-0
+  title: 'Module 0: Course Introduction'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Google_Cloud_Fundamentals_for_Researchers/M0-Introduction.pdf
+- id: research-fund-student-notes-1
+  title: 'Module 1: Google Cloud Live Demos'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Google_Cloud_Fundamentals_for_Researchers/M1%20-%20Google%20Cloud%20Live%20Demos.pdf
+- id: research-fund-student-notes-2
+  title: 'Module 2: Google Project Concepts'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Google_Cloud_Fundamentals_for_Researchers/M2%20-%20Google%20Project%20Concepts.pdf
+- id: research-fund-student-notes-3
+  title: 'Module 3: Computing and Storage on Google Cloud'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Google_Cloud_Fundamentals_for_Researchers/M3%20-%20Computing%20and%20Storage%20on%20Google%20Cloud.pdf
+- id: research-fund-student-notes-4
+  title: 'Module 4: BigQuery'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Google_Cloud_Fundamentals_for_Researchers/M4%20-%20BigQuery.pdf
+- id: research-fund-student-notes-5
+  title: 'Module 5: Vertex AI Notebooks'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Google_Cloud_Fundamentals_for_Researchers/M5%20-%20Vertex%20AI%20Notebooks.pdf
+- id: research-fund-student-notes-6
+  title: 'Module 6: Machine Learning'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Google_Cloud_Fundamentals_for_Researchers/M6%20-%20Machine%20Learning.pdf
+- id: research-fund-student-notes-7
+  title: 'Module 7: Summary'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Google_Cloud_Fundamentals_for_Researchers/M7%20-%20Summary.pdf
+
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl062-res-create-and-resize-vm
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl069-res-hpc-slurm
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl063-res-bq-looker-studio
+  - id: step-3
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl064-res-python-r-notebooks
+  - id: step-4
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp075-extract-analyze-and-translate-text-from-images-with-the-cloud-ml-apis
+  - id: step-5
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp972-identify-damaged-car-parts-vertex-ai
+  - id: step-6
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp247-getting-started-with-bqml
+  
+
+
+
+
+
+
+
+
+ 

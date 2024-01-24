@@ -1,0 +1,62 @@
+<h3>Attiva Cloud Shell</h3>
+<p>Cloud Shell è una macchina virtuale in cui sono caricati strumenti per sviluppatori. Offre una home directory permanente da 5 GB e viene eseguita su Google Cloud. Cloud Shell fornisce l'accesso da riga di comando alle risorse Google Cloud.</p>
+<ol>
+<li>
+<p>Fai clic su <strong>Attiva Cloud Shell</strong> Attiva l'icona di Cloud Shell nella parte superiore della console di Google Cloud.</p>
+</li>
+<li>
+<p>Fai clic su <strong>Continua</strong>.</p>
+</li>
+
+
+<p>Occorrono alcuni istanti per eseguire il provisioning e connettersi all'ambiente. Quando sei connesso, sei già autenticato e il progetto è impostato sul tuo <strong>PROJECT_ID</strong>. L'output contiene una riga che dichiara il <strong>PROJECT_ID</strong> per questa sessione:</p>
+<ql-code-block language="plaintext" output noWrap>
+Your Cloud Platform project in this session is set to YOUR_PROJECT_ID
+</ql-code-block>
+
+
+
+<p><code>gcloud</code> è lo strumento a riga di comando di Google Cloud. È preinstallato su Cloud Shell e supporta il completamento tramite tasto Tab.</p>
+<li>
+<p>(Opzionale) Puoi visualizzare il nome dell'account attivo con questo comando:</p>
+</li>
+
+
+<ql-code-block language="bash">
+gcloud auth list
+</ql-code-block>
+
+
+<p><strong>Output</strong></p>
+<ql-code-block language="plaintext" output noWrap>
+ACTIVE: *
+ACCOUNT: student-01-xxxxxxxxxxxx@qwiklabs.net
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+</ql-code-block>
+
+<li>
+<p>(Opzionale) Puoi elencare l'ID progetto con questo comando:</p>
+</li>
+</ol>
+
+<ql-code-block language="bash">
+gcloud config list project
+</ql-code-block>
+
+<p><strong>Output</strong></p>
+<ql-code-block language="plaintext" output noWrap>
+[core]
+project = <project_ID>
+</ql-code-block>
+
+
+<p><strong>output di esempio</strong></p>
+<ql-code-block language="plaintext" output noWrap>
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+</ql-code-block>
+<aside>
+  <strong>Nota</strong>: Per la documentazione completa su <code>gcloud</code>, consulta la <a href="https://cloud.google.com/sdk/gcloud" target="_blank">panoramica dello strumento a riga di comando gcloud</a>.
+
+</aside>

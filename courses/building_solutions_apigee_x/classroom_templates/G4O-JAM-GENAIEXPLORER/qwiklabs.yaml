@@ -1,0 +1,49 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '1.0'
+classroom_type: Instructor-led
+course_code: T-SJGAE-I
+title: "GenAI Study Jam - Generative AI Explorer"
+description: Explore Generative AI Studio and the PaLM API in Vertex AI, all while taking part in a friendly competition! You will create and test a prompt, create a conversation, and explore the prompt gallery through hands-on activities. After completing these tasks, you will compete to be the first to finish a challenge lab using what you have learned from earlier labs.
+objectives: 
+audience: 'AI application developers, machine learning practitioners, and anyone else who want to get hands-on with generative AI tools on Google Cloud'
+prerequisites: 'Basic familiarity with Google Cloud and Vertex AI as covered in the "Google Cloud Big Data and Machine Learning Fundamentals" course.'
+outline: 
+external_content_url: ''
+tags: 
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 1
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 1440
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources: []
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp1154-get-started-generative-ai-studio
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl050-prompt-design-in-genai-studio
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp1151-generative-ai-prompt-design
+  - id: step-3
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/gen-ai-studio-jam-challenge
+ 

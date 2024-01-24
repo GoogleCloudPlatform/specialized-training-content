@@ -1,0 +1,229 @@
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '3.5'
+classroom_type: Instructor-led
+course_code: T-GCPML-I
+title: "[Tailored] Machine Learning on Google Cloud - Individual Labs"
+description: "Build Vertex AI AutoML models without writing a single line of code;
+  build BigQuery ML models, create Vertex AI custom training jobs using Keras and
+  TensorFlow, use Vertex AI Feature Store for data management, use feature engineering
+  for model improvement, determine the appropriate data preprocessing options for
+  your use case, leverage best practices to implement machine learning on Google Cloud.
+  \ \r\nWhat is Feature Store, Analytics Hub, DataPlex, and Data Catalog and how can
+  you use them for data management and governance?  How can you use Big Query ML to
+  build, train, and deploy machine learning models by knowing basic SQL code?  How
+  do you improve data quality and perform exploratory data analysis?  What feature
+  engineering techniques can you use to improve model performance?  How do you determine
+  the appropriate data preprocessing approach for a use case? How do you write distributed
+  machine learning models that scale in TensorFlow?  How does Vertex AI serve batch
+  and online predictions and monitor ML models?  Learn all this and more!\r\n"
+objectives: "This series of courses teaches participants the following skills:\r\n-Build,
+  train and deploy a machine learning model without writing a single line of code
+  using Vertex AI AutoML.\r\n-Understand when to use AutoML and Big Query ML.\r\n-Create
+  Vertex AI managed datasets.\r\n-Add features to a Feature Store.\r\n-Describe Analytics
+  Hub, Dataplex, Data Catalog.\r\n-Describe hyperparameter tuning using Vertex Vizier
+  and how it can be used to improve model performance. \r\n-Create a Vertex AI Workbench
+  User-Managed Notebook, build a custom training job, then deploy it using a Docker
+  container.\r\n-Describe batch and online predictions and model monitoring.  \r\n-Describe
+  how to improve data quality.\r\n-Perform exploratory data analysis.\r\n-Build and
+  train supervised learning models.\r\n-Optimize and evaluate models using loss functions
+  and performance metrics.\r\n-Create repeatable and scalable train, eval, and test
+  datasets.\r\n-Implement machine learning models using TensorFlow/Keras.\r\n-Describe
+  how to represent and transform features.\r\n-Understand the benefits of using feature
+  engineering to improve model quality.\r\n-Describe Vertex AI Pipelines\r\n"
+audience: "This class is primarily intended for the following participants:\r\nAspiring
+  machine learning data analysts, data scientists and data engineers.\r\nLearners
+  who want exposure to ML using Vertex AI AutoML, BQML, Feature Store, Workbench,
+  Vizier for hyperparameter tuning, TensorFlow/Keras."
+prerequisites: Some familiarity with basic machine learning concepts. ●Basic proficiency
+  with a scripting language - Python preferred.
+outline: 
+external_content_url: https://www.coursera.org/specializations/machine-learning-tensorflow-gcp
+tags: 
+- Google Internal Use Only
+- Vertex AI
+- Feature Store
+- Machine Learning in the Enterprise
+- TensorFlow
+- Data Analysis
+- Data Quality
+- Feature Engineering
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 2
+course_surveys:
+- gcp-training-content/cloud-training-l2io16cn5i
+estimated_duration: 50000
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: true
+published: true
+student_resources:
+- id: 2237a35f-aab6-4f28-bf4a-882111ca3c801
+  title: Welcome and Introduction to Course
+  description: Welcome and Introduction to Course
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/00_%20v3.5_Welcome%20to%20Machine%20Learning%20on%20Google%20Cloud.pdf
+- id: 92cdd89e-9374-4070-99e1-1bbbe0137f3e1
+  title: 'Module 1:  How Google Does Machine Learning'
+  description: 'Module 1:  How Google Does Machine Learning'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/v3.5_Day%201_%20%20How%20Google%20Does%20Machine%20Learning.pdf
+- id: 60fba01c-76ae-4331-a669-44bf5ea3c7291
+  title: 'Module 2:  Launching into Machine Learning'
+  description: 'Module 2:  Launching into Machine Learning'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/v3.5_Day%202_%20Launching%20into%20Machine%20Learning_1.pdf
+- id: 62d312da-23b3-4054-bf75-d962dae82d371
+  title: 'Module 3:  TensorFlow on Google Cloud'
+  description: 'Module 3:  TensorFlow on Google Cloud'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/v3.5_Day%203_%20TensorFlow%20on%20Google%20Cloud.pdf
+- id: 793f0bbc-bdd8-475e-a8ec-f99a9e6f31451
+  title: 'Module 4:  Feature Engineering'
+  description: 'Module 4:  Feature Engineering'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/v3.5_Day%204_%20%20Feature%20Engineering.pdf
+- id: ae15d4bf-1742-42a8-bfcc-221808fb546d1
+  title: 'Module 5:  Machine Learning in the Enterprise'
+  description: 'Module 5:  Machine Learning in the Enterprise'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/v3.5_Day%205_%20%20Machine%20Learning%20in%20the%20Enterprise.pdf
+- id: 4d63db8b-5823-4632-b539-3ae963a067d31
+  title: Course Summary
+  description: Course Summary
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/01_%20v3.5_Series%20Summary%20-%20%20Machine%20Learning%20on%20Google%20Cloud.pdf
+- id: 6055eca8-a30e-4b65-888f-fb6f678cf35e1
+  title: Readings
+  description: Readings
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Resources/Readings%20-%20ALL%20by%20course/Readings_v3.5%20_%20Machine%20Learning%20on%20Google%20Cloud.pdf
+- id: ce1533aa-def8-47c0-a08f-ee27494b44331
+  title: Best Practices
+  description: Best practices
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Resources/%5BPDF%5D%20Best%20Practices%20for%20ML%20Development%20on%20Vertex%20AI.pdf
+- id: ad2ec25d-3811-43dd-b5fc-dc3431b0a6081
+  title: Machine Learning Glossary (Open in Google Colaboratory)
+  description: URL  colab.sandbox.google.com
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Resources/ml_glossary-from%20GCS.ipynb
+- id: 1cff5fa8-d921-43e3-9276-278c7c0648d61
+  title: How to Create a Feature Store using the Vertex AI GUI
+  description: How to Create a Feature Store using the Vertex AI GUI
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Resources/v3.0%20How%20to%20Create%20a%20Feature%20Store.pdf
+instructor_resources:
+- id: ae35c23e-c811-41cf-891e-a01a37bdb2f91
+  title: Welcome and Introduction to Course
+  description: Welcome and Introduction to Course
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/00_%20v3.5_Welcome%20to%20Machine%20Learning%20on%20Google%20Cloud.pdf
+- id: c01a5160-5257-4706-bf8d-85658c542db31
+  title: 'Module 1:  How Google Does Machine Learning'
+  description: 'Module 1:  How Google Does Machine Learning'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/v3.5_Day%201_%20%20How%20Google%20Does%20Machine%20Learning.pdf
+- id: 60e50eae-c090-488a-bafc-bcc7c6cf89741
+  title: 'Module 2:  Launching into Machine Learning'
+  description: 'Module 2:  Launching into Machine Learning'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/v3.5_Day%202_%20Launching%20into%20Machine%20Learning_1.pdf
+- id: 18cfabe4-dc46-4ac9-b16d-066456c1e7341
+  title: 'Module 3:  TensorFlow on Google Cloud'
+  description: 'Module 3:  TensorFlow on Google Cloud'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/v3.5_Day%203_%20TensorFlow%20on%20Google%20Cloud.pdf
+- id: bc897256-6f73-48ac-94a3-c32a7611be351
+  title: 'Module 4:  Feature Engineering'
+  description: 'Module 4:  Feature Engineering'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/v3.5_Day%204_%20%20Feature%20Engineering.pdf
+- id: ac444208-4dd2-4379-a673-b2fdc291a91b1
+  title: 'Module 5: Machine Learning in the Enterprise'
+  description: 'Module 5: Machine Learning in the Enterprise'
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/v3.5_Day%205_%20%20Machine%20Learning%20in%20the%20Enterprise.pdf
+- id: 2386ba5f-e4e4-4d44-8fba-0f6a40e5fa191
+  title: Course Summary
+  description: Course Summary
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Course%20Files%20/01_%20v3.5_Series%20Summary%20-%20%20Machine%20Learning%20on%20Google%20Cloud.pdf
+- id: 5238f6b4-d076-43d4-ba5f-105a313692a91
+  title: Instructor Materials
+  description: Instructor Materials
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Instructor/Trainer%20materials%20_%20T-GCPML-I%20v3.5%20_%20Machine%20Learning%20on%20Google%20Cloud.pdf
+- id: fbf530be-9d30-47c8-9b41-f1237b920a561
+  title: How to Create a Feature Store using the Vertex AI GUI
+  description: How to Create a Feature Store using the Vertex AI GUI
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/mlongcp/v3.5_MLonGC/ilt_pdf/Resources/v3.0%20How%20to%20Create%20a%20Feature%20Store.pdf
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL328-UsinganImageDatasettoTrainanAutoML
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL182-ImprovingDataQuality
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL183-ExploratoryDataAnalysis
+  - id: step-3
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL184-IntroToLinearRegression
+  - id: step-4
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL294-UsingBQMLtoPredictPenguinWeight
+  - id: step-5
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL148-ManipulatingDataWithTensorflowDatasetAPI
+  - id: step-6
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL200-BuilddDnnUsingKerasFunctionalAPI
+  - id: step-7
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL227-Training-at-scale-AIP-Service
+  - id: step-8
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL283-ClassifyStructuredDataUsingKerasPreprocessingLayers
+  - id: step-9
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL152-PerformingAdvancedFeatureEngineeringInBQML
+  - id: step-10
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL281-UsingFeatureStore
+  - id: step-11
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL275-VertexAICustomTrainingJobPredictionUsingManagedDatasets
+  - id: step-12
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL277-HyperparameterTuning
+  - id: step-13
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL287-VetexAIModelMonitoring
+  - id: step-14
+    activity_options:
+    - type: lab
+      id: gcp-training-content/MLGC-ILT-v3.0
+      

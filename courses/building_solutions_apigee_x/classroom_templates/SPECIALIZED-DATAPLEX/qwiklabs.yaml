@@ -1,0 +1,111 @@
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '1.0'
+classroom_type: Instructor-led
+course_code: T-MDMD-I
+title: "Managing a Data Mesh with Dataplex"
+description: ".. "
+objectives: " ."
+audience: ' .'
+prerequisites: ' .'
+outline: ''
+external_content_url: ''
+tags: 
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 1
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 2880
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources: 
+- id: dataplex-student-notes-0
+  title: 'Module 0: Introduction'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Managing_Data_Mesh_With_Dataplex/M0-Introduction.pdf
+- id: dataplex-student-notes-1
+  title: 'Module 1: Introduction to Dataplex'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Managing_Data_Mesh_With_Dataplex/M1-Introduction%20to%20Dataplex.pdf
+- id: dataplex-student-notes-2
+  title: 'Module 2: Creating a Data Mesh on Dataplex'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Managing_Data_Mesh_With_Dataplex/M2-Creating%20a%20Data%20Mesh%20on%20Dataplex.pdf
+- id: dataplex-student-notes-3
+  title: 'Module 3: Processing Data on Dataplex'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Managing_Data_Mesh_With_Dataplex/M3-Processing%20Data%20on%20Dataplex.pdf
+- id: dataplex-student-notes-4
+  title: 'Module 4: Managing Data Security with Dataplex'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Managing_Data_Mesh_With_Dataplex/M4-Managing%20Data%20Security%20with%20Dataplex.pdf
+- id: dataplex-student-notes-5
+  title: 'Module 5: Data Tagging and Data Catalog'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Managing_Data_Mesh_With_Dataplex/M5-Data%20Tagging%20and%20Data%20Catalog.pdf
+- id: dataplex-student-notes-6
+  title: 'Module 6: Data Quality and Profiling'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Managing_Data_Mesh_With_Dataplex/M6-Data%20Quality%20and%20Profiling.pdf
+- id: dataplex-student-notes-7
+  title: 'Module 7: Dataplex Best Practices'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Managing_Data_Mesh_With_Dataplex/M7-Dataplex%20Best%20Practices.pdf
+
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl056-provisioning-a-data-mesh-with-dataplex
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl057-standardize-data-using-dataplex-tasks
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl058-manage-data-security-using-dataplex
+  - id: step-3
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl059-data-catalog-and-data-lineage
+  - id: step-4
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl060-data-quality-and-profiling-in-bigquery
+  - id: step-5
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl061-dataplex-challenge-lab
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

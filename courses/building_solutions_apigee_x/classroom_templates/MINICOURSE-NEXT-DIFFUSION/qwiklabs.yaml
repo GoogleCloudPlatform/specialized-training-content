@@ -1,0 +1,37 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '0.1'
+classroom_type: Instructor-led
+course_code: ''
+title: "Google Cloud Next 2023 - Practical Introduction to Diffusion Models"
+description: In this mini course, you will learn the fundamentals of Diffusion Models and what use cases they can support. At the end of the course, you will be able to practice building and deploying Diffusion Models on Vertex AI in a live lab environment.
+objectives: 
+audience: 
+prerequisites: 
+outline: 
+external_content_url: ''
+tags: 
+- Google Internal Use Only
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 2
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 120
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources: []
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl067-next-stable-diffusion

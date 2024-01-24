@@ -1,0 +1,40 @@
+<h3>Ative o Google Cloud Shell</h3>
+	<p>O Google Cloud Shell é uma máquina virtual com ferramentas de desenvolvimento. Ele conta com um diretório principal permanente de 5 GB e é executado no Google Cloud.
+	O Google Cloud Shell permite acesso de linha de comando aos seus recursos do GCP.</p>
+	<ol>
+	<li>
+	<p>No Console do GCP, na barra de ferramentas superior direita, clique no botão <strong>Abrir o Cloud Shell</strong>.</p>
+	<p><img src="img/console_topbar_icon_cloudshell.png" alt="Ícone do Cloud Shell"></p>
+	</li>
+	<li>
+	<p>Clique em <strong>Continue</strong> (continuar):</p>
+	<p><img src="img/cloudshell_continue.png" alt="cloudshell_continue"></p>
+	</li>
+	</ol>
+	<p>Demora alguns minutos para provisionar e conectar-se ao ambiente. Quando você está conectado, você já está autenticado e o projeto é definido como seu <strong> PROJECT_ID </strong>. Por exemplo:</p>
+	<p><img src="img/welcome-to-cloud-shell.png" alt="Terminal do Cloud Shell"></p>
+	<p><strong>gcloud</strong> é a ferramenta de linha de comando do Google Cloud Platform. Ele vem pré-instalado no Cloud Shell e aceita preenchimento com tabulação.</p>
+	<p>É possível listar o nome da conta ativa com este comando:</p>
+	<pre><code>gcloud auth list
+</code></pre>
+	<p>Saída:</p>
+	<pre><code class="language-output">ACTIVE: *
+ACCOUNT: student-01-xxxxxxxxxxxx@qwiklabs.net
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+	</code></pre>
+	<p>É possível listar o ID de projeto com este comando:</p>
+	<pre><code>gcloud config list project
+	</code></pre>
+	<p>Saída:</p>
+	<pre><code class="language-output">[core]
+project = &lt;project_ID&gt;
+	</code></pre>
+	<p>Exemplo de saída:</p>
+	<pre><code class="language-Output">[core]
+project = qwiklabs-gcp-44776a13dea667a6
+	</code></pre>
+	<aside>
+	  A documentação completa do <strong>gcloud</strong> está disponível na página <a href="https://cloud.google.com/sdk/gcloud">Visão geral do gcloud</a> do Google Cloud.
+
+	</aside>

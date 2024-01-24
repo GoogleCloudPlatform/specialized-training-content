@@ -1,0 +1,84 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '1.0'
+classroom_type: Instructor-led
+course_code: T-ICGAI-I
+title: "Interactive Chat for Applications using Generative AI Studio"
+description: In this course, you will explore the use of interactive chat models using Gen AI Studio on Vertex AI and learn how to incorporate those models into your application using the PaLM API and client libraries. You will learn how to design and tune prompts to ensure the best outputs for your applications and discuss how to fine-tune foundational models to improve model output quality.
+objectives: 
+audience: 'Intermediate-level training for those developing using Generative AI features on the Google Cloud Vertex AI platform'
+prerequisites: 'Basic familiarity with Google Cloud and Vertex AI as covered in the "Google Cloud Big Data and Machine Learning Fundamentals" course'
+outline: 
+external_content_url: ''
+tags: 
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 1
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 1440
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources: 
+- id: genaistudio-chat-0
+  title: M0-Introduction
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M0-Introduction-chat.pdf
+- id: genaistudio-chat-1
+  title: M1-Generative AI on Vertex AI
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M1-Generative%20AI%20on%20Vertex%20AI-chat.pdf
+- id: genaistudio-chat-2
+  title: M2-Gen AI Studio
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M2-Gen%20AI%20Studio-chat.pdf
+- id: genaistudio-chat-3
+  title: M3-Prompt Design
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M3-Prompt%20Design-chat.pdf
+- id: genaistudio-chat-4
+  title: M4-Implementing the PaLM API
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M4-Implementing%20the%20PaLM%20API-chat.pdf
+- id: genaistudio-chat-5
+  title: M5-Best Practices for Interactive Chat Applications
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M5-Best%20Practices%20for%20Interactive%20Chat%20Applications-chat.pdf
+- id: genaistudio-chat-6
+  title: M6-Summary
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M6%20-%20Summary-chat.pdf
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl040-chat-getting-started-with-gen-ai-studio-ui
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl041-chat-question-answering-with-generative-models
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl042-chat-getting-started-with-the-palm-for-chat-bots-api
+  - id: step-3
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl043-chat-integrate-palm-api-into-chat-applications
+ 

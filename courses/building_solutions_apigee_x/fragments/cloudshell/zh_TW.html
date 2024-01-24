@@ -1,0 +1,52 @@
+<h3>啟動 Cloud Shell</h3>
+<p>Cloud Shell 是搭載多項開發工具的虛擬機器，提供永久的 5 GB 主目錄，而且在 Google Cloud 中運作。Cloud Shell 提供指令列存取權，方便您使用 Google Cloud 資源。</p>
+<ol>
+<li>
+<p>在 Google Cloud 控制台的上方，按一下「啟用 Cloud Shell」<strong></strong>圖示 <img src="https://storage.googleapis.com/cloud-training/images/devshell.png" alt="「啟動 Cloud Shell」圖示" />。</p>
+</li>
+<li>
+<p>按一下「繼續」<strong></strong>。</p>
+</li>
+</ol>
+<p>佈建並連線至環境的作業需要一些時間才能完成。連線完成即代表已通過驗證，且專案已設為您的「PROJECT_ID」<strong></strong>。輸出內容中有一行宣告本工作階段 <strong>PROJECT_ID</strong> 的文字：</p>
+<ql-code-block output>
+您在本工作階段中的 Cloud Platform 專案會設為「YOUR_PROJECT_ID」
+</ql-code-block>
+<p><code>gcloud</code> 是 Google Cloud 的指令列工具，已預先安裝於 Cloud Shell，並支援 Tab 鍵自動完成功能。</p>
+<ol start="3">
+<li>
+<p>(選用) 您可以使用下列指令來列出使用中的帳戶：</p>
+</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud auth list
+</ql-code-block>
+<p><strong>輸出內容：</strong></p>
+<ql-code-block language="plaintext" output>
+ACTIVE: *
+ACCOUNT: student-01-xxxxxxxxxxxx@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+</ql-code-block>
+<ol start="4">
+<li>
+<p>(選用) 您可以使用下列指令來列出專案 ID：</p>
+</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud config list project
+</ql-code-block>
+<p><strong>輸出內容：</strong></p>
+<ql-code-block language="plaintext" output>
+[core]
+project = &lt;project_ID>
+</ql-code-block>
+<p><strong>輸出內容範例：</strong></p>
+<ql-code-block language="plaintext" output>
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+</ql-code-block>
+<ql-infobox>
+<strong>附註：</strong>如需有關 <code>gcloud</code> 的完整說明，請前往 Google Cloud 並參閱「<a href="https://cloud.google.com/sdk/gcloud" target="_blank">gcloud CLI overview guide</a>」(gcloud CLI 總覽指南)。
+</ql-infobox>

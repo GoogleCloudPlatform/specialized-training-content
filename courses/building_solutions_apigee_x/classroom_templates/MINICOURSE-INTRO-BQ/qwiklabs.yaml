@@ -1,0 +1,63 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '0.1'
+classroom_type: Instructor-led
+course_code: ''
+title: "[Mini Course] Introduction to BigQuery"
+description: 'In this course you will learn the fundamentals of BigQuery. Explore
+  ways to derive insights from data at scale using BigQuery, Google Cloud’s serverless,
+  highly scalable, and cost-effective cloud data warehouse. This course uses lectures,
+  demos, and hands-on labs to teach you the fundamentals of BigQuery, including how
+  to load and query data, optimize performance and design schemas at scale. '
+objectives: 
+audience: 
+prerequisites: 
+outline: 
+external_content_url: ''
+tags: 
+- Google Internal Use Only
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 2
+course_surveys:
+estimated_duration: 0
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: true
+published: true
+student_resources:
+- id: mc-introbq-student-notes
+  title: Presentation Slides
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/minicourses/MINICOURSE-INTRO-BQ/student/Mini_Course_Introduction_to_BigQuery.pdf
+instructor_resources:
+- id: mc-introbq-instructor-links
+  title: Instructor Links
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/minicourses/MINICOURSE-INTRO-BQ/instructor/Instructor%20Materials-Mini%20Course_%20Introduction%20to%20BigQuery.pdf
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp072-bigquery-qwik-start-console
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp408-troubleshooting-common-sql-errors-with-bigquery
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL135-PartitionedTablesBigQuery
+  - id: step-3
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL019-optimizing-your-bigquery-queries-for-performance
+    

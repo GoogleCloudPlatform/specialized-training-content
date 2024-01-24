@@ -1,0 +1,42 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '0.1'
+classroom_type: Instructor-led
+course_code: ''
+title: "[Tech Talk] Secure and Simplify Access with PSC"
+description: It covers how to connect & consume 1st & 3rd party, customer-owned services easily and privately with PSC  
+objectives: 
+audience: 
+prerequisites: 
+outline: 
+external_content_url: ''
+tags: 
+- Google Internal Use Only
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 2
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 120
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources:
+- id: tt-private-service-connect-student-pdf-1
+  title: Tech Talk Private Service Connect slides
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/techtalk-slides/TechTalk-PrivateServiceConnect/TechTalk_Secure_and_Simplify_Access_with_PSC.pdf
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL456-cloud-digital-leader

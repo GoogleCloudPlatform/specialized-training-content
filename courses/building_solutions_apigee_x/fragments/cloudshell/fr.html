@@ -1,0 +1,40 @@
+<h3>Activer Google Cloud Shell</h3>
+	<p>Google Cloud Shell est une machine virtuelle qui contient des outils pour les développeurs. Elle comprend un répertoire d'accueil persistant de 5 Go et s'exécute sur Google Cloud.
+	Google Cloud Shell offre un accès en ligne de commande à vos ressources GCP.</p>
+	<ol>
+	<li>
+	<p>Dans la console GCP, dans la barre d'outils située en haut à droite, cliquez sur le bouton <strong>Ouvrir Cloud Shell</strong>.</p>
+	<p><img src="img/console_topbar_icon_cloudshell.png" alt="Icône Cloud Shell"></p>
+	</li>
+	<li>
+	<p>Cliquez sur <strong>Continue</strong> (Continuez):</p>
+	<p><img src="img/cloudshell_continue.png" alt="cloudshell_continue"></p>
+	</li>
+	</ol>
+	<p>Il faut quelques instants pour mettre en service et se connecter à l'environnement. Lorsque vous êtes connecté, vous êtes déjà authentifié et le projet est défini sur votre <strong>PROJECT_ID</strong>. Par exemple:</p>
+  <p><img src="img/welcome-to-cloud-shell.png" alt="Terminal Cloud Shell"></p>
+	<p><strong>gcloud</strong> est l'outil de ligne de commande associé à Google Cloud Platform. Pré-installé sur Cloud Shell, il est également compatible avec la saisie semi-automatique via la touche de tabulation.</p>
+	<p>Vous pouvez répertorier les noms des comptes actifs à l'aide de cette commande :</p>
+	<pre><code>gcloud auth list
+</code></pre>
+	<p>Résultat :</p>
+	<pre><code class="language-output">ACTIVE: *
+ACCOUNT: student-01-xxxxxxxxxxxx@qwiklabs.net
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+	</code></pre>
+	<p>Pour répertorier les ID de projet, exécutez la commande suivante :</p>
+	<pre><code>gcloud config list project
+	</code></pre>
+	<p>Résultat :</p>
+	<pre><code class="language-output">[core]
+project = &lt;ID_Projet&gt;
+	</code></pre>
+	<p>Exemple de résultat :</p>
+	<pre><code class="language-Output">[core]
+project = qwiklabs-gcp-44776a13dea667a6
+	</code></pre>
+	<aside>
+	  Pour plus d'informations, consultez la <a href="https://cloud.google.com/sdk/gcloud">documentation complète</a> relative à <strong>gcloud</strong>.
+
+	</aside>

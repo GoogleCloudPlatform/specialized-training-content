@@ -1,0 +1,39 @@
+---
+locale: ja
+title: "Vertex AI Model Garden "
+description: In this class, after being introduced to Vertex AI as a machine learning platform through the lens of Model Garden. You will learn how to leverage pre-trained models as part of your machine learning workflow and how to fine-tune models for your specific applications.
+objectives: 
+audience: 'Intermediate-level training for ML practioners using Model Garden and other features on the Google Cloud Vertex AI platform'
+prerequisites: 'Basic familiarity with Google Cloud and Vertex AI as covered in the "Google Cloud Big Data and Machine Learning Fundamentals" course'
+external_content_url: ''
+student_resources: 
+- id: model-garden-0
+  title: M0-Introduction
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Vertex_AI_Model_Garden/M0%20_%20Introduction%20_%20Model%20Garden%20v0.1_JA.pdf
+- id: model-garden-1
+  title: M1-Vertex AI for ML Workloads
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Vertex_AI_Model_Garden/M1%20_%20Vertex%20AI%20for%20ML%20Workloads%20_%20Model%20Garden%20v0.1_JA.pdf
+- id: model-garden-2
+  title: M2-Model Garden
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Vertex_AI_Model_Garden/M2%20_%20Model%20Garden%20_%20Model%20Garden%20v0.1_JA.pdf
+- id: model-garden-3
+  title: M3-Task Specific Solutions
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Vertex_AI_Model_Garden/M3%20_%20Task-specific%20Solutions%20_%20Model%20Garden%20v0.1_JA.pdf
+- id: model-garden-4
+  title: M4-Foundation Models
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Vertex_AI_Model_Garden/M4%20_%20Foundation%20Models%20_%20Model%20Garden%20v0.1_JA.pdf
+- id: model-garden-5
+  title: M5-Fine-Tunable Models
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Vertex_AI_Model_Garden/M5%20_%20Fine-tunable%20Models%20_%20Model%20Garden%20v0.1_JA.pdf

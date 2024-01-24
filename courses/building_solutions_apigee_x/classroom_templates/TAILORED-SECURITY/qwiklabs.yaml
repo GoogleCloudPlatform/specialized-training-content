@@ -1,0 +1,77 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '0.1'
+classroom_type: Instructor-led
+course_code: ''
+title: "[Tailored] Security on Google Cloud"
+description: '.'
+objectives: 
+audience: 
+prerequisites: 
+outline: 
+external_content_url: ''
+tags: 
+- Google Internal Use Only
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 1
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 4000
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources: []
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-training-content/GCPSEC-ConfIAP
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL003-CloudIAM
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-training-content/GCPSEC-ConfVPCFW
+  - id: step-3
+    activity_options:
+    - type: lab
+      id: gcp-training-content/GCPSEC-CSEKWithCloudStorage
+  - id: step-4
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL005-CloudStorage
+  - id: step-5
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL037-ImplementingCloudSQL
+  - id: step-6
+    activity_options:
+    - type: lab
+      id: gcp-training-content/GCPSEC-ConfUseStackdriverLoggingMonitoring
+  - id: step-7
+    activity_options:
+    - type: lab
+      id: gcp-training-content/GCPSEC-ConfViewAuditLogs
+  - id: step-8
+    activity_options:
+    - type: lab
+      id: gcp-training-content/GCPSEC-ScannerAppEngine
+  - id: step-9
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL487-BCE-Compute-Engine
+  - id: step-10
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL303-GCPSEC-Secret-Manager

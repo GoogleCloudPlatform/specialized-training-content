@@ -1,0 +1,45 @@
+---
+locale: es
+title: Interactive Chat for Applications using Generative AI Studio
+description: "La IA generativa se está utilizando para desarrollar nuevos productos y servicios en múltiples sectores, como comunicaciones de marketing personalizadas, chatbots para interactuar con los clientes y asistentes virtuales. Por ejemplo, también se puede utilizar para crear chatbots capaces de responder las preguntas de los clientes y brindarles asistencia. En este curso, explorarás el uso de modelos de chat interactivo de varios turnos con Gen AI Studio en Vertex AI y aprenderás a incorporarlos en una aplicación usando la API de PaLM y las bibliotecas cliente. Aprenderás a diseñar y probar instrucciones de chat para garantizar los mejores resultados en tus aplicaciones y analizarás cómo elegir los parámetros de la API de PaLM para mejorar la calidad de las respuestas en tu caso de uso."
+objectives: "Comprender las opciones de IA generativa que ofrece Vertex AI para tus aplicaciones. Explorar Gen AI Studio para interactuar con los modelos básicos. Diseñar y ajustar instrucciones de chat para tus casos de uso de IA generativa. Comprender el efecto de modificar los parámetros de la API de PaLM en las respuestas del modelo 
+Implementar la API de PaLM en tus aplicaciones con el SDK de Python"
+audience: Capacitación de nivel intermedio para desarrolladores que utilizan funciones de IA generativa en Vertex AI Platform de Google Cloud.
+prerequisites: "Tener conocimientos básicos de uno o más de los siguientes temas. Programación en Python. Uso de APIs en aplicaciones. Conocimientos básicos de Google Cloud y Vertex AI, según lo que se incluye en el curso Google Cloud Big Data and Machine Learning Fundamentals"
+external_content_url: ''
+student_resources: 
+- id: genaistudio-chat-0
+  title: M0-Introduction
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M0-Introduction-chat_ESLA.pdf
+- id: genaistudio-chat-1
+  title: M1-Generative AI on Vertex AI
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M1-Generative%20AI%20on%20Vertex%20AI-chat_ESLA.pdf
+- id: genaistudio-chat-2
+  title: M2-Gen AI Studio
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M2-Gen%20AI%20Studio-chat_ESLA.pdf
+- id: genaistudio-chat-3
+  title: M3-Prompt Design
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M3-Prompt%20Design-chat_ESLA.pdf
+- id: genaistudio-chat-4
+  title: M4-Implementing the PaLM API
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M4-Implementing%20the%20PaLM%20API-chat_ESLA.pdf
+- id: genaistudio-chat-5
+  title: M5-Best Practices for Interactive Chat Applications
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M5-Best%20Practices%20for%20Interactive%20Chat%20Applications-chat_ESLA.pdf
+- id: genaistudio-chat-6
+  title: M6-Summary
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M6-Summary-chat_ESLA.pdf

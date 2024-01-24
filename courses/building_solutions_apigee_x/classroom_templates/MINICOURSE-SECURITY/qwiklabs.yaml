@@ -1,0 +1,74 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '0.5'
+classroom_type: Instructor-led
+course_code: ''
+title: "[Mini Course] Intro to Google Cloud Security"
+description: This training course gives you a focused study of security controls and 
+  techniques in Google Cloud. Through recorded lectures, demonstrations, and hands-on labs, 
+  you will explore and deploy the components of a secure Google Cloud solution, including 
+  Cloud Identity and encrypted storage using Key Management Systems.
+objectives: 
+audience: 
+prerequisites: 
+outline: 
+external_content_url: ''
+tags: 
+- Google Internal Use Only
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 2
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 540
+lock_activity_position: false
+max_hot_labs: 500
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources:
+- id: mc-security-1
+  title: 1 - Foundations of Google Cloud Security
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/gcpsec/v3.x/en/students/M1_Foundations_of_Google_Cloud_Security.pdf
+- id: mc-security-2
+  title: 2 - Securing Access to Google Cloud
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/gcpsec/v3.x/en/students/M2_Securing_Access_to_Google_Cloud.pdf
+- id: mc-security-6
+  title: 6 - Securing Cloud Data
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/gcpsec/v3.x/en/students/M6_Securing_Cloud_Data.pdf
+instructor_resources: 
+- id: mc-security-1-in
+  title: 1 - Foundations of Google Cloud Security
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/gcpsec/v3.x/en/trainers/M1_Foundations_of_Google_Cloud_Security.pdf
+- id: mc-security-2-in
+  title: 2 - Securing Access to Google Cloud
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/gcpsec/v3.x/en/trainers/M2_Securing_Access_to_Google_Cloud.pdf
+- id: mc-security-6-in
+  title: 6 - Securing Cloud Data
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/gcpsec/v3.x/en/trainers/M6_Securing_Cloud_Data.pdf
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-training-content/GCPSEC-ConfIAP
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-training-content/GCPSEC-CSEKWithCloudStorage

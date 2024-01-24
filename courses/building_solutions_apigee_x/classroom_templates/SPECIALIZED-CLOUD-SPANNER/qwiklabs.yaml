@@ -1,0 +1,129 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '1.0'
+classroom_type: Instructor-led
+course_code: T-UCS-I
+title: "Understanding Cloud Spanner"
+description: 'In this course you will learn about Cloud Spanner. You will get an introduction to 
+  Cloud Spanner, contrasting it with other Database products to understand when and how to use 
+  Spanner to solve your relational database needs at scale. You will learn how to create and manage 
+  Spanner databases using various tools on Google Cloud, learn to optimize relational schemas with 
+  Spanner’s distributed database model in mind, interact with your Spanner databases using the 
+  Spanner APIs, integrate Spanner with your applications, and learn how to use other Google tools for administering Spanner databases and managing your data. The lab culminates with a challenge lab where you demonstrate your knowledge of administering Spanner databases and managing data.'
+objectives: "Build scalable, managed, relational databases using Google Cloud Spanner; Create and 
+  manage Spanner databases using the CLI, Terraform, Python API, and the Cloud Console; Optimize relational database schemas for Spanner's distributed database model; Leverage Google Cloud tools for administering Spanner databases and managing data; Program and run queries and transactions using the Spanner API; Integrate Spanner with your applications"
+audience: 'Database administrators, engineers/developers, and cloud architects who want to learn 
+  how to create, optimize, and manage Spanner databases and migrate existing databases into 
+  Spanner.'
+prerequisites: 'Some prior Google Cloud experience at the fundamental level is assumed. Experience 
+  with relational databases, the SQL language, and some programming is also assumed.'
+outline: '{"subhead":"The course includes presentations, demonstrations, and hands-on
+  labs.","modules":[{"name":"Module 1: The Need for Spanner","items":["What is Spanner?","Spanner and the CAP Theorem","History of Spanner", "Cloud Spanner Use Cases"]},{"name":"Module 2: Getting Started with Spanner","items":["Planning Spanner Instances", "Automating Instance Creating","Creating Databases in Spanner"]},{"name":"Module
+  3: Optimizing Spanner Schemas","items":["Spanner Architecture", "Choosing Primary Keys", "Defining Database Schemas in Spanner", "Understanding Interleaving and Foreign Keys", "Understanding Secondary Indexes"]},{"name":"Module 4: Programming Spanner Applications, Queries, and Transactions","items":["Authentication and Authorization", "Using the Spanner Client Libraries", "Running Queries", "Managing Transactions"]},{"name":"Module 5: Deploying Spanner Applications","items":["Using Spanner from Applications", "Building Data Pipelines into and out of Spanner"]},{"name":"Module 6: Spanner Administration","items":["Manging your Data in Spanner","Managing Change","Operations"]},
+  {"name":"Module 7: Capstone Project", "items":["Spanner Best Practices","Capstone Project"]}]}'
+external_content_url: ''
+tags: 
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 1
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 4000
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources:
+- id: cloud-spanner-student-notes-0
+  title: 'Module 0: Course Introduction'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Understanding_Cloud_Spanner/student/M0-Introduction_v1.0.pdf
+- id: cloud-spanner-student-notes-1
+  title: 'Module 1: The Need for Spanner'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Understanding_Cloud_Spanner/student/M1-The%20Need%20for%20Spanner_v1.0.pdf
+- id: cloud-spanner-student-notes-2
+  title: 'Module 2: Getting Started with Spanner'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Understanding_Cloud_Spanner/student/M2-Getting%20Started%20with%20Spanner_v1.0.pdf
+- id: cloud-spanner-student-notes-3
+  title: 'Module 3: Optimizing Spanner Schemas'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Understanding_Cloud_Spanner/student/M3-Optimizing%20Spanner%20Schemas_v1.0.pdf
+- id: cloud-spanner-student-notes-4
+  title: 'Module 4: Programming Spanner Applications'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Understanding_Cloud_Spanner/student/M4-Programming%20Spanner%20Applications%2C%20Queries%2C%20and%20Transactions_v1.0.pdf
+- id: cloud-spanner-student-notes-5
+  title: 'Module 5: Deploying Spanner Applications'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Understanding_Cloud_Spanner/student/M5-Deploying%20Spanner%20Applications_v1.0.pdf
+- id: cloud-spanner-student-notes-6
+  title: 'Module 6: Spanner Administration'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Understanding_Cloud_Spanner/student/M6-Spanner%20Administration_v1.0.pdf
+- id: cloud-spanner-student-notes-7
+  title: 'Module 7: Capstone Project'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Understanding_Cloud_Spanner/student/M7-Capstone%20Project_v1.0.pdf
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl001-create-spanner-instances-console
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl002-create-spanner-instances-cli-terraform
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl003-choosing-primary-keys-spanner
+  - id: step-3
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl004-managing-relationships-spanner
+  - id: step-4
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl005-programming-spanner-applications-python
+  - id: step-5
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl006-running-queries-transactions-spanner
+  - id: step-6
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl007-deploying-spanner-applications
+  - id: step-7
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl008-migrating-data-spanner-dataflow
+  - id: step-8
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl069-cloud-spanner-autoscaler
+  - id: step-9
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp1097-reconciling-account-data-with-cloud-spanner-change-streams 
+  - id: step-10
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl009-admin-spanner-challenge-lab
+  

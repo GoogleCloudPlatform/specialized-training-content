@@ -1,0 +1,74 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '0.3'
+classroom_type: Instructor-led
+course_code: ''
+title: "[Mini Course] Google Cloud Networking"
+description: In this course you will learn the essential features of Google Cloud
+  networking, including how to create and secure Virtual Private Cloud (VPC) networks
+  for your projects. You will also learn how to interconnect your VPC networks between
+  projects using Shared VPC and VPC Peering.
+objectives: 
+audience: 
+prerequisites: 
+outline: 
+external_content_url: ''
+tags: 
+- Google Internal Use Only
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 2
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 540
+lock_activity_position: false
+max_hot_labs: 500
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources:
+- id: 8413db77-5e1e-4a95-bae5-8c9c2fa8b815
+  title: 01 Google Cloud VPC Networking Fundamentals.pdf
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/gcpnet/v1.2/student/01%20Google%20Cloud%20VPC%20Networking%20Fundamentals.pdf
+- id: 9b452c99-a6ab-4da4-9919-4131cfa3c0a6
+  title: 03 Sharing Networks across Projects.pdf
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/gcpnet/v1.2/student/03%20Sharing%20Networks%20across%20Projects.pdf
+instructor_resources:
+- id: 370c9cce-5fcf-4431-8698-bb040f686637
+  title: 01 Google Cloud VPC Networking Fundamentals.pdf
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/gcpnet/v1.2/trainer/01%20Google%20Cloud%20VPC%20Networking%20Fundamentals.pdf
+- id: f010e816-7b21-47da-8699-f17b7e682f3e
+  title: 03 Sharing Networks across Projects.pdf
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/gcpnet/v1.2/trainer/03%20Sharing%20Networks%20across%20Projects.pdf
+- id: 2499bd68-3304-406e-8e2c-6a83b336d3d1
+  title: Datasheet - Mini Course_ Google Cloud Networking.pdf
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/minicourses/MINICOURSE-GCP-NETWORKING/instructor/Datasheet%20-%20Mini%20Course_%20Google%20Cloud%20Networking%20-%20Google%20Docs.pdf
+- id: ec387f12-1deb-4ee2-834f-f0e40dff125a
+  title: Timing Estimates.xlsx
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/minicourses/MINICOURSE-GCP-NETWORKING/instructor/Timing%20Estimates%20and%20Lab%20Info.xlsx
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-training-content/GCPNET-StartVPC
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-training-content/GCPNET-VPCPeering

@@ -1,0 +1,45 @@
+---
+locale: ja
+title: Text Generation for Applications using Generative AI Studio
+description: 生成 AI はさまざまな業界で新しい製品やサービスの開発に使用されています。パーソナライズされたマーケティング コミュニケーション、お客様とやり取りするための chatbot、仮想アシスタントがその例です。生成 AI を使用して、お客様からの質問に回答したり、カスタマー サポートを提供したりする chatbot も作成できます。このコースでは、Vertex AI で Generative AI Studio を利用するテキスト生成モデルの使用方法と、それらのモデルを PaLM API とクライアント ライブラリを使用してアプリケーションに組み込む方法について学習します。また、プロンプトを設計、チューニングして、アプリケーションに最適な出力が生成されるようにする方法と、モデルから得られる出力の品質を高めるために基盤モデルをファインチューニングする方法についても学びます。
+objectives: アプリケーションで使用可能な Vertex AI の生成 AI のオプションを理解する。Generative AI Studio で基盤モデルを操作する方法を学ぶ。生成 AI のユースケースに合わせてプロンプトを設計、チューニングする。Python SDK を使用して PaLM API をアプリケーションに実装する。モデルから得られる出力の品質を高めるために基盤モデルの重みをファイ。ンチューニングする。 
+audience: Google Cloud の Vertex AI プラットフォームで生成 AI 機能を使用して開発を行う人を対象とした中級レベルのトレーニング
+prerequisites: 以下の 1 つ以上について基本的な理解があること。Python でのプログラミング。アプリケーションでの API の使用。「Google Cloud Big Data and Machine Learning Fundamentals」コースで紹介されている Google Cloud と Vertex AI に関する基本的な知識。
+
+external_content_url: ''
+student_resources: 
+- id: genaistudio-text-0
+  title: M0-Introduction
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M0-Introduction_JA.pdf
+- id: genaistudio-text-1
+  title: M1-Generative AI on Vertex AI
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M1-Generative_AI_on_Vertex_AI_JA.pdf
+- id: genaistudio-text-2
+  title: M2-Gen AI Studio
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M2-Gen_AI_Studio_JA.pdf
+- id: genaistudio-text-3
+  title: M3-Prompt Design
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M3-Prompt_Design_JA.pdf
+- id: genaistudio-text-4
+  title: M4-Implementing the PaLM API
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M4-Implementing_the_PaLM_API_JA.pdf
+- id: genaistudio-text-5
+  title: M5-Fine-tuning Models
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M5-Fine-tuning_Models_JA.pdf
+- id: genaistudio-text-6
+  title: M6-Summary
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M6-Summary_JA.pdf

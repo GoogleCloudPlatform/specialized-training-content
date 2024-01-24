@@ -1,0 +1,38 @@
+{% set region = 'us-west1' %}
+{% set zone = 'us-west1-b' %}
+
+
+{% set project = env["project"] %}
+{% set cleanupScript = imports["cleanup-apigeex.sh"] %}
+{% set email = env['project'] +'@'+ env['project'] +'.iam.gserviceaccount.com' %}
+
+imports:
+- path: cleanup-apigeex.sh
+
+resources:
+- type: compute.v1.instance
+  name: cleanup-apigeex-vm
+  properties:
+    zone: {{ zone }}
+    machineType: https://www.googleapis.com/compute/v1/projects/{{ project }}/zones/{{ zone }}/machineTypes/g1-small
+    disks:
+    - deviceName: boot
+      type: PERSISTENT
+      boot: true
+      autoDelete: true
+      initializeParams:
+        sourceImage: https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/family/ubuntu-1804-lts
+    networkInterfaces:
+    - network: https://www.googleapis.com/compute/v1/projects/{{ project }}/global/networks/default
+      accessConfigs:
+      - name: External NAT
+        type: ONE_TO_ONE_NAT
+    serviceAccounts:
+    - email: {{ email }}
+      scopes:
+        - https://www.googleapis.com/auth/cloud-platform
+    metadata:
+      items:
+        - key: startup-script
+          value: |
+            {{ cleanupScript | indent(12) }}

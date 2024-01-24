@@ -1,0 +1,117 @@
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '1.0'
+classroom_type: Instructor-led
+course_code: T-D2OGC-A
+title: "Day 2 Operations on Google Cloud"
+description: ". "
+objectives: " ."
+audience: ' .'
+prerequisites: ' .'
+outline: ''
+external_content_url: ''
+tags: 
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 1
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 2880
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources:
+- id: sysops-student-notes-0
+  title: 'Module 0: Course Introduction'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Day_2_Operations/M0-Introduction.pdf
+- id: sysops-student-notes-1
+  title: 'Module 1: Google Cloud Architecture Framework'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Day_2_Operations/M1%20-%20Google%20Cloud%20Architecture%20Framework.pdf
+- id: sysops-student-notes-2
+  title: 'Module 2: Logging and Monitoring'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Day_2_Operations/M2%20-%20Logging%20and%20Monitoring.pdf
+- id: sysops-student-notes-3
+
+  title: 'Module 3: Securing Resources with Cloud IAM and Policies'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Day_2_Operations/M3%20-%20Securing%20Resources%20with%20Cloud%20IAM%20and%20Policies.pdf
+- id: sysops-student-notes-4
+  title: 'Module 4: Using VM Manager to Manage Resources'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Day_2_Operations/M4%20-%20Using%20VM%20Manager%20to%20Manage%20Resources.pdf
+- id: sysops-student-notes-5
+  title: 'Module 5: Migrating your Application Database'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Day_2_Operations/M5%20-%20Migrating%20Your%20Application%20Database.pdf
+- id: sysops-student-notes-6
+  title: 'Module 6: Automating Infrastructure Deployment'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Day_2_Operations/M6%20-%20Automating%20Infrastructure%20Deployment.pdf
+- id: sysops-student-notes-7
+  title: 'Module 7: Preparing to Migrate Applications to Google Kubernetes Engine'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Day_2_Operations/M7%20-%20Preparing%20to%20Migrate%20Application%20to%20Google%20Kubernetes%20Engine.pdf
+- id: sysops-student-notes-8
+  title: 'Module 8: Managing and Troubleshooting Google Kubernetes Engine'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Day_2_Operations/M8%20-%20Managing%20and%20Troubleshooting%20Google%20Kubernetes%20Engine.pdf
+- id: sysops-student-notes-9
+  title: 'Module 9: Summary'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Day_2_Operations/M9%20-%20Summary.pdf
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl029-lab-1-case-study
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl030-lab-2-logging-monitoring
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl031-lab-3-securing-and-managing
+  - id: step-3
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl032-lab-4-database-migration
+  - id: step-4
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl033-lab-5-terraform-automation
+  - id: step-5
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl034-lab-6-gke-migration
+  - id: step-6
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl035-lab-7-gke-management
+
+
+
+
+
+
+ 

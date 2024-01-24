@@ -1,0 +1,52 @@
+<h3>Як активувати Cloud Shell</h3>
+<p>Cloud Shell – це віртуальна машина з попередньо завантаженими інструментами для розробників. Вона пропонує домашній каталог обсягом 5 ГБ постійної пам’яті та працює в середовищі Google Cloud. Cloud Shell надає доступ до ресурсів Google Cloud через командний рядок.</p>
+<ol>
+<li>
+<p>Угорі Google Cloud Console натисніть <strong>Activate Cloud Shell (Активувати Cloud Shell)</strong> <img src="https://storage.googleapis.com/cloud-training/images/devshell.png" alt="Значок активації Cloud Shell" />.</p>
+</li>
+<li>
+<p>Натисніть <strong>Continue (Продовжити)</strong>.</p>
+</li>
+</ol>
+<p>Налаштування та підключення до середовища триватиме кілька секунд. Щойно ви підключитеся, вас буде автентифіковано, а проект отримає ваш <strong>PROJECT_ID (ІДЕНТИФІКАТОР ПРОЕКТУ)</strong>. Вивід міститиме рядок зі значенням <strong>PROJECT_ID (ІДЕНТИФІКАТОР ПРОЕКТУ)</strong> для цього сеансу:</p>
+<ql-code-block output>
+Your Cloud Platform project in this session is set to YOUR_PROJECT_ID
+</ql-code-block>
+<p><code>gcloud</code> – це інструмент командного рядка для Google Cloud. Він входить у пакет Cloud Shell і підтримує функцію автозаповнення за допомогою клавіші TAB.</p>
+<ol start="3">
+<li>
+<p>(Необов’язково) Щоб вивести поточне ім’я облікового запису, введіть таку команду:</p>
+</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud auth list
+</ql-code-block>
+<p><strong>Вивід:</strong></p>
+<ql-code-block language="plaintext" output>
+ACTIVE: *
+ACCOUNT: student-01-xxxxxxxxxxxx@qwiklabs.net
+
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+</ql-code-block>
+<ol start="4">
+<li>
+<p>(Необов’язково) Щоб вивести ідентифікатор проекту, введіть таку команду:</p>
+</li>
+</ol>
+<ql-code-block language="plaintext">
+gcloud config list project
+</ql-code-block>
+<p><strong>Вивід:</strong></p>
+<ql-code-block language="plaintext" output>
+[core]
+project = &lt;project_ID>
+</ql-code-block>
+<p><strong>Приклад виводу:</strong></p>
+<ql-code-block language="plaintext" output>
+[core]
+project = qwiklabs-gcp-44776a13dea667a6
+</ql-code-block>
+<ql-infobox>
+<strong>Примітка.</strong> Щоб знайти повну документацію щодо <code>gcloud</code>, перегляньте <a href="https://cloud.google.com/sdk/gcloud" target="_blank">посібник з інтерфейсу командного рядка gcloud</a> у Google Cloud.
+</ql-infobox>

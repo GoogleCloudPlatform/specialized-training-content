@@ -1,0 +1,1 @@
+![Google Cloud self-paced labs logo](img/logo.png)

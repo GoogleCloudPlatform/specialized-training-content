@@ -1,0 +1,83 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '0.1'
+classroom_type: Instructor-led
+course_code: ''
+title: "[Tailored] Data and ML Fundamentals"
+description: "An overview of big data and machine learning fundamentals on Google Cloud"
+objectives: 
+audience: 
+prerequisites: 
+outline: 
+external_content_url: ''
+tags: 
+- Google Internal Use Only
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 1
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 4000
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources: []
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp866-getting-started-with-bigquery-gis
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp406-using-the-bigquery-web-ui
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp865-loading-data-into-bq
+  - id: step-3
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL131-PublishStreamingData
+  - id: step-4
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL023-StreamingDataPipelineIntoDashboard
+  - id: step-5
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp972-identify-damaged-car-parts-vertex-ai  
+  - id: step-6
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL330-TraininganAutoMLVideoClassificationModel
+  - id: step-7
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL274-FraudDetectionWithAutoML
+  - id: step-8
+    activity_options:
+    - type: lab
+      id: gcp-ondemand-content/OCBL294-UsingBQMLtoPredictPenguinWeight
+  - id: step-9
+    activity_options:
+    - type: lab
+      id: gcp-spl-content/gsp774-fraud-detection-on-financial-transactions-with-machine-learning-on-google-cloud
+  - id: step-10
+    activity_options:
+    - type: lab
+      id: gcp-training-content/DATATOINSIGHTS-ExploringAndCreatingAnEcommerceAnalyticsPipelineWithCloudDataprep
+  - id: step-11
+    activity_options:
+    - type: lab
+      id: gcp-training-content/MLGC-ILT-v3.0
+
+

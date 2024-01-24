@@ -1,0 +1,53 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '0.2'
+classroom_type: Instructor-led
+course_code: ''
+title: "[Mini Course] Cloud Storage Tasks"
+description: This short course covers the basic tasks for using Google Cloud Storage. The
+  goal is to give participants hands-on experience in creating and deploying Cloud Storage buckets.
+objectives: 
+audience: 
+prerequisites: 
+outline: 
+external_content_url: ''
+tags: 
+- Google Internal Use Only
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 2
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 120
+lock_activity_position: false
+max_hot_labs: 500
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources:
+- id: mc-cloudstorage-1
+  title: Storage and Database Services.pdf
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/archinfra/v2.2/student/05_Storage_and_Database_Services.pdf
+instructor_resources:
+- id: mc-cloudstorage-2
+  title: Storage and Database Services - instructor.pdf
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/archinfra/v2.2/trainer/05_Storage_and_Database_Services.pdf
+- id: mc-cloudstorage-3
+  title: Datasheet - Cloud Storage Tasks.pdf
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/minicourses/MICROCOURSE-CLOUDSTORAGE/Datasheet_Google_Storage_Tasks.pdf
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-training-content/CBL005-CloudStorage

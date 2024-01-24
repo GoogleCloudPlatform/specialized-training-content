@@ -1,0 +1,46 @@
+---
+schema_version: 2
+title: 'Hardening your API'
+description: In this lab, you explore the legacy API that is deployed in a Google Compute Engine instance. The API is publicly exposed, and there is no security. You will search for and uncover the security vulnerabilities in the API. In later labs, you will use Apigee to correct these vulnerabilities.
+default_locale: en
+duration: 180
+max_duration: 180
+level: introductory
+tags:
+- Apigee
+- Provisioning resources
+- Managing resources
+credits: 0
+tagline:
+resources: []
+environment:
+  resources:
+  - type: gcp_project
+    id: project_0
+    ssh_key_user: user_0
+    allowed_locations:
+    - us-central1
+    - us-west1
+    - us-east1
+    - us-west4
+    startup_script:
+      type: qwiklabs
+      path: ./terraform
+    cleanup_script:
+      type: deployment_manager
+      path: cleanup
+  - type: gcp_user
+    id: user_0
+    permissions:
+    - project: project_0
+      roles:
+      - roles/owner
+  student_visible_outputs:
+  - label: Open Google Console
+    reference: project_0.console_url
+  - label: Username
+    reference: user_0.username
+  - label: Password
+    reference: user_0.password
+  - label: GCP Project ID
+    reference: project_0.project_id

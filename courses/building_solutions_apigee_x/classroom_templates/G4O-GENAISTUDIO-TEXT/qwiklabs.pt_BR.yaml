@@ -1,0 +1,44 @@
+---
+locale: pt_BR
+title: Text Generation for Applications using Generative AI Studio
+description: A IA generativa está sendo usada para desenvolver novos produtos e serviços em vários setores, como comunicações de marketing personalizadas, chatbots para interagir com clientes e assistentes virtuais. Ela também pode ser usada para criar chatbots que respondem perguntas e fornecem suporte ao cliente. Neste curso, você vai aprender sobre o uso de modelos de geração de texto utilizando o Gen AI Studio na Vertex AI e como incorporar esses modelos no seu aplicativo usando a API PaLM e as bibliotecas de cliente. Você também vai aprender a projetar e adaptar comandos para garantir as melhores saídas para seus aplicativos, além de discutir como ajustar modelos de fundação para melhorar a qualidade de saída do modelo.
+objectives: Entender as opções de IA generativa da Vertex AI para seus aplicativos. Conhecer o Gen AI Studio para interagir com modelos de fundação. Projetar e ajustar comandos de acordo com seus casos de uso de IA generativa. Implementar a API PaLM nos seus aplicativos usando o SDK do Python. Ajustar os pesos do modelo de fundação para melhorar a qualidade da saída do modelo 
+audience: Desenvolvedores de aplicativos que usam a IA generativa e profissionais de machine learning que oferecem suporte ao desenvolvimento de aplicativos viabilizados por IA generativa. 
+prerequisites: "Entendimento básico sobre um ou mais dos seguintes temas: Programação em Python. Uso de APIs em aplicativos. Conhecimento básico do Google Cloud e da Vertex AI conforme abordado no curso Google Cloud Big Data and Machine Learning Fundamentals"
+external_content_url: ''
+student_resources: 
+- id: genaistudio-text-0
+  title: M0-Introduction
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M0-Introduction_PTBR.pdf
+- id: genaistudio-text-1
+  title: M1-Generative AI on Vertex AI
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M1-Generative_AI_on_Vertex_AI_PTBR.pdf
+- id: genaistudio-text-2
+  title: M2-Gen AI Studio
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M2-Gen_AI_Studio_PTBR.pdf
+- id: genaistudio-text-3
+  title: M3-Prompt Design
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M3-Prompt_Design_PTBR.pdf
+- id: genaistudio-text-4
+  title: M4-Implementing the PaLM API
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M4-Implementing_the_PaLM_API%20_PTBR.pdf
+- id: genaistudio-text-5
+  title: M5-Fine-tuning Models
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M5-Fine-tuning_Models_PTBR.pdf
+- id: genaistudio-text-6
+  title: M6-Summary
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Text_Generation_for_Applications_Gen_AI_Studio/M6-Summary_PTBR.pdf

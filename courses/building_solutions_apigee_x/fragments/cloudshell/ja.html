@@ -1,0 +1,33 @@
+<h3>Google Cloud Shell の有効化</h3>
+	<p>Google Cloud Shell は、デベロッパー ツールと一緒に読み込まれる仮想マシンです。5 GB の永続ホーム ディレクトリが用意されており、Google Cloud で稼働します。Google Cloud Shell では、コマンドラインで GCP リソースにアクセスできます。</p>
+	<p>GCP Console の右上のツールバーにある [<strong>Cloud Shell をアクティブにする</strong>] ボタンをクリックします。</p>
+	<p><img src="img/console_topbar_icon_cloudshell.png" alt="Cloud Shell アイコン"></p>
+	<p>[<strong>続行</strong>] をクリックします。</p>
+	<p><img src="img/cloudshell_continue.png" alt="cloudshell_continue"></p>
+	<p>環境のプロビジョニングと接続には少し時間がかかります。接続すると、すでに認証されており、プロジェクトは<em> PROJECT_ID </em>に設定されています。例えば:</p>
+  <p><img src="img/welcome-to-cloud-shell.png" alt="Cloud Shell 端末"></p>
+	<p><code>gcloud</code> は Google Cloud Platform のコマンドライン ツールです。このツールは、Cloud Shell にプリインストールされており、タブ補完がサポートされています。</p>
+	<p>次のコマンドを使用すると、有効なアカウント名を一覧表示できます。</p>
+	<pre><code>gcloud auth list
+</code></pre>
+	<p>出力:</p>
+	<pre><code class="language-output">ACTIVE: *
+ACCOUNT: student-01-xxxxxxxxxxxx@qwiklabs.net
+To set the active account, run:
+    $ gcloud config set account `ACCOUNT`
+	</code></pre>
+	<p>次のコマンドを使用すると、プロジェクト ID を一覧表示できます。</p>
+	<pre><code>gcloud config list project
+	</code></pre>
+	<p>出力:</p>
+	<pre><code class="language-output">[core]
+project = &lt;project_ID&gt;
+	</code></pre>
+	<p>出力例:</p>
+	<pre><code class="language-Output">[core]
+project = qwiklabs-gcp-44776a13dea667a6
+	</code></pre>
+	<aside>
+	  <code>gcloud</code> について詳しくは、<a href="https://cloud.google.com/sdk/gcloud">gcloud の概要</a>をご確認ください。
+
+	</aside>

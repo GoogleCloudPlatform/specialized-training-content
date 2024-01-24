@@ -1,0 +1,7 @@
+# Email of Qwiklabs user that will be assigned as the owner of all content
+# created in this directory.
+
+# Each lab folder can have its own QL_OWNER file that overrides the value
+# in this file.
+
+michaelabel@google.com

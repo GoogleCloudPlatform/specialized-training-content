@@ -1,0 +1,44 @@
+---
+locale: ja
+title: Interactive Chat for Applications using Generative AI Studio
+description: 生成 AI はさまざまな業界で新しい製品やサービスの開発に使用されています。パーソナライズされたマーケティング コミュニケーション、顧客とやり取りするための chatbot、仮想アシスタントがその例です。生成 AI を使用して、顧客からの質問に回答したり、カスタマー サポートを提供したりする chatbot も作成できます。このコースでは、Vertex AI の Generative AI Studio を使ったインタラクティブなマルチターン チャットモデルの使用方法と、PaLM API とクライアント ライブラリを使用してそれらのモデルをアプリケーションに組み込む方法について学習します。また、チャット プロンプトを設計、テストして、アプリケーションに最適な出力が生成されるようにする方法と、ユースケースに合わせてレスポンスの質を高めるために PaLM API のパラメータを選択する方法についても学びます。 
+objectives: アプリケーションで使用可能な Vertex AI の生成 AI オプションを理解する。Generative AI Studio で基盤モデルを操作する方法を学ぶ。生成 AI のユースケースに合わせてチャット プロンプトを設計、チューニングする。PaLM API パラメータの変更によってモデルのレスポンスが受ける影響を理解する 。Python SDK を使用して PaLM API をアプリケーションに実装する
+audience: Google Cloud の Vertex AI Platform で生成 AI 機能を使用して開発を行う人を対象とした中級レベルのトレーニング
+prerequisites: 以下のいずれか 1 つ以上について基本的な理解があること。Python でのプログラミング アプリケーションでの API の使用 「Google Cloud Big Data and Machine Learning Fundamentals」コースで紹介さ れている Google Cloud と Vertex AI に関する基本的な知識
+external_content_url: ''
+student_resources: 
+- id: genaistudio-chat-0
+  title: M0-Introduction
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M0-Introduction-chat_JA.pdf
+- id: genaistudio-chat-1
+  title: M1-Generative AI on Vertex AI
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M1-Generative_AI_on_Vertex_AI-chat_JA.pdf
+- id: genaistudio-chat-2
+  title: M2-Gen AI Studio
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M2-Gen_AI_Studio-chat_JA.pdf
+- id: genaistudio-chat-3
+  title: M3-Prompt Design
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M3-Prompt_Design-chat_JA.pdf
+- id: genaistudio-chat-4
+  title: M4-Implementing the PaLM API
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M4-Implementing_the_PaLM_API-chat_JA.pdf
+- id: genaistudio-chat-5
+  title: M5-Best Practices for Interactive Chat Applications
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M5-Best_Practices_for_Interactive_Chat_Applications-chat_JA.pdf
+- id: genaistudio-chat-6
+  title: M6-Summary
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Interactive_Chat_for_Applications_Gen_AI_Studio/M6-Summary-chat_JA.pdf

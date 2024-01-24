@@ -1,0 +1,81 @@
+---
+entity_type: ClassroomTemplate
+schema_version: 1
+default_locale: en
+version: '1.0'
+classroom_type: Instructor-led
+course_code: T-MRSBQ-B
+title: "Migrating Teradata Users to BigQuery"
+description: In this course you will learn how to translate various concepts in Teradata to the analogous concepts in BigQuery. You will learn how the high-level architectures of Teradata and BigQuery compare, understand differences in how to configure datasets and tables, map data types in Redshift to data types in BigQuery, understand schema mapping from Teradata to BigQuery, optimize your new schemas in BigQuery, and do a high-level comparison of SQL dialects in Teradata and BigQuery.
+objectives: 
+audience: 'Current users of Teradata (Data Engineers, Data Analysts, Data Scientists, Application Developers) migrating to BigQuery'
+prerequisites: 'Some basic Teradata and BigQuery experience is assumed.'
+outline: 
+external_content_url: ''
+tags: 
+product_tags: 
+role_tags: 
+domain_tags: 
+level: 1
+course_surveys:
+- gcp-training-content/google-cloud-learning-evaluation-tga
+estimated_duration: 1440
+lock_activity_position: false
+max_hot_labs: 0
+enable_drm: false
+resource_limit_check: false
+published: true
+student_resources:
+- id: rsbq-student-notes-0
+  title: 'Module 0: Introduction'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Migrating_Teradata_Users_to_BigQuery/M0-Introduction.pdf
+- id: rsbq-student-notes-1
+  title: 'Module 1: Understanding BigQuery Architecture'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Migrating_Teradata_Users_to_BigQuery/M1-Understanding%20BigQuery%20Architecture.pdf
+- id: rsbq-student-notes-2
+  title: 'Module 2: Creating Datasets and Tables in BigQuery'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Migrating_Teradata_Users_to_BigQuery/M2-Creating%20Datasets%20and%20Tables%20in%20BigQuery.pdf
+- id: rsbq-student-notes-3
+  title: 'Module 3: Mapping Data Types'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Migrating_Teradata_Users_to_BigQuery/M3-Mapping%20Data%20Types.pdf
+- id: rsbq-student-notes-4
+  title: 'Module 4: Schema Mapping and Optimization'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Migrating_Teradata_Users_to_BigQuery/M4-Schema%20Mapping%20and%20Opimization.pdf
+- id: rsbq-student-notes-5
+  title: 'Module 5: Writing SQL for BigQuery'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Migrating_Teradata_Users_to_BigQuery/M5-SQL%20Translation%20for%20Teradata%20to%20BigQuery.pdf
+- id: rsbq-student-notes-6
+  title: 'Module 6: Migration Best Practices'
+  description: ''
+  type: link
+  uri: https://storage.googleapis.com/cloud-training/specialized-training/Migrating_Teradata_Users_to_BigQuery/M6-Migration%20Best%20Practices.pdf
+
+instructor_resources: []
+modules:
+- id: classroom_template-module-1
+  steps:
+  - id: step-0
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl010-provisioning-managing-resources-in-bq-rs
+  - id: step-1
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl011-schema-migration-redshift-bq
+  - id: step-2
+    activity_options:
+    - type: lab
+      id: gcp-trainer-classrooms/scbl012-redshift-bq-sql-translation
+ 
