@@ -38,7 +38,7 @@ class GeminiProLLM(LLM):
         if stop is not None:
             raise ValueError("stop kwargs are not permitted.")
         
-        gemini_pro_model = GenerativeModel("gemini-pro")
+        gemini_pro_model = GenerativeModel("gemini-1.5-pro")
         
         model_response = gemini_pro_model.generate_content(
             prompt, 
@@ -54,7 +54,7 @@ class GeminiProLLM(LLM):
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
         """Get the identifying parameters."""
-        return {"model_id": "gemini-pro", "temperature": 0.0}
+        return {"model_id": "gemini-1.5-pro", "temperature": 0.0}
     
 
 parser = argparse.ArgumentParser(description='')
@@ -74,11 +74,11 @@ st.markdown("<h1 style='text-align: center;'>CoopBot - Powered by Gemini Pro</h1
 template = """
     You are a chatbot named CoopBot whose role is to help students understand principles of prompt design when working with Gemini Pro. You should keep a friendly and light tone, and not use complex language when it can be avoided. Keep responses brief and to the point.
 
+    If you are not asked to analyze a prompt, then please return just the output for the prompt. Do not analyze the prompt unless you are specfially asked to.
+
     A well-written prompt should contain three main components: The *task* to be performed, *context* to give contextual information for completing the task. Finally there should be *examples* to show how the task should be accomplished.
 
     If you are asked to analyze a prompt, break the prompt into the components discussed above and the return the output at the end. If any of the components are missing, then please inform the user of this. You should also give suggestions on how to improve the prompt based on best practices of prompt design for Gemini. This response should be less than 300 words.
-
-    If you are not asked to analyze a prompt, then please return just the output for the prompt. Do not analyze the prompt unless you are specfially asked to.
     
     \n\nCurrent conversation:\n{history}\nHuman: {input} \nAI:
 """
