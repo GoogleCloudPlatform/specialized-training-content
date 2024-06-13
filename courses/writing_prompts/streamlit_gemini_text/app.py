@@ -42,7 +42,10 @@ class GeminiProLLM(LLM):
         
         model_response = gemini_pro_model.generate_content(
             prompt, 
-            generation_config={"temperature": 0.0}
+            generation_config={"temperature": temperature,
+                               "top_p": top_p,
+                               "top_k": top_k,
+                               "max_output_tokens": max_output_tokens}
         )
         print(model_response)
 
@@ -68,7 +71,9 @@ args = parser.parse_args()
 vertexai.init(project=args.project)
 
 # Setting page title and header
-st.set_page_config(page_title="CoopBot - Powered by Gemini Pro", page_icon=":dog:")
+st.set_page_config(page_title="CoopBot - Powered by Gemini Pro", page_icon=":dog:",
+                   initial_sidebar_state="collapsed")
+
 st.markdown("<h1 style='text-align: center;'>CoopBot - Powered by Gemini Pro</h1>", unsafe_allow_html=True)
 
 template = """
@@ -82,6 +87,15 @@ template = """
     
     \n\nCurrent conversation:\n{history}\nHuman: {input} \nAI:
 """
+
+
+st.sidebar.title("Options")
+clear_button = st.sidebar.button("Clear Conversation", key="clear")
+
+temperature = st.sidebar.slider("Temperature", 0.0, 1.0, 0.0, 0.1)
+top_p = st.sidebar.slider("Top P", 0.0, 1.0, 0.95, 0.05)
+top_k = st.sidebar.number_input("Top K", 1, 100, 20)
+max_output_tokens = st.sidebar.number_input("Max Output Tokens", 1, 2048, 100)
 
 # Load chat model
 @st.cache_resource
@@ -101,12 +115,10 @@ if 'messages' not in st.session_state:
 
 st.markdown("""**About me**: I am a virtual assistant, powered by Gemini and Streamlit, with the goal of help people learn the fundamentals of prompt design. I am named after the author's dog, who has all knowledge known to dogs about prompt design.""", unsafe_allow_html=False)
 
-st.sidebar.title("Options")
-clear_button = st.sidebar.button("Clear Conversation", key="clear")
-
 # Reset conversation
 if clear_button:
     st.session_state['messages'] = []
+    chatchain = load_chain()
 
 # Display previous messages
 for message in st.session_state['messages']:
