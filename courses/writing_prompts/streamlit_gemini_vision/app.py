@@ -70,7 +70,8 @@ def home():
     prompt = f"Please return all responses in Markdown. \n\n {text_input}"
 
     # Input for uploading an image
-    uploaded_file = st.sidebar.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+    uploaded_files = st.sidebar.file_uploader("Upload Image", type=["jpg", "jpeg", "png"],
+                                             accept_multiple_files=True)
 
     # Set up the model configuration options
     temperature = st.sidebar.slider("Temperature", 0.0, 1.0, 0.0, 0.1)
@@ -88,16 +89,18 @@ def home():
         
     gemini = GenerativeModel(model_name=model)
 
-    if uploaded_file is not None:
+    if uploaded_files is not None:
         if prompt is not None:
 
-            bytes_data = uploaded_file.getvalue()
+            content = []
+            
+            for uploaded_file in uploaded_files:
 
-            # Prepare content for Gemini model
-            content = [
-                Part.from_image(Image.from_bytes(bytes_data)),
-                prompt,
-            ]
+                bytes_data = uploaded_file.getvalue()
+                content.append(Part.from_image(Image.from_bytes(bytes_data)))
+
+
+            content.append(prompt)  
 
             response = gemini.generate_content(
                 content,
@@ -117,9 +120,10 @@ def home():
 
             st.subheader("Image:")
 
-            st.image(PIL.Image.open(uploaded_file),
-                     caption="Uploaded Image.",
-                     width=800)            
+            for uploaded_file in uploaded_files:
+                st.image(PIL.Image.open(uploaded_file),
+                        caption="Uploaded Image.",
+                        width=800)            
    
 # Run the Streamlit app
 if __name__ == "__main__":
