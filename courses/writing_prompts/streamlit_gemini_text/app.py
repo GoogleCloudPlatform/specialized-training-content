@@ -52,7 +52,7 @@ class GeminiProLLM(LLM):
         if len(model_response.candidates[0].content.parts) > 0:
             return model_response.candidates[0].content.parts[0].text
         else:
-            return "<No answer given by Gemini Pro>"
+            return "There was an issue with returning a response. Please try again."
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
@@ -77,9 +77,9 @@ st.set_page_config(page_title="CoopBot - Powered by Gemini Pro", page_icon=":dog
 st.markdown("<h1 style='text-align: center;'>CoopBot - Powered by Gemini Pro</h1>", unsafe_allow_html=True)
 
 template = """
-    You are a chatbot named CoopBot whose role is to help students understand principles of prompt design when working with Gemini Pro. You should keep a friendly and light tone, and not use complex language when it can be avoided. Keep responses brief and to the point.
+    You are a chatbot named CoopBot whose role is to help students understand principles of prompt design when working with Gemini Pro. You should keep a friendly and light tone, and not use complex language when it can be avoided. Keep responses brief and to the point. When asked to think step-by-step, or to explain your reasoning, please do so.
 
-    If you are not asked to analyze a prompt, then please return just the output for the prompt. Do not analyze the prompt unless you are specfially asked to.
+    If you are not asked to analyze a prompt, then please return just the output for the prompt. Do not analyze the prompt unless you are specfially asked to, even if asked to think step by step. 
 
     A well-written prompt should contain three main components: The *task* to be performed, *context* to give contextual information for completing the task. Finally there should be *examples* to show how the task should be accomplished.
 
@@ -88,14 +88,13 @@ template = """
     \n\nCurrent conversation:\n{history}\nHuman: {input} \nAI:
 """
 
-
 st.sidebar.title("Options")
 clear_button = st.sidebar.button("Clear Conversation", key="clear")
 
 temperature = st.sidebar.slider("Temperature", 0.0, 1.0, 0.0, 0.1)
 top_p = st.sidebar.slider("Top P", 0.0, 1.0, 0.95, 0.05)
 top_k = st.sidebar.number_input("Top K", 1, 100, 20)
-max_output_tokens = st.sidebar.number_input("Max Output Tokens", 1, 2048, 100)
+max_output_tokens = st.sidebar.number_input("Max Output Tokens", 1, 2048, 500)
 
 # Load chat model
 @st.cache_resource
@@ -103,8 +102,8 @@ def load_chain():
     llm = GeminiProLLM()
     memory = ConversationBufferMemory()
     chain = ConversationChain(llm=llm, memory=memory,
-                               prompt=PromptTemplate(input_variables=['history', 'input'],      
-                                                     template=template))
+                              prompt=PromptTemplate(input_variables=['history', 'input'],      
+                                                    template=template))
     return chain
 
 chatchain = load_chain()
@@ -118,7 +117,7 @@ st.markdown("""**About me**: I am a virtual assistant, powered by Gemini and Str
 # Reset conversation
 if clear_button:
     st.session_state['messages'] = []
-    chatchain = load_chain()
+    chatchain.memory.clear()
 
 # Display previous messages
 for message in st.session_state['messages']:
@@ -130,12 +129,15 @@ for message in st.session_state['messages']:
 # Chat input
 prompt = st.chat_input("You:")
 if prompt:
-    # For these exercises, we do not want to use previous inputs for context.
-    st.session_state['messages'] = [{"role": "user", "content": prompt}]
+    st.session_state['messages'].append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     response = chatchain(prompt)["response"]
+    
     st.session_state['messages'].append({"role": "assistant", "content": response})
     with st.chat_message("assistant"):
         st.markdown(response)
+        # Do not consider previous prompts in future prompts.
+        # Remove the below line to enable conversation memory.
+        chatchain.memory.clear()

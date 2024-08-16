@@ -34,22 +34,22 @@ args = parser.parse_args()
 def initialize_session_state():
     return vertexai.init(project=args.project)
 
-def _fix_streamlit_space(text: str) -> str:
-    """Fix silly streamlit issue where a newline needs 2 spaces before it.
+# def _fix_streamlit_space(text: str) -> str:
+#     """Fix silly streamlit issue where a newline needs 2 spaces before it.
 
-    See https://github.com/streamlit/streamlit/issues/868
-    """
+#     See https://github.com/streamlit/streamlit/issues/868
+#     """
 
-    def _replacement(match: re.Match):
-        # Check if the match is preceded by a space
-        if match.group(0).startswith(" "):
-            # If preceded by one space, add one more space
-            return " \n"
-        else:
-            # If not preceded by any space, add two spaces
-            return "  \n"
+#     def _replacement(match: re.Match):
+#         # Check if the match is preceded by a space
+#         if match.group(0).startswith(" "):
+#             # If preceded by one space, add one more space
+#             return " \n"
+#         else:
+#             # If not preceded by any space, add two spaces
+#             return "  \n"
 
-    return re.sub(r"( ?)\n", _replacement, text)
+#     return re.sub(r"( ?)\n", _replacement, text)
 
 # Main Streamlit app
 def home():
@@ -62,16 +62,28 @@ def home():
 
     # Initialize session state
     initialize_session_state()
+    if 'uploader_key' not in st.session_state:
+            st.session_state['uploader_key'] = 0 
+
+    st.session_state['uploaded_files'] = st.file_uploader("Upload Image",
+                                                                  type=["jpg", "jpeg", "png"],
+                                                                  accept_multiple_files=True,
+                                                                  key=st.session_state['uploader_key'])    
     
     model = 'gemini-pro-vision' 
-    # Sidebar option to choose image source
+    
     text_input = st.text_input("Enter your Prompt:", value="Describe this image.")
-
     prompt = f"Please return all responses in Markdown. \n\n {text_input}"
 
-    # Input for uploading an image
-    uploaded_files = st.sidebar.file_uploader("Upload Image", type=["jpg", "jpeg", "png"],
-                                             accept_multiple_files=True)
+    col1, col2, _= st.columns([1,1.5,2.5])
+    with col1:
+        submit_button = st.button("Submit Prompt", key="submit")
+    with col2:
+        clear_button = st.button("Clear Uploaded Images", key="clear")
+
+    if clear_button:
+        st.session_state['uploader_key'] += 1
+        st.rerun()
 
     # Set up the model configuration options
     temperature = st.sidebar.slider("Temperature", 0.0, 1.0, 0.0, 0.1)
@@ -89,12 +101,12 @@ def home():
         
     gemini = GenerativeModel(model_name=model)
 
-    if uploaded_files is not None:
-        if prompt is not None:
+    if len(st.session_state['uploaded_files']) > 0:
+        if (prompt is not None) and (submit_button):
 
             content = []
             
-            for uploaded_file in uploaded_files:
+            for uploaded_file in st.session_state['uploaded_files']:
 
                 bytes_data = uploaded_file.getvalue()
                 content.append(Part.from_image(Image.from_bytes(bytes_data)))
@@ -120,7 +132,7 @@ def home():
 
             st.subheader("Image:")
 
-            for uploaded_file in uploaded_files:
+            for uploaded_file in st.session_state['uploaded_files']:
                 st.image(PIL.Image.open(uploaded_file),
                         caption="Uploaded Image.",
                         width=800)            
