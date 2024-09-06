@@ -66,16 +66,16 @@ def home():
             st.session_state['uploader_key'] = 0 
 
     st.session_state['uploaded_files'] = st.file_uploader("Upload Image",
-                                                                  type=["jpg", "jpeg", "png"],
-                                                                  accept_multiple_files=True,
-                                                                  key=st.session_state['uploader_key'])    
+                                                          type=["jpg", "jpeg", "png"],
+                                                          accept_multiple_files=True,
+                                                          key=st.session_state['uploader_key'])    
     
     model = 'gemini-pro-vision' 
     
     text_input = st.text_input("Enter your Prompt:", value="Describe this image.")
     prompt = f"Please return all responses in Markdown. \n\n {text_input}"
 
-    col1, col2, _= st.columns([1,1.5,2.5])
+    col1, col2, _= st.columns([1.5,1.5,2])
     with col1:
         submit_button = st.button("Submit Prompt", key="submit")
     with col2:
