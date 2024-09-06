@@ -1,0 +1,201 @@
+id,owner_id,pet_name,pet_type,breed,weight
+1,89,Daisy,Fish,Molly,1
+2,8,Nala,Rabbit,Holland Lop,3
+3,72,Bree,Cat,Ragdoll,3
+4,48,Oliver,Cat,Bengal,6
+5,31,Jake,Dog,German Shepherd,22
+6,55,Bailey,Dog,Golden Retriever,42
+7,47,Bree,Dog,German Shepherd,45
+8,76,Gigi,Cat,Siamese,3
+9,12,Daisy,Cat,Bengal,10
+10,72,Luna,Cat,Siamese,5
+11,76,Coco,Cat,Ragdoll,10
+12,15,Lucy,Cat,Persian,5
+13,67,Bree,Cat,Maine Coon,3
+14,61,Rocky,Bird,Finch,2
+15,83,Bailey,Fish,Goldfish,1
+16,38,Molly,Dog,French Bulldog,43
+17,13,Coco,Bird,Parakeet,1
+18,88,Sadie,Dog,Golden Retriever,22
+19,33,Joy,Cat,Alley,3
+20,61,Bella,Dog,French Bulldog,21
+21,100,Lola,Bird,Lovebird,2
+22,78,Luna,Fish,Molly,2
+23,14,Milo,Cat,Bengal,9
+24,53,Bella,Cat,Alley,7
+25,60,Oliver,Bird,Canary,2
+26,96,Oliver,Bird,Cockatiel,1
+27,11,Jake,Bird,Lovebird,2
+28,5,Joy,Cat,Persian,9
+29,67,Max,Cat,Persian,3
+30,84,Lucy,Dog,German Shepherd,27
+31,67,Coco,Dog,French Bulldog,28
+32,66,Noir,Dog,French Bulldog,16
+33,64,Toby,Dog,French Bulldog,42
+34,87,Sadie,Cat,Alley,4
+35,18,Bella,Bird,Lovebird,1
+36,44,Daisy,Dog,Labrador,36
+37,11,Molly,Cat,Persian,5
+38,56,Charlie,Dog,Poodle,37
+39,45,Jake,Rabbit,Flemish Giant,1
+40,72,Molly,Dog,Golden Retriever,43
+41,92,Coco,Dog,Labrador,43
+42,17,Coco,Cat,Ragdoll,8
+43,50,Buddy,Dog,Poodle,48
+44,66,Noir,Fish,Molly,2
+45,43,Molly,Dog,French Bulldog,44
+46,67,Bree,Dog,French Bulldog,20
+47,95,Max,Cat,Alley,3
+48,80,Molly,Dog,Golden Retriever,12
+49,100,Rocky,Fish,Molly,2
+50,66,Oliver,Dog,Golden Retriever,33
+51,19,Max,Fish,Goldfish,1
+52,89,Oliver,Cat,Ragdoll,5
+53,30,Rocky,Cat,Ragdoll,8
+54,76,Gigi,Dog,Labrador,12
+55,75,Noir,Cat,Alley,6
+56,80,Joy,Dog,Golden Retriever,11
+57,91,Nala,Dog,Poodle,33
+58,2,Rocky,Dog,Poodle,30
+59,19,Lola,Cat,Persian,5
+60,54,Noir,Cat,Siamese,4
+61,46,Nala,Cat,Persian,5
+62,61,Lola,Cat,Siamese,3
+63,68,Molly,Dog,French Bulldog,45
+64,3,Daisy,Dog,German Shepherd,39
+65,76,Sadie,Dog,Labrador,24
+66,95,Bailey,Dog,German Shepherd,45
+67,53,Bree,Cat,Alley,3
+68,10,Charlie,Cat,Ragdoll,5
+69,70,Milo,Dog,German Shepherd,35
+70,20,Chloe,Dog,Labrador,13
+71,10,Noir,Dog,German Shepherd,25
+72,29,Joy,Cat,Siamese,4
+73,52,Lucy,Cat,Persian,4
+74,92,Buddy,Cat,Bengal,7
+75,90,Coco,Dog,Labrador,40
+76,77,Milo,Cat,Bengal,5
+77,84,Nala,Cat,Alley,4
+78,40,Duke,Cat,Persian,4
+79,65,Bree,Dog,German Shepherd,27
+80,90,Charlie,Bird,Finch,1
+81,50,Sadie,Dog,French Bulldog,35
+82,84,Daisy,Rabbit,Flemish Giant,5
+83,90,Coco,Cat,Siamese,6
+84,30,Sadie,Cat,Alley,9
+85,91,Luna,Dog,German Shepherd,26
+86,91,Jack,Cat,Maine Coon,7
+87,30,Sadie,Cat,Siamese,10
+88,82,Daisy,Cat,Bengal,7
+89,44,Coco,Bird,Canary,1
+90,61,Bree,Cat,Maine Coon,10
+91,50,Charlie,Dog,German Shepherd,49
+92,34,Coco,Bird,Parakeet,1
+93,16,Luna,Dog,French Bulldog,11
+94,7,Gigi,Bird,Lovebird,2
+95,68,Bailey,Rabbit,Flemish Giant,5
+96,92,Bailey,Rabbit,Netherland Dwarf,5
+97,52,Bree,Bird,Cockatiel,1
+98,24,Charlie,Bird,Parakeet,2
+99,22,Joy,Dog,German Shepherd,31
+100,39,Lucy,Dog,German Shepherd,32
+101,51,Bree,Rabbit,Mini Rex,5
+102,70,Oliver,Cat,Siamese,10
+103,31,Toby,Bird,Lovebird,1
+104,12,Duke,Dog,German Shepherd,20
+105,33,Noir,Dog,Golden Retriever,30
+106,22,Noir,Cat,Ragdoll,8
+107,94,Buddy,Rabbit,Netherland Dwarf,3
+108,69,Bailey,Cat,Siamese,8
+109,36,Bella,Cat,Maine Coon,4
+110,24,Toby,Cat,Bengal,4
+111,9,Luna,Dog,French Bulldog,14
+112,64,Milo,Dog,Labrador,22
+113,43,Molly,Dog,Golden Retriever,32
+114,39,Molly,Fish,Betta,1
+115,15,Milo,Cat,Alley,6
+116,73,Oliver,Cat,Persian,7
+117,94,Joy,Dog,Poodle,22
+118,56,Bella,Dog,Labrador,29
+119,6,Molly,Cat,Alley,10
+120,71,Lola,Dog,Golden Retriever,13
+121,70,Oliver,Cat,Siamese,8
+122,96,Duke,Cat,Persian,6
+123,13,Bella,Dog,Labrador,48
+124,19,Noir,Cat,Persian,10
+125,16,Molly,Fish,Molly,2
+126,36,Chloe,Dog,Golden Retriever,14
+127,94,Bailey,Dog,Golden Retriever,26
+128,35,Nala,Dog,German Shepherd,27
+129,26,Buddy,Dog,Golden Retriever,14
+130,56,Joy,Dog,Poodle,15
+131,48,Oliver,Cat,Bengal,5
+132,45,Bailey,Cat,Ragdoll,8
+133,75,Toby,Dog,Labrador,12
+134,14,Duke,Dog,German Shepherd,20
+135,40,Buddy,Cat,Siamese,3
+136,27,Bailey,Cat,Maine Coon,6
+137,46,Jack,Dog,Labrador,36
+138,66,Noir,Dog,Poodle,38
+139,42,Coco,Dog,Poodle,25
+140,32,Luna,Rabbit,Holland Lop,1
+141,75,Sadie,Dog,German Shepherd,28
+142,27,Charlie,Fish,Tetra,1
+143,4,Lucy,Cat,Bengal,9
+144,15,Sadie,Dog,German Shepherd,10
+145,12,Coco,Cat,Maine Coon,4
+146,17,Sadie,Rabbit,Lionhead,4
+147,100,Duke,Cat,Persian,8
+148,20,Toby,Cat,Bengal,10
+149,50,Chloe,Dog,German Shepherd,33
+150,82,Charlie,Bird,Finch,1
+151,57,Jake,Cat,Bengal,10
+152,46,Charlie,Rabbit,Lionhead,5
+153,61,Sadie,Dog,German Shepherd,25
+154,18,Nala,Bird,Cockatiel,2
+155,58,Rocky,Cat,Alley,9
+156,44,Lucy,Bird,Parakeet,2
+157,10,Noir,Dog,German Shepherd,40
+158,29,Rocky,Dog,Poodle,36
+159,6,Lucy,Dog,Poodle,11
+160,41,Rocky,Rabbit,Lionhead,2
+161,47,Chloe,Dog,Golden Retriever,18
+162,40,Noir,Cat,Alley,3
+163,68,Bella,Cat,Alley,8
+164,53,Joy,Cat,Ragdoll,10
+165,97,Chloe,Dog,Golden Retriever,24
+166,61,Max,Dog,German Shepherd,28
+167,81,Bree,Cat,Siamese,10
+168,49,Charlie,Cat,Ragdoll,3
+169,41,Jake,Cat,Alley,6
+170,67,Noir,Rabbit,Flemish Giant,1
+171,93,Bree,Fish,Guppy,2
+172,70,Rocky,Cat,Maine Coon,3
+173,11,Rocky,Cat,Bengal,5
+174,21,Jake,Cat,Alley,8
+175,90,Bree,Dog,Labrador,44
+176,18,Sadie,Dog,Poodle,26
+177,9,Coco,Dog,Poodle,11
+178,19,Sadie,Rabbit,Lionhead,4
+179,63,Lucy,Dog,French Bulldog,24
+180,14,Rocky,Rabbit,Mini Rex,2
+181,6,Milo,Cat,Persian,8
+182,48,Noir,Cat,Siamese,10
+183,40,Coco,Cat,Maine Coon,5
+184,24,Molly,Cat,Alley,4
+185,29,Max,Cat,Alley,9
+186,91,Sadie,Cat,Alley,4
+187,13,Coco,Cat,Siamese,3
+188,8,Lola,Cat,Bengal,10
+189,39,Lola,Cat,Persian,3
+190,55,Toby,Fish,Tetra,2
+191,43,Jake,Dog,Golden Retriever,32
+192,72,Chloe,Bird,Parakeet,1
+193,98,Charlie,Dog,French Bulldog,28
+194,15,Sadie,Dog,French Bulldog,15
+195,100,Bree,Cat,Alley,3
+196,69,Max,Rabbit,Holland Lop,3
+197,33,Nala,Dog,Labrador,44
+198,98,Buddy,Dog,French Bulldog,36
+199,40,Duke,Dog,Golden Retriever,29
+200,45,Bree,Dog,Golden Retriever,38

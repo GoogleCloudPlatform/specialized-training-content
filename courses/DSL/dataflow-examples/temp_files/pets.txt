@@ -1,0 +1,11 @@
+dog,noir
+dog,Bree
+dog,Gigi
+dog,Gretyl
+dog,Duchess
+dog,Rusty
+cat,Cleo
+cat,Sparkles
+cat,Phelix
+turtle,Cuff
+turtle,Link

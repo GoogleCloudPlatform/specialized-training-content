@@ -1,0 +1,81 @@
+,id,owner_id,pet_name,pet_type,breed,weight
+0,1,30,Rocky,Dog,Golden Retriever,30
+1,3,76,Oliver,Dog,Poodle,19
+2,5,44,Toby,Dog,French Bulldog,33
+3,6,6,Milo,Dog,French Bulldog,40
+4,7,59,Joy,Dog,Golden Retriever,20
+5,8,94,Bella,Dog,Poodle,45
+6,13,58,Lucy,Dog,Labrador,14
+7,14,43,Max,Dog,French Bulldog,34
+8,19,21,Bella,Dog,German Shepherd,44
+9,21,89,Daisy,Dog,Labrador,17
+10,22,78,Noir,Dog,Labrador,11
+11,29,41,Oliver,Dog,German Shepherd,28
+12,32,25,Lola,Dog,Labrador,28
+13,33,52,Buddy,Dog,Golden Retriever,19
+14,35,25,Lola,Dog,Labrador,24
+15,36,48,Charlie,Dog,Labrador,35
+16,37,68,Molly,Dog,Golden Retriever,23
+17,39,100,Jake,Dog,Golden Retriever,43
+18,41,2,Toby,Dog,German Shepherd,49
+19,43,7,Chloe,Dog,Golden Retriever,10
+20,46,93,Bella,Dog,Poodle,23
+21,47,64,Jack,Dog,Poodle,14
+22,48,87,Noir,Dog,Golden Retriever,15
+23,54,3,Milo,Dog,Poodle,35
+24,55,74,Duke,Dog,Poodle,19
+25,59,18,Noir,Dog,French Bulldog,40
+26,61,10,Coco,Dog,Golden Retriever,34
+27,63,51,Charlie,Dog,Golden Retriever,22
+28,66,51,Jack,Dog,Golden Retriever,33
+29,67,63,Jake,Dog,Poodle,18
+30,69,28,Duke,Dog,Golden Retriever,24
+31,73,71,Luna,Dog,French Bulldog,17
+32,74,30,Nala,Dog,French Bulldog,30
+33,75,5,Jack,Dog,German Shepherd,43
+34,78,7,Jack,Dog,Labrador,10
+35,79,52,Daisy,Dog,French Bulldog,11
+36,82,56,Lucy,Dog,German Shepherd,41
+37,87,24,Bella,Dog,Poodle,26
+38,89,2,Lola,Dog,Golden Retriever,14
+39,92,76,Duke,Dog,French Bulldog,42
+40,95,58,Bree,Dog,Golden Retriever,27
+41,101,65,Gigi,Dog,Golden Retriever,16
+42,102,24,Daisy,Dog,French Bulldog,37
+43,104,48,Bella,Dog,Golden Retriever,44
+44,106,94,Lola,Dog,French Bulldog,38
+45,109,69,Bailey,Dog,German Shepherd,48
+46,111,98,Jake,Dog,French Bulldog,31
+47,112,67,Sadie,Dog,German Shepherd,17
+48,114,74,Oliver,Dog,Poodle,37
+49,118,85,Sadie,Dog,German Shepherd,16
+50,119,64,Lucy,Dog,German Shepherd,46
+51,122,14,Bella,Dog,Golden Retriever,28
+52,123,20,Joy,Dog,Poodle,16
+53,128,46,Duke,Dog,Golden Retriever,44
+54,131,82,Charlie,Dog,Poodle,28
+55,132,20,Bree,Dog,German Shepherd,30
+56,136,2,Gigi,Dog,French Bulldog,13
+57,138,12,Noir,Dog,Golden Retriever,34
+58,139,2,Milo,Dog,Poodle,34
+59,140,2,Coco,Dog,French Bulldog,42
+60,141,87,Lola,Dog,Labrador,29
+61,149,53,Joy,Dog,Golden Retriever,25
+62,150,98,Noir,Dog,German Shepherd,38
+63,152,40,Jack,Dog,Poodle,34
+64,159,84,Noir,Dog,Labrador,48
+65,163,86,Chloe,Dog,Labrador,29
+66,164,4,Rocky,Dog,French Bulldog,45
+67,165,99,Joy,Dog,French Bulldog,33
+68,172,40,Noir,Dog,Golden Retriever,10
+69,175,36,Charlie,Dog,German Shepherd,32
+70,178,30,Lucy,Dog,Golden Retriever,49
+71,179,30,Jake,Dog,Labrador,26
+72,180,73,Lola,Dog,French Bulldog,17
+73,181,5,Joy,Dog,Golden Retriever,18
+74,187,43,Noir,Dog,Golden Retriever,31
+75,189,66,Molly,Dog,Poodle,45
+76,193,97,Bailey,Dog,Golden Retriever,20
+77,198,74,Duke,Dog,German Shepherd,38
+78,199,79,Luna,Dog,Golden Retriever,18
+79,200,61,Oliver,Dog,Golden Retriever,25

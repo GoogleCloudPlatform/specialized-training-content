@@ -1,0 +1,201 @@
+id,owner_id,pet_name,pet_type,breed,weight
+1,30,Rocky,Dog,Golden Retriever,30
+2,35,Sadie,Bird,Canary,1
+3,76,Oliver,Dog,Poodle,19
+4,44,Jake,Cat,Alley,6
+5,44,Toby,Dog,French Bulldog,33
+6,6,Milo,Dog,French Bulldog,40
+7,59,Joy,Dog,Golden Retriever,20
+8,94,Bella,Dog,Poodle,45
+9,20,Rocky,Cat,Maine Coon,8
+10,52,Bailey,Rabbit,Lionhead,2
+11,73,Oliver,Cat,Maine Coon,4
+12,75,Gigi,Rabbit,Netherland Dwarf,3
+13,58,Lucy,Dog,Labrador,14
+14,43,Max,Dog,French Bulldog,34
+15,17,Rocky,Cat,Persian,9
+16,41,Lola,Rabbit,Lionhead,3
+17,29,Jake,Rabbit,Flemish Giant,4
+18,19,Chloe,Bird,Lovebird,1
+19,21,Bella,Dog,German Shepherd,44
+20,44,Noir,Fish,Molly,1
+21,89,Daisy,Dog,Labrador,17
+22,78,Noir,Dog,Labrador,11
+23,49,Nala,Cat,Ragdoll,8
+24,7,Joy,Cat,Maine Coon,7
+25,11,Jack,Cat,Persian,10
+26,1,Joy,Cat,Bengal,9
+27,55,Milo,Fish,Goldfish,1
+28,18,Lola,Fish,Tetra,2
+29,41,Oliver,Dog,German Shepherd,28
+30,43,Bree,Rabbit,Netherland Dwarf,4
+31,21,Bella,Cat,Bengal,8
+32,25,Lola,Dog,Labrador,28
+33,52,Buddy,Dog,Golden Retriever,19
+34,2,Jake,Cat,Bengal,10
+35,25,Lola,Dog,Labrador,24
+36,48,Charlie,Dog,Labrador,35
+37,68,Molly,Dog,Golden Retriever,23
+38,12,Lucy,Rabbit,Netherland Dwarf,3
+39,100,Jake,Dog,Golden Retriever,43
+40,11,Oliver,Fish,Molly,1
+41,2,Toby,Dog,German Shepherd,49
+42,35,Max,Bird,Cockatiel,1
+43,7,Chloe,Dog,Golden Retriever,10
+44,99,Bailey,Cat,Bengal,9
+45,95,Jack,Bird,Parakeet,2
+46,93,Bella,Dog,Poodle,23
+47,64,Jack,Dog,Poodle,14
+48,87,Noir,Dog,Golden Retriever,15
+49,27,Charlie,Cat,Maine Coon,10
+50,13,Milo,Cat,Persian,9
+51,49,Noir,Cat,Ragdoll,8
+52,40,Buddy,Bird,Finch,1
+53,4,Sadie,Cat,Maine Coon,7
+54,3,Milo,Dog,Poodle,35
+55,74,Duke,Dog,Poodle,19
+56,72,Oliver,Rabbit,Netherland Dwarf,3
+57,71,Charlie,Rabbit,Mini Rex,4
+58,71,Duke,Bird,Cockatiel,2
+59,18,Noir,Dog,French Bulldog,40
+60,87,Daisy,Cat,Alley,6
+61,10,Coco,Dog,Golden Retriever,34
+62,27,Coco,Bird,Cockatiel,1
+63,51,Charlie,Dog,Golden Retriever,22
+64,40,Gigi,Bird,Finch,2
+65,42,Luna,Rabbit,Lionhead,4
+66,51,Jack,Dog,Golden Retriever,33
+67,63,Jake,Dog,Poodle,18
+68,80,Luna,Bird,Finch,1
+69,28,Duke,Dog,Golden Retriever,24
+70,15,Rocky,Fish,Molly,2
+71,42,Sadie,Cat,Siamese,7
+72,19,Bailey,Bird,Lovebird,2
+73,71,Luna,Dog,French Bulldog,17
+74,30,Nala,Dog,French Bulldog,30
+75,5,Jack,Dog,German Shepherd,43
+76,93,Toby,Bird,Finch,1
+77,60,Oliver,Cat,Siamese,5
+78,7,Jack,Dog,Labrador,10
+79,52,Daisy,Dog,French Bulldog,11
+80,83,Gigi,Fish,Betta,2
+81,84,Coco,Bird,Lovebird,1
+82,56,Lucy,Dog,German Shepherd,41
+83,80,Bella,Cat,Maine Coon,6
+84,17,Lucy,Bird,Parakeet,1
+85,82,Lucy,Cat,Maine Coon,5
+86,41,Gigi,Rabbit,Netherland Dwarf,5
+87,24,Bella,Dog,Poodle,26
+88,66,Bree,Cat,Alley,10
+89,2,Lola,Dog,Golden Retriever,14
+90,79,Milo,Cat,Alley,4
+91,84,Jake,Bird,Canary,1
+92,76,Duke,Dog,French Bulldog,42
+93,46,Daisy,Rabbit,Lionhead,2
+94,58,Joy,Fish,Goldfish,1
+95,58,Bree,Dog,Golden Retriever,27
+96,100,Gigi,Cat,Persian,10
+97,16,Bella,Cat,Maine Coon,6
+98,59,Gigi,Cat,Maine Coon,8
+99,26,Chloe,Cat,Alley,9
+100,40,Jack,Cat,Siamese,5
+101,65,Gigi,Dog,Golden Retriever,16
+102,24,Daisy,Dog,French Bulldog,37
+103,50,Luna,Cat,Maine Coon,6
+104,48,Bella,Dog,Golden Retriever,44
+105,21,Bree,Cat,Ragdoll,7
+106,94,Lola,Dog,French Bulldog,38
+107,2,Bella,Cat,Bengal,8
+108,7,Jake,Cat,Persian,6
+109,69,Bailey,Dog,German Shepherd,48
+110,60,Charlie,Fish,Tetra,1
+111,98,Jake,Dog,French Bulldog,31
+112,67,Sadie,Dog,German Shepherd,17
+113,28,Toby,Cat,Maine Coon,4
+114,74,Oliver,Dog,Poodle,37
+115,47,Molly,Cat,Siamese,7
+116,52,Sadie,Cat,Siamese,3
+117,76,Bella,Cat,Bengal,7
+118,85,Sadie,Dog,German Shepherd,16
+119,64,Lucy,Dog,German Shepherd,46
+120,90,Lola,Rabbit,Holland Lop,5
+121,22,Rocky,Cat,Maine Coon,4
+122,14,Bella,Dog,Golden Retriever,28
+123,20,Joy,Dog,Poodle,16
+124,4,Lola,Fish,Goldfish,1
+125,51,Duke,Cat,Ragdoll,3
+126,79,Toby,Fish,Betta,1
+127,14,Jack,Rabbit,Flemish Giant,5
+128,46,Duke,Dog,Golden Retriever,44
+129,6,Lucy,Fish,Betta,1
+130,25,Bella,Rabbit,Mini Rex,4
+131,82,Charlie,Dog,Poodle,28
+132,20,Bree,Dog,German Shepherd,30
+133,74,Lola,Fish,Betta,1
+134,28,Daisy,Rabbit,Holland Lop,3
+135,74,Bailey,Fish,Tetra,1
+136,2,Gigi,Dog,French Bulldog,13
+137,30,Duke,Fish,Betta,2
+138,12,Noir,Dog,Golden Retriever,34
+139,2,Milo,Dog,Poodle,34
+140,2,Coco,Dog,French Bulldog,42
+141,87,Lola,Dog,Labrador,29
+142,14,Max,Cat,Alley,3
+143,6,Noir,Rabbit,Lionhead,5
+144,42,Bella,Cat,Bengal,10
+145,92,Duke,Cat,Siamese,9
+146,32,Bailey,Cat,Ragdoll,9
+147,42,Gigi,Cat,Persian,8
+148,48,Charlie,Cat,Alley,6
+149,53,Joy,Dog,Golden Retriever,25
+150,98,Noir,Dog,German Shepherd,38
+151,35,Chloe,Bird,Canary,1
+152,40,Jack,Dog,Poodle,34
+153,81,Sadie,Cat,Ragdoll,10
+154,74,Sadie,Rabbit,Lionhead,2
+155,47,Lucy,Cat,Ragdoll,10
+156,58,Rocky,Cat,Ragdoll,3
+157,85,Daisy,Rabbit,Holland Lop,4
+158,70,Lucy,Cat,Alley,9
+159,84,Noir,Dog,Labrador,48
+160,19,Duke,Fish,Tetra,1
+161,78,Bree,Rabbit,Lionhead,3
+162,35,Coco,Fish,Betta,2
+163,86,Chloe,Dog,Labrador,29
+164,4,Rocky,Dog,French Bulldog,45
+165,99,Joy,Dog,French Bulldog,33
+166,3,Joy,Cat,Persian,10
+167,10,Noir,Bird,Lovebird,2
+168,14,Joy,Rabbit,Holland Lop,3
+169,52,Nala,Fish,Tetra,1
+170,99,Bree,Fish,Molly,2
+171,34,Lucy,Cat,Persian,7
+172,40,Noir,Dog,Golden Retriever,10
+173,32,Bailey,Fish,Guppy,2
+174,73,Charlie,Cat,Ragdoll,9
+175,36,Charlie,Dog,German Shepherd,32
+176,98,Chloe,Cat,Maine Coon,3
+177,10,Luna,Bird,Finch,1
+178,30,Lucy,Dog,Golden Retriever,49
+179,30,Jake,Dog,Labrador,26
+180,73,Lola,Dog,French Bulldog,17
+181,5,Joy,Dog,Golden Retriever,18
+182,71,Coco,Fish,Guppy,1
+183,73,Buddy,Cat,Bengal,7
+184,47,Nala,Bird,Lovebird,1
+185,2,Bailey,Bird,Canary,1
+186,26,Duke,Fish,Tetra,2
+187,43,Noir,Dog,Golden Retriever,31
+188,48,Oliver,Cat,Maine Coon,8
+189,66,Molly,Dog,Poodle,45
+190,47,Lola,Fish,Tetra,2
+191,34,Nala,Cat,Alley,10
+192,57,Jack,Bird,Parakeet,2
+193,97,Bailey,Dog,Golden Retriever,20
+194,97,Lola,Fish,Betta,1
+195,3,Max,Cat,Maine Coon,8
+196,14,Bailey,Bird,Canary,1
+197,54,Bree,Cat,Persian,5
+198,74,Duke,Dog,German Shepherd,38
+199,79,Luna,Dog,Golden Retriever,18
+200,61,Oliver,Dog,Golden Retriever,25
