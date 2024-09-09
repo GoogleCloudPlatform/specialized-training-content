@@ -1,178 +1,18 @@
-# DSL Challenge Lab: Engineering and Analyzing Clickstream Data
+# DSL Challenge Lab: Prepating Data for ML Training and Serving Workflows
 
 ## Introduction
 
-Your company's ecommerce website traffic has grown quickly over the past few months. Though business is increasing, the clickstream data capturing user actions has simply been copied into Cloud Storage and is not being used effectively. 
+The data scientists at your company have successfully trained a prototype model for **INSERT USE CASE** using a representative data sample. However, in moving to production, they are running across multiple issues.
 
-Your first goal is to build a batch data pipeline to migrate the data that has been already collected in Cloud Storage and store it in BigQuery.
+  1. The data preparation and feature engineering code is all written using the Panda package in Jupyter notebooks. Though this works well for the sample data stored in a single CSV file, this approach does not scale to the entire dataset.
+  2. The model training code is currently being manually executed by the data science team. In production, they want to be able to orchestrate feature engineering, model training, and model deployment in a more automated fashion.
+  3. New training data will be added to a Cloud Storage bucket, but not at a regular cadence. The data science team wants to be able to retrain and deploy the model when new training is added to the bucket without manual intervention.
+  4. The data science team wants to be able to easily share the training data and their prepared features with other teams, but some teams are not as familiar with the tools being used to process the data for training.
+  5. The consumers of the model's predictions are unhappy with the time it takes for the model to generate predictions. This is adding latency to downstream applications and leading to negative customer experience.
 
-You also need to build streaming data pipelines that perform analysis on the data in real-time and save results to Cloud Storage for raw data and BigQuery for processed data.
+You have been asked to use your knowledge of data engineering to design a solution for the data science team to address these issues.
 
-You need to implement best practices for analyzing streaming data, including proper windowing logic and managing malformed records. Additionally, you have been asked to work through developing a CI/CD pipeline for your streaming data pipeline.
-
-Analysts from various departments are interested in using this data. So, you need to share it with the appropriate groups and include the required metadata to make it understandable. Analysts from different groups will use the data in various ways including business analytics, web analytics, and machine learning. You need to share the data so it is easy to understand and query. 
-
-## Understanding the data
-
-Sample data is located in the following Cloud Storage bucket. You should copy this data to a bucket in your own Google Cloud project. 
-
-```
-gs://challenge-lab-data-dar
-```
-
-___NOTE: This should be changed to a Google-owned bucket.___
-
-The data represents visits to a website. Each visit contains fields related to a user's session including: Session ID, User ID, Device Type, etc. Visits also contain a collection of events and their related fields. There are three event types: Page View, Add Item to Cart, and Purchase. 
-
-The schema for the data is as follows. Take a few minutes to familiarize yourself with this schema.
-
-```
-openapi: 3.0.0
-info:
-  title: Visit Schema API
-  version: 1.0.0
-  description: Schema for representing a visit to a website, including page views, adding items to a cart, and purchases.
-paths: {}
-components:
-  schemas:
-    Visit:
-      type: object
-      properties:
-        session_id:
-          type: string
-          example: "SID-1234"
-          description: "A unique identifier for the user's session."
-        user_id:
-          type: string
-          example: "UID-5678"
-          description: "A unique identifier for the user visiting the website."
-        device_type:
-          type: string
-          enum: [desktop, mobile, tablet]
-          example: "desktop"
-          description: "The type of device used by the user."
-        geolocation:
-          type: string
-          example: "37.7749,-122.4194"
-          description: "The geolocation of the user in latitude,longitude format."
-        user_agent:
-          type: string
-          example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-          description: "The user agent string of the browser/device used by the user."
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/Event'
-          description: "List of events during the user's visit."
-
-    Event:
-      type: object
-      properties:
-        event_type:
-          type: string
-          enum: [page_view, add_item_to_cart, purchase]
-          example: "page_view"
-          description: "The type of event that occurred."
-        timestamp:
-          type: string
-          format: date-time
-          example: "2023-08-10T12:34:56Z"
-          description: "The exact time when the event occurred."
-        details:
-          type: object
-          oneOf:
-            - $ref: '#/components/schemas/PageViewDetails'
-            - $ref: '#/components/schemas/AddItemToCartDetails'
-            - $ref: '#/components/schemas/PurchaseDetails'
-          description: "Specific details of the event based on its type."
-
-    PageViewDetails:
-      type: object
-      properties:
-        page_url:
-          type: string
-          example: "https://example.com/products"
-          description: "The URL of the webpage that was viewed."
-        referrer_url:
-          type: string
-          nullable: true
-          example: "https://google.com"
-          description: "The URL of the referrer page that led to this page view, or null if none."
-
-    AddItemToCartDetails:
-      type: object
-      properties:
-        product_id:
-          type: string
-          example: "HDW-001"
-          description: "The unique identifier of the product added to the cart."
-        product_name:
-          type: string
-          example: "Laptop X200"
-          description: "The name of the product added to the cart."
-        category:
-          type: string
-          enum: [hardware, software, peripherals]
-          example: "hardware"
-          description: "The category of the product added to the cart."
-        price:
-          type: number
-          format: float
-          example: 999.99
-          description: "The price of the product added to the cart."
-        quantity:
-          type: integer
-          example: 2
-          description: "The quantity of the product added to the cart."
-
-    PurchaseDetails:
-      type: object
-      properties:
-        order_id:
-          type: string
-          example: "ORD-4321"
-          description: "A unique identifier for the order."
-        amount:
-          type: number
-          format: float
-          example: 1999.98
-          description: "The total amount of the purchase."
-        currency:
-          type: string
-          example: "USD"
-          description: "The currency used for the purchase."
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/PurchaseItem'
-          description: "A list of items purchased in this order."
-
-    PurchaseItem:
-      type: object
-      properties:
-        product_id:
-          type: string
-          example: "HDW-001"
-          description: "The unique identifier of the product purchased."
-        product_name:
-          type: string
-          example: "Laptop X200"
-          description: "The name of the product purchased."
-        category:
-          type: string
-          enum: [hardware, software, peripherals]
-          example: "hardware"
-          description: "The category of the product purchased."
-        price:
-          type: number
-          format: float
-          example: 999.99
-          description: "The price of the product purchased."
-        quantity:
-          type: integer
-          example: 2
-          description: "The quantity of the product purchased."
-```
+## Understanding the data and code
 
 ## Task 1: Migrating the data to BigQuery
 
