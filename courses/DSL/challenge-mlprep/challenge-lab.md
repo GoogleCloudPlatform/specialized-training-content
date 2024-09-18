@@ -54,7 +54,7 @@ In this task, you update the DAG from the previous task to trigger automatically
 ## Task 4: Create and manage a feature store
 
 
-## Task 5: Implement data transformation and model into a real-time streaming pipeline\
+## Task 5: Implement data transformation and model into a real-time streaming pipeline
 
   
 ### Congratulations! 
