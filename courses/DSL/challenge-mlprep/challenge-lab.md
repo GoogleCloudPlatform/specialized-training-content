@@ -38,9 +38,9 @@ In this task, you use Cloud Composer to orchestrate feature engineering, model t
 
 4. Update your DAG to do the following:
    
-    a. Check when data in the source tables were last updated.
-    b. Run parallel training jobs with different hyperparameters.
-    c. Deploy only the model that performed the best to Vertex AI. 
+  * Check when data in the source tables were last updated.
+  * Run parallel training jobs with different hyperparameters.
+  * Deploy only the model that performed the best to Vertex AI. 
 
 ## Task 3: Update Airflow DAG for continuous training
 
