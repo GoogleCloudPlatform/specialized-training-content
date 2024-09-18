@@ -52,10 +52,35 @@ In this task, you update the DAG from the previous task to trigger automatically
 
 3. Add operators to the DAG to email someone on your team when the training job has completed or if a pipeline run was stopped due to stale data. Include information about the model training job.
 
-## Task 4: Create and manage a feature store
+## Task 4: Create and manage a data mesh and a feature store
 
+In this task, you will create a feature store using Vertex AI to ensure that features, including engineered features, are easy to share and access with low latency.
+
+1. Using Dataplex, create a data mesh architecture to share your raw and transformed data with the data science team. The architecture has the following requirements:
+- Zones for raw and curated data.
+- The raw zone contains the original CSV data in Cloud Storage
+- The BigQuery tables are in the curated zone.
+- Add appropriate metadata to the curated datasets using Dataplex tags and tag templates.
+- Enable data lineage to track changes to data over time.
+
+2. Create a Feature Store on Vertex AI for your prepared training data. The [documentation] for Feature Store will be helpful for doing this.
+  
+3. The data science team has been wanting to update the model serving code to use Feature Store to lower latency for serving compared to querying BigQuery for the same data. Create an online feature store using **Optimized online serving from a public endpoint**. Name this feature store `online_serving_fs`.
 
 ## Task 5: Implement data transformation and model into a real-time streaming pipeline
+
+In this task you will implement a streaming data pipeline using Apache Beam and Dataflow to serve streaming predictions on real-time data. A stream simulator is available for you using a Python script and Pub/Sub. However, as an additional challenge, you can try to set this up from scratch.
+
+1. Start up the stream simulator on a small VM (say `e2-standard-2`) following the instructions [here](add-the.link)
+
+2. Using the model artifact output from your training pipeline, create a streaming pipeline using Apache Beam with the following requirements.
+- Ingest messages from the Pub/Sub topic used by the data generator
+- A dead letter pattern should be implemented to prevent a bad message from stopping the pipeline.
+- Parse messages into the format needed for model prediction, see [here](add-the.link) for hints if needed.
+- Enrich the message by querying Feature Store
+- Serve a prediction using the RunInference operator
+- Write the predictions to a BigQuery table for later analysis
+- If an anomaly is detected, also send an alert to the Pub/Sub topic called `fraud_alert`.
 
   
 ### Congratulations! 
