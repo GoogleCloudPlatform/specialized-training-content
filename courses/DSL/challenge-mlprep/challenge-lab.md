@@ -37,6 +37,7 @@ In this task, you use Cloud Composer to orchestrate feature engineering, model t
 3. Implement automated deployment of Airflow DAGs to Composer as the code is updated. You may want to consider using tools like Github and Cloud Build to aid with this.
 
 4. Update your DAG to do the following:
+   
     a. Check when data in the source tables were last updated.
     b. Run parallel training jobs with different hyperparameters.
     c. Deploy only the model that performed the best to Vertex AI. 
