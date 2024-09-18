@@ -1,4 +1,4 @@
-# DSL Challenge Lab: Prepating Data for ML Training and Serving Workflows
+# DSL Challenge Lab: Preparing Data for ML Training and Serving Workflows
 
 ## Introduction
 
