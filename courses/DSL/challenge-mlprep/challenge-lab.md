@@ -1,10 +1,10 @@
-# DSL Challenge Lab: Prepating Data for ML Training and Serving Workflows
+# DSL Challenge Lab: Preparing Data for ML Training and Serving Workflows
 
 ## Introduction
 
 The data scientists at your company have successfully trained a prototype model for **INSERT USE CASE** using a representative data sample. However, in moving to production, they are running across multiple issues.
 
-  1. The data preparation and feature engineering code is all written using the Panda package in Jupyter notebooks. Though this works well for the sample data stored in a single CSV file, this approach does not scale to the entire dataset.
+  1. The data preparation and feature engineering code is all written using the Pandas package in Jupyter notebooks. Though this works well for the sample data stored in a single CSV file, this approach does not scale to the entire dataset.
   2. The model training code is currently being manually executed by the data science team. In production, they want to be able to orchestrate feature engineering, model training, and model deployment in a more automated fashion.
   3. New training data will be added to a Cloud Storage bucket, but not at a regular cadence. The data science team wants to be able to retrain and deploy the model when new training is added to the bucket without manual intervention.
   4. The data science team wants to be able to easily share the training data and their prepared features with other teams, but some teams are not as familiar with the tools being used to process the data for training.
@@ -14,71 +14,73 @@ You have been asked to use your knowledge of data engineering to design a soluti
 
 ## Understanding the data and code
 
-## Task 1: Migrating the data to BigQuery
+## Task 1: Load the data into BigQuery and convert feature engineering code
 
-Your task is to not only migrate the data to BigQuery, but also to modify the schema so it is easy for analysts to query. You could simply run an import with the schema auto-detection flag enabled. While this would work, it would be difficult for most analysts to query the nested fields using SQL. 
+Your task is to load the training data into BigQuery and to convert the feature engineering code into a more scalable solution. There are two tables spread across multiple CSV files. The sample data used by the data science team was created by joining a single CSV from each table using Pandas methods.
 
-1. Use the initial schema as a starting point. Redesign the data to be better optimized for a BigQuery data warehouse. Draw a diagram of your planned schema changes. 
+1. Import the training data into BigQuery as-is. 
 
-2. Write a program to migrate the data into BigQuery. You can do this using Bash, Python, Java, or Dataform, but you need to write a program so it could be run repeatedly. You can use the BigQuery console to help, but the final results need to be code. Create a Dataflow Workbench instance and write the code in Jupyter Notebooks if you like. 
+2. Using the initial schema and transformations being performed as a starting point, create a new table with a schema which will be more performant for data transformation. Call this new table named `joined_for_transformation`.
 
-3. Using Looker Studio, create a dashboard that contains the following information: 
-   1. Visits by Page
-   2. Most Popular Items
-   3. Sales by Category
-   4. Visit by Device Type
+3. Convert the Pandas transformation code into a more scalable solution using SQL in BigQuery. Store the results in a new table named `prepared_data`.
 
+4. Create a single query to automate this entire process. This will be helpful later in the project as you start to automate other parts of the model training and serving.
 
-## Task 2: Writing Dataflow batch pipelines
+## Task 2: Orchestrating model training and deployment
 
-In this task, you use Apache Beam and Dataflow to run a batch processing pipeline to accomplish the same job as in the previous task. Read the data from Cloud Storage, parse it, and write it to BigQuery using a schema that is optimized for analytics. 
+In this task, you use Cloud Composer to orchestrate feature engineering, model training, and model deployment in a more automated fashion. You will leverage the code provided by the data science team which has been packaged for training on Vertex AI.
 
-1. Using Apache Beam, create a pipeline to migrate the clickstream data to BigQuery in accordance with the schema you created earlier. Program the pipeline in a Jupyter Notebook. 
+1. Create a Cloud Composer instance for this task. You can use the console or the Google Cloud CLI, but doing this using Terraform for this task so that the provisioning process can easily be adapted for other projects.
 
-2. Once you have the pipeline tested, run it using Google Cloud Dataflow. 
+2. Create an Airflow DAG to load data into BigQuery, transform the data for training, perform model training, and deploy the model.
 
-## Task 3: Processing the data in real time
+3. Implement automated deployment of Airflow DAGs to Composer as the code is updated. You may want to consider using tools like Github and Cloud Build to aid with this.
 
-In this task, you use Google tools to process data in real time. The data is sent to a Pub/Sub topic. You program subscribers to process the messages as they arrive. 
+4. Update your DAG to do the following:
+   
+  * Check when data in the source tables were last updated.
+  * Run parallel training jobs with different hyperparameters.
+  * Deploy only the model that performed the best to Vertex AI. 
 
-1. Write a simulator that creates visits and posts them as messages to a Google Pub/Sub topic. Use variables to control the number of visits sent per minute and how long the simulator should run. You can program this any way you like. 
+## Task 3: Update Airflow DAG for continuous training
 
-2. Create a push subscriber running in Cloud Run or Cloud Functions. Process the messages as they come in. Parse them, and write the data to BigQuery where it can be analyzed. In Looker Studio, create a simple report that shows clicks by page in real time. 
+In this task, you update the DAG from the previous task to trigger automatically when new data is added to the Cloud Storage bucket containing the raw data. You know from the relevant teams that this data will not be added at a regular cadence, so you cannot simply schedule the pipeline to run at a regular interval
 
-3. Do the same thing as the previous step, but program a pull subscriber. Deploy the program to a Compute Engine virtual machine. Use an instance group to set up autoscaling. Also, implement some kind of health check that you can use to ensure if the pull process is not running, the machine will be restarted. 
+1. Update the pipeline to trigger only when new data is added to the Cloud Storage bucket where data is stored. Test this by adding **ADD FILE LOCATION/NAME** to the bucket aftet updating the DAG.
 
-4. Write an Apache Beam pipeline with the following requirements:
-   1. Write the raw data to files in Google Cloud Storage at regular intervals. 
-   2. Parse the messages and write the data to BigQuery. 
-   3. Calculate page views by minute. Create a dashboard that reports this information.
-   4. Run the pipeline in Dataflow. 
+2. You want to ensure that only recent data is being used to train the model and often old data is added to the Cloud Storage bucket. Add a step in the Airflow DAG to stop the pipeline if the data is older than 60 days. 
 
-5. You want to detect a potential denial of service attack. Create an Apache Beam pipeline that calculates page views per minute. Write this information to the Google Cloud logs. Create a log metric that reports this information in a Logging and Monitoring Dashboard. Next, create a log alert that triggers beyond some threshold. When the alert triggers, send yourself an email. 
+3. Add operators to the DAG to email someone on your team when the training job has completed or if a pipeline run was stopped due to stale data. Include information about the model training job.
 
-6. Restart your Pub/Sub message simulator so enough messages are sent to trigger the alert. 
+## Task 4: Create and manage a data mesh and a feature store
 
-## Task 4: Using Google Cloud Composer to orchestrate data engineering tasks
+In this task, you will create a feature store using Vertex AI to ensure that features, including engineered features, are easy to share and access with low latency.
 
-In this task, you use Apache Airflow and Google Cloud Composer to automate a data engineering task. 
+1. Using Dataplex, create a data mesh architecture to share your raw and transformed data with the data science team. The architecture has the following requirements:
+- Zones for raw and curated data.
+- The raw zone contains the original CSV data in Cloud Storage
+- The BigQuery tables are in the curated zone.
+- Add appropriate metadata to the curated datasets using Dataplex tags and tag templates.
+- Enable data lineage to track changes to data over time.
 
-1. Create a Composer pipeline with the following requirements:
-   1. When a file containing clickstream data is written to a Cloud Storage bucket, trigger the pipeline. 
-   2. Run a Dataflow job that processes the file, parses the data, and writes it to BigQuery. 
-   3. After the Dataflow job completes, send a message to Pub/Sub indicating the file was processed. 
-
-2. Create a subscriber to the Pub/Sub topic that notifies you that the file was succesfully processed. 
-
-
-## Task 5: Using Dataplex to share enterprise data
-
-In this task, you use Google Cloud Dataplex to share your clickstream data with the organization. 
-
-1. Using Dataplex, create a data mesh architecture to share your clickstream data with the organization. The architecture has the following requirements:
-   1. Zones for raw and curated data. 
-   2. The raw zone contains the original JSON data contining the clickstream events 
-   3. The data should be automatically processed and written to BigQuery tables. The BigQuery tables are in the curated zone. 
-   4. Share the data using Dataplex security. 
-   5. Add appropriate metadata to the curated datasets using Dataplex tags and tag templates. 
-   6. Enable data lineage to track changes to data over time.
+2. Create a Feature Store on Vertex AI for your prepared training data. The [documentation] for Feature Store will be helpful for doing this.
   
-### Congratulations! You built a data pipeline, migrated data that has been already collected in Cloud Storage, and stored it in BigQuery. You also built streaming data pipelines that performed analysis on the data in real-time and saved the results to Cloud Storage for raw data and BigQuery for processed data.
+3. The data science team has been wanting to update the model serving code to use Feature Store to lower latency for serving compared to querying BigQuery for the same data. Create an online feature store using **Optimized online serving from a public endpoint**. Name this feature store `online_serving_fs`.
+
+## Task 5: Implement data transformation and model into a real-time streaming pipeline
+
+In this task you will implement a streaming data pipeline using Apache Beam and Dataflow to serve streaming predictions on real-time data. A stream simulator is available for you using a Python script and Pub/Sub. However, as an additional challenge, you can try to set this up from scratch.
+
+1. Start up the stream simulator on a small VM (say `e2-standard-2`) following the instructions [here](add-the.link)
+
+2. Using the model artifact output from your training pipeline, create a streaming pipeline using Apache Beam with the following requirements.
+- Ingest messages from the Pub/Sub topic used by the data generator
+- A dead letter pattern should be implemented to prevent a bad message from stopping the pipeline.
+- Parse messages into the format needed for model prediction, see [here](add-the.link) for hints if needed.
+- Enrich the message by querying Feature Store
+- Serve a prediction using the RunInference operator
+- Write the predictions to a BigQuery table for later analysis
+- If an anomaly is detected, also send an alert to the Pub/Sub topic called `fraud_alert`.
+
+  
+### Congratulations! 
