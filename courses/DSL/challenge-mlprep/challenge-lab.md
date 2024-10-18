@@ -22,7 +22,26 @@ Sample data is located in the following Cloud Storage location. You should copy 
 gs://cloud-training/specialized-training/dsl_data
 ```
 
-There are 6 folders in this Cloud Storage location containing data. Each folder contains CSV files exported from a single table in the relational database that will need to be loaded into BigQuery throughout this project. The sole exception are the CSV files in the `sample_preproc_data` folder, which contains the prepared data sample that the data scientists used to work on the proof-of-concept model.
+There are 6 folders in this Cloud Storage location containing data. Each folder contains CSV files exported from a single table in the relational database that will need to be loaded into BigQuery throughout this project. The sole exception are the CSV files in the `sample_preproc_data` folder, which contains the prepared data sample that the data scientists used to work on the proof-of-concept model. The sample data has the following schema and it is what is expected by the data science team:
+
+### Sample Data Schema
+
+| **Field name**          | **Type**  | **Mode** | **Description**                                                                                   |
+|-------------------------|-----------|----------|---------------------------------------------------------------------------------------------------|
+| transactionId (PK)      | INTEGER   | REQUIRED | Unique Id for transaction                                                                         |
+| step                    | INTEGER   | REQUIRED | Number of hours from beginning of data collection                                                 |
+| action                  | STRING(8) | REQUIRED | Type of transaction, there are five possible values: PAYMENT, CASH_IN, CASH_OUT, DEBIT, TRANSFER. |
+| amount | FLOAT | REQUIRED | Amount of transaction |
+| idOrig (FK)             | STRING    | REQUIRED | UserId of user originating the transaction                                                        |
+| oldBalanceOrig          | FLOAT     | REQUIRED | Balance of idOrig account before transaction                                                      |
+| newBalanceOrig          | FLOAT     | REQUIRED | Balance of idOrig account after transaction                                                       |
+| idDest (FK)             | STRING    | REQUIRED | UserId, BankId or MerchantId of destination for the transaction                                   |
+| oldBalanceDest          | FLOAT     | NULLABLE | Balance of idDest account before transaction if relevant                                          |
+| newBalanceDest          | FLOAT     | NULLABLE | Balance of idDest account after transaction if relevant                                           |
+| isFraud | BOOLEAN | REQUIRED | Flag for fraudulent transactions |
+| isFlaggedFraud | BOOLEAN | REQUIRED | Transactions marked as fraud by rule-based system. |
+| isUnauthorizedOverdraft | BOOLEAN   | NULLABLE | Flag for unauthorized overdrafts if relevant                                                      |
+| isSuccessful            | BOOLEAN   | REQUIRED | Flag for successful transactions                                                                  |
 
 The schema for the other tables are as follows:
 
@@ -94,6 +113,8 @@ The schema for the other tables are as follows:
 | idDest (FK)             | STRING    | REQUIRED | UserId, BankId or MerchantId of destination for the transaction |
 | isFraud                 | BOOLEAN   | REQUIRED | Flag for fraudulent transactions                                |
 | isFlaggedFraud          | BOOLEAN   | REQUIRED | Flag for transactions flagged as fraudulent                     |
+
+
 
 
 
