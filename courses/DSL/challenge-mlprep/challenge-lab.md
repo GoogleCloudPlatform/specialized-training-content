@@ -2,7 +2,9 @@
 
 ## Introduction
 
-The data scientists at your company have successfully trained a prototype model for **INSERT USE CASE** using a representative data sample. However, in moving to production, they are running across multiple issues.
+Your company has begun the process of scaling out their new mobile payment service to a broader user base, however there is a persistent concern of fraudulent transactions. Your support team is able to work with customers resolve these tickets when the fraudulent transaction slips past your current rules-based fraud detection system, but this is time-consuming for that team. The ultimate goal is to have a better AI-powered system for detecting fraudulent transactions to alleviate the pressure on the support team and improve customer experience.
+
+The data scientists at your company have successfully trained a proof-of-concent model for detecting fraduluent transactions using a data sample provided by the team managing the relational database. However, the data scientists are concerned that the distribution of their data sample is not truly representative of all transactions occuring and wish to be able to train the model on a much larger dataset. Additionally, there are other issues that will have to be addressed before moving into production.
 
   1. The data preparation and feature engineering code is all written using the Pandas package in Jupyter notebooks. Though this works well for the sample data stored in a single CSV file, this approach does not scale to the entire dataset.
   2. The model training code is currently being manually executed by the data science team. In production, they want to be able to orchestrate feature engineering, model training, and model deployment in a more automated fashion.
@@ -13,6 +15,87 @@ The data scientists at your company have successfully trained a prototype model 
 You have been asked to use your knowledge of data engineering to design a solution for the data science team to address these issues.
 
 ## Understanding the data and code
+
+Sample data is located in the following Cloud Storage location. You should copy this data to a bucket in your own Google Cloud project for the sake of this exercise. 
+
+```
+gs://cloud-training/specialized-training/dsl_data
+```
+
+There are 6 folders in this Cloud Storage location containing data. Each folder contains CSV files exported from a single table in the relational database that will need to be loaded into BigQuery throughout this project. The sole exception are the CSV files in the `sample_preproc_data` folder, which contains the prepared data sample that the data scientists used to work on the proof-of-concept model.
+
+The schema for the other tables are as follows:
+
+### Users
+
+| **Field Name** | **Type** | **Mode** | **Description**                                           |
+|----------------|----------|----------|-----------------------------------------------------------|
+| userId (PK)    | STRING   | REQUIRED | The User ID of a User involved in a transaction           |
+| first_name     | STRING   | REQUIRED | First name of the user, collected at account creation     |
+| last_name      | STRING   | REQUIRED | Last name of the user, collected at account creation      |
+| street_address | STRING   | REQUIRED | Street address of the user, collected at account creation |
+| city           | STRING   | REQUIRED | City of the user, collected at account creation           |
+| state          | STRING   | REQUIRED | State of the user, collected at account creation          |
+| zip_code       | INTEGER  | REQUIRED | Zip code of the user, collected at account creation       |
+
+### Merchants
+
+| **Field Name** | **Type** | **Mode** | **Description**                                               |
+|----------------|----------|----------|---------------------------------------------------------------|
+| merchantId (PK)| STRING   | REQUIRED | The merchant ID of a merchant involved in a transaction       |
+| company_name   | STRING   | REQUIRED | Name of merchant, collected at account creation               |
+| contact_name   | STRING   | REQUIRED | Contact name for merchant, collected at account creation      |
+| first_name     | STRING   | REQUIRED | First name of the merchant, collected at account creation     |
+| last_name      | STRING   | REQUIRED | Last name of the merchant, collected at account creation      |
+| street_address | STRING   | REQUIRED | Street address of the merchant, collected at account creation |
+| city           | STRING   | REQUIRED | City of the merchant, collected at account creation           |
+| state          | STRING   | REQUIRED | State of the merchant, collected at account creation          |
+| zip_code       | INTEGER  | REQUIRED | Zip code of the merchant, collected at account creation       |
+
+### Banks
+
+| **Field Name** | **Type** | **Mode** | **Description**                                           |
+|----------------|----------|----------|-----------------------------------------------------------|
+| bankId (PK)    | STRING   | REQUIRED | The bank ID of a bank involved in a transaction           |
+| bank_name      | STRING   | REQUIRED | Name of bank, collected at account creation               |
+| contact_name   | STRING   | REQUIRED | Contact name for bank, collected at account creation      |
+| first_name     | STRING   | REQUIRED | First name of the bank, collected at account creation     |
+| last_name      | STRING   | REQUIRED | Last name of the bank, collected at account creation      |
+| street_address | STRING   | REQUIRED | Street address of the bank, collected at account creation |
+| city           | STRING   | REQUIRED | City of the bank, collected at account creation           |
+| state          | STRING   | REQUIRED | State of the bank, collected at account creation          |
+| zip_code       | INTEGER  | REQUIRED | Zip code of the bank, collected at account creation       |
+
+### Transactions
+
+| **Field name**          | **Type**  | **Mode** | **Description**                                                                                   |
+|-------------------------|-----------|----------|---------------------------------------------------------------------------------------------------|
+| transactionId (PK)      | INTEGER   | REQUIRED | Unique Id for transaction                                                                         |
+| step                    | INTEGER   | REQUIRED | Number of hours from beginning of data collection                                                 |
+| action                  | STRING(8) | REQUIRED | Type of transaction, there are five possible values: PAYMENT, CASH_IN, CASH_OUT, DEBIT, TRANSFER. |
+| idOrig (FK)             | STRING    | REQUIRED | UserId of user originating the transaction                                                        |
+| oldBalanceOrig          | FLOAT     | REQUIRED | Balance of idOrig account before transaction                                                      |
+| newBalanceOrig          | FLOAT     | REQUIRED | Balance of idOrig account after transaction                                                       |
+| idDest (FK)             | STRING    | REQUIRED | UserId, BankId or MerchantId of destination for the transaction                                   |
+| oldBalanceDest          | FLOAT     | NULLABLE | Balance of idDest account before transaction if relevant                                          |
+| newBalanceDest          | FLOAT     | NULLABLE | Balance of idDest account after transaction if relevant                                           |
+| isUnauthorizedOverdraft | BOOLEAN   | NULLABLE | Flag for unauthorized overdrafts if relevant                                                      |
+| isSuccessful            | BOOLEAN   | REQUIRED | Flag for successful transactions                                                                  |
+
+### Fraud Transactions
+
+| **Field name**          | **Type**  | **Mode** | **Description**                                                 |
+|-------------------------|-----------|----------|-----------------------------------------------------------------|
+| transactionId (PK)      | INTEGER   | REQUIRED | Unique Id for transaction                                       |
+| step                    | INTEGER   | REQUIRED | Number of hours from beginning of data collection               |
+| action                  | STRING(8) | REQUIRED | Type of transaction                                             |
+| amount                  | FLOAT     | REQUIRED | Amount of the transaction                                       |
+| idOrig (FK)             | STRING    | REQUIRED | UserId of user originating the transaction                      |
+| idDest (FK)             | STRING    | REQUIRED | UserId, BankId or MerchantId of destination for the transaction |
+| isFraud                 | BOOLEAN   | REQUIRED | Flag for fraudulent transactions                                |
+| isFlaggedFraud          | BOOLEAN   | REQUIRED | Flag for transactions flagged as fraudulent                     |
+
+
 
 ## Task 1: Load the data into BigQuery and convert feature engineering code
 
