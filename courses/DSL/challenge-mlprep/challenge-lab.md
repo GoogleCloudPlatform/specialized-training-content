@@ -14,7 +14,7 @@ The data scientists at your company have successfully trained a proof-of-concent
 
 You have been asked to use your knowledge of data engineering to design a solution for the data science team to address these issues.
 
-## Understanding the data and code
+## Understanding the data
 
 Sample data is located in the following Cloud Storage location. You should copy this data to a bucket in your own Google Cloud project for the sake of this exercise. 
 
@@ -115,26 +115,41 @@ The schema for the other tables are as follows:
 | isFlaggedFraud          | BOOLEAN   | REQUIRED | Flag for transactions flagged as fraudulent                     |
 
 
+## Understanding the code
 
+The data science team handed over three different artifacts for this project.
+
+1. The `experiment.ipynb` notebook uses the copy of the sample data in the Cloud Storage location above to explore the data using Pandas and train a basic model using TensorFlow in Keras. You should explore this notebook to understand which transformations they performed (e.g. standardizing numeric features). You will not be required to write any TensorFlow or Keras code in this project, but you should feel free to explore that code if interested.
+
+2. The `fraud_detection` folder contains the code for the model training package and a Dockerfile for creating a custom training container to use in Vertex AI training. Some notes about the training code:
+
+  * CSV files for the training, validation and testing datasets should be in a Cloud Storage location. These files should have the same schema as the sample data, no header row. The data split should be 80% training, 10% validation and 10% testing. The names of the files should be of the form `train*`, `eval*` and `test*` respectively. It is recommended to convert the label, `isFraud`, into an integer before exporting the data into CSVs.
+  * The script `build_container.sh` will create an Artifact Registry in your project and build the model training container. You will need to update some variables at the beginning of the script.
+  * The script `submit_job.sh` will have to be updated for the locations of your files and project information. All of the envrionment variables to be updated are located at the beginning of the script. This script will be used to kick off a Vertex AI Training job.
+  * `submit_job.sh` takes some arguments corresponding to hyperparameters for the model training. These hyperparameters will be important later in the project.
+
+3. The `deploy_model.sh` and `predict.py` scripts show examples of how to deploy and serve predictions from deployed models. 
 
 
 ## Task 1: Load the data into BigQuery and convert feature engineering code
 
-Your task is to load the training data into BigQuery and to convert the feature engineering code into a more scalable solution. There are two tables spread across multiple CSV files. The sample data used by the data science team was created by joining a single CSV from each table using Pandas methods.
+Your task is to load the training data into BigQuery and to convert the parts of feature engineering code into a more scalable solution. There are five tables spread across multiple CSV files. The sample data used by the data science team was created by the owners of the relational database.
 
-1. Import the training data into BigQuery as-is. 
+1. Import the data into BigQuery as-is into five separate tables. You do not need to import the sample data, but also feel free to do so if you wish. 
 
 2. Using the initial schema and transformations being performed as a starting point, create a new table with a schema which will be more performant for data transformation. Call this new table named `joined_for_transformation`.
 
 3. Convert the Pandas transformation code into a more scalable solution using SQL in BigQuery. Store the results in a new table named `prepared_data`.
 
-4. Create a single query to automate this entire process. This will be helpful later in the project as you start to automate other parts of the model training and serving.
+4. Create separate tables for training, evaluation and testing. Use a function, such as `FARM_FINGERPRINT` to split the data in a repeatable fashion. Do not forget if you did not do so earlier to convert the `isFraud` field into an `INTEGER`-valued field.
+
+5. Create a single query or script to automate this entire process. This will be helpful later in the project as you start to automate other parts of the model training and serving.
 
 ## Task 2: Orchestrating model training and deployment
 
 In this task, you use Cloud Composer to orchestrate feature engineering, model training, and model deployment in a more automated fashion. You will leverage the code provided by the data science team which has been packaged for training on Vertex AI.
 
-1. Create a Cloud Composer instance for this task. You can use the console or the Google Cloud CLI, but doing this using Terraform for this task so that the provisioning process can easily be adapted for other projects.
+1. Create a Cloud Composer instance for this task. You can use the console or the Google Cloud CLI, however using a tool like Terraform will allow for repeatable deployment in other environments.
 
 2. Create an Airflow DAG to load data into BigQuery, transform the data for training, perform model training, and deploy the model.
 
@@ -143,16 +158,16 @@ In this task, you use Cloud Composer to orchestrate feature engineering, model t
 4. Update your DAG to do the following:
    
   * Check when data in the source tables were last updated.
-  * Run parallel training jobs with different hyperparameters.
+  * Run parallel training jobs with different hyperparameters. Recall that some hyperparameters are command-line arguments for the training code.
   * Deploy only the model that performed the best to Vertex AI. 
 
 ## Task 3: Update Airflow DAG for continuous training
 
 In this task, you update the DAG from the previous task to trigger automatically when new data is added to the Cloud Storage bucket containing the raw data. You know from the relevant teams that this data will not be added at a regular cadence, so you cannot simply schedule the pipeline to run at a regular interval
 
-1. Update the pipeline to trigger only when new data is added to the Cloud Storage bucket where data is stored. Test this by adding **ADD FILE LOCATION/NAME** to the bucket aftet updating the DAG.
+1. Update the pipeline to trigger only when new data is added to the Cloud Storage bucket where data is stored. Test this by adding a new file containing appropriate data to the bucket after updating the DAG.
 
-2. You want to ensure that only recent data is being used to train the model and often old data is added to the Cloud Storage bucket. Add a step in the Airflow DAG to stop the pipeline if the data is older than 60 days. 
+2. You want to ensure that only recent data is being used to train the model and often old data will be added to the Cloud Storage bucket alongside new data. Add a step in the Airflow DAG to stop the pipeline if all of the data is older than 60 days. 
 
 3. Add operators to the DAG to email someone on your team when the training job has completed or if a pipeline run was stopped due to stale data. Include information about the model training job.
 
@@ -167,7 +182,7 @@ In this task, you will create a feature store using Vertex AI to ensure that fea
 - Add appropriate metadata to the curated datasets using Dataplex tags and tag templates.
 - Enable data lineage to track changes to data over time.
 
-2. Create a Feature Store on Vertex AI for your prepared training data. The [documentation] for Feature Store will be helpful for doing this.
+2. Create a Feature Store on Vertex AI for your prepared training data. The [documentation](https://cloud.google.com/vertex-ai/docs/featurestore/latest/overview) for Feature Store will be helpful for doing this.
   
 3. The data science team has been wanting to update the model serving code to use Feature Store to lower latency for serving compared to querying BigQuery for the same data. Create an online feature store using **Optimized online serving from a public endpoint**. Name this feature store `online_serving_fs`.
 
@@ -186,5 +201,3 @@ In this task you will implement a streaming data pipeline using Apache Beam and 
 - Write the predictions to a BigQuery table for later analysis
 - If an anomaly is detected, also send an alert to the Pub/Sub topic called `fraud_alert`.
 
-  
-### Congratulations! 
