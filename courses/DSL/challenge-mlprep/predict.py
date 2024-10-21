@@ -22,4 +22,4 @@ def parse_prediction(response):
     return f'There is a {predict_prob} percent chance of fraud for this transaction'
 
 response = model_endpoint.predict(SAMPLE_REQUEST)
-parse_prediction(response)
+print(parse_prediction(response))
