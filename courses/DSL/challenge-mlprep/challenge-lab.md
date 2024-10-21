@@ -190,12 +190,12 @@ In this task, you will create a feature store using Vertex AI to ensure that fea
 
 In this task you will implement a streaming data pipeline using Apache Beam and Dataflow to serve streaming predictions on real-time data. A stream simulator that can be adapted for this transaction data is available for you in a [Jupyter notebook](courses/DSL/pub-sub-examples/pub-sub-simulated-clicks-feed.ipynb) using Pub/Sub. However, as an additional challenge, you can try to set this up from scratch.
 
-1. Start up the stream simulator on a small VM (say `e2-standard-2`) following the instructions [here](add-the.link)
+1. Start up the stream simulator on a small VM (say `e2-standard-2`).
 
 2. Using the model artifact output from your training pipeline, create a streaming pipeline using Apache Beam with the following requirements.
 - Ingest messages from the Pub/Sub topic used by the data generator
 - A dead letter pattern should be implemented to prevent a bad message from stopping the pipeline.
-- Parse messages into the format needed for model prediction, see [here](add-the.link) for hints if needed.
+- Parse messages into the format needed for model prediction.
 - Enrich the message by querying Feature Store
 - Serve a prediction using the RunInference operator
 - Write the predictions to a BigQuery table for later analysis
