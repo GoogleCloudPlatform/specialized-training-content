@@ -123,8 +123,8 @@ The data science team handed over three different artifacts for this project.
 
 2. The `fraud_detection` folder contains the code for the model training package and a Dockerfile for creating a custom training container to use in Vertex AI training. Some notes about the training code:
 
-  * CSV files for the training, validation and testing datasets should be in a Cloud Storage location. These files should have the same schema as the sample data, no header row. The data split should be 80% training, 10% validation and 10% testing. The names of the files should be of the form `train*`, `eval*` and `test*` respectively. It is recommended to convert the label, `isFraud`, into an integer before exporting the data into CSVs.
-  * The script `build_container.sh` will create an Artifact Registry in your project and build the model training container. You will need to update some variables at the beginning of the script.
+  * CSV files for the training, validation and testing datasets should be in a Cloud Storage location. These files should have the same schema as the sample data, no header row. The data split should be 80% training, 10% validation and 10% testing. The names of the files should be of the form `train*`, `eval*` and `test*` respectively. It is recommended to convert the label, `isFraud`, into an integer before exporting the data into CSVs and to check to be sure you are including the correct columns.
+  * The script `build_container.sh` will create an Artifact Registry repository in your project and build the model training container. You will need to update some variables at the beginning of the script.
   * The script `submit_job.sh` will have to be updated for the locations of your files and project information. All of the envrionment variables to be updated are located at the beginning of the script. This script will be used to kick off a Vertex AI Training job.
   * `submit_job.sh` takes some arguments corresponding to hyperparameters for the model training. These hyperparameters will be important later in the project.
 
