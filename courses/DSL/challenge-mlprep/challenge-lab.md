@@ -188,7 +188,7 @@ In this task, you will create a feature store using Vertex AI to ensure that fea
 
 ## Task 5: Implement data transformation and model into a real-time streaming pipeline
 
-In this task you will implement a streaming data pipeline using Apache Beam and Dataflow to serve streaming predictions on real-time data. A stream simulator that can be adapted for this transaction data is available for you in a [Jupyter notebook](courses/DSL/pub-sub-examples/pub-sub-simulated-clicks-feed.ipynb) using Pub/Sub. However, as an additional challenge, you can try to set this up from scratch.
+In this task you will implement a streaming data pipeline using Apache Beam and Dataflow to serve streaming predictions on real-time data. A stream simulator that can be adapted for this transaction data is available for you in a [Jupyter notebook](../../pub-sub-examples/pub-sub-simulated-clicks-feed.ipynb) using Pub/Sub. However, as an additional challenge, you can try to set this up from scratch.
 
 1. Start up the stream simulator on a small VM (say `e2-standard-2`).
 
