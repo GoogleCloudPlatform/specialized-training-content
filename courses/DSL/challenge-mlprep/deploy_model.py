@@ -1,3 +1,10 @@
+'''Usage: python3 deploy_model.py --model_dir $MODEL_DIR --model_name $MODEL_NAME
+
+    Note: You need to have set a default region for Google Compute Engine and Vertex AI, you can do so with the follow commands:
+    gcloud config set project $PROJECT
+    gcloud config set ai/region $REGION
+'''
+
 import argparse
 from google.cloud import aiplatform
 
