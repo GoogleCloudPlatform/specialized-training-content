@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Your company has begun the process of scaling out their new mobile payment service to a broader user base, however there is a persistent concern of fraudulent transactions. Your support team is able to work with customers resolve these tickets when the fraudulent transaction slips past your current rules-based fraud detection system, but this is time-consuming for that team. The ultimate goal is to have a better AI-powered system for detecting fraudulent transactions to alleviate the pressure on the support team and improve customer experience.
+Your company has begun the process of scaling out their new mobile payment service to a broader user base, however there is a persistent concern of fraudulent transactions. Your support team is able to work with customers resolve these tickets when the fraudulent transaction slips past your current rules-based fraud detection system, but this is time-consuming for that team and frustrating for customers. The ultimate goal is to have a better AI-powered system for detecting fraudulent transactions to alleviate the pressure on the support team and improve customer experience.
 
 The data scientists at your company have successfully trained a proof-of-concent model for detecting fraduluent transactions using a data sample provided by the team managing the relational database. However, the data scientists are concerned that the distribution of their data sample is not truly representative of all transactions occuring and wish to be able to train the model on a much larger dataset. Additionally, there are other issues that will have to be addressed before moving into production.
 
@@ -131,7 +131,7 @@ The data science team handed over three different artifacts for this project.
 3. The `deploy_model.sh` and `predict.py` scripts show examples of how to deploy and serve predictions from deployed models. 
 
 
-## Task 1: Load the data into BigQuery and convert feature engineering code
+## Task 1: Load the data into BigQuery, convert feature engineering code
 
 Your task is to load the training data into BigQuery and to convert the parts of feature engineering code into a more scalable solution. There are five tables spread across multiple CSV files. The sample data used by the data science team was created by the owners of the relational database.
 
@@ -145,7 +145,33 @@ Your task is to load the training data into BigQuery and to convert the parts of
 
 5. Create a single query or script to automate this entire process. This will be helpful later in the project as you start to automate other parts of the model training and serving.
 
-## Task 2: Orchestrating model training and deployment
+## Task 2: Export datasets and ensure model training code executes successfully
+
+In this task you will export the prepared training data from BigQuery and test the model training code provided by the data science team. This code should execute with minimal changes if everything is configured correctly.
+
+1. Explore `submit_job.sh` to understand where data should be exported from BigQuery to Cloud Storage. Refer to the lines under the comment `# GCS Paths` when performing this step.
+
+2. Explore the `train.py` and `task.py` scripts in the `fraud_detection/trainer` folder to understand how the data is being used in the model training code.
+
+3. Export the prepared datasets to the identified location in the previous step. Be sure you are following the naming scheme recommended in the **Understanding the code** section.
+
+4. Build the container to be used for model training using the `build_container.sh` script.
+
+5. Submit a job to Vertex AI training using the `submit_job.sh` script. Set the values for `NUM_EXAMPLES`, `NUM_BINS` and `HASH_BKTS` to 1 for the sake of testing your job submission.
+
+## Task 3: Create and manage a data mesh
+
+In this task you will create a data mesh using Dataplex to manage and share the raw and transformed data.
+
+1. Using Dataplex, create a data mesh architecture to share your raw and transformed data with the data science team. The architecture has the following requirements:
+- Zones for raw and curated data.
+- The raw zone contains the original CSV data in Cloud Storage
+- The BigQuery tables are in the curated zone.
+- Add appropriate metadata to the curated datasets using Dataplex tags and tag templates.
+- Enable data lineage to track changes to data over time. 
+
+
+## Task 4: Orchestrating model training and deployment
 
 In this task, you use Cloud Composer to orchestrate feature engineering, model training, and model deployment in a more automated fashion. You will leverage the code provided by the data science team which has been packaged for training on Vertex AI.
 
@@ -161,7 +187,7 @@ In this task, you use Cloud Composer to orchestrate feature engineering, model t
   * Run parallel training jobs with different hyperparameters. Recall that some hyperparameters are command-line arguments for the training code.
   * Deploy only the model that performed the best to Vertex AI. 
 
-## Task 3: Update Airflow DAG for continuous training
+## (Optional) Task 5: Update Airflow DAG for continuous training
 
 In this task, you update the DAG from the previous task to trigger automatically when new data is added to the Cloud Storage bucket containing the raw data. You know from the relevant teams that this data will not be added at a regular cadence, so you cannot simply schedule the pipeline to run at a regular interval
 
@@ -171,22 +197,8 @@ In this task, you update the DAG from the previous task to trigger automatically
 
 3. Add operators to the DAG to email someone on your team when the training job has completed or if a pipeline run was stopped due to stale data. Include information about the model training job.
 
-## Task 4: Create and manage a data mesh and a feature store
 
-In this task, you will create a feature store using Vertex AI to ensure that features, including engineered features, are easy to share and access with low latency.
-
-1. Using Dataplex, create a data mesh architecture to share your raw and transformed data with the data science team. The architecture has the following requirements:
-- Zones for raw and curated data.
-- The raw zone contains the original CSV data in Cloud Storage
-- The BigQuery tables are in the curated zone.
-- Add appropriate metadata to the curated datasets using Dataplex tags and tag templates.
-- Enable data lineage to track changes to data over time.
-
-2. Create a Feature Store on Vertex AI for your prepared training data. The [documentation](https://cloud.google.com/vertex-ai/docs/featurestore/latest/overview) for Feature Store will be helpful for doing this.
-  
-3. The data science team has been wanting to update the model serving code to use Feature Store to lower latency for serving compared to querying BigQuery for the same data. Create an online feature store using **Optimized online serving from a public endpoint**. Name this feature store `online_serving_fs`.
-
-## Task 5: Implement data transformation and model into a real-time streaming pipeline
+## Task 6: Implement data transformation and model into a real-time streaming pipeline
 
 In this task you will implement a streaming data pipeline using Apache Beam and Dataflow to serve streaming predictions on real-time data. A stream simulator that can be adapted for this transaction data is available for you in a [Jupyter notebook](../pub-sub-examples/pub-sub-simulated-clicks-feed.ipynb) using Pub/Sub. However, as an additional challenge, you can try to set this up from scratch.
 
@@ -196,8 +208,17 @@ In this task you will implement a streaming data pipeline using Apache Beam and 
 - Ingest messages from the Pub/Sub topic used by the data generator
 - A dead letter pattern should be implemented to prevent a bad message from stopping the pipeline.
 - Parse messages into the format needed for model prediction.
-- Enrich the message by querying Feature Store
-- Serve a prediction using the RunInference operator
-- Write the predictions to a BigQuery table for later analysis
+- Incorporate any transformations needed at prediction time.
+- Serve a prediction using the RunInference operator.
+- Write the predictions to a BigQuery table for later analysis.
 - If an anomaly is detected, also send an alert to the Pub/Sub topic called `fraud_alert`.
 
+## (Optional) Task 7: Create a feature store and incorporate it into your serving pipeline.
+
+In this task, you will create a feature store using Vertex AI to ensure that features, including engineered features, are easy to share and access with low latency.
+
+1. Create a Feature Store on Vertex AI for your prepared training data. The [documentation](https://cloud.google.com/vertex-ai/docs/featurestore/latest/overview) for Feature Store will be helpful for doing this.
+  
+2. The data science team has been wanting to update the model serving code to use Feature Store to lower latency for serving compared to querying BigQuery for the same data. Create an online feature store using **Optimized online serving from a public endpoint**. Name this feature store `online_serving_fs`.
+
+3. Update your Apache Beam pipeline from Task 6 to enrich the incoming messages using Feature Store before prediction.
