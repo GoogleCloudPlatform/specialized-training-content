@@ -213,6 +213,8 @@ In this task you will implement a streaming data pipeline using Apache Beam and 
 - Write the predictions to a BigQuery table for later analysis.
 - If an anomaly is detected, also send an alert to the Pub/Sub topic called `fraud_alert`.
 
+This [tutorial](https://cloud.google.com/dataflow/docs/notebooks/bigquery_enrichment_transform#use_the_bigquery_enrichment_handler) shows an example of using data in BigQuery for enriching data for model prediction in a Apache Beam pipeline.
+
 ## (Optional) Task 7: Create a feature store and incorporate it into your serving pipeline.
 
 In this task, you will create a feature store using Vertex AI to ensure that features, including engineered features, are easy to share and access with low latency.
@@ -221,4 +223,4 @@ In this task, you will create a feature store using Vertex AI to ensure that fea
   
 2. The data science team has been wanting to update the model serving code to use Feature Store to lower latency for serving compared to querying BigQuery for the same data. Create an online feature store using **Optimized online serving from a public endpoint**. Name this feature store `online_serving_fs`.
 
-3. Update your Apache Beam pipeline from Task 6 to enrich the incoming messages using Feature Store before prediction.
+3. Update your Apache Beam pipeline from Task 6 to enrich the incoming messages using Feature Store before prediction. This [tutorial](https://cloud.google.com/dataflow/docs/notebooks/vertex_ai_feature_store_enrichment#use_the_vertexaimodelhandlerjson_interface_to_run_inference) shows an example of using Feature Store in an Apache Beam pipeline.
