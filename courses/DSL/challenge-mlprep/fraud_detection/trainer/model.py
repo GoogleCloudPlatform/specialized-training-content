@@ -10,7 +10,7 @@ import os
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import callbacks, models
+from tensorflow.keras import callbacks
 from tensorflow.keras.layers import (
     Concatenate,
     Dense,
