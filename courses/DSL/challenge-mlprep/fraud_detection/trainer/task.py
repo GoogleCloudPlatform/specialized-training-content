@@ -5,6 +5,8 @@ import argparse
 from trainer import model
 
 if __name__ == "__main__":
+
+# Parse input arguments
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--batch_size",
@@ -57,4 +59,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     hparams = args.__dict__
 
+    # Pass input arguments to function to train and evaluate model
     model.train_and_evaluate(hparams)
