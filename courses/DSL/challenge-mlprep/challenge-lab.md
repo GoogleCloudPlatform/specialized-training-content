@@ -187,7 +187,7 @@ In this task, you use Cloud Composer to orchestrate feature engineering, model t
   * Run parallel training jobs with different hyperparameters. Recall that some hyperparameters are command-line arguments for the training code.
   * Deploy only the model that performed the best to Vertex AI. 
 
-## (Optional) Task 5: Update Airflow DAG for continuous training
+## Optional Task: Update Airflow DAG for continuous training
 
 In this task, you update the DAG from the previous task to trigger automatically when new data is added to the Cloud Storage bucket containing the raw data. You know from the relevant teams that this data will not be added at a regular cadence, so you cannot simply schedule the pipeline to run at a regular interval
 
@@ -198,7 +198,7 @@ In this task, you update the DAG from the previous task to trigger automatically
 3. Add operators to the DAG to email someone on your team when the training job has completed or if a pipeline run was stopped due to stale data. Include information about the model training job.
 
 
-## Task 6: Implement data transformation and model into a real-time streaming pipeline
+## Task 5: Implement data transformation and model into a real-time streaming pipeline
 
 In this task you will implement a streaming data pipeline using Apache Beam and Dataflow to serve streaming predictions on real-time data. A stream simulator that can be adapted for this transaction data is available for you in a [Jupyter notebook](../pub-sub-examples/pub-sub-simulated-clicks-feed.ipynb) using Pub/Sub. However, as an additional challenge, you can try to set this up from scratch.
 
@@ -215,7 +215,7 @@ In this task you will implement a streaming data pipeline using Apache Beam and 
 
 This [tutorial](https://cloud.google.com/dataflow/docs/notebooks/bigquery_enrichment_transform#use_the_bigquery_enrichment_handler) shows an example of using data in BigQuery for enriching data for model prediction in a Apache Beam pipeline.
 
-## (Optional) Task 7: Create a feature store and incorporate it into your serving pipeline.
+## Optional Task: Create a feature store and incorporate it into your serving pipeline.
 
 In this task, you will create a feature store using Vertex AI to ensure that features, including engineered features, are easy to share and access with low latency.
 
