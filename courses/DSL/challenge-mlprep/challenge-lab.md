@@ -223,4 +223,4 @@ In this task, you will create a feature store using Vertex AI to ensure that fea
   
 2. The data science team has been wanting to update the model serving code to use Feature Store to lower latency for serving compared to querying BigQuery for the same data. Create an online feature store using **Optimized online serving from a public endpoint**. Name this feature store `online_serving_fs`.
 
-3. Update your Apache Beam pipeline from Task 6 to enrich the incoming messages using Feature Store before prediction. This [tutorial](https://cloud.google.com/dataflow/docs/notebooks/vertex_ai_feature_store_enrichment#use_the_vertexaimodelhandlerjson_interface_to_run_inference) shows an example of using Feature Store in an Apache Beam pipeline.
+3. Update your Apache Beam pipeline from Task 5 to enrich the incoming messages using Feature Store before prediction. This [tutorial](https://cloud.google.com/dataflow/docs/notebooks/vertex_ai_feature_store_enrichment#use_the_vertexaimodelhandlerjson_interface_to_run_inference) shows an example of using Feature Store in an Apache Beam pipeline.
