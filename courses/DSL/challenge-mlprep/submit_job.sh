@@ -9,14 +9,14 @@
 
 # Output directory and jobID
 TIMESTAMP=$(date -u +%Y%m%d_%H%M%S)
-OUTDIR=gs://${BUCKET}/fraud_detection/trained_model_$TIMESTAMP
+OUTDIR=gs://${DATA_BUCKET}/fraud_detection/trained_model_$TIMESTAMP
 JOB_NAME=fraud_detection_$TIMESTAMP
 echo ${OUTDIR} ${REGION} ${JOB_NAME}
 
 # Model and training hyperparameters
 BATCH_SIZE=50
 NUM_EXAMPLES_TO_TRAIN_ON=$4
-NUM_EVALS=100
+NUM_EVALS=5
 NUM_BINS=$5
 HASH_BKTS=$6
 
