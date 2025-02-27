@@ -5,9 +5,9 @@ by trainer.task after parsing input arguments.
 """
 
 from functools import partial
+import hypertune
 import logging
 import os
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import callbacks
@@ -227,6 +227,15 @@ def train_and_evaluate(hparams):
         verbose=1,  # 0=silent, 1=progress bar, 2=one line per epoch
         callbacks=[checkpoint_cb, tensorboard_cb],
     )
+    
+    # Code to export metrics to Vertex AI for hyperparameter tuning jobs
+    hp_metric = history.history['val_auc'][-1]
+
+    hpt = hypertune.HyperTune()
+    hpt.report_hyperparameter_tuning_metric(
+        hyperparameter_metric_tag='ROC AUC',
+        metric_value=hp_metric,
+        global_step=num_evals)
 
     # Exporting the model with default serving function.
     model.save(model_export_path)
