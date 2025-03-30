@@ -70,7 +70,7 @@ def home():
                                                           accept_multiple_files=True,
                                                           key=st.session_state['uploader_key'])    
     
-    model = 'gemini-pro-vision' 
+    model = 'gemini-2.0-flash' 
     
     text_input = st.text_input("Enter your Prompt:", value="Describe this image.")
     prompt = f"Please return all responses in Markdown. \n\n {text_input}"
