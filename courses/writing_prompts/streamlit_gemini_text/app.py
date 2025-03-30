@@ -38,7 +38,7 @@ class GeminiProLLM(LLM):
         if stop is not None:
             raise ValueError("stop kwargs are not permitted.")
         
-        gemini_pro_model = GenerativeModel("gemini-1.5-pro")
+        gemini_pro_model = GenerativeModel("gemini-2.0-flash")
         
         model_response = gemini_pro_model.generate_content(
             prompt, 
@@ -57,7 +57,7 @@ class GeminiProLLM(LLM):
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
         """Get the identifying parameters."""
-        return {"model_id": "gemini-1.5-pro", "temperature": 0.0}
+        return {"model_id": "gemini-2.0-flash, "temperature": 0.0}
     
 
 parser = argparse.ArgumentParser(description='')
