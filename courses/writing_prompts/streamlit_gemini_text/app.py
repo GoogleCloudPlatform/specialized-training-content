@@ -57,7 +57,7 @@ class GeminiProLLM(LLM):
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
         """Get the identifying parameters."""
-        return {"model_id": "gemini-2.0-flash, "temperature": 0.0}
+        return {"model_id": "gemini-2.0-flash", "temperature": 0.0}
     
 
 parser = argparse.ArgumentParser(description='')
