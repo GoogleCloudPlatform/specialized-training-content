@@ -60,6 +60,3 @@ Now visit streaming data via Pub/Sub and Dataflow. Explore the data (that has be
 ## Task 5
 Implement CDC on the transactional data using a product such as Datastream. Incorporate this into your DE workload
 
-```sql
-SELECT MT,TT,Hex,datetime(PARSE_DATE('%Y/%m/%d', DMG),TMG) as datetime_generated, array_agg(datetime(PARSE_DATE('%Y/%m/%d', DML),TML)) as datetime_logged, count(*) as records FROM `paul-leroy.FlightData.transponderHistoric` WHERE TIMESTAMP_TRUNC(_PARTITIONTIME, DAY) = TIMESTAMP("2025-04-03") and Hex="407573" group by all having records>1
-```
