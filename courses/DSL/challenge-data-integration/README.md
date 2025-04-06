@@ -36,6 +36,11 @@ Below is a snapshot of the airspace over London Heathrow showing over flights (f
 
 ![Snapshot of real data from ADS-B showing holding and appraoching aircraft](images/Realtime.png)
 
+----
+Todo
+
+----
+
 ## Setup:
 Terraform script to deploy databases and load data into the following sources:
 SQL Server on Cloud SQL
@@ -45,18 +50,130 @@ Log data in Cloud Storage
 Data to be statically stored in AWS S3 buckets and Azure Blob Storage buckets for the project. Will need to think about managing this data and billing
 Terraform script to deploy a small VM for streaming simulated data to Pub/Sub and writing transactions to Cloud SQL and/or AlloyDB/Spanner.
 
+----
+
 ## Task 1
+
+Data is currently being written into a cloud storage bucket at `gs://flightdata-demo`. In this bucket you'll see sample aircraft metadata in the `flighdata-data` directory and the aircraft logs data in the root directory. 
+
+The data in the root directory conforms the Base Station format listed [here](http://woodair.net/sbs/article/barebones42_socket_data.htm) and as you can see it is formatted as standard CSV. While CSV data is fairly ubiquitous it is horrible to work with as the structure can be messy. A sample of the data is shown below.
+
+```csv
+MSG,8,1,1,ABFDAF,1,2025/03/19,04:18:28.888,2025/03/19,04:18:28.926,,,,,,,,,,,,0
+MSG,7,1,1,A3DC34,1,2025/03/19,04:18:28.891,2025/03/19,04:18:28.927,,8750,,,,,,,,,,
+MSG,4,1,1,AC56BA,1,2025/03/19,04:18:28.892,2025/03/19,04:18:28.927,,,298,311,,,2880,,,,,0
+MSG,4,1,1,ABFDAF,1,2025/03/19,04:18:28.898,2025/03/19,04:18:28.928,,,437,138,,,-2176,,,,,0
+MSG,7,1,1,A1244D,1,2025/03/19,04:18:28.899,2025/03/19,04:18:28.929,,10950,,,,,,,,,,
+MSG,5,1,1,A58C29,1,2025/03/19,04:18:28.911,2025/03/19,04:18:28.931,,10375,,,,,,,0,,0,
+MSG,3,1,1,ABFDAF,1,2025/03/19,04:18:28.917,2025/03/19,04:18:28.932,,18475,,,33.32707,-117.68406,,,0,,0,0
+MSG,3,1,1,A1244D,1,2025/03/19,04:18:28.920,2025/03/19,04:18:28.976,,10950,,,33.45039,-117.99933,,,0,,0,0
+MSG,7,1,1,A2E09A,1,2025/03/19,04:18:28.928,2025/03/19,04:18:28.977,,38000,,,,,,,,,,
+MSG,8,1,1,A4E146,1,2025/03/19,04:18:29.255,2025/03/19,04:18:29.306,,,,,,,,,,,,0
+MSG,7,1,1,A3DC34,1,2025/03/19,04:18:29.265,2025/03/19,04:18:29.308,,8750,,,,,,,,,,
+MSG,8,1,1,AD9EDC,1,2025/03/19,04:18:29.266,2025/03/19,04:18:29.309,,,,,,,,,,,,0
+MSG,8,1,1,A58C29,1,2025/03/19,04:18:29.266,2025/03/19,04:18:29.309,,,,,,,,,,,,0
+MSG,3,1,1,AC56BA,1,2025/03/19,04:18:29.277,2025/03/19,04:18:29.311,,22525,,,33.04674,-117.65885,,,0,,0,0
+MSG,8,1,1,A451CF,1,2025/03/19,04:18:29.284,2025/03/19,04:18:29.312,,,,,,,,,,,,0
+MSG,7,1,1,0C20F6,1,2025/03/19,04:18:29.288,2025/03/19,04:18:29.313,,33000,,,,,,,,,,
+MSG,4,1,1,A2E09A,1,2025/03/19,04:18:29.319,2025/03/19,04:18:29.362,,,371,320,,,-64,,,,,0
+MSG,3,1,1,ABFDAF,1,2025/03/19,04:18:29.326,2025/03/19,04:18:29.363,,18450,,,33.32648,-117.68340,,,0,,0,0
+MSG,5,1,1,A451CF,1,2025/03/19,04:18:29.331,2025/03/19,04:18:29.364,,37025,,,,,,,0,,0,
+MSG,8,1,1,AA630B,1,2025/03/19,04:18:29.343,2025/03/19,04:18:29.366,,,,,,,,,,,,0
+MSG,7,1,1,A3DC34,1,2025/03/19,04:18:29.346,2025/03/19,04:18:29.367,,8750,,,,,,,,,,
+MSG,4,1,1,A3DC34,1,2025/03/19,04:18:29.370,2025/03/19,04:18:29.415,,,277,263,,,-256,,,,,0
+MSG,3,1,1,0D0A21,1,2025/03/19,04:18:29.375,2025/03/19,04:18:29.416,,14650,,,33.60022,-117.14027,,,0,,0,0
+```
+
+As you can see most messages will be the `MSG` format, the dates are not in [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) format and there are separate message generation date/times and message logged date/time. There are also many blank strings that should be stored as blanks.
+
+The files in Cloud Storage are updated fairly frequently (every 10 minutes or every 10.24 MB whichever comes first). 
+
+### Step 1
+
+Set up an [event sync](https://cloud.google.com/storage-transfer/docs/event-driven-transfers) to replicate data from the source bucket into a bucket in your project. BigQuery DTS requires that the data source and BigQuery Dataset is in the same region.
+
+### Step 2
+
+Set up the table so that it is visible in BigQuery. This can use either [DTS](https://cloud.google.com/bigquery/docs/dts-introduction) to schedule the data loads or use [object tables](https://cloud.google.com/bigquery/docs/biglake-intro). 
+
+### Step 3
+
+Clean the data using SQL, the dates are especially messy from this. `CAST`ing and `SAFE_CAST`ing are useful here. You'll need to work with [date functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions) to clean the dates. You can create this as a [view](https://cloud.google.com/bigquery/docs/views) or a [materialized view](https://cloud.google.com/bigquery/docs/materialized-views-intro).
+
+### Step 4
+
+You'll need to remove the duplicate rows from the overlapping receivers. Keep in mind that the generation date/time and data  will be the same but the logged date/time will vary based on the logger receiving. The granularity of this time is not accurate enough to triangulate the planes though, so it is your choice on what to do with the logging date/time. 
+
+----
+
+Initial request
+
 Consolidate data from transactional databases and object storage into a single location. This will mean using BigQuery or Spanner for the transactional data and Cloud Storage for object storage. Students should explore tools like DTS and connections in BigQuery for performing this task. The goal here is not to fully analyze the data, but rather to just get everything into one place before further ETL
 
+----
+
 ## Task 2
+
+Once the structure has been roughly agreed upon, you'll change from a Bigquery oriented ELT process to a dataflow oriented ETL process. This means that the data will need to be transformed on load but helps in that the date/time fields can be converted into `datetime` or `timestamp` types on load which helps.
+
+### Step 1
+
+Write a dataflow job that loads the data into Bigquery from Cloud Storage. Using the the [Workbenches](https://cloud.google.com/dataflow/docs/guides/interactive-pipeline-development) would accelerate the development of this. 
+
+### Step 2
+
+The data should be validated against a regex to make sure that the structure conforms to your required input. This will also fix the scenario that dirty data is written into Cloud Storage breaking the view of data in BigQuery. Dates and times can be consolidated into a single field which you can now use to partition the data. Blank fields in the `CSV` should be converted into `Nulls`.
+
+### Step 3
+
+If data doesn't match the regex it should write the data to a second Cloud Storage bucket for review to evaluate whether data could be saved by better ETL or whether it can be safely discarded.
+
+### Step 4 
+
+The duplicate data (messages from a single aircraft received by two loggers) will still need to be removed.
+
+----
+Initial request
+
 Perform ETL on the consolidated batch data to transform the data into an appropriate form for the data warehouse. A specific use case will need to be defined for this to be viable.
 
+----
+
 ## Task 3
+
+Schedule the transfer from Cloud Storage using either Cloud Composer or Data Fusion to move the data to BigQuery. This should simplify moving the data on a daily basis. The process should only move the data from one day at a time.
+
+----
+Initial request
+
 Orchestrate the first two tasks via an orchestration tool such as Composer or Data Fusion. Ideally Composer here unless students want to go the Data Fusion route.
 
+----
+
 ## Task 4
+
+The Data Capture team has upgraded the data collection to use PubSub. 
+
+### Step 1
+
+The data structure has not changed but becasue you'll be reading from an API rather than a bucket your intial step from dataflow will need a Google Cloud storage or PubSub tolerant step. It should work for both your batch and stream processing. The data is available on the following topic `projects/paul-leroy/topics/flight-transponder` and you'll need to create a subscription in your project or alternatively dynamically create the subscription when your pipeline starts. This is subtly done when using the PubsubIO handler to read from a topic.
+
+### Step 2
+
+You know have access to a continuous stream of data which allows you to restructure the data so that data can be nested per session (time from when the aircraft is first seen to when it is last seen). The visualization time is interested the in `Timestamp`/`DateTime`, the aircraft [ICAO24](https://skybrary.aero/articles/24-bit-aircraft-address) identifier, the altitude and the location (latitude and longitude) of the aircraft. Keep in mind that aircraft may be in the air over midnight so sessions should be tolerant of flights spanning multiple days. 
+
+----
+Initial request
+
 Now visit streaming data via Pub/Sub and Dataflow. Explore the data (that has been written to a sink in GCS) and write a pipeline to properly parse the data and store it in BigQuery. Ensure that the data is valid.
 
+----
+
 ## Task 5
+
+----
+Initial request
+
 Implement CDC on the transactional data using a product such as Datastream. Incorporate this into your DE workload
 
+----
