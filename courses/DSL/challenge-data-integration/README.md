@@ -223,6 +223,25 @@ Now visit streaming data via Pub/Sub and Dataflow. Explore the data (that has be
 
 ## Task 5
 
+You task will be to load data from a website into CloudSQL this will allow you to then sync the data into BigQuery.
+
+### Step 1
+
+Create a Cloud SQL PostGreSQL instance in a selected region, this should be a sandbox instance, you will not need anything more for this task.
+
+### Step 2 
+
+Download data from this [site](https://opensky-network.org/datasets/#metadata/), pick one of the files, preferrably last months one, and import it into a PostGreSQL Cloud SQL instance 
+The data use Citation is [here](https://opensky-network.org/data/aircraft), make sure you add it to your Dashboard.
+
+### Step 3
+
+Import the data into the Cloud SQL instance. Make sure you have the schema set to parse the columns correctly.
+
+### Step 4
+
+Step up datastream to replicate the data into BigQuery. This will allow the analysts to create dashboards with the aircraft metadata loaded from joining the ADS-B messages with the aircraft metadata.
+
 ----
 Initial request
 
