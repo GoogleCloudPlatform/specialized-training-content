@@ -94,9 +94,37 @@ Set up an [event sync](https://cloud.google.com/storage-transfer/docs/event-driv
 
 Set up the table so that it is visible in BigQuery. This can use either [DTS](https://cloud.google.com/bigquery/docs/dts-introduction) to schedule the data loads or use [object tables](https://cloud.google.com/bigquery/docs/biglake-intro).
 
+The table may look like the below sample
+
+| MT  | TT | SID | AID | Hex    | FID | DMG         | TMG      | DML         | TML      | CS     | Alt  | GS   | Trk  | Lat  | Lng  | VR   | Sq   | Alrt | Emer | SPI | Gnd |
+|-----|----|-----|-----|--------|-----|-------------|----------|-------------|----------|--------|------|------|------|------|------|------|------|------|------|-----|-----|
+| MSG | 1  | 1   | 1   | 06A124 | 1   | 2025/03/10  | 0:22:59  | 2025/03/10  | 0:22:59  | QTR99Y | null | null | null | null | null | null | null | null | null | null| 0   |
+| MSG | 1  | 1   | 1   | 0D07A8 | 1   | 2025/03/10  | 12:22:09 | 2025/03/10  | 12:22:09 | VOI3180| null | null | null | null | null | null | null | null | null | null| 0   |
+| MSG | 1  | 1   | 1   | 0C210D | 1   | 2025/03/10  | 9:43:30  | 2025/03/10  | 9:43:30  | CMP473 | null | null | null | null | null | null | null | null | null | null| 0   |
+| MSG | 1  | 1   | 1   | 0C210D | 1   | 2025/03/10  | 9:44:35  | 2025/03/10  | 9:44:35  | CMP473 | null | null | null | null | null | null | null | null | null | null| 0   |
+| MSG | 1  | 1   | 1   | 0C210D | 1   | 2025/03/10  | 9:45:30  | 2025/03/10  | 9:45:30  | CMP473 | null | null | null | null | null | null | null | null | null | null| 0   |
+| MSG | 1  | 1   | 1   | 0C210D | 1   | 2025/03/10  | 9:44:30  | 2025/03/10  | 9:44:30  | CMP473 | null | null | null | null | null | null | null | null | null | null| 0   |
+| MSG | 1  | 1   | 1   | 06A124 | 1   | 2025/03/10  | 0:20:25  | 2025/03/10  | 0:20:25  | QTR99Y | null | null | null | null | null | null | null | null | null | null| 0   |
+| MSG | 1  | 1   | 1   | 0C210D | 1   | 2025/03/10  | 9:46:26  | 2025/03/10  | 9:46:26  | CMP473 | null | null | null | null | null | null | null | null | null | null| 0   |
+| MSG | 1  | 1   | 1   | 06A124 | 1   | 2025/03/10  | 0:23:29  | 2025/03/10  | 0:23:29  | QTR99Y | null | null | null | null | null | null | null | null | null | null| 0   |
+| MSG | 1  | 1   | 1   | 06A19F | 1   | 2025/03/10  | 8:29:02  | 2025/03/10  | 8:29:02  | QTR56Y | null | null | null | null | null | null | null | null | null | null| 0   |
+
 ### Step 3
 
-Clean the data using SQL. The dates are especially messy. `CAST`ing and `SAFE_CAST`ing are useful here. You'll need to work with [date functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions) to clean the dates. You can create this as a [view](https://cloud.google.com/bigquery/docs/views) or a [materialized view](https://cloud.google.com/bigquery/docs/materialized-views-intro).
+Clean the data using SQL. The dates are especially messy. `CAST`ing and `SAFE_CAST`ing are useful here. You'll need to work with [date functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions) to clean the dates. You can create this as a [view](https://cloud.google.com/bigquery/docs/views) or a [materialized view](https://cloud.google.com/bigquery/docs/materialized-views-intro). You should also be able to de-dupilicate the data that may be received from multiple loggers.
+
+| Row | MT  | TT | SID | AID | Hex    | FID | MG                  |  CS     | Alt  | GS   | Trk  | Geom | VR   | Sq   | Alrt | Emer | SPI | Gnd |
+|---|-----|----|-----|-----|--------|-----|---------------------|--------|------|------|------|------|------|------|------|------|-----|-----|
+| 1 | MSG | 1  | 1   | 1   | 06A124 | 1   | 2025-03-10T00:22:59 | QTR99Y | null | null | null | null | null | null | null | null | null| 0   |
+| 2 | MSG | 1  | 1   | 1   | 0D07A8 | 1   | 2025-03-10T12:22:09 | VOI3180| null | null | null | null | null | null | null | null | null| 0   |
+| 3 | MSG | 1  | 1   | 1   | 0C210D | 1   | 2025-03-10T09:43:30 | CMP473 | null | null | null | null | null | null | null | null | null| 0   |
+| 4 | MSG | 1  | 1   | 1   | 0C210D | 1   | 2025-03-10T09:44:35 | CMP473 | null | null | null | null | null | null | null | null | null| 0   |
+| 5 | MSG | 1  | 1   | 1   | 0C210D | 1   | 2025-03-10T09:45:30 | CMP473 | null | null | null | null | null | null | null | null | null| 0   |
+| 6 | MSG | 1  | 1   | 1   | 0C210D | 1   | 2025-03-10T09:44:30 | CMP473 | null | null | null | null | null | null | null | null | null| 0   |
+| 7 | MSG | 1  | 1   | 1   | 06A124 | 1   | 2025-03-10T00:20:25 | QTR99Y | null | null | null | null | null | null | null | null | null| 0   |
+| 8 | MSG | 1  | 1   | 1   | 0C210D | 1   | 2025-03-10T09:46:26 | CMP473 | null | null | null | null | null | null | null | null | null| 0   |
+| 9 | MSG | 1  | 1   | 1   | 06A124 | 1   | 2025-03-10T00:23:29 | QTR99Y | null | null | null | null | null | null | null | null | null| 0   |
+| 10 | MSG | 1  | 1   | 1   | 06A19F | 1   | 2025-03-10T08:29:02 | QTR56Y | null | null | null | null | null | null | null | null | null| 0   |
 
 ### Step 4
 
@@ -119,7 +147,7 @@ Write a Dataflow job that loads the data into BigQuery from Cloud Storage. Using
 
 ### Step 2
 
-The data should be validated against a regex to make sure that the structure conforms to your required input. This will also fix the scenario that dirty data is written into Cloud Storage, breaking the view of data in BigQuery. Dates and times can be consolidated into a single field, which you can now use to partition the data. Blank fields in the `CSV` should be converted into null values.
+The data should be validated against a regex to make sure that the structure conforms to your required input. This will also fix the scenario that dirty data is written into Cloud Storage, breaking the view of data in BigQuery. Dates and times can be consolidated into a single field, which you can now use to partition the data. Blank fields in the `CSV` should be converted into null values. You can also use Geography data types for the `Latitude` and `Longitude` data
 
 ### Step 3
 
@@ -159,6 +187,33 @@ The data structure has not changed, but because you'll be reading from an API ra
 
 You now have access to a continuous stream of data, which allows you to restructure the data so that data can be nested per session (time from when the aircraft is first seen to when it is last seen). The visualization time is interested in the Timestamp/DateTime, the aircraft [ICAO24](https://skybrary.aero/articles/24-bit-aircraft-address) identifier, the altitude, and the location (latitude and longitude) of the aircraft. Keep in mind that aircraft may be in the air over midnight, so sessions should be tolerant of flights spanning multiple days.
 
+Data may look like this (notice the chronological ordering):
+
+| Row | Hex | StartSession | Session.MG | Session.ML | Session.Alt | Session.pt |
+|---|---|---|---|---|---|---|
+| 1 | 4078DB | 2025-04-07 10:17:58.062000 UTC | 2025-04-07 10:17:58.062000 UTC | 2025-04-07 10:17:58.100000 UTC | 12775 | POINT(-0.93712 50.73938) |
+| 2 | 4009D9 | 2025-04-07 10:18:03.545000 UTC | 2025-04-07 10:18:03.545000 UTC | 2025-04-07 10:18:03.564000 UTC | 29750 | POINT(2.34919 52.09908) |
+| 3 | 33C1C8 | 2025-04-07 10:18:31.630000 UTC | 2025-04-07 10:18:31.630000 UTC | 2025-04-07 10:18:31.684000 UTC | 20025 | POINT(1.24465 51.16365) |
+| 4 | 407937 | 2025-04-07 10:18:03.673000 UTC | 2025-04-07 10:18:03.673000 UTC | 2025-04-07 10:18:03.723000 UTC | 3350 | POINT(-1.58359 51.0531) |
+|  |  |  | 2025-04-07 10:18:29.648000 UTC | 2025-04-07 10:18:29.670000 UTC | 3350 | POINT(-1.57001 51.06963) |
+| 5 | 4D23FA | 2025-04-07 10:18:24.670000 UTC | 2025-04-07 10:18:24.670000 UTC | 2025-04-07 10:18:24.700000 UTC | 38000 | POINT(1.48805 50.04934) |
+| 6 | 407793 | 2025-04-07 10:18:00.761000 UTC | 2025-04-07 10:18:00.761000 UTC | 2025-04-07 10:18:00.781000 UTC | 9000 | POINT(-0.1109 50.97244) |
+|  |  |  | 2025-04-07 10:18:23.104000 UTC | 2025-04-07 10:18:23.119000 UTC | 9000 | POINT(-0.14954 50.97982) |
+|  |  |  | 2025-04-07 10:18:23.557000 UTC | 2025-04-07 10:18:23.603000 UTC | 9000 | POINT(-0.15032 50.9799) |
+|  |  |  | 2025-04-07 10:18:34.507000 UTC | 2025-04-07 10:18:34.532000 UTC | 9000 | POINT(-0.16953 50.98266) |
+| 7 | 3C4B45 | 2025-04-07 10:18:25.843000 UTC | 2025-04-07 10:18:25.843000 UTC | 2025-04-07 10:18:25.896000 UTC | 36000 | POINT(0.47119 52.43161) |
+|  |  |  | 2025-04-07 10:18:29.244000 UTC | 2025-04-07 10:18:29.286000 UTC | 36000 | POINT(0.46227 52.43546) |
+|  |  |  | 2025-04-07 10:18:31.353000 UTC | 2025-04-07 10:18:31.369000 UTC | 36000 | POINT(0.4568 52.43784) |
+|  |  |  | 2025-04-07 10:18:31.823000 UTC | 2025-04-07 10:18:31.851000 UTC | 36000 | POINT(0.45555 52.43839) |
+|  |  |  | 2025-04-07 10:18:33.773000 UTC | 2025-04-07 10:18:33.819000 UTC | 36000 | POINT(0.45044 52.44058) |
+| 8 | 02A181 | 2025-04-07 10:18:04.799000 UTC | 2025-04-07 10:18:04.799000 UTC | 2025-04-07 10:18:04.822000 UTC | 5675 | POINT(-0.26189 51.0163) |
+| 9 | 406CA3 | 2025-04-07 10:17:59.667000 UTC | 2025-04-07 10:17:59.667000 UTC | 2025-04-07 10:17:59.690000 UTC | 7450 | POINT(-0.11164 51.01158) |
+|  |  |  | 2025-04-07 10:18:02.678000 UTC | 2025-04-07 10:18:02.694000 UTC | 7400 | POINT(-0.11604 51.01343) |
+|  |  |  | 2025-04-07 10:18:21.957000 UTC | 2025-04-07 10:18:21.973000 UTC | 7075 | POINT(-0.14913 51.01781) |
+|  |  |  | 2025-04-07 10:18:23.957000 UTC | 2025-04-07 10:18:23.991000 UTC | 7025 | POINT(-0.1527 51.01753) |
+|  |  |  | 2025-04-07 10:18:34.462000 UTC | 2025-04-07 10:18:34.479000 UTC | 6775 | POINT(-0.17133 51.01556) |
+| 10 | 4D2383 | 2025-04-07 10:18:26.088000 UTC | 2025-04-07 10:18:26.088000 UTC | 2025-04-07 10:18:26.121000 UTC | 37000 | POINT(0.01952 49.72123) |
+
 ----
 Initial request
 
@@ -172,5 +227,8 @@ Now visit streaming data via Pub/Sub and Dataflow. Explore the data (that has be
 Initial request
 
 Implement CDC on the transactional data using a product such as Datastream. Incorporate this into your DE workload
+
+
+
 
 ----
