@@ -34,7 +34,7 @@ Below is a snapshot of the airspace over London Heathrow showing overflights (fl
 
 ![Snapshot of real data from ADS-B showing holding and appraoching aircraft](images/Realtime.png)
 
-----
+<!----
 Todo
 
 ----
@@ -48,9 +48,16 @@ Log data in Cloud Storage
 Data to be statically stored in AWS S3 buckets and Azure Blob Storage buckets for the project. Will need to think about managing this data and billing
 Terraform script to deploy a small VM for streaming simulated data to Pub/Sub and writing transactions to Cloud SQL and/or AlloyDB/Spanner.
 
-----
+---->
 
 ## Task 1
+
+<!----
+Initial request
+
+Perform ETL on the consolidated batch data to transform the data into an appropriate form for the data warehouse. A specific use case will need to be defined for this to be viable.
+
+---->
 
 Data is currently being written into a Cloud Storage bucket at `gs://flightdata-demo`. In this bucket, you'll see sample aircraft metadata in the `flightdata-data` directory and the aircraft logs data in the root directory.
 
@@ -88,7 +95,11 @@ The files in Cloud Storage are updated fairly frequently (every 10 minutes or ev
 
 ### Step 1
 
-Set up an [event sync](https://cloud.google.com/storage-transfer/docs/event-driven-transfers) to replicate data from the source bucket into a bucket in your project. BigQuery DTS requires that the data source and BigQuery Dataset are in the same region.
+Set up an [event sync](https://cloud.google.com/storage-transfer/docs/event-driven-transfers) to replicate data from the source bucket into a bucket in your project. The change data is currently published to this topic `projects/paul-leroy/topics/flightdata-gcs-eventstream`, which you can subscribe to in your project. You will also need to check that the data transfer service API is enabled and that the data transfer service account has consume access on Pub/Sub, Bucket Viewer and Object Admin roles on your bucket. BigQuery DTS requires that the data source and BigQuery Dataset are in the same region so be cognizant of this as BigQuery will be unable to load data from other regions outside the dataset region. A daily sync is also acceptable, you can use the following template to decide on mechanisms:
+
+1. How much data needs to be moved? (about 5 GB per day)
+1. How fast is the data moving? (roughyl 3MB per minute)
+1. How frequently is the data reported on (at this stage once per day, which is the deciding criterion)
 
 ### Step 2
 
@@ -113,6 +124,10 @@ The table may look like the below sample
 
 Clean the data using SQL. The dates are especially messy. `CAST`ing and `SAFE_CAST`ing are useful here. You'll need to work with [date functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions) to clean the dates. You can create this as a [view](https://cloud.google.com/bigquery/docs/views) or a [materialized view](https://cloud.google.com/bigquery/docs/materialized-views-intro). You should also be able to de-dupilicate the data that may be received from multiple loggers.
 
+!!! Warning
+    At this stage you may encounter the first big issue with trusting the incoming data, it may be dirty. if your queries fail with an error to say the there is a column mis-match, delete the offending file from the bucket. You'll fix that later with dataflow.
+
+
 | Row | MT  | TT | SID | AID | Hex    | FID | MG                  |  CS     | Alt  | GS   | Trk  | Geom | VR   | Sq   | Alrt | Emer | SPI | Gnd |
 |---|-----|----|-----|-----|--------|-----|---------------------|--------|------|------|------|------|------|------|------|------|-----|-----|
 | 1 | MSG | 1  | 1   | 1   | 06A124 | 1   | 2025-03-10T00:22:59 | QTR99Y | null | null | null | null | null | null | null | null | null| 0   |
@@ -128,16 +143,30 @@ Clean the data using SQL. The dates are especially messy. `CAST`ing and `SAFE_CA
 
 ### Step 4
 
-You'll need to remove the duplicate rows from the overlapping receivers. Keep in mind that the generation date/time and data will be the same, but the logged date/time will vary based on the logger receiving. The granularity of this time is not accurate enough to triangulate the planes, though, so it is your choice on what to do with the logging date/time.
+You'll need to remove the duplicate rows from the overlapping receivers. Keep in mind that the generation date/time and data will be the same, but the logged date/time will vary based on the logger receiving. The granularity of this time is not accurate enough to triangulate the planes, though, so it is your choice on what to do with the logging date/time. The `AID`, `FID` and `SID` fields have been misconfigured on the remote devices and don't provide any relevant data or insight at this stage and can be dropped.
 
-----
+| Row | MT  | TT |  Hex    | MG                  |  CS     | Alt  | GS   | Trk  | Geom | VR   | Sq   | Alrt | Emer | SPI | Gnd |
+|-----|-----|----|---------|---------------------|---------|------|------|------|------|------|------|------|------|-----|-----|
+| 1  | MSG | 1  | 06A124 | 2025-03-10T00:22:59 | QTR99Y | null | null | null | null | null | null | null | null | null| 0   |
+| 2  | MSG | 1  | 0D07A8 | 2025-03-10T12:22:09 | VOI3180| null | null | null | null | null | null | null | null | null| 0   |
+| 3  | MSG | 1  | 0C210D | 2025-03-10T09:43:30 | CMP473 | null | null | null | null | null | null | null | null | null| 0   |
+| 4  | MSG | 1  | 0C210D | 2025-03-10T09:44:35 | CMP473 | null | null | null | null | null | null | null | null | null| 0   |
+| 5  | MSG | 1  | 0C210D | 2025-03-10T09:45:30 | CMP473 | null | null | null | null | null | null | null | null | null| 0   |
+| 6  | MSG | 1  | 0C210D | 2025-03-10T09:44:30 | CMP473 | null | null | null | null | null | null | null | null | null| 0   |
+| 7  | MSG | 1  | 06A124 | 2025-03-10T00:20:25 | QTR99Y | null | null | null | null | null | null | null | null | null| 0   |
+| 8  | MSG | 1  | 0C210D | 2025-03-10T09:46:26 | CMP473 | null | null | null | null | null | null | null | null | null| 0   |
+| 9  | MSG | 1  | 06A124 | 2025-03-10T00:23:29 | QTR99Y | null | null | null | null | null | null | null | null | null| 0   |
+| 10 | MSG | 1  | 06A19F | 2025-03-10T08:29:02 | QTR56Y | null | null | null | null | null | null | null | null | null| 0   |
+
+
+## Task 2
+
+<!----
 Initial request
 
 Consolidate data from transactional databases and object storage into a single location. This will mean using BigQuery or Spanner for the transactional data and Cloud Storage for object storage. Students should explore tools like DTS and connections in BigQuery for performing this task. The goal here is not to fully analyze the data, but rather to just get everything into one place before further ETL
 
-----
-
-## Task 2
+---->
 
 Once the structure has been roughly agreed upon, you'll change from a BigQuery-oriented ELT process to a Dataflow-oriented ETL process. This means that the data will need to be transformed on load but helps in that the date/time fields can be converted into `datetime` or `timestamp` types on load, which helps.
 
@@ -157,25 +186,33 @@ If data doesn't match the regex, it should write the data to a second Cloud Stor
 
 The duplicate data (messages from a single aircraft received by two loggers) will still need to be removed.
 
-----
-Initial request
-
-Perform ETL on the consolidated batch data to transform the data into an appropriate form for the data warehouse. A specific use case will need to be defined for this to be viable.
-
-----
 
 ## Task 3
 
-Schedule the transfer from Cloud Storage using either Cloud Composer or Data Fusion to move the data to BigQuery. This should simplify moving the data on a daily basis. The process should only move the data from one day at a time.
-
-----
+<!----
 Initial request
 
 Orchestrate the first two tasks via an orchestration tool such as Composer or Data Fusion. Ideally Composer here unless students want to go the Data Fusion route.
 
-----
+---->
+
+
+The batch process should now be able to be triggered daily to move yesterday's data into the data warehouse. The pipeline itself is working, so you have multiple options in order to deploy this. 
+
+### Step 1
+
+Create a [dataflow template](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) or [dataflow flex templates](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates#python) from your pipeline so that it can be parameterised and called periodically, either from [Cloud Composer](https://cloud.google.com/composer/docs/composer-3/composer-overview) or [Cloud Scheduler](https://cloud.google.com/scheduler/docs). Your choice here may have an impact of scaling this in future (but not as part of this challenge), so for this project it may be cost effective to use scheduler, in production composer would allow multiple pipelines to be managed and scale across multiple teams. A quickstart can be found [here](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates) for building out the template.
+
 
 ## Task 4
+
+
+<!----
+Initial request
+
+Now visit streaming data via Pub/Sub and Dataflow. Explore the data (that has been written to a sink in GCS) and write a pipeline to properly parse the data and store it in BigQuery. Ensure that the data is valid.
+
+---->
 
 The Data Capture team has upgraded the data collection to use Pub/Sub allowing for near realtime data analytics.
 
@@ -189,39 +226,36 @@ You now have access to a continuous stream of data, which allows you to restruct
 
 Data may look like this (notice the chronological ordering):
 
-| Row | Hex | StartSession | Session.MG | Session.ML | Session.Alt | Session.pt |
-|---|---|---|---|---|---|---|
-| 1 | 4078DB | 2025-04-07 10:17:58.062000 UTC | 2025-04-07 10:17:58.062000 UTC | 2025-04-07 10:17:58.100000 UTC | 12775 | POINT(-0.93712 50.73938) |
-| 2 | 4009D9 | 2025-04-07 10:18:03.545000 UTC | 2025-04-07 10:18:03.545000 UTC | 2025-04-07 10:18:03.564000 UTC | 29750 | POINT(2.34919 52.09908) |
-| 3 | 33C1C8 | 2025-04-07 10:18:31.630000 UTC | 2025-04-07 10:18:31.630000 UTC | 2025-04-07 10:18:31.684000 UTC | 20025 | POINT(1.24465 51.16365) |
-| 4 | 407937 | 2025-04-07 10:18:03.673000 UTC | 2025-04-07 10:18:03.673000 UTC | 2025-04-07 10:18:03.723000 UTC | 3350 | POINT(-1.58359 51.0531) |
-|  |  |  | 2025-04-07 10:18:29.648000 UTC | 2025-04-07 10:18:29.670000 UTC | 3350 | POINT(-1.57001 51.06963) |
-| 5 | 4D23FA | 2025-04-07 10:18:24.670000 UTC | 2025-04-07 10:18:24.670000 UTC | 2025-04-07 10:18:24.700000 UTC | 38000 | POINT(1.48805 50.04934) |
-| 6 | 407793 | 2025-04-07 10:18:00.761000 UTC | 2025-04-07 10:18:00.761000 UTC | 2025-04-07 10:18:00.781000 UTC | 9000 | POINT(-0.1109 50.97244) |
-|  |  |  | 2025-04-07 10:18:23.104000 UTC | 2025-04-07 10:18:23.119000 UTC | 9000 | POINT(-0.14954 50.97982) |
-|  |  |  | 2025-04-07 10:18:23.557000 UTC | 2025-04-07 10:18:23.603000 UTC | 9000 | POINT(-0.15032 50.9799) |
-|  |  |  | 2025-04-07 10:18:34.507000 UTC | 2025-04-07 10:18:34.532000 UTC | 9000 | POINT(-0.16953 50.98266) |
-| 7 | 3C4B45 | 2025-04-07 10:18:25.843000 UTC | 2025-04-07 10:18:25.843000 UTC | 2025-04-07 10:18:25.896000 UTC | 36000 | POINT(0.47119 52.43161) |
-|  |  |  | 2025-04-07 10:18:29.244000 UTC | 2025-04-07 10:18:29.286000 UTC | 36000 | POINT(0.46227 52.43546) |
-|  |  |  | 2025-04-07 10:18:31.353000 UTC | 2025-04-07 10:18:31.369000 UTC | 36000 | POINT(0.4568 52.43784) |
-|  |  |  | 2025-04-07 10:18:31.823000 UTC | 2025-04-07 10:18:31.851000 UTC | 36000 | POINT(0.45555 52.43839) |
-|  |  |  | 2025-04-07 10:18:33.773000 UTC | 2025-04-07 10:18:33.819000 UTC | 36000 | POINT(0.45044 52.44058) |
-| 8 | 02A181 | 2025-04-07 10:18:04.799000 UTC | 2025-04-07 10:18:04.799000 UTC | 2025-04-07 10:18:04.822000 UTC | 5675 | POINT(-0.26189 51.0163) |
-| 9 | 406CA3 | 2025-04-07 10:17:59.667000 UTC | 2025-04-07 10:17:59.667000 UTC | 2025-04-07 10:17:59.690000 UTC | 7450 | POINT(-0.11164 51.01158) |
-|  |  |  | 2025-04-07 10:18:02.678000 UTC | 2025-04-07 10:18:02.694000 UTC | 7400 | POINT(-0.11604 51.01343) |
-|  |  |  | 2025-04-07 10:18:21.957000 UTC | 2025-04-07 10:18:21.973000 UTC | 7075 | POINT(-0.14913 51.01781) |
-|  |  |  | 2025-04-07 10:18:23.957000 UTC | 2025-04-07 10:18:23.991000 UTC | 7025 | POINT(-0.1527 51.01753) |
-|  |  |  | 2025-04-07 10:18:34.462000 UTC | 2025-04-07 10:18:34.479000 UTC | 6775 | POINT(-0.17133 51.01556) |
-| 10 | 4D2383 | 2025-04-07 10:18:26.088000 UTC | 2025-04-07 10:18:26.088000 UTC | 2025-04-07 10:18:26.121000 UTC | 37000 | POINT(0.01952 49.72123) |
+| Hex | SessionStart | Session.MG                     | Session.CS                     | Session.Alt | Session.GS | Session.Trk | Session.pt | Session.VR                 | Session.Sq | Session.Alrt | Session.Emer | Session.SPI | Session.Gnd |      |
+| :-: | :----------: | :----------------------------: | :----------------------------: | :---------: | :--------: | :---------: | :--------: | :------------------------: | :--------: | :----------: | :----------: | :---------: | :---------: | :--: |
+| 1   | 10207        | 2025-04-12 17:44:48.104000 UTC | 2025-04-12 18:44:48.104000 UTC | null        | null       | 182         | 247        | null                       | \-832      | null         | null         | null        | null        | 0    |
+|     |              |                                | 2025-04-12 18:44:51.214000 UTC | null        | null       | 182         | 251        | null                       | \-768      | null         | null         | null        | null        | 0    |
+|     |              |                                | 2025-04-12 18:44:51.961000 UTC | null        | 4450       | null        | null       | null                       | null       | null         | null         | null        | null        | null |
+|     |              |                                | 2025-04-12 18:45:01.336000 UTC | null        | 4325       | null        | null       | null                       | null       | null         | null         | null        | null        | null |
+| 2   | 10207        | 2025-04-12 17:46:29.147000 UTC | 2025-04-12 18:46:29.147000 UTC | null        | 3250       | null        | null       | null                       | null       | null         | null         | null        | null        | null |
+|     |              |                                | 2025-04-12 18:46:58.448000 UTC | null        | null       | null        | null       | null                       | null       | 3564         | 0            | 0           | 0           | null |
+|     |              |                                | 2025-04-12 18:47:47.082000 UTC | null        | 2150       | null        | null       | null                       | null       | null         | null         | null        | null        | null |
+|     |              |                                | 2025-04-12 18:48:08.995000 UTC | null        | 1825       | null        | null       | null                       | null       | null         | null         | null        | null        | null |
+| 3   | 0C218D       | 2025-04-12 17:50:49.803000 UTC | 2025-04-12 18:50:49.803000 UTC | null        | null       | 387         | 138        | null                       | 1728       | null         | null         | null        | null        | 0    |
+|     |              |                                | 2025-04-12 18:50:56.118000 UTC | null        | 19775      | null        | null       | POINT(-117.89815 33.38121) | null       | null         | 0            | null        | 0           | 0    |
+|     |              |                                | 2025-04-12 18:51:02.443000 UTC | null        | null       | 388         | 138        | null                       | 1728       | null         | null         | null        | null        | 0    |
+|     |              |                                | 2025-04-12 18:51:06.314000 UTC | null        | 20050      | null        | null       | null                       | null       | null         | null         | null        | null        | null |
+|     |              |                                | 2025-04-12 18:51:52.153000 UTC | null        | 21425      | null        | null       | null                       | null       | null         | null         | null        | null        | null |
+|     |              |                                | 2025-04-12 18:51:59.474000 UTC | null        | 21625      | null        | null       | null                       | null       | null         | null         | null        | null        | null |
+|     |              |                                | 2025-04-12 18:52:29.424000 UTC | null        | 22450      | null        | null       | null                       | null       | null         | null         | null        | null        | null |
+| 4   | 0C218D       | 2025-04-12 17:53:55.736000 UTC | 2025-04-12 18:53:55.736000 UTC | null        | 24075      | null        | null       | POINT(-117.62092 33.1485)  | null       | null         | 0            | null        | 0           | 0    |
+|     |              |                                | 2025-04-12 18:54:03.511000 UTC | null        | null       | 442         | 109        | null                       | 1344       | null         | null         | null        | null        | 0    |
+| 5   | 0D0D92       | 2025-04-12 17:52:53.787000 UTC | 2025-04-12 18:52:53.787000 UTC | null        | null       | 329         | 279        | null                       | 0          | null         | null         | null        | null        | 0    |
+|     |              |                                | 2025-04-12 18:53:22.777000 UTC | null        | 13950      | null        | null       | POINT(-117.36661 33.23584) | null       | null         | 0            | null        | 0           | 0    |
+|     |              |                                | 2025-04-12 18:53:38.772000 UTC | null        | null       | 330         | 281        | null                       | 0          | null         | null         | null        | null        | 0    |
+|     |              |                                | 2025-04-12 18:53:45.170000 UTC | null        | 13950      | null        | null       | null                       | null       | null         | null         | null        | null        | null |
+|     |              |                                | 2025-04-12 18:53:49.552000 UTC | null        | null       | 330         | 281        | null                       | 0          | null         | null         | null        | null        | 0    |
 
-----
-Initial request
 
-Now visit streaming data via Pub/Sub and Dataflow. Explore the data (that has been written to a sink in GCS) and write a pipeline to properly parse the data and store it in BigQuery. Ensure that the data is valid.
 
-----
 
 ## Task 5
+
 
 In this task, you will be responsible for loading data from an external website into a Cloud SQL instance. This data will then be synchronized with BigQuery, enabling you to join it with the existing ADS-B data for comprehensive analysis. The primary goal is to integrate aircraft metadata from the OpenSky Network with the real-time flight data you've been working with.
 
@@ -261,6 +295,8 @@ By carefully provisioning your Cloud SQL instance, you'll lay the groundwork for
 Download data from this [site](https://opensky-network.org/datasets/#metadata/), pick one of the files, preferrably last months one, and import it into a PostGreSQL Cloud SQL instance 
 The data use Citation is [here](https://opensky-network.org/data/aircraft), make sure you add it to your Dashboard.
 
+
+
 ### Step 3
 
 Import the downloaded data into the Cloud SQL instance. This step requires careful consideration of the data schema to ensure that the columns are parsed correctly. The data from the OpenSky Network is provided in a CSV format, which is relatively straightforward to import into a relational database like PostgreSQL. However, you will need to define the table schema in PostgreSQL to match the structure of the CSV data.
@@ -299,12 +335,42 @@ Here's a breakdown of the steps and considerations:
 By setting up Datastream, you'll establish a robust and efficient pipeline for synchronizing your aircraft metadata with BigQuery, enabling powerful data analysis and visualization capabilities.
 
 
-----
+## Step 5
+
+Validate that the data is loaded into Bigquery. You can run this query to check the data has been loaded. 
+
+```sql
+WITH
+  t1 AS (
+  SELECT
+    LOWER(icao24) AS icao24,
+    manufacturericao,
+    MODEL
+  FROM
+    public.aircraft_metadata ),
+  t2 AS (
+  SELECT
+    DISTINCT LOWER(Hex) AS icao24
+  FROM
+    flight_data.test_3 )
+SELECT
+  manufacturericao,
+  MODEL,
+  COUNT(*) AS planes
+FROM
+  t1
+JOIN
+  t2
+USING
+  (icao24)
+GROUP BY
+  ALL
+ORDER BY
+  planes desc
+```
+<!----
 Initial request
 
 Implement CDC on the transactional data using a product such as Datastream. Incorporate this into your DE workload
 
-
-
-
-----
+---->
