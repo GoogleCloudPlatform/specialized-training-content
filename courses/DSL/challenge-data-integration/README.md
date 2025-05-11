@@ -10,7 +10,7 @@ Our mission is to revolutionize the way flight tracking data is utilized, empowe
 
 The flight data is collected through a network of ADS-B receivers, arbitrarily distributed and linked to compact, remote edge computing platforms. These platforms are designed for efficient data processing at the source. Each receiver within the network plays a crucial role in capturing real-time data from aircraft within its coverage area.
 
-Due to the dynamic nature of air traffic, the volume of data generated can be substantial. In densely populated airspace, the system can handle an influx of over 2000 messages per second, originating from more than 100 aircraft. To manage this high-velocity data stream, the messages are published to a Pub/Sub topic. This approach ensures that the data is readily available for consumption by various applications and services. Additionally, the data is backed up to a Google Cloud Storage bucket, providing a durable and reliable storage solution for long-term retention and analysis. A sample service is available here to visualize the real-time data.
+Due to the dynamic nature of air traffic, the volume of data generated can be substantial. In densely populated airspace, the system can handle an influx of over 2,000 messages per second, originating from more than 100 aircraft. To manage this high-velocity data stream, the messages are published to a Pub/Sub topic. This approach ensures that the data is readily available for consumption by various applications and services. Additionally, the data is backed up to a Google Cloud Storage bucket, providing a durable and reliable storage solution for long-term retention and analysis. A sample service is available here to visualize the real-time data.
 
 The rough architecture of the system is shown below, with the existing infrastructure on the left and the challenges for you as the Visualization Analyst on the right.
 
@@ -28,7 +28,7 @@ The critical challenges from a data engineering perspective, beyond the potentia
 
 If data is going to be aggregated for each session the aircraft is seen, then a session window will be required. Tumbling (fixed time) windows and hopping (sliding windows) will not aggregate the data correctly. A session window should be chosen that accurately reflects the validity of the data. If the window is too short, then an aircraft's session may be closed if it enters a "shadow," which is a portion of the airspace that is untracked due to ground obstructions. This frequently happens when there is a building between the logger and the aircraft, usually close to landing/takeoff areas for aircraft near the maximum range of the loggers. If the session is too long, it may join a previous flight with a current flight. This means the session should be shorter than the fastest turnaround of a commercial airliner, which is around 45 minutes. Another consideration is that the session is not emitted until after the final data is received, so the longer the session, the longer it will take for the data to be available for analysis.
 
-Another challenge is that as the F-ATC logger network expands, data from each aircraft may be received more than once. This is preferable as it eliminates the shadows and gives better detail over a wider area. For each message:
+Another challenge is that as the F-ATC logger network expands, data from each aircraft may be received more than once. This is preferable as it eliminates the shadows and gives better detail over a wider area. 
 
 Below is a snapshot of the airspace over London Heathrow showing overflights (flights at high altitude just passing over), aircraft in holding (center left of the image, aircraft waiting to be brought into approach), aircraft on final (below center left), and aircraft taking off (center).
 
@@ -98,14 +98,14 @@ The files in Cloud Storage are updated fairly frequently (every 10 minutes or ev
 Set up an [event sync](https://cloud.google.com/storage-transfer/docs/event-driven-transfers) to replicate data from the source bucket into a bucket in your project. The change data is currently published to this topic `projects/paul-leroy/topics/flightdata-gcs-eventstream`, which you can subscribe to in your project. You will also need to check that the data transfer service API is enabled and that the data transfer service account has consume access on Pub/Sub, Bucket Viewer and Object Admin roles on your bucket. BigQuery DTS requires that the data source and BigQuery Dataset are in the same region so be cognizant of this as BigQuery will be unable to load data from other regions outside the dataset region. A daily sync is also acceptable, you can use the following template to decide on mechanisms:
 
 1. How much data needs to be moved? (about 5 GB per day)
-1. How fast is the data moving? (roughyl 3MB per minute)
-1. How frequently is the data reported on (at this stage once per day, which is the deciding criterion)
+1. How fast is the data moving? (roughly 3MB per minute)
+1. How frequently is the data reported on? (at this stage once per day, which is the deciding criterion)
 
 ### Step 2
 
 Set up the table so that it is visible in BigQuery. This can use either [DTS](https://cloud.google.com/bigquery/docs/dts-introduction) to schedule the data loads or use [object tables](https://cloud.google.com/bigquery/docs/biglake-intro).
 
-The table may look like the below sample
+The table may look like the sample below.
 
 | MT  | TT | SID | AID | Hex    | FID | DMG         | TMG      | DML         | TML      | CS     | Alt  | GS   | Trk  | Lat  | Lng  | VR   | Sq   | Alrt | Emer | SPI | Gnd |
 |-----|----|-----|-----|--------|-----|-------------|----------|-------------|----------|--------|------|------|------|------|------|------|------|------|------|-----|-----|
@@ -122,10 +122,9 @@ The table may look like the below sample
 
 ### Step 3
 
-Clean the data using SQL. The dates are especially messy. `CAST`ing and `SAFE_CAST`ing are useful here. You'll need to work with [date functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions) to clean the dates. You can create this as a [view](https://cloud.google.com/bigquery/docs/views) or a [materialized view](https://cloud.google.com/bigquery/docs/materialized-views-intro). You should also be able to de-dupilicate the data that may be received from multiple loggers.
+Clean the data using SQL. The dates are especially messy. `CAST`ing and `SAFE_CAST`ing are useful here. You'll need to work with [date functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions) to clean the dates. You can create this as a [view](https://cloud.google.com/bigquery/docs/views) or a [materialized view](https://cloud.google.com/bigquery/docs/materialized-views-intro). You should also be able to de-duplicate the data that may be received from multiple loggers.
 
-!!! Warning
-    At this stage you may encounter the first big issue with trusting the incoming data, it may be dirty. if your queries fail with an error to say the there is a column mis-match, delete the offending file from the bucket. You'll fix that later with dataflow.
+Warning! At this stage you may encounter the first big issue with trusting the incoming data, it may be dirty. If your queries fail with an error that says there is a column mismatch, delete the offending file from the bucket. You'll fix that later with Dataflow.
 
 
 | Row | MT  | TT | SID | AID | Hex    | FID | MG                  |  CS     | Alt  | GS   | Trk  | Geom | VR   | Sq   | Alrt | Emer | SPI | Gnd |
@@ -143,7 +142,7 @@ Clean the data using SQL. The dates are especially messy. `CAST`ing and `SAFE_CA
 
 ### Step 4
 
-You'll need to remove the duplicate rows from the overlapping receivers. Keep in mind that the generation date/time and data will be the same, but the logged date/time will vary based on the logger receiving. The granularity of this time is not accurate enough to triangulate the planes, though, so it is your choice on what to do with the logging date/time. The `AID`, `FID` and `SID` fields have been misconfigured on the remote devices and don't provide any relevant data or insight at this stage and can be dropped.
+You'll need to remove the duplicate rows from the overlapping receivers. Keep in mind that the generation date/time and data will be the same, but the logged date/time will vary based on the logger receiving. The granularity of this time is not accurate enough to triangulate the planes, though, so it is your choice on what to do with the logging date/time. The `AID`, `FID`, and `SID` fields have been misconfigured on the remote devices and don't provide any relevant data or insight at this stage and can be dropped.
 
 | Row | MT  | TT |  Hex    | MG                  |  CS     | Alt  | GS   | Trk  | Geom | VR   | Sq   | Alrt | Emer | SPI | Gnd |
 |-----|-----|----|---------|---------------------|---------|------|------|------|------|------|------|------|------|-----|-----|
@@ -176,7 +175,7 @@ Write a Dataflow job that loads the data into BigQuery from Cloud Storage. Using
 
 ### Step 2
 
-The data should be validated against a regex to make sure that the structure conforms to your required input. This will also fix the scenario that dirty data is written into Cloud Storage, breaking the view of data in BigQuery. Dates and times can be consolidated into a single field, which you can now use to partition the data. Blank fields in the `CSV` should be converted into null values. You can also use Geography data types for the `Latitude` and `Longitude` data
+The data should be validated against a regex to make sure that the structure conforms to your required input. This will also fix the scenario that dirty data is written into Cloud Storage, breaking the view of data in BigQuery. Dates and times can be consolidated into a single field, which you can now use to partition the data. Blank fields in the `CSV` should be converted into null values. You can also use Geography data types for the `Latitude` and `Longitude` data.
 
 ### Step 3
 
@@ -201,7 +200,7 @@ The batch process should now be able to be triggered daily to move yesterday's d
 
 ### Step 1
 
-Create a [dataflow template](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) or [dataflow flex templates](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates#python) from your pipeline so that it can be parameterised and called periodically, either from [Cloud Composer](https://cloud.google.com/composer/docs/composer-3/composer-overview) or [Cloud Scheduler](https://cloud.google.com/scheduler/docs). Your choice here may have an impact of scaling this in future (but not as part of this challenge), so for this project it may be cost effective to use scheduler, in production composer would allow multiple pipelines to be managed and scale across multiple teams. A quickstart can be found [here](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates) for building out the template.
+Create a [dataflow template](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) or [dataflow flex template](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates#python) from your pipeline so that it can be parameterized and called periodically, either from [Cloud Composer](https://cloud.google.com/composer/docs/composer-3/composer-overview) or [Cloud Scheduler](https://cloud.google.com/scheduler/docs). Your choice here may have an impact of scaling this in the future (but not as part of this challenge), so for this project it may be cost effective to use Cloud Scheduler. In production, Cloud Composer would allow multiple pipelines to be managed and scale across multiple teams. A quickstart can be found [here](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates) for building out the template.
 
 
 ## Task 4
@@ -265,11 +264,11 @@ In this task, you will be responsible for loading data from an external website 
 
 Your first step is to set up a Cloud SQL PostgreSQL instance. This instance will serve as the initial repository for the aircraft metadata you'll be downloading.
 
-**Instance Configuration:**
+**Instance configuration:**
 
-*   **Region Selection:** Choose a region that aligns with your project's requirements. Consider factors like proximity to other resources and data residency needs.
-*   **Instance Type:** For this task, a sandbox instance is sufficient. You don't need a high-performance or production-grade instance. A small, cost-effective instance will suffice.
-*   **Database Version:** Select a supported PostgreSQL version. Ensure it's compatible with any tools or libraries you plan to use.
+*   **Region selection:** Choose a region that aligns with your project's requirements. Consider factors such as proximity to other resources and data residency needs.
+*   **Instance type:** For this task, a sandbox instance is sufficient. You don't need a high-performance or production-grade instance. A small, cost-effective instance will suffice.
+*   **Database version:** Select a supported PostgreSQL version. Ensure it's compatible with any tools or libraries you plan to use.
 *   **Storage:** Allocate enough storage for the aircraft metadata. Since this is a sandbox instance, you can start with a minimal amount and scale up if needed.
 *   **Connectivity:** Configure the instance for appropriate network access. You might need to allow connections from your local machine or other Google Cloud services.
 *   **Security:** Set up strong credentials for the database user. Follow best practices for password management.
@@ -292,8 +291,8 @@ By carefully provisioning your Cloud SQL instance, you'll lay the groundwork for
 
 ### Step 2 
 
-Download data from this [site](https://opensky-network.org/datasets/#metadata/), pick one of the files, preferrably last months one, and import it into a PostGreSQL Cloud SQL instance 
-The data use Citation is [here](https://opensky-network.org/data/aircraft), make sure you add it to your Dashboard.
+Download data from this [site](https://opensky-network.org/datasets/#metadata/), pick one of the files, preferrably last months one, and import it into a PostgreSQL Cloud SQL instance. 
+The data use citation is [here](https://opensky-network.org/data/aircraft), make sure you add it to your dashboard.
 
 
 
@@ -303,11 +302,11 @@ Import the downloaded data into the Cloud SQL instance. This step requires caref
 
 Here are some key considerations for this step:
 
-1.  **Schema Definition**: Before importing, define the table schema in your PostgreSQL instance. This includes specifying the column names, data types (e.g., TEXT, INTEGER, REAL, TIMESTAMP), and any constraints (e.g., NOT NULL, PRIMARY KEY). The schema should accurately reflect the structure of the OpenSky Network data.
-2.  **Data Type Mapping**: Ensure that the data types in your PostgreSQL schema are compatible with the data types in the CSV file. For example, numeric values should be mapped to INTEGER or REAL, and date/time values should be mapped to TIMESTAMP.
-3.  **CSV Import**: Use PostgreSQL's `COPY` command or a graphical tool like pgAdmin to import the CSV data into the defined table. The `COPY` command is efficient for large datasets and allows you to specify delimiters, null values, and other formatting options.
-4.  **Data Validation**: After importing, perform data validation to ensure that the data has been imported correctly. This can involve running SQL queries to check for data integrity, completeness, and accuracy.
-5.  **Error Handling**: Be prepared to handle potential errors during the import process. This might include data type mismatches, constraint violations, or formatting issues. You may need to clean or transform the data before importing it.
+1.  **Schema definition**: Before importing, define the table schema in your PostgreSQL instance. This includes specifying the column names, data types (e.g., TEXT, INTEGER, REAL, TIMESTAMP), and any constraints (e.g., NOT NULL, PRIMARY KEY). The schema should accurately reflect the structure of the OpenSky Network data.
+2.  **Data type mapping**: Ensure that the data types in your PostgreSQL schema are compatible with the data types in the CSV file. For example, numeric values should be mapped to INTEGER or REAL, and date/time values should be mapped to TIMESTAMP.
+3.  **CSV import**: Use PostgreSQL's `COPY` command or a graphical tool like pgAdmin to import the CSV data into the defined table. The `COPY` command is efficient for large datasets and allows you to specify delimiters, null values, and other formatting options.
+4.  **Data validation**: After importing, perform data validation to ensure that the data has been imported correctly. This can involve running SQL queries to check for data integrity, completeness, and accuracy.
+5.  **Error handling**: Be prepared to handle potential errors during the import process. This might include data type mismatches, constraint violations, or formatting issues. You may need to clean or transform the data before importing it.
 6.  **Indexing**: Consider adding indexes to columns that will be frequently used in queries. This can significantly improve query performance, especially for large datasets.
 7. **Citation**: Make sure you add the citation to your dashboard as per the instructions.
 
@@ -325,19 +324,19 @@ Datastream will act as the bridge between your Cloud SQL instance and BigQuery. 
 
 Here's a breakdown of the steps and considerations:
 
-1.  **Datastream Configuration**: In the Google Cloud Console, navigate to Datastream and create a new stream. You'll need to configure the source connection (your Cloud SQL instance) and the destination connection (BigQuery).
-2.  **Source Connection**: Provide the necessary credentials and connection details for your Cloud SQL instance. Datastream will use these to connect to the database and capture changes.
-3.  **Destination Connection**: Specify the BigQuery dataset where you want the data to be replicated. Datastream will create tables in this dataset that mirror the structure of your PostgreSQL tables.
-4.  **Table Selection**: Choose the specific table(s) in your PostgreSQL instance that you want to replicate. You can replicate entire tables or select specific columns.
-5.  **Data Replication**: Once configured, Datastream will start replicating data from your Cloud SQL instance to BigQuery. It will capture both initial data and ongoing changes (inserts, updates, deletes).
-6.  **Data Synchronization**: Datastream ensures that the data in BigQuery is kept in sync with the data in Cloud SQL. This is done through a process called Change Data Capture (CDC), which captures and replicates changes in real-time.
+1.  **Datastream configuration**: In the Google Cloud console, navigate to Datastream and create a new stream. You'll need to configure the source connection (your Cloud SQL instance) and the destination connection (BigQuery).
+2.  **Source connection**: Provide the necessary credentials and connection details for your Cloud SQL instance. Datastream will use these to connect to the database and capture changes.
+3.  **Destination connection**: Specify the BigQuery dataset where you want the data to be replicated. Datastream will create tables in this dataset that mirror the structure of your PostgreSQL tables.
+4.  **Table selection**: Choose the specific table(s) in your PostgreSQL instance that you want to replicate. You can replicate entire tables or select specific columns.
+5.  **Data replication**: Once configured, Datastream will start replicating data from your Cloud SQL instance to BigQuery. It will capture both initial data and ongoing changes (inserts, updates, deletes).
+6.  **Data synchronization**: Datastream ensures that the data in BigQuery is kept in sync with the data in Cloud SQL. This is done through a process called Change Data Capture (CDC), which captures and replicates changes in real-time.
 
 By setting up Datastream, you'll establish a robust and efficient pipeline for synchronizing your aircraft metadata with BigQuery, enabling powerful data analysis and visualization capabilities.
 
 
 ## Step 5
 
-Validate that the data is loaded into Bigquery. You can run this query to check the data has been loaded. 
+Validate that the data is loaded into BigQuery. You can run this query to check the data has been loaded. 
 
 ```sql
 WITH
@@ -371,6 +370,6 @@ ORDER BY
 <!----
 Initial request
 
-Implement CDC on the transactional data using a product such as Datastream. Incorporate this into your DE workload
+Implement CDC on the transactional data using a product such as Datastream. Incorporate this into your DE workload.
 
 ---->
