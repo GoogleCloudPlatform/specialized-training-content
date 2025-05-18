@@ -58,12 +58,10 @@ The rough architecture of the system is shown below with the existing infrastruc
 
 Explore datasets and look for problems. Based on the way that data is collected there are two message formats the aircraft sends after the data is generated, the first sends multiple messages over the air, the other sends one message which is decoded into multiple messages on the receiver. Both formats the same structure in BigQuery, Cloud Storage and PubSub but the main issue is that each message maybe only have some of the data. You will need to query the raw data from cloud storage, the messages from the subscription and the bigquery table. 
 
-- **Coverage Gaps & Intermittency**: Ground-based ADS-B, a primary source, is limited by line-of-sight, leading to coverage gaps over oceans, mountainous terrain, or at low altitudes. MLAT systems require signals to be received by multiple ground stations, making their coverage dependent on receiver density. Even satellite-based ADS-B coverage can be dynamic and not consistently available. Volunteer-based networks, like parts of OpenSky Network, can experience intermittent receiver availability or performance issues.
-Positional Inaccuracies: Aircraft transponders can occasionally transmit random or incorrect positional data, leading to "ghost" tracks or erratic flight paths. For some older aircraft, positional data calibrated on the ground can drift during a long flight, resulting in apparent deviations, such as landing outside the runway.9 MLAT position calculations, while generally accurate, can sometimes produce errors in speed or altitude, especially if signal quality is poor.9 OpenSky Network also acknowledges that some aircraft transmit false or erroneous position reports.
-- **Latency and Timeliness**: While the goal is real-time tracking, delays can be introduced at various points: data transmission from remote receivers, network latency, and processing time within the aggregation systems. For instance, some data sources integrated by Flightradar24, such as certain FAA feeds, can have inherent delays of up to five minutes. Timeliness, or temporal accuracy, is recognized as a critical data quality dimension by aviation authorities like ICAO.
-- **Missing or Incomplete Fields**: Not all data sources provide a complete set of flight parameters. For example, FLARM systems, often used by gliders, may not always transmit altitude information.3 Furthermore, aircraft metadata databases, which link transponder signals to specific aircraft details (like type, registration, or operator), may contain missing or outdated information.11
-- **Transponder and Data Source Anomalies**: Aircraft may broadcast incorrect transponder codes (e.g., default codes like "000000" or "123456"), leading to misidentification or the appearance of multiple aircraft where only one exists.9 Errors in other integrated data sources, such as radar feeds, can also introduce anomalies, like displaying an aircraft flying in the opposite direction of its actual travel.9 ADS-B signals themselves are susceptible to low Signal-to-Noise Ratios (SNR) and interference, which can result in bit errors during decoding.
-Data Integrity Issues: Beyond simple inaccuracies, the corruption of critical aeronautical data, such as the precise coordinates of navigation aids or runway thresholds, can pose severe risks to flight safety. ICAO guidelines emphasize the importance of data integrity levels (critical, essential, routine) based on the potential risk of using corrupted data.
+- **Coverage Gaps & Intermittency**: Ground-based ADS-B has line-of-sight limitations, causing coverage gaps over oceans, mountains, and at low altitudes. It may be useful to write a SQL query to test the largest gaps between the timestamps of the generated data.
+
+- **Missing or Incomplete Fields**: Some aircraft don't transmit all the data. Write a query to analyze the volume of missing data per aircraft. 
+- **Transponder and Data Source Anomalies**: Aircraft may broadcast incorrect transponder codes (e.g., default codes like "000000" or "123456"), leading to misidentification or the appearance of multiple aircraft where only one exists.
 
 Since the current data streams are only ADS-B you can expect those to be the core data quality issues to consider.
 
@@ -159,8 +157,7 @@ Some of the issues arising are happening with incoming streaming data. Implement
 
 You are interested in only commercial airlines, change the rules to remove any flights above 43,100ft. The upstream team are amending the data structure requirements to have the `TMG` and `DMG` field concateneated into a `DATETIME` field and drop the `DML` and `TML` fields. Update your dataflow pipeline that is republishing the pubsub messages, the schema and quality controls.
 
-<!---
-Original ask
-You have been informed about upstream changes to incoming data from applications, including schema changes and business logic changes to permissible values. Update your data quality workflow across the different tools being used to incorporate these changes.--->
-
-
+Aircraft Data Sourced from:
+> Matthias Schäfer, Martin Strohmeier, Vincent Lenders, Ivan Martinovic, and Matthias Wilhelm.
+> "Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research".
+> In Proceedings of the 13th IEEE/ACM International Symposium on Information Processing in Sensor Networks (IPSN), pages 83-94, April 2014.
