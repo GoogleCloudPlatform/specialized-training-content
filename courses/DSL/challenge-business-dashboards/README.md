@@ -254,6 +254,8 @@ The business team who owns the dashboard has asked for you to add in additional 
 The business team would like a tool tip showing the aircraft data from the following endpoint.
 You can call the following enmdpoint and get more details on the aircraft <https://api.planespotters.net/pub/photos/hex/AA9300>. Have a look at this link <https://lookerstudio.google.com/reporting/1zOZ2aPL8HYl4JIhjsMQKvj5BSWwcKRdv/page/EQxK>
 
+The application team has exposed an API that returns an image of the aircraft based on the ICAO number here <https://aircraftimage-707366556769.us-central1.run.app/>
+
 ![Architecture](images/lookerstudio_04.png)
 
 Aircraft Data Sourced from:
