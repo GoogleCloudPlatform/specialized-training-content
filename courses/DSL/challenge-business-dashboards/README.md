@@ -19,7 +19,7 @@ The rough architecture of the system is shown below with the existing infrastruc
  
 ## Setup:
 
-Create database server on Cloud SQL
+Create database server on Cloud SQL.
 
 ```bash
 gcloud services enable sqladmin.googleapis.com
@@ -50,7 +50,7 @@ echo $CLOUD_SQL_SA
 cloud-sql-proxy --address 0.0.0.0 --port 5432 $CONNECTION_ID
 ```
 
-Open a second tab
+Open a second tab.
 
 ```bash
 psql -h 127.0.0.1  --username=postgres flightdata
@@ -140,7 +140,7 @@ gcloud sql import csv business-dashboard gs://$PROJECT_ID-flightdata-bucket/airc
 delete from aircraft_data where icao24='icao24' or icao24=''
 ```
 
-Connect Lookerstudio
+Connect Looker Studio.
 
 ```bash
 gcloud sql instances patch business-dashboard --authorized-networks=142.251.74.0/23 -q
@@ -180,29 +180,29 @@ USING
   (icao24)
 ```
 
-## Task 1 Investigate the data, query performance and connnect Cloud SQL to BigQuery
+## Task 1. Investigate the data, query performance, and connnect Cloud SQL to BigQuery
 Understand data across different sources and set up a connection between Cloud SQL/Spanner and BigQuery. Explore Looker Studio dashboard to identify why there are issues with the results and issues with the performance.
 
-The critical issue is that the database server is too small to run the full table scans required for the queries and this is also impacting the day to day operations of the company. Your first task will be to connect Bigquery to the database to reduce the load on the operational database. 
+The critical issue is that the database server is too small to run the full table scans required for the queries and this is also impacting the day to day operations of the company. Your first task will be to connect BigQuery to the database to reduce the load on the operational database. 
 
 ### Create a connection from BigQuery to Cloud SQl
 
 You have recently reviewed this site <https://cloud.google.com/bigquery/docs/cloud-sql-federated-queries> to enable the reading of data directly from your operational database into BigQuery.
 
-This first tstep in these journey will be to reduce join load. If you use federated queries it is a squential scan of the data that is sent to BigQuery. Bigquery can then run the join for you reducing the computational load on the operational database.
+This first step in this journey will be to reduce join load. If you use federated queries, it is a sequential scan of the data that is sent to BigQuery. BigQuery can then run the join for you, reducing the computational load on the operational database.
 
-Keep in mind that you are only working with a single day's worth of data and the query is really slow already. If you move to 30 days or longer then the queries will be too slow. 
+Keep in mind that you are only working with a single day's worth of data and the query is really slow already. If you move to 30 days or longer, then the queries will be too slow. 
 
-## Task 2 Move the larger of the two datasets into BigQuery using a scheduled query
+## Task 2. Move the larger of the two datasets into BigQuery using a scheduled query
 <!---Create a new table (or tables) with appropriate schema to optimize query performance. Leverage repeated and nested fields where appropriate.  Create a scheduled query to repopulate this new table once per day.--->
 
-You need to move some fo the data into BigQuery so that the actual query does not put load on the Operational Data Source (ODS). You have elected to move the ADS-B data (ther larger of the two datsets) into BigQuery.
+Move some of the data into BigQuery so that the actual query does not put load on the Operational Data Source (ODS). You have elected to move the ADS-B data (the larger of the two datasets) into BigQuery.
 
 Some tables could stay in Cloud SQL as they may be updated by the operational systems and as long as the data is not too large, it should be feasible to join a small table from Cloud SQL to the larger data in BigQuery.
 
-Create a scheduled query for the aircraft adsb data to bring that into BigQuery. The aircraft details can safely be left in Cloud SQL as it is small enough and if you assume it may be updated very frequently then it would not be a good candidate to keep in BigQuery (assume this for thhis scenario, in production the aircraft database wouldonly be updated when new aircraft are produced which is not a very high velocity dataset).
+Create a scheduled query for the aircraft adsb data to bring that into BigQuery. The aircraft details can safely be left in Cloud SQL as it is small enough and if you assume it may be updated very frequently, then it would not be a good candidate to keep in BigQuery (assume this for this scenario, in production the aircraft database would only be updated when new aircraft are produced which is not a very high velocity dataset).
 
-One of the items just to be aware of as you build out the dashboarding infrastrcuture is that federated data sources like Cloud SQL must be in the same region or in the same multi-regional area as the BigQuery execution engine. You cannot have Cloud SQL in `europe-west1` and BigQuery in `US`. This become much more important when you start joining data between native and federated data sources.
+One of the items to be aware of as you build out the dashboarding infrastrcuture is that federated data sources like Cloud SQL must be in the same region or in the same multi-regional area as the BigQuery execution engine. You cannot have Cloud SQL in `europe-west1` and BigQuery in `US`. This becomes much more important when you start joining data between native and federated data sources.
 
 You will also need to start with an initial load and then load the remaining data with a high water mark.
 
@@ -224,43 +224,39 @@ FROM
   adsb_details;
 ```
 
-## Task 3 Build a Looker Studio Dashboard with Data from BigQuery and Cloud SQL
-
-Update the Looker Studio dashboard to incorporate the new table(s) and fix identified issues with queries. 
+## Task 3. Update the Looker Studio dashboard to incorporate the new table(s) and fix identified issues with queries 
 
 ![Architecture](images/lookerstudio_01.png)
 
-You'll need to write a custom query joining the ADS-B data in BigQuery database with the aircraft data from the operational database. Create a report with the minimum and maximum altitude for each flight. Your dashboard should also be able to show which flights, manufacturers and operators are flying. you can join the ODS data (`manufacturericao`, `model`,`owner`) with the `generated` and `altitude_feet` data from BigQuery using the lowercased `icao24` field.
+Write a custom query joining the ADS-B data in BigQuery database with the aircraft data from the operational database. Create a report with the minimum and maximum altitude for each flight. Your dashboard should also be able to show which flights, manufacturers, and operators are flying. You can join the ODS data (`manufacturericao`, `model`,`owner`) with the `generated` and `altitude_feet` data from BigQuery using the lowercased `icao24` field.
 
 ![Architecture](images/lookerstudio_02.png)
 
 
-You'll need to add a calulated field to have the count of the `icao24` records to break down how many aircraft are seen as the record count will be inaccurate (it will show total records which will be much higher than the actual aircraft.) You will see data quality issues here, but this is part of the challenge data quality challenge to solve, you are just presenting the data.
+Add a calulated field to have the count of the `icao24` records to break down how many aircraft are seen as the record count will be inaccurate (it will show total records which will be much higher than the actual aircraft.) You will see data quality issues here, but this is part of the data quality challenge to solve, you are just presenting the data.
 
 ## Task 4 Optimize Query Performance with Materialized Views and BI Engine
 
-Performance is still slower than it should be. Create materialized views to improve the performance of your queries. Set up BI Engine and use it to further improve performance. You can also remove altitudes larger than 43000 feet and less than 0 feet. You may also drop any records that don't have location and altitude data. 
-
-![Architecture](images/lookerstudio_06.png)
+Performance is still slower than it should be. Create materialized views to improve the performance of your queries. Set up BI Engine and use it to further improve performance. You can also remove altitudes larger than 43,000 feet and less than 0 feet. You may also drop any records that don't have location and altitude data. 
 
 Enable the BI engine and target the tables used in the query to accelerate the reponse times.
 
-Rebuild the looker query to use the materialized view and the federated data. You can aggregate the data for each flight into a single row by nesting the geometry data into a line.
+Rebuild the Looker query to use the materialized view and the federated data. You can aggregate the data for each flight into a single row by nesting the geometry data into a line.
 
 ![Architecture](images/lookerstudio_03.png)
 
 ## Task 5 Enhance the Dashboard with Additional Metrics and Visualizations
 
-The business team who owns the dashboard has asked for you to add in additional metrics and visualizations to the dashboard. Revisit your work from the previous tasks to integrate these new asks into the dashboard.
+The business team who owns the dashboard has asked for you to add in additional metrics and visualizations to the dashboard. Revisit your work from the previous tasks to integrate these new tasks into the dashboard.
 
 The business team would like a tool tip showing the aircraft data from the following endpoint.
-You can call the following enmdpoint and get more details on the aircraft <https://api.planespotters.net/pub/photos/hex/AA9300>. Have a look at this link <https://lookerstudio.google.com/reporting/1zOZ2aPL8HYl4JIhjsMQKvj5BSWwcKRdv/page/EQxK>
+You can call the following endpoint and get more details on the aircraft <https://api.planespotters.net/pub/photos/hex/AA9300>. Have a look at this link <https://lookerstudio.google.com/reporting/1zOZ2aPL8HYl4JIhjsMQKvj5BSWwcKRdv/page/EQxK>
 
 The application team has exposed an API that returns an image of the aircraft based on the ICAO number here <https://aircraftimage-707366556769.us-central1.run.app/0101DB>
 
 ![Architecture](images/lookerstudio_04.png)
 
-Aircraft Data Sourced from:
+Aircraft data sourced from:
 > Matthias Schäfer, Martin Strohmeier, Vincent Lenders, Ivan Martinovic, and Matthias Wilhelm.
 > "Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research".
 > In Proceedings of the 13th IEEE/ACM International Symposium on Information Processing in Sensor Networks (IPSN), pages 83-94, April 2014.
