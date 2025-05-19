@@ -224,7 +224,7 @@ FROM
   adsb_details;
 ```
 
-## Task 3
+## Task 3 Build a Looker Studio Dashboard with Data from BigQuery and Cloud SQL
 
 Update the Looker Studio dashboard to incorporate the new table(s) and fix identified issues with queries. 
 
@@ -237,9 +237,11 @@ You'll need to write a custom query joining the ADS-B data in BigQuery database 
 
 You'll need to add a calulated field to have the count of the `icao24` records to break down how many aircraft are seen as the record count will be inaccurate (it will show total records which will be much higher than the actual aircraft.) You will see data quality issues here, but this is part of the challenge data quality challenge to solve, you are just presenting the data.
 
-## Task 4
+## Task 4 Optimize Query Performance with Materialized Views and BI Engine
 
 Performance is still slower than it should be. Create materialized views to improve the performance of your queries. Set up BI Engine and use it to further improve performance. You can also remove altitudes larger than 43000 feet and less than 0 feet. You may also drop any records that don't have location and altitude data. 
+
+![Architecture](images/lookerstudio_06.png)
 
 Enable the BI engine and target the tables used in the query to accelerate the reponse times.
 
@@ -247,14 +249,14 @@ Rebuild the looker query to use the materialized view and the federated data. Yo
 
 ![Architecture](images/lookerstudio_03.png)
 
-## Task 5
+## Task 5 Enhance the Dashboard with Additional Metrics and Visualizations
 
 The business team who owns the dashboard has asked for you to add in additional metrics and visualizations to the dashboard. Revisit your work from the previous tasks to integrate these new asks into the dashboard.
 
 The business team would like a tool tip showing the aircraft data from the following endpoint.
 You can call the following enmdpoint and get more details on the aircraft <https://api.planespotters.net/pub/photos/hex/AA9300>. Have a look at this link <https://lookerstudio.google.com/reporting/1zOZ2aPL8HYl4JIhjsMQKvj5BSWwcKRdv/page/EQxK>
 
-The application team has exposed an API that returns an image of the aircraft based on the ICAO number here <https://aircraftimage-707366556769.us-central1.run.app/>
+The application team has exposed an API that returns an image of the aircraft based on the ICAO number here <https://aircraftimage-707366556769.us-central1.run.app/0101DB>
 
 ![Architecture](images/lookerstudio_04.png)
 
