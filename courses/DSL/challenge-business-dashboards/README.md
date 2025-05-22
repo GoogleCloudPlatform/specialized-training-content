@@ -22,38 +22,58 @@ The rough architecture of the system is shown below with the existing infrastruc
 Create database server on Cloud SQL.
 
 ```bash
+# Enable the Cloud SQL Admin API.
 gcloud services enable sqladmin.googleapis.com
 
+# Create a Cloud SQL PostgreSQL instance named 'business-dashboard'.
+# Set the machine type to db-g1-small, database version to POSTGRES_16,
+# and specify the region using the REGION environment variable.
+# Use the ENTERPRISE edition and set a root password.
+# Enable IAM database authentication.
 gcloud sql instances create business-dashboard \
-    --tier=db-g1-small \
-    --database-version=POSTGRES_16 \
-    --region=$REGION \
-    --edition=ENTERPRISE \
-    --root-password=MyDBPassword \
-    --database-flags=cloudsql.iam_authentication=on
+  --tier=db-g1-small \
+  --database-version=POSTGRES_16 \
+  --region="${REGION}" \
+  --edition=ENTERPRISE \
+  --root-password=MyDBPassword \
+  --database-flags=cloudsql.iam_authentication=on
 
-
+# Create a database named 'flightdata' within the 'business-dashboard' instance.
 gcloud sql databases create flightdata \
---instance=business-dashboard
+  --instance=business-dashboard
 
+# Get the service account email address for the Cloud SQL instance.
+# This service account is used for IAM authentication.
+CLOUD_SQL_SA=$(gcloud sql instances describe business-dashboard \
+  --project="$(gcloud config get-value project)" \
+  --format='value(serviceAccountEmailAddress)')
 
+# Create a Cloud IAM service account user for the Cloud SQL instance.
+# The username is derived from the service account email.
+gcloud sql users create "${CLOUD_SQL_SA%.gserviceaccount.com}" \
+  --instance=business-dashboard \
+  --type=cloud_iam_service_account
 
-CLOUD_SQL_SA=$(gcloud sql instances describe business-dashboard --project=$(gcloud config get-value project) --format='value(serviceAccountEmailAddress)')
+# Get the connection name for the Cloud SQL instance.
+# This is used by the Cloud SQL Proxy.
+CONNECTION_ID=$(gcloud sql instances describe business-dashboard \
+  --format='value(connectionName)')
 
-gcloud sql users create ${CLOUD_SQL_SA%.gserviceaccount.com} \
---instance=business-dashboard \
---type=cloud_iam_service_account
+# Print the Cloud SQL service account email.
+echo "${CLOUD_SQL_SA}"
 
-CONNECTION_ID=$(gcloud sql instances describe business-dashboard  --format='value(connectionName)')
-
-echo $CLOUD_SQL_SA
-cloud-sql-proxy --address 0.0.0.0 --port 5432 $CONNECTION_ID
+# Start the Cloud SQL Proxy, listening on all interfaces (0.0.0.0) on port 5432,
+# and connecting to the specified Cloud SQL instance.
+cloud-sql-proxy --address 0.0.0.0 --port 5432 "${CONNECTION_ID}"
 ```
 
 Open a second tab.
 
 ```bash
-psql -h 127.0.0.1  --username=postgres flightdata
+# Connect to the 'flightdata' database on the PostgreSQL instance.
+# -h 127.0.0.1: Specifies the host as the local machine, connecting via the Cloud SQL Proxy.
+# --username=postgres: Authenticates as the 'postgres' user.
+psql -h 127.0.0.1 --username=postgres flightdata
 ```
 
 ```sql
@@ -118,21 +138,32 @@ GRANT ALL ON SCHEMA flightdata TO <CLOUD_SQL_SA>;
 ```
 
 ```bash
-gcloud storage buckets add-iam-policy-binding "gs://$PROJECT_ID-flightdata-bucket" \
-  --member="serviceAccount:$CLOUD_SQL_SA" \
+# Grant the Cloud SQL service account the 'Storage Object Admin' role on the Cloud Storage bucket.
+# This allows Cloud SQL to read and import data from the bucket.
+gcloud storage buckets add-iam-policy-binding "gs://${PROJECT_ID}-flightdata-bucket" \
+  --member="serviceAccount:${CLOUD_SQL_SA}" \
   --role="roles/storage.objectAdmin"
 
-gcloud sql import csv business-dashboard gs://$PROJECT_ID-flightdata-bucket/transponder/transponder.csv \
---database=flightdata \
---table=adsb_data -q
+# Import the 'transponder.csv' file from the Cloud Storage bucket into the 'adsb_data' table
+# within the 'flightdata' database in the 'business-dashboard' Cloud SQL instance.
+gcloud sql import csv business-dashboard "gs://${PROJECT_ID}-flightdata-bucket/transponder/transponder.csv" \
+  --database=flightdata \
+  --table=adsb_data -q
 
+# Download the 'aircraftDatabase.zip' file from the OpenSky Network.
 wget https://s3.opensky-network.org/data-samples/metadata/aircraftDatabase.zip
-unzip aircraftDatabase.zip 
-gcloud storage cp aircraftDatabase.csv gs://$PROJECT_ID-flightdata-bucket/
 
-gcloud sql import csv business-dashboard gs://$PROJECT_ID-flightdata-bucket/aircraftDatabase.csv \
---database=flightdata \
---table=aircraft_data -q
+# Unzip the downloaded 'aircraftDatabase.zip' file.
+unzip aircraftDatabase.zip
+
+# Copy the extracted 'aircraftDatabase.csv' file to the Cloud Storage bucket.
+gcloud storage cp aircraftDatabase.csv "gs://${PROJECT_ID}-flightdata-bucket/"
+
+# Import the 'aircraftDatabase.csv' file from the Cloud Storage bucket into the 'aircraft_data' table
+# within the 'flightdata' database in the 'business-dashboard' Cloud SQL instance.
+gcloud sql import csv business-dashboard "gs://${PROJECT_ID}-flightdata-bucket/aircraftDatabase.csv" \
+  --database=flightdata \
+  --table=aircraft_data -q
 ```
 
 ```sql
@@ -143,8 +174,11 @@ delete from aircraft_data where icao24='icao24' or icao24=''
 Connect Looker Studio.
 
 ```bash
+# Patch the Cloud SQL instance to authorize a specific network range (142.251.74.0/23 Looker Studio).
+# This allows connections to the instance only from IP addresses within this range.
 gcloud sql instances patch business-dashboard --authorized-networks=142.251.74.0/23 -q
 
+# Get the public IP address of the Cloud SQL instance and store it in the IP environment variable.
 export IP=$(gcloud sql instances describe business-dashboard --format="value(ipAddresses[0].ipAddress)")
 ```
 
@@ -180,33 +214,33 @@ USING
   (icao24)
 ```
 
-## Task 1. Investigate the data, query performance, and connnect Cloud SQL to BigQuery
-Understand data across different sources and set up a connection between Cloud SQL/Spanner and BigQuery. Explore Looker Studio dashboard to identify why there are issues with the results and issues with the performance.
+## Task 1: Connect Cloud SQL to BigQuery to Reduce Operational Database Load
 
-The critical issue is that the database server is too small to run the full table scans required for the queries and this is also impacting the day to day operations of the company. Your first task will be to connect BigQuery to the database to reduce the load on the operational database. 
+To complete this task, you will need to analyze data, evaluate query performance, and establish a connection between Cloud SQL and BigQuery. The goal is to address performance issues that affect daily operations, which are a result of the current database server's limitations in handling full table scans.
 
-### Create a connection from BigQuery to Cloud SQl
+A key part of this task is to move analytical queries from the operational database to BigQuery. This will involve:
 
-You have recently reviewed this site <https://cloud.google.com/bigquery/docs/cloud-sql-federated-queries> to enable the reading of data directly from your operational database into BigQuery.
+- **Establishing a Federated Connection**: You will create a connection from BigQuery to Cloud SQL. This process uses BigQuery's federated query capabilities, allowing BigQuery to directly read data from your operational database. This method shifts the computational load of joins to BigQuery, thereby reducing the strain on the Cloud SQL instance.
+- **Analyzing Performance with Looker Studio**: You will investigate the Looker Studio dashboard to understand the causes of current performance issues and data inconsistencies.
 
-This first step in this journey will be to reduce join load. If you use federated queries, it is a sequential scan of the data that is sent to BigQuery. BigQuery can then run the join for you, reducing the computational load on the operational database.
+The current database performance problems are worsened by the database server's limited capacity. Using federated queries with BigQuery is a strategy to reduce the operational database load, as BigQuery will handle the sequential scanning and joining of data. This is particularly relevant because current queries are slow even with a single day's data, indicating that scaling to larger datasets (e.g., 30 days) would significantly worsen performance.
 
-Keep in mind that you are only working with a single day's worth of data and the query is really slow already. If you move to 30 days or longer, then the queries will be too slow. 
+You will need to create a database connection. Refer to the documentation on BigQuery federated queries with Cloud SQL for guidance: <https://cloud.google.com/bigquery/docs/cloud-sql-federated-queries>.
 
 ## Task 2. Move the larger of the two datasets into BigQuery using a scheduled query
 <!---Create a new table (or tables) with appropriate schema to optimize query performance. Leverage repeated and nested fields where appropriate.  Create a scheduled query to repopulate this new table once per day.--->
 
-Move some of the data into BigQuery so that the actual query does not put load on the Operational Data Source (ODS). You have elected to move the ADS-B data (the larger of the two datasets) into BigQuery.
+Moving a portion of the data to BigQuery offloads the operational data source (ODS) from query burdens. You will transfer the larger ADSB dataset to BigQuery.
 
-Some tables could stay in Cloud SQL as they may be updated by the operational systems and as long as the data is not too large, it should be feasible to join a small table from Cloud SQL to the larger data in BigQuery.
+Some tables, potentially subject to frequent updates by operational systems, can remain in Cloud SQL. Joining a smaller Cloud SQL table with larger BigQuery data is feasible.
 
-Create a scheduled query for the aircraft adsb data to bring that into BigQuery. The aircraft details can safely be left in Cloud SQL as it is small enough and if you assume it may be updated very frequently, then it would not be a good candidate to keep in BigQuery (assume this for this scenario, in production the aircraft database would only be updated when new aircraft are produced which is not a very high velocity dataset).
+You will create a scheduled query for the ADSB aircraft data to import it into BigQuery. Aircraft details can remain in Cloud SQL. In this scenario, assume that the aircraft database might be updated frequently, making it less suitable for BigQuery.
 
-One of the items to be aware of as you build out the dashboarding infrastrcuture is that federated data sources like Cloud SQL must be in the same region or in the same multi-regional area as the BigQuery execution engine. You cannot have Cloud SQL in `europe-west1` and BigQuery in `US`. This becomes much more important when you start joining data between native and federated data sources.
+When building the dashboarding infrastructure, note that federated data sources, such as Cloud SQL, must reside in the same region or multi-regional area as the BigQuery execution engine. Cross-region joins between Cloud SQL and BigQuery are not supported (e.g., Cloud SQL in `europe-west1` and BigQuery in `US` should show an error). This regional alignment is important when joining data between native and federated data sources.
 
-You will also need to start with an initial load and then load the remaining data with a high water mark.
+You will also need to perform an initial data load, followed by subsequent loads using a high-water mark strategy.
 
-You can run the initial load using this query and you might as well do the type conversions on load:
+To initiate the load and perform type conversions, you will need to create a database connection.
 
 ```sql
 drop table if exists flightData.adsbData;
@@ -228,31 +262,60 @@ FROM
 
 ![Architecture](images/lookerstudio_01.png)
 
-Write a custom query joining the ADS-B data in BigQuery database with the aircraft data from the operational database. Create a report with the minimum and maximum altitude for each flight. Your dashboard should also be able to show which flights, manufacturers, and operators are flying. You can join the ODS data (`manufacturericao`, `model`,`owner`) with the `generated` and `altitude_feet` data from BigQuery using the lowercased `icao24` field.
+To create a report showing the minimum and maximum altitude for each flight and display information about flights, manufacturers, and operators, you will need to perform a join between your ADSB data in BigQuery and your aircraft details in Cloud SQL. The icao24 field, when lowercased, can be used as the join key.
+
+Here is a BigQuery SQL query to achieve this. This query assumes you have:
+
+A BigQuery dataset named your_adsb_dataset with a table named `adsb_flights` containing `generated` (timestamp) and `altitude_feet` fields, along with `icao24`.
+An external table in BigQuery named `your_operational_dataset.aircraft_details` that connects to your Cloud SQL instance, containing `manufacturericao`,` model`, `owner`, and `icao24` fields.
+
+Before running this query, ensure you have:
+
+1. Loaded your ADSB data into a BigQuery table.
+1. Created an external table in BigQuery that connects to your Cloud SQL instance. This external table allows BigQuery to query data directly from Cloud SQL without importing it.
+1. Configured regional co-location for your BigQuery dataset and Cloud SQL instance. As mentioned, BigQuery federated queries to Cloud SQL require them to be in the same region or multi-regional area.
 
 ![Architecture](images/lookerstudio_02.png)
 
+To accurately count unique aircraft, you will need to create a calculated field. The existing record count may display the total number of records, which will be higher than the actual number of distinct aircraft.
 
-Add a calulated field to have the count of the `icao24` records to break down how many aircraft are seen as the record count will be inaccurate (it will show total records which will be much higher than the actual aircraft.) You will see data quality issues here, but this is part of the data quality challenge to solve, you are just presenting the data.
+Create a new calculated field.
 
-## Task 4 Optimize Query Performance with Materialized Views and BI Engine
+1. Use the `icao24` identifier to count unique aircraft. This will provide a more precise representation of the number of aircraft observed, rather than the total data entries.
+1. This step will highlight data quality considerations, which are an integral part of this data quality challenge. Your role is to present the data as observed.
 
-Performance is still slower than it should be. Create materialized views to improve the performance of your queries. Set up BI Engine and use it to further improve performance. You can also remove altitudes larger than 43,000 feet and less than 0 feet. You may also drop any records that don't have location and altitude data. 
+## Task 4. Optimize Query Performance with Materialized Views and BI Engine
 
-Enable the BI engine and target the tables used in the query to accelerate the reponse times.
+To improve query performance, you will need to create materialized views. Additionally, configure BI Engine to further enhance performance.
 
-Rebuild the Looker query to use the materialized view and the federated data. You can aggregate the data for each flight into a single row by nesting the geometry data into a line.
+It is recommended to filter data by removing altitudes exceeding 43,000 feet or below 0 feet. Records without location and altitude data should also be removed.
+
+Enable BI Engine and target the tables relevant to your queries to accelerate response times.
+
+Rebuild your Looker query to utilize the newly created materialized views and federated data. You can aggregate flight data into single rows by nesting the geometry data into a line.
 
 ![Architecture](images/lookerstudio_03.png)
 
-## Task 5 Enhance the Dashboard with Additional Metrics and Visualizations
+## Task 5. Enhance the Dashboard with Additional Metrics and Visualizations
 
-The business team who owns the dashboard has asked for you to add in additional metrics and visualizations to the dashboard. Revisit your work from the previous tasks to integrate these new tasks into the dashboard.
+### Dashboard Enhancements: Integrating Additional Metrics and Visualizations
 
-The business team would like a tool tip showing the aircraft data from the following endpoint.
-You can call the following endpoint and get more details on the aircraft <https://api.planespotters.net/pub/photos/hex/AA9300>. Have a look at this link <https://lookerstudio.google.com/reporting/1zOZ2aPL8HYl4JIhjsMQKvj5BSWwcKRdv/page/EQxK>
+You are now tasked with enhancing the existing dashboard by incorporating new metrics and visualizations, as requested by the business team. This involves revisiting your previous work and integrating these new requirements into the dashboard.
 
-The application team has exposed an API that returns an image of the aircraft based on the ICAO number here <https://aircraftimage-707366556769.us-central1.run.app/0101DB>
+### Aircraft Data Tooltip
+
+The business team requires a tooltip displaying aircraft data. You will need to create a data connection that fetches information from the following endpoint:
+Aircraft Data Endpoint: <https://api.planespotters.net/pub/photos/hex/0101DB>
+
+###  Aircraft Image and Information Link
+
+The application team has exposed an API that provides an image of the aircraft based on its ICAO number. It is also beneficial to link this thumbnail image to a detailed aircraft information page.
+
+- Aircraft Image API: <https://aircraftimage-707366556769.us-central1.run.app/0101DB>
+
+You can refer to the following Looker Studio dashboard as an example for integrating these features:
+
+- Example Looker Studio Dashboard: <https://lookerstudio.google.com/reporting/1zOZ2aPL8HYl4JIhjsMQKvj5BSWwcKRdv/page/EQxK>
 
 ![Architecture](images/lookerstudio_04.png)
 
