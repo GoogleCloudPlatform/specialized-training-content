@@ -16,21 +16,37 @@ The rough architecture of the system is shown below, with the existing infrastru
 
 ![Architecture](images/Architecture.svg)
 
+## Task 1
+
 The critical challenges from a data engineering perspective, beyond the potentially dirty data, lie in the physical implementation of the system. In data engineering, it is preferred to have duplicate data rather than to lose data. However, this means that the system must be designed to tolerate duplicate data throughout the pipeline. Duplication may occur at:
 
-- The aircraft: It may send out the data twice, but it should have the same generation time.
-- The logger: The logger may record receiving the data twice.
-- The logger: It also might send the data to Pub/Sub twice.
-- Pub/Sub: It may deliver the message to each subscription more than once.
-- Dataflow and BigQuery: They may duplicate the data ingested in some specific failure scenarios.
+Data duplication is a common challenge in data engineering. Duplication can occur at various stages of a data pipeline.
+
+**Sources of Data Duplication**
+
+- **Aircraft Data Transmission:** An aircraft might transmit the same data multiple times, potentially with identical generation timestamps.
+- **Logger Data Reception:** The logger responsible for collecting data may record the reception of the same data more than once.
+- **Logger Data Transmission to Pub/Sub:** The logger might also send the data to Pub/Sub multiple times.
+- **Pub/Sub Message Delivery:** Pub/Sub can deliver the same message to each subscription more than once.
+- **Data Ingestion Failures (Dataflow and BigQuery):** In certain failure scenarios, data ingested by Dataflow and BigQuery may be duplicated.
+
+To manage these challenges effectively, you will need to design your system to tolerate duplicate data throughout the pipeline. Data engineers prioritize data availability over strict uniqueness, preferring to have duplicate data rather than data loss.
 
 ![Representation of Challenges](images/Challenges.svg)
 
-If data is going to be aggregated for each session the aircraft is seen, then a session window will be required. Tumbling (fixed time) windows and hopping (sliding windows) will not aggregate the data correctly. A session window should be chosen that accurately reflects the validity of the data. If the window is too short, then an aircraft's session may be closed if it enters a "shadow," which is a portion of the airspace that is untracked due to ground obstructions. This frequently happens when there is a building between the logger and the aircraft, usually close to landing/takeoff areas for aircraft near the maximum range of the loggers. If the session is too long, it may join a previous flight with a current flight. This means the session should be shorter than the fastest turnaround of a commercial airliner, which is around 45 minutes. Another consideration is that the session is not emitted until after the final data is received, so the longer the session, the longer it will take for the data to be available for analysis.
+In situations where data needs to be aggregated for each aircraft session, a session window is a suitable choice. Fixed time (tumbling) windows and sliding (hopping) windows are not appropriate for this type of aggregation.
 
-Another challenge is that as the F-ATC logger network expands, data from each aircraft may be received more than once. This is preferable as it eliminates the shadows and gives better detail over a wider area. 
+### Session Window Considerations
+When defining a session window, consider the following:
 
-Below is a snapshot of the airspace over London Heathrow showing overflights (flights at high altitude just passing over), aircraft in holding (center left of the image, aircraft waiting to be brought into approach), aircraft on final (below center left), and aircraft taking off (center).
+- **Window Duration and "Shadows":** A window that is too short may prematurely close an aircraft's session if it enters a "shadow." Shadows are untracked airspace sections, often caused by ground obstructions like buildings, particularly near landing/takeoff areas or at the maximum range of loggers.
+- **Window Duration and Flight Separation:** A window that is too long might merge a previous flight with a current flight. To prevent this, the session duration should be shorter than the fastest turnaround time for commercial airliners, which is approximately 45 minutes.
+- **Data Latency:** The session window's length directly impacts when data becomes available for analysis. Data is not emitted until after the final data point for that session is received. Consequently, a longer session window will result in a longer delay before the data is available.
+
+### Handling Redundant Data from Logger Network Expansion
+As the F-ATC logger network expands, you may receive data from each aircraft multiple times. This redundancy is beneficial, as it helps eliminate "shadows" and provides more comprehensive data coverage over a wider area. You will need to design your system to effectively process and manage this duplicated data to ensure accurate aggregation and analysis.
+
+The image provided illustrates the airspace over London Heathrow, displaying various flight activities such as overflights, aircraft in holding patterns, aircraft on final approach, and aircraft taking off. This visual representation highlights the complex nature of air traffic data and the need for robust session windowing techniques.
 
 ![Snapshot of real data from ADS-B showing holding and appraoching aircraft](images/Realtime.png)
 
@@ -50,8 +66,6 @@ Terraform script to deploy a small VM for streaming simulated data to Pub/Sub an
 
 ---->
 
-## Task 1
-
 <!----
 Initial request
 
@@ -59,9 +73,11 @@ Perform ETL on the consolidated batch data to transform the data into an appropr
 
 ---->
 
-Data is currently being written into a Cloud Storage bucket at `gs://flightdata-demo`. In this bucket, you'll see sample aircraft metadata in the `flightdata-data` directory and the aircraft logs data in the root directory.
+Data is being written to a Cloud Storage bucket at `gs://flightdata-demo`. This bucket contains sample aircraft metadata in the `flightdata-data` directory, and aircraft log data in the root directory.
 
-The data in the root directory conforms to the Base Station format listed [here](http://woodair.net/sbs/article/barebones42_socket_data.htm), and as you can see, it is formatted as standard CSV. While CSV data is fairly ubiquitous, it is difficult to work with as the structure can be messy. A sample of the data is shown below.
+You will need to create a Cloud Storage bucket to store the processed data. This bucket will hold the refined aircraft information after it has been transformed.
+
+The data in the root directory adheres to the Base Station format and is structured as [standard CSV](http://woodair.net/sbs/article/barebones42_socket_data.htm). While CSV is common, its structure can be inconsistent, making it challenging to use. A sample of the data is shown below:
 
 ```csv
 MSG,8,1,1,ABFDAF,1,2025/03/19,04:18:28.888,2025/03/19,04:18:28.926,,,,,,,,,,,,0
@@ -89,23 +105,51 @@ MSG,4,1,1,A3DC34,1,2025/03/19,04:18:29.370,2025/03/19,04:18:29.415,,,277,263,,,-
 MSG,3,1,1,0D0A21,1,2025/03/19,04:18:29.375,2025/03/19,04:18:29.416,,14650,,,33.60022,-117.14027,,,0,,0,0
 ```
 
-As you can see, most messages will be the `MSG` format, the dates are not in [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) format, and there are separate message generation date/times and message logged date/times. There are also many blank strings that should be stored as null values.
+This information describes characteristics of the incoming data. You will need to process messages in `MSG` format. Dates are not in [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) format, and there are distinct message generation and message logged timestamps. You will also need to handle numerous blank strings by storing them as null values.
 
-The files in Cloud Storage are updated fairly frequently (every 10 minutes or every 10.24 MB, whichever comes first).
+The files in Cloud Storage are updated frequently, either every 10 minutes or upon reaching 10.24 MB, whichever occurs first. You will need to create a database connection for this process.
 
-### Step 1
+### Step 1 Understanding the data
 
 Set up an [event sync](https://cloud.google.com/storage-transfer/docs/event-driven-transfers) to replicate data from the source bucket into a bucket in your project. The change data is currently published to this topic `projects/paul-leroy/topics/flightdata-gcs-eventstream`, which you can subscribe to in your project. You will also need to check that the data transfer service API is enabled and that the data transfer service account has consume access on Pub/Sub, Bucket Viewer and Object Admin roles on your bucket. BigQuery DTS requires that the data source and BigQuery Dataset are in the same region so be cognizant of this as BigQuery will be unable to load data from other regions outside the dataset region. A daily sync is also acceptable, you can use the following template to decide on mechanisms:
 
-1. How much data needs to be moved? (about 5 GB per day)
-1. How fast is the data moving? (roughly 3MB per minute)
-1. How frequently is the data reported on? (at this stage once per day, which is the deciding criterion)
+Configure event synchronization to replicate data from a source bucket into a bucket within your Google Cloud project.
 
-### Step 2
+1. **Enable the Data Transfer Service API**
 
-Set up the table so that it is visible in BigQuery. This can use either [DTS](https://cloud.google.com/bigquery/docs/dts-introduction) to schedule the data loads or use [object tables](https://cloud.google.com/bigquery/docs/biglake-intro).
+    Ensure that the Data Transfer Service API is enabled in your Google Cloud project.
 
-The table may look like the sample below.
+1. **Verify Data Transfer Service Account Permissions**
+
+    Confirm that the Data Transfer Service account possesses the following Identity and Access Management (IAM) roles:
+
+    - Pub/Sub Subscriber
+    - Storage Object Viewer
+    - Storage Object Admin
+
+    These roles are necessary for the service account to consume data from Pub/Sub and administer objects within your bucket.
+
+1. **Consider Regional Consistency for BigQuery Data Transfer Service (DTS)**
+    
+    For BigQuery DTS, the data source and the BigQuery dataset must reside in the same region. BigQuery cannot load data from regions outside of the dataset's specified region. This is an important consideration for data transfer operations.
+
+1. **Subscribe to the Pub/Sub Topic**
+
+    The change data is published to the Pub/Sub topic projects/paul-leroy/topics/flightdata-gcs-eventstream. You will need to subscribe to this topic within your project to receive data change notifications.
+
+1. **Determine Data Transfer Frequency**
+
+    A daily synchronization is acceptable given the data characteristics:
+
+    - Data Volume: Approximately 5 GB per day.
+    - Data Velocity: Roughly 3 MB per minute.
+    - Reporting Frequency: Once per day, which is the primary factor determining the synchronization schedule.
+
+### Step 2 Choose a method for data loading
+
+You will need to make the table visible in BigQuery. This can be achieved by either using Data Transfer Service ([DTS](https://cloud.google.com/bigquery/docs/dts-introduction)) to schedule data loads or by utilizing [object tables](https://cloud.google.com/bigquery/docs/biglake-intro).
+
+Consider the following sample table structure:
 
 | MT  | TT | SID | AID | Hex    | FID | DMG         | TMG      | DML         | TML      | CS     | Alt  | GS   | Trk  | Lat  | Lng  | VR   | Sq   | Alrt | Emer | SPI | Gnd |
 |-----|----|-----|-----|--------|-----|-------------|----------|-------------|----------|--------|------|------|------|------|------|------|------|------|------|-----|-----|
@@ -120,12 +164,15 @@ The table may look like the sample below.
 | MSG | 1  | 1   | 1   | 06A124 | 1   | 2025/03/10  | 0:23:29  | 2025/03/10  | 0:23:29  | QTR99Y | null | null | null | null | null | null | null | null | null | null| 0   |
 | MSG | 1  | 1   | 1   | 06A19F | 1   | 2025/03/10  | 8:29:02  | 2025/03/10  | 8:29:02  | QTR56Y | null | null | null | null | null | null | null | null | null | null| 0   |
 
-### Step 3
+### Step 3 Clean and de-duplicate the data
 
-Clean the data using SQL. The dates are especially messy. `CAST`ing and `SAFE_CAST`ing are useful here. You'll need to work with [date functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions) to clean the dates. You can create this as a [view](https://cloud.google.com/bigquery/docs/views) or a [materialized view](https://cloud.google.com/bigquery/docs/materialized-views-intro). You should also be able to de-duplicate the data that may be received from multiple loggers.
+You will need to clean the data using SQL. The dates in the provided sample are unformatted and contain additional characters, making them difficult to use. You can use the `CAST` and `SAFE_CAST` functions to convert the data types, and you will need to utilize BigQuery's [date functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions) to properly format these date fields.
 
-Warning! At this stage you may encounter the first big issue with trusting the incoming data, it may be dirty. If your queries fail with an error that says there is a column mismatch, delete the offending file from the bucket. You'll fix that later with Dataflow.
+You should also implement a method to de-duplicate any data that may originate from multiple loggers. This will help ensure data accuracy and consistency.
 
+You can implement these cleaning and de-duplication processes within a [view](https://cloud.google.com/bigquery/docs/views) or a [materialized view](https://cloud.google.com/bigquery/docs/materialized-views-intro) in BigQuery.
+
+If your queries encounter errors related to column mismatches, it indicates issues with the incoming data. You will need to delete the offending file from the bucket; this will be addressed later using Dataflow.
 
 | Row | MT  | TT | SID | AID | Hex    | FID | MG                  |  CS     | Alt  | GS   | Trk  | Geom | VR   | Sq   | Alrt | Emer | SPI | Gnd |
 |---|-----|----|-----|-----|--------|-----|---------------------|--------|------|------|------|------|------|------|------|------|-----|-----|
@@ -140,9 +187,12 @@ Warning! At this stage you may encounter the first big issue with trusting the i
 | 9 | MSG | 1  | 1   | 1   | 06A124 | 1   | 2025-03-10T00:23:29 | QTR99Y | null | null | null | null | null | null | null | null | null| 0   |
 | 10 | MSG | 1  | 1   | 1   | 06A19F | 1   | 2025-03-10T08:29:02 | QTR56Y | null | null | null | null | null | null | null | null | null| 0   |
 
-### Step 4
+### Step 4 Handle duplicate rows and remove irrelevant fields
+You will need to address duplicate rows that may arise from overlapping receivers. While the generation date/time and data will be consistent across these duplicates, the logged date/time may vary depending on the specific logger that received the data. The granularity of this logging time is not sufficient for precise triangulation of aircraft, so you can decide how to best manage this field.
 
-You'll need to remove the duplicate rows from the overlapping receivers. Keep in mind that the generation date/time and data will be the same, but the logged date/time will vary based on the logger receiving. The granularity of this time is not accurate enough to triangulate the planes, though, so it is your choice on what to do with the logging date/time. The `AID`, `FID`, and `SID` fields have been misconfigured on the remote devices and don't provide any relevant data or insight at this stage and can be dropped.
+The `AID`, `FID`, and `SID` fields from the remote devices are currently misconfigured and do not provide relevant data or insight. You should remove these fields from your dataset.
+
+Consider the following example of the cleaned data, where `MT`, `TT`, `Hex`, `MG`, `CS`, `Alt`, `GS`, `Trk`, `Geom`, `VR`, `Sq`, `Alrt`, `Emer`, `SPI`, and `Gnd` represent various data fields:
 
 | Row | MT  | TT |  Hex    | MG                  |  CS     | Alt  | GS   | Trk  | Geom | VR   | Sq   | Alrt | Emer | SPI | Gnd |
 |-----|-----|----|---------|---------------------|---------|------|------|------|------|------|------|------|------|-----|-----|
@@ -158,7 +208,20 @@ You'll need to remove the duplicate rows from the overlapping receivers. Keep in
 | 10 | MSG | 1  | 06A19F | 2025-03-10T08:29:02 | QTR56Y | null | null | null | null | null | null | null | null | null| 0   |
 
 
-## Task 2
+## Task 2. Transition to a Dataflow-oriented ETL Process
+This task involves transitioning from a BigQuery-oriented ELT process to a Dataflow-oriented ETL process. This change enables data transformation during the loading phase, which facilitates the conversion of date/time fields into `datetime` or `timestamp` types upon loading.
+
+### Step 1. Develop a Dataflow Job for BigQuery Data Loading
+You will need to create a Dataflow job to load data into BigQuery from Cloud Storage. Utilizing [Workbenches](https://cloud.google.com/dataflow/docs/guides/interactive-pipeline-development) can expedite the development process for this job.
+
+### Step 2. Implement Data Validation and Transformation
+The data should be validated against a regular expression to ensure its structure conforms to the required input. This validation helps to address instances where inconsistent data is written into Cloud Storage, which might impact the data view in BigQuery. Dates and times can be combined into a single field, which you can then use for data partitioning. Empty fields within the `CSV` should be converted into null values. You can also use Geography data types for the `Latitude` and `Longitude` data.
+
+### Step 3. Handle Non-conforming Data
+If data does not match the regular expression, it should be written to a separate Cloud Storage bucket for review. This allows for evaluation of whether the data can be salvaged through improved ETL processes or if it can be safely discarded.
+
+### Step 4. Remove Duplicate Data
+Duplicate data, such as messages from a single aircraft received by two loggers, will require removal.
 
 <!----
 Initial request
@@ -167,26 +230,13 @@ Consolidate data from transactional databases and object storage into a single l
 
 ---->
 
-Once the structure has been roughly agreed upon, you'll change from a BigQuery-oriented ELT process to a Dataflow-oriented ETL process. This means that the data will need to be transformed on load but helps in that the date/time fields can be converted into `datetime` or `timestamp` types on load, which helps.
+## Task 3. Orchestrate the Data Pipeline
+This task involves orchestrating the previously developed data pipeline to enable daily batch processing. The goal is to trigger the pipeline to move the previous day's data into the data warehouse.
 
-### Step 1
+### Step 1. Create a Dataflow Template for Scheduled Execution
+You will need to create either a [dataflow template](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) or a [dataflow flex template](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates#python) from your pipeline. This template will allow the pipeline to be parameterized and invoked periodically. You can choose to call this template from [Cloud Composer](https://cloud.google.com/composer/docs/composer-3/composer-overview) or [Cloud Scheduler](https://cloud.google.com/scheduler/docs).
 
-Write a Dataflow job that loads the data into BigQuery from Cloud Storage. Using the [Workbenches](https://cloud.google.com/dataflow/docs/guides/interactive-pipeline-development) would accelerate the development of this.
-
-### Step 2
-
-The data should be validated against a regex to make sure that the structure conforms to your required input. This will also fix the scenario that dirty data is written into Cloud Storage, breaking the view of data in BigQuery. Dates and times can be consolidated into a single field, which you can now use to partition the data. Blank fields in the `CSV` should be converted into null values. You can also use Geography data types for the `Latitude` and `Longitude` data.
-
-### Step 3
-
-If data doesn't match the regex, it should write the data to a second Cloud Storage bucket for review to evaluate whether data could be saved by better ETL or whether it can be safely discarded.
-
-### Step 4 
-
-The duplicate data (messages from a single aircraft received by two loggers) will still need to be removed.
-
-
-## Task 3
+For this project, using Cloud Scheduler may be more cost-effective. In a production environment, Cloud Composer offers advantages for managing multiple pipelines and scaling across various teams. A quickstart guide for building templates can be found  [here](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates).
 
 <!----
 Initial request
@@ -195,16 +245,17 @@ Orchestrate the first two tasks via an orchestration tool such as Composer or Da
 
 ---->
 
+## Task 4. Process Streaming Data with Pub/Sub and Dataflow
 
-The batch process should now be able to be triggered daily to move yesterday's data into the data warehouse. The pipeline itself is working, so you have multiple options in order to deploy this. 
+The Data Capture team has upgraded data collection to use Pub/Sub, enabling near real-time data analytics. You will explore this streaming data and write a Dataflow pipeline to parse the data and store it in BigQuery, ensuring data validity.
 
-### Step 1
+### Step 1. Ingest Data from Pub/Sub
+The data structure remains consistent, but the data source is now an API rather than a Google Cloud Storage bucket. Your initial Dataflow step will need to be compatible with both Google Cloud Storage and Pub/Sub for batch and stream processing. The data is available on the Pub/Sub topic `projects/paul-leroy/topics/flight-transponder`. You will need to create a subscription in your project, or you can dynamically create the subscription when your pipeline starts. This is an implicit feature when using the PubsubIO handler to read from a topic.
 
-Create a [dataflow template](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) or [dataflow flex template](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates#python) from your pipeline so that it can be parameterized and called periodically, either from [Cloud Composer](https://cloud.google.com/composer/docs/composer-3/composer-overview) or [Cloud Scheduler](https://cloud.google.com/scheduler/docs). Your choice here may have an impact of scaling this in the future (but not as part of this challenge), so for this project it may be cost effective to use Cloud Scheduler. In production, Cloud Composer would allow multiple pipelines to be managed and scale across multiple teams. A quickstart can be found [here](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates) for building out the template.
+### Step 2. Structure Data for Analysis
+You now have access to a continuous stream of data. The next step involves restructuring this data to enable nesting of data per session. A session is defined as the period from when an aircraft is first detected to when it is last detected. For visualization purposes, the key fields are the Timestamp/DateTime, the aircraft's `ICAO24` identifier, altitude, and location (latitude and longitude). Aircraft may remain airborne past midnight, so the session logic should accommodate flights that span multiple days.
 
-
-## Task 4
-
+An example of the data structure, with chronological ordering, is provided below:
 
 <!----
 Initial request
@@ -212,18 +263,6 @@ Initial request
 Now visit streaming data via Pub/Sub and Dataflow. Explore the data (that has been written to a sink in GCS) and write a pipeline to properly parse the data and store it in BigQuery. Ensure that the data is valid.
 
 ---->
-
-The Data Capture team has upgraded the data collection to use Pub/Sub allowing for near realtime data analytics.
-
-### Step 1
-
-The data structure has not changed, but because you'll be reading from an API rather than a bucket, your initial step from Dataflow will need a Google Cloud Storage or Pub/Sub tolerant step. It should work for both your batch and stream processing. The data is available on the following topic `projects/paul-leroy/topics/flight-transponder`, and you'll need to create a subscription in your project or alternatively dynamically create the subscription when your pipeline starts. This is subtly done when using the PubsubIO handler to read from a topic.
-
-### Step 2
-
-You now have access to a continuous stream of data, which allows you to restructure the data so that data can be nested per session (time from when the aircraft is first seen to when it is last seen). The visualization time is interested in the Timestamp/DateTime, the aircraft [ICAO24](https://skybrary.aero/articles/24-bit-aircraft-address) identifier, the altitude, and the location (latitude and longitude) of the aircraft. Keep in mind that aircraft may be in the air over midnight, so sessions should be tolerant of flights spanning multiple days.
-
-Data may look like this (notice the chronological ordering):
 
 | Hex | SessionStart | Session.MG                     | Session.CS                     | Session.Alt | Session.GS | Session.Trk | Session.pt | Session.VR                 | Session.Sq | Session.Alrt | Session.Emer | Session.SPI | Session.Gnd |      |
 | :-: | :----------: | :----------------------------: | :----------------------------: | :---------: | :--------: | :---------: | :--------: | :------------------------: | :--------: | :----------: | :----------: | :---------: | :---------: | :--: |
@@ -249,9 +288,6 @@ Data may look like this (notice the chronological ordering):
 |     |              |                                | 2025-04-12 18:53:38.772000 UTC | null        | null       | 330         | 281        | null                       | 0          | null         | null         | null        | null        | 0    |
 |     |              |                                | 2025-04-12 18:53:45.170000 UTC | null        | 13950      | null        | null       | null                       | null       | null         | null         | null        | null        | null |
 |     |              |                                | 2025-04-12 18:53:49.552000 UTC | null        | null       | 330         | 281        | null                       | 0          | null         | null         | null        | null        | 0    |
-
-
-
 
 ## Task 5
 
@@ -293,8 +329,6 @@ By carefully provisioning your Cloud SQL instance, you'll lay the groundwork for
 
 Download data from this [site](https://opensky-network.org/datasets/#metadata/), pick one of the files, preferrably last months one, and import it into a PostgreSQL Cloud SQL instance. 
 The data use citation is [here](https://opensky-network.org/data/aircraft), make sure you add it to your dashboard.
-
-
 
 ### Step 3
 

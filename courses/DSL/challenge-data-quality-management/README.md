@@ -18,7 +18,7 @@ The rough architecture of the system is shown below with the existing infrastruc
 
 ![Architecture](images/Architecture.svg)
 
-## Task 0 
+## Setup
 
 1. Create the datasets.
     ```bash
@@ -54,40 +54,71 @@ The rough architecture of the system is shown below with the existing infrastruc
             gs://flightdata-demo-dsl/transponder*.parquet
         ```
 
-## Task 1
+## Task 1. Identify Data Issues
+This task involves examining datasets for potential problems. Data is collected in two message formats from aircraft. One format sends multiple messages over the air, while the other sends a single message that is decoded into multiple messages upon receipt. Both formats utilize the same structure across BigQuery, Cloud Storage, and Pub/Sub. A common issue is that individual messages may contain only partial data.
 
-Explore datasets and look for problems. Based on the way that data is collected, there are two message formats the aircraft sends after the data is generated. The first sends multiple messages over the air, the other sends one message which is decoded into multiple messages on the receiver. Both formats use the same structure in BigQuery, Cloud Storage, and Pub/Sub but the main issue is that each message may only have some of the data. You will need to query the raw data from Cloud Storage, the messages from the subscription, and the BigQuery table. 
+You will need to query the raw data from Cloud Storage, the messages from the subscription, and the BigQuery table.
 
-- **Coverage Gaps & Intermittency**: Ground-based ADS-B has line-of-sight limitations, causing coverage gaps over oceans, mountains, and at low altitudes. It may be useful to write a SQL query to test the largest gaps between the timestamps of the generated data.
+### Step 1. Investigate Data Coverage Gaps
+Ground-based ADS-B systems have line-of-sight limitations, which can result in coverage gaps over oceans, mountainous regions, and at low altitudes.
 
-- **Missing or Incomplete Fields**: Some aircraft don't transmit all the data. Write a query to analyze the volume of missing data per aircraft. 
-- **Transponder and Data Source Anomalies**: Aircraft may broadcast incorrect transponder codes (e.g., default codes like "000000" or "123456"), leading to misidentification or the appearance of multiple aircraft where only one exists.
+You will need to write a SQL query to identify the largest gaps between the timestamps of the generated data. This will help in understanding data intermittency.
 
-Since the current data streams are only ADS-B you can expect those to be the core data quality issues to consider.
+### Step 2. Analyze Missing or Incomplete Fields
+Some aircraft do not transmit a complete set of data.
 
-## Task 2
+You will need to write a query to analyze the volume of missing data per aircraft. This will help in identifying which aircraft frequently transmit incomplete information.
 
-Create a data mesh with Dataplex to better be able to track the different data sources and streams. Use data profiling to better understand where issues could arise in your datasets. You'll need to create the data lake and profiles for Cloud Storage. You'll work on the Pub/Sub source a later in the challenge. 
+### Step 3. Identify Transponder and Data Source Anomalies
+Aircraft may broadcast incorrect transponder codes, such as default codes like "000000" or "123456." This can lead to misidentification or the appearance of multiple aircraft when only one is present.
 
-- **Lakes**: A Dataplex Lake, such as "FlightOperationsDataDomain," acts as the top-level logical container for all flight-related data and metadata within the data mesh. It represents a distinct business domain, unifying distributed data assets under a common governance umbrella.
-- **Zones (Raw and Curated)**: Within this lake, data is organized into Zones, which can represent sub-domains or stages of data processing.
-    - **Raw Zones**: These zones are designated for the initial ingestion of flight data from various feeds (ADS-B, MLAT, airline schedules, etc.) into Cloud Storage. Data in raw zones is stored in its original, unprocessed format, aligning with the best practice of preserving source data before transformation. This raw data is considered "untrusted" until it undergoes validation and cleansing.
-    - **Curated Zones**: Data that has been processed, validated, and cleansed is promoted to curated zones. These zones typically house structured data in BigQuery, ready for consumption by analytical tools and operational applications. Data in curated zones must conform to predefined schemas and meet established quality standards. The transition from a raw zone to a curated zone is not merely a change in data state but represents a critical data quality gating mechanism. Only data that successfully passes through the defined transformation and validation pipelines (e.g., Dataflow processing and Dataplex quality checks) earns promotion to a curated zone. Access controls can be more stringent for curated zones, ensuring that downstream consumers primarily interact with data that has met these quality benchmarks.
-- **Assets**: Physical storage resources, such as Cloud Storage buckets for raw data feeds and BigQuery datasets for curated flight information, are mapped as Assets within their respective zones. This links the logical data mesh structure defined in Dataplex to the underlying data storage, enabling centralized discovery, metadata management, and governance.
+Since the current data streams are exclusively from ADS-B, you can expect these to be the primary data quality issues requiring consideration.
 
-Some potential data issues that you may encounter. 
-- Out-of-range values: Altitudes exceeding 73,000 feet, negative ground speeds, or latitudes outside the -90 to +90 range. There may be U2 aircraft in the feed (service ceiling of 73000 ft) in addition to commercial aircraft.
-- Unexpected nulls: Missing aircraft ICAO24 identifiers, timestamps, or crucial positional data.
-- Cardinality anomalies: An unexpectedly high number of unique aircraft types might indicate issues with aircraft type classification or data entry errors. The insights gleaned from data profiling are not merely informational; Dataplex can use these profiles to recommend potential data quality rules. This accelerates the rule definition process by providing data-driven suggestions. Data profiling should not be a static, one-time activity. Given the dynamic nature of flight data – with new aircraft, routes, and potential sensor error patterns emerging – continuous or regularly scheduled profiling of key datasets is essential. This proactive approach can help identify data drift or new quality issues before they significantly impact downstream systems or trigger widespread rule failures, allowing for timely adaptation of data quality rules and processes.
-- Different countries have different minimum requirements for ADS-B data, so expect data from the the European and American regions to be more data rich than ones from elsewhere.
+## Task 2. Create a Data Mesh with Dataplex
+You will create a data mesh with Dataplex to track different data sources and streams. You will use data profiling to identify potential issues in your datasets. This task involves creating the data lake and profiles for Cloud Storage. The Pub/Sub source will be addressed later in the challenge.
 
-## Task 3
+- **Lakes:** A Dataplex Lake, such as "FlightOperationsDataDomain," functions as the top-level logical container for flight-related data and metadata within the data mesh. It represents a business domain, unifying distributed data assets under a common governance umbrella.
+- **Zones (Raw and Curated):** Within this lake, data is organized into Zones, which can represent sub-domains or stages of data processing.
+    - **Raw Zones:** These zones are for the initial ingestion of flight data from various feeds (ADS-B, MLAT, airline schedules, etc.) into Cloud Storage. Data in raw zones is in its original, unprocessed format, aligning with the best practice of preserving source data before transformation. This raw data is considered "untrusted" until it undergoes validation and cleansing.
+    - **Curated Zones:** Data that has been processed, validated, and cleansed is promoted to curated zones. These zones typically house structured data in BigQuery, ready for consumption by analytical tools and operational applications. Data in curated zones must conform to predefined schemas and meet established quality standards. The transition from a raw zone to a curated zone is not merely a change in data state but represents a data quality gating mechanism. Only data that successfully passes through the defined transformation and validation pipelines (e.g., Dataflow processing and Dataplex quality checks) is promoted to a curated zone. Access controls can be more stringent for curated zones, ensuring that downstream consumers primarily interact with data that has met these quality benchmarks.
+- **Assets:** Physical storage resources, such as Cloud Storage buckets for raw data feeds and BigQuery datasets for curated flight information, are mapped as Assets within their respective zones. This links the logical data mesh structure defined in Dataplex to the underlying data storage, enabling centralized discovery, metadata management, and governance.
 
-With a foundational understanding of the data's characteristics, the next step is to define and implement specific data quality rules. This involves translating general aviation data quality principles and domain-specific knowledge into executable checks within the Google Cloud environment.
+Some potential data issues you may encounter:
 
-You'll need to create two Pub/Sub topics, one for piping the primary feed into your project and the second a dead-letter queue for data hospitalization. Set the schema on the topic to match what you expect your dataflow pipeline to output. Write a dataflow pipeline to clean the data and write it to the ingest topic and any data that doesn't match the required structure output to the hospitalization topic. Set a pull subscription on the hospitalization topic and an alert on the number of unacked messages on that topic so you will be alerted of any data mismatches.
+- **Out-of-range values:** Altitudes exceeding 73,000 feet, negative ground speeds, or latitudes outside the -90 to +90 range. There may be U2 aircraft in the feed (service ceiling of 73,000 ft) in addition to commercial aircraft.
+- **Unexpected nulls:** Missing aircraft ICAO24 identifiers, timestamps, or positional data.
+- **Cardinality anomalies:** An unexpectedly high number of unique aircraft types might indicate issues with aircraft type classification or data entry errors. The insights gleaned from data profiling are not merely informational; Dataplex can use these profiles to recommend potential data quality rules. This accelerates the rule definition process by providing data-driven suggestions. Data profiling should not be a static, one-time activity. Given the dynamic nature of flight data—with new aircraft, routes, and potential sensor error patterns emerging—continuous or regularly scheduled profiling of key datasets is essential. This proactive approach can help identify data drift or new quality issues before they significantly impact downstream systems or trigger widespread rule failures, allowing for timely adaptation of data quality rules and processes.
+- Different countries have different minimum requirements for ADS-B data, so data from European and American regions may be more data-rich than from elsewhere.
 
-You can sink data from the ingest topic directly into the BigQuery curated table.
+### Step 1. Create a Dataplex Lake
+You will need to create a Dataplex Lake named "FlightOperationsDataDomain".
+
+### Step 2. Create Zones within the Lake
+You will need to create two zones within your "FlightOperationsDataDomain" lake:
+
+- A "Raw Zone" for unprocessed data.
+- A "Curated Zone" for processed and validated data.
+
+### Step 3. Add Assets to the Zones
+You will need to map your Cloud Storage buckets (for raw data) and BigQuery datasets (for curated data) as Assets within their respective zones. This establishes the link between your logical data mesh and the physical data storage.
+
+### Step 4. Configure Data Profiling
+You will need to configure data profiling for your Cloud Storage assets. This will help you identify potential data quality issues, such as out-of-range values, unexpected nulls, and cardinality anomalies, and recommend data quality rules.
+
+## Task 3. Define and Implement Data Quality Rules
+This task involves defining and implementing data quality rules within the Google Cloud environment. You will translate general aviation data quality principles and domain-specific knowledge into executable checks.
+
+### Step 1. Create Pub/Sub Topics
+You will need to create two Pub/Sub topics. One topic will serve as the primary feed for your project, and the second will be a dead-letter queue for data that requires further review. You will also set the schema on the primary topic to match the expected output of your Dataflow pipeline.
+
+### Step 2. Develop a Dataflow Pipeline
+You will write a Dataflow pipeline to clean the data. The cleaned data will be written to the ingest topic. Any data that does not conform to the required structure will be output to the hospitalization topic.
+
+### Step 3. Configure Alerts for Data Mismatches
+You will set a pull subscription on the hospitalization topic. An alert will be configured on the number of unacknowledged messages on this topic, ensuring you are notified of any data mismatches.
+
+### Stepp 4. Sink Data to BigQuery
+You can directly sink data from the ingest topic into the BigQuery curated table.
 
 ## Task 4
 
@@ -151,9 +182,17 @@ While Dataplex excels at validating data at rest in BigQuery, Google Cloud Dataf
 Original ask
 Some of the issues arising are happening with incoming streaming data. Implement controls on the Pub/Sub topic (such as schemas) and post-processing (using Dataflow or continuous queries) to clean data as it arrives for the data warehouse. Store both raw data and transformed data into different datasets. Update your data mesh with this in mind.--->
 
+## Task 5. Modify Dataflow Pipeline
+You will need to update your dataflow pipeline to filter flights and modify data fields.
 
+### Step 1. Filter Flights
+Modify the existing rule to exclude flights with an altitude exceeding 43,100 feet. You will need to apply this filter to the appropriate field in your data.
 
-## Task 5
+### Step 2. Concatenate and Drop Fields
+Adjust the data structure requirements within your dataflow pipeline. You will need to concatenate the TMG and DMG fields into a new `DATETIME` field. Additionally, you will need to drop the `DML` and `TML` fields from the dataflow as you may get messages from two receivers picking up the same message. 
+
+### Step 3. Update Pub/Sub Messages, Schema, and Quality Controls
+Republish the Pub/Sub messages with the updated data. You will also need to modify the Pub/Sub schema to reflect the new `DATETIME` field and the removal of the `DML` and `TML` fields. Update your quality controls to align with these changes.
 
 You are interested in only commercial airlines, change the rules to remove any flights above 43,100 feet. The upstream team are amending the data structure requirements to have the `TMG` and `DMG` field concatenated into a `DATETIME` field and drop the `DML` and `TML` fields. Update your dataflow pipeline that is republishing the Pub/Sub messages, the schema, and quality controls.
 
