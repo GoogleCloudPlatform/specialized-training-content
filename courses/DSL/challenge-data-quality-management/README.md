@@ -151,7 +151,7 @@ Dataplex offers a suite of predefined rule types that can be directly applied to
     - **StatisticRangeExpectation (Statistic Check)**: Checks aggregated statistics against expected ranges. Example:
         -   The average number of position reports received per minute for an active flight should be within a defined range (e.g., 4 to 12, depending on the source like ADS-B).
 - **Crafting custom SQL rules in Dataplex for advanced validations**:
-    For more complex or domain-specific checks that go beyond predefined rules, Dataplex allows the creation of custom SQL rules.26 These are powerful for encoding nuanced business logic.
+    For more complex or domain-specific checks that go beyond predefined rules, Dataplex allows the creation of custom SQL rules. These are powerful for encoding nuanced business logic.
     - **Row condition (evaluates per row, SQL expression in a WHERE clause)**:
         - `altitude < 1000 AND ground_speed > 150` (flag potential error: aircraft too fast at very low altitude, unless it's a specific known takeoff/landing phase for certain aircraft).
         - `ABS(vertical_rate) > 12000` (flag potentially erroneous extreme vertical speeds).
@@ -195,6 +195,55 @@ Adjust the data structure requirements within your dataflow pipeline. You will n
 Republish the Pub/Sub messages with the updated data. You will also need to modify the Pub/Sub schema to reflect the new `DATETIME` field and the removal of the `DML` and `TML` fields. Update your quality controls to align with these changes.
 
 You are interested in only commercial airlines, change the rules to remove any flights above 43,100 feet. The upstream team are amending the data structure requirements to have the `TMG` and `DMG` field concatenated into a `DATETIME` field and drop the `DML` and `TML` fields. Update your dataflow pipeline that is republishing the Pub/Sub messages, the schema, and quality controls.
+
+When running this you may end up with this error which indicates one of the receivers is appending garbage to the end of the line. Rather than fail the `int` conversion set it to null. `{'error': "Type conversion error: invalid literal for int() with base 10: '\\r'", 'data': {'MT': 'MSG', 'TT': '6', 'SID': '1', 'AID': '1', 'Hex': '39CF01', 'FID': '1', 'DMG': '2025-05-23', 'TMG': '09:28:19.864', 'DML': '2025-05-23', 'TML': '09:28:19.918', 'VR': '352', 'Sq': 6307, 'Alrt': 0, 'Emer': 0, 'SPI': 0, 'Gnd': '\r'}}`. Notice the `\r` in the `Ground` field, this means that the data is being added with a Windows style newline `\r\n` and PubSub will remove the `\n` but not the `\r`. If this field is not numeric it would be a good idea to null it rather than trigger an error.
+
+Sample data going into the `hospitalization` topic:
+```json
+{"quality": "hex_format", "data": {"MT": "MSG", "TT": "3", "SID": "1", "AID": "1", "Hex": "~AB828A", "FID": "1", "DMG": "2025-05-23", "TMG": "10:02:21.366", "DML": "2025-05-23", "TML": "10:02:21.366", "Alt": 1800, "Lat": 51.423798, "Lng": -1.689668, "Alrt": 0, "SPI": 0}}
+{"quality": "hex_format", "data": {"MT": "MSG", "TT": "3", "SID": "1", "AID": "1", "Hex": "~AB828A", "FID": "1", "DMG": "2025-05-23", "TMG": "10:02:21.366", "DML": "2025-05-23", "TML": "10:02:21.366", "Alt": 1800, "Lat": 51.42379, "Lng": -1.689682, "Alrt": 0, "SPI": 0}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "3", "SID": "1", "AID": "1", "Hex": "403321", "FID": "1", "DMG": "2025-05-23", "TMG": "10:07:49.614", "DML": "2025-05-23", "TML": "10:07:49.629", "Alt": -50, "Lat": 51.50377, "Lng": -0.76451, "Alrt": 0, "SPI": 0}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "3", "SID": "1", "AID": "1", "Hex": "508472", "FID": "1", "DMG": "2025-05-23", "TMG": "10:08:22.546", "DML": "2025-05-23", "TML": "10:08:22.561", "Alt": -75, "Lat": 51.5018, "Lng": -0.76726, "Alrt": 0, "SPI": 0}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "3", "SID": "1", "AID": "1", "Hex": "508472", "FID": "1", "DMG": "2025-05-23", "TMG": "10:10:30.546", "DML": "2025-05-23", "TML": "10:10:30.574", "Alt": -75, "Lat": 51.50194, "Lng": -0.76719, "Alrt": 0, "SPI": 0}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "7", "SID": "1", "AID": "1", "Hex": "508472", "FID": "1", "DMG": "2025-05-23", "TMG": "10:10:20.888", "DML": "2025-05-23", "TML": "10:10:20.908", "Alt": -75}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "7", "SID": "1", "AID": "1", "Hex": "508472", "FID": "1", "DMG": "2025-05-23", "TMG": "10:11:05.196", "DML": "2025-05-23", "TML": "10:11:05.200", "Alt": -75}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "7", "SID": "1", "AID": "1", "Hex": "508472", "FID": "1", "DMG": "2025-05-23", "TMG": "10:11:21.113", "DML": "2025-05-23", "TML": "10:11:21.146", "Alt": -75}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "3", "SID": "1", "AID": "1", "Hex": "508472", "FID": "1", "DMG": "2025-05-23", "TMG": "10:12:37.237", "DML": "2025-05-23", "TML": "10:12:37.276", "Alt": -100, "Lat": 51.50226, "Lng": -0.76748, "Alrt": 0, "SPI": 0}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "7", "SID": "1", "AID": "1", "Hex": "402EE4", "FID": "1", "DMG": "2025-05-23", "TMG": "10:12:37.652", "DML": "2025-05-23", "TML": "10:12:37.661", "Alt": -100}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "3", "SID": "1", "AID": "1", "Hex": "508472", "FID": "1", "DMG": "2025-05-23", "TMG": "10:12:38.197", "DML": "2025-05-23", "TML": "10:12:38.207", "Alt": -100, "Lat": 51.50223, "Lng": -0.76752, "Alrt": 0, "SPI": 0}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "7", "SID": "1", "AID": "1", "Hex": "402EE4", "FID": "1", "DMG": "2025-05-23", "TMG": "10:12:38.871", "DML": "2025-05-23", "TML": "10:12:38.914", "Alt": -100}}
+{"quality": "altitude", "data": {"MT": "MSG", "TT": "7", "SID": "1", "AID": "1", "Hex": "402EE4", "FID": "1", "DMG": "2025-05-23", "TMG": "10:12:39.526", "DML": "2025-05-23", "TML": "10:12:39.570", "Alt": -100}}
+```
+
+You will also need to update the schema on pubsub to match your new structure. You can use this schema (but you'll need to make sure your data matches):
+
+```json
+{
+  "type": "record",
+  "name": "PubsubMessage",
+  "fields": [
+    {"name": "MT", "type": "string"},
+    {"name": "TT", "type": "int"},
+    {"name": "SID", "type": "int"},
+    {"name": "AID", "type": "int"},
+    {"name": "Hex", "type": "string"},
+    {"name": "FID", "type": "int"},
+    {"name": "MG", "type": "string"},
+    {"name": "CS", "type": ["null", "string"]},
+    {"name": "Alt", "type": ["null", "int"]},
+    {"name": "GS", "type": ["null", "int"]},
+    {"name": "Trk", "type": ["null", "int"]},
+    {"name": "Lat", "type": ["null", "double"]},
+    {"name": "Lng", "type": ["null", "double"]},
+    {"name": "VR", "type": ["null", "double"]},
+    {"name": "Sq", "type": ["null", "string"]},
+    {"name": "Alrt", "type": ["null", "int"]},
+    {"name": "Emer", "type": ["null", "string"]},
+    {"name": "SPI", "type": ["null", "int"]},
+    {"name": "Gnd", "type": ["null", "int"]}
+  ]
+}
+```
 
 Aircraft Data Sourced from:
 > Matthias Schäfer, Martin Strohmeier, Vincent Lenders, Ivan Martinovic, and Matthias Wilhelm.
