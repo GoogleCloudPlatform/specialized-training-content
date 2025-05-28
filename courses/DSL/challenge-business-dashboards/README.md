@@ -8,16 +8,16 @@ Fictional Aircraft Tracking Company is a leading provider of flight tracking dat
 
 Our mission is to revolutionize the way flight tracking data is utilized, empowering our partners to make informed decisions, optimize operations, and mitigate potential risks. By harnessing the power of data, Fictional Aircraft Tracking Company is committed to ensuring the highest standards of safety and efficiency in the global aviation industry.
 
-The flight data is gathered from a distributed network of ADS-B receivers connected to small remote publishing edge compute platforms. These send all data received to pubsub. There are multiple sensors in each region. The busiest airspaces can have more than 2000 messages per second being received from over 100 aircraft. The messages are published to a pubsub topic for easy consumption and this is backed up to a Google Cloud Storage bucket.The flight data is collected through a network of ADS-B receivers, which are strategically distributed and linked to compact, remote edge computing platforms. These platforms are designed for efficient data processing at the source. Each receiver within the network plays a crucial role in capturing real-time data from aircraft within its coverage area.
+The flight data is gathered from a distributed network of ADS-B receivers connected to small, remote publishing edge compute platforms. These send all data received to Pub/Sub. There are multiple sensors in each region. The busiest airspaces can have more than 2,000 messages per second being received from over 100 aircraft. The messages are published to a Pub/Sub topic for easy consumption and this is backed up to a Google Cloud Storage bucket. The flight data is collected through a network of ADS-B receivers, which are strategically distributed and linked to compact, remote edge computing platforms. These platforms are designed for efficient data processing at the source. Each receiver within the network plays a crucial role in capturing real-time data from aircraft within its coverage area.
 
-Due to the dynamic nature of air traffic, the volume of data generated can be substantial. In densely populated airspace, the system can handle an influx of over 2000 messages per second, originating from more than 100 aircraft. To manage this high-velocity data stream, the messages are published to a pubsub topic. This approach ensures that the data is readily available for consumption by various applications and services. Additionally, the data is backed up to a Google Cloud Storage bucket, providing a durable and reliable storage solution for long-term retention and analysis.
+Due to the dynamic nature of air traffic, the volume of data generated can be substantial. In densely populated airspace, the system can handle an influx of over 2,000 messages per second, originating from more than 100 aircraft. To manage this high-velocity data stream, the messages are published to a Pub/Sub topic. This approach ensures that the data is readily available for consumption by various applications and services. Additionally, the data is backed up to a Google Cloud Storage bucket, providing a durable and reliable storage solution for long-term retention and analysis.
 
-The rough architecture of the system is shown below with the existing infrastructure on the left and the challenges for you as the Visualization Analyst on the right.
+The rough architecture of the system is shown below with the existing infrastructure on the left and the challenges for you as the visualization analyst on the right.
 
 ![Architecture](images/Architecture.svg)
 
  
-## Setup:
+## Setup
 
 Create database server on Cloud SQL.
 
@@ -214,14 +214,14 @@ USING
   (icao24)
 ```
 
-## Task 1: Connect Cloud SQL to BigQuery to Reduce Operational Database Load
+## Task 1: Connect Cloud SQL to BigQuery to reduce operational database load
 
 To complete this task, you will need to analyze data, evaluate query performance, and establish a connection between Cloud SQL and BigQuery. The goal is to address performance issues that affect daily operations, which are a result of the current database server's limitations in handling full table scans.
 
 A key part of this task is to move analytical queries from the operational database to BigQuery. This will involve:
 
-- **Establishing a Federated Connection**: You will create a connection from BigQuery to Cloud SQL. This process uses BigQuery's federated query capabilities, allowing BigQuery to directly read data from your operational database. This method shifts the computational load of joins to BigQuery, thereby reducing the strain on the Cloud SQL instance.
-- **Analyzing Performance with Looker Studio**: You will investigate the Looker Studio dashboard to understand the causes of current performance issues and data inconsistencies.
+- **Establishing a Federated connection**: You will create a connection from BigQuery to Cloud SQL. This process uses BigQuery's federated query capabilities, allowing BigQuery to directly read data from your operational database. This method shifts the computational load of joins to BigQuery, thereby reducing the strain on the Cloud SQL instance.
+- **Analyzing performance with Looker Studio**: You will investigate the Looker Studio dashboard to understand the causes of current performance issues and data inconsistencies.
 
 The current database performance problems are worsened by the database server's limited capacity. Using federated queries with BigQuery is a strategy to reduce the operational database load, as BigQuery will handle the sequential scanning and joining of data. This is particularly relevant because current queries are slow even with a single day's data, indicating that scaling to larger datasets (e.g., 30 days) would significantly worsen performance.
 
@@ -284,7 +284,7 @@ Create a new calculated field.
 1. Use the `icao24` identifier to count unique aircraft. This will provide a more precise representation of the number of aircraft observed, rather than the total data entries.
 1. This step will highlight data quality considerations, which are an integral part of this data quality challenge. Your role is to present the data as observed.
 
-## Task 4. Optimize Query Performance with Materialized Views and BI Engine
+## Task 4. Optimize query performance with materialized views and BI Engine
 
 To improve query performance, you will need to create materialized views. Additionally, configure BI Engine to further enhance performance.
 
@@ -296,18 +296,18 @@ Rebuild your Looker query to utilize the newly created materialized views and fe
 
 ![Architecture](images/lookerstudio_03.png)
 
-## Task 5. Enhance the Dashboard with Additional Metrics and Visualizations
+## Task 5. Enhance the dashboard with additional metrics and visualizations
 
-### Dashboard Enhancements: Integrating Additional Metrics and Visualizations
+### Dashboard Enhancements: Integrating additional metrics and visualizations
 
 You are now tasked with enhancing the existing dashboard by incorporating new metrics and visualizations, as requested by the business team. This involves revisiting your previous work and integrating these new requirements into the dashboard.
 
-### Aircraft Data Tooltip
+### Aircraft data tooltip
 
 The business team requires a tooltip displaying aircraft data. You will need to create a data connection that fetches information from the following endpoint:
 Aircraft Data Endpoint: <https://api.planespotters.net/pub/photos/hex/0101DB>
 
-###  Aircraft Image and Information Link
+###  Aircraft image and information link
 
 The application team has exposed an API that provides an image of the aircraft based on its ICAO number. It is also beneficial to link this thumbnail image to a detailed aircraft information page.
 
