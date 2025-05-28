@@ -54,7 +54,7 @@ The rough architecture of the system is shown below with the existing infrastruc
             gs://flightdata-demo-dsl/transponder*.parquet
         ```
 
-## Task 1. Identify data ossues
+## Task 1. Identify data issues
 This task involves examining datasets for potential problems. Data is collected in two message formats from aircraft. One format sends multiple messages over the air, while the other sends a single message that is decoded into multiple messages upon receipt. Both formats utilize the same structure across BigQuery, Cloud Storage, and Pub/Sub. A common issue is that individual messages may contain only partial data.
 
 You will query the raw data from Cloud Storage, the messages from the subscription, and the BigQuery table.
