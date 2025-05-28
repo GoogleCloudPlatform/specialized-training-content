@@ -12,7 +12,7 @@ The flight data is collected through a network of ADS-B receivers, arbitrarily d
 
 Due to the dynamic nature of air traffic, the volume of data generated can be substantial. In densely populated airspace, the system can handle an influx of over 2,000 messages per second, originating from more than 100 aircraft. To manage this high-velocity data stream, the messages are published to a Pub/Sub topic. This approach ensures that the data is readily available for consumption by various applications and services. Additionally, the data is backed up to a Google Cloud Storage bucket, providing a durable and reliable storage solution for long-term retention and analysis. A sample service is available here to visualize the real-time data.
 
-The rough architecture of the system is shown below, with the existing infrastructure on the left and the challenges for you as the Visualization Analyst on the right.
+The rough architecture of the system is shown below, with the existing infrastructure on the left and the challenges for you as the visualization analyst on the right.
 
 ![Architecture](images/Architecture.svg)
 
@@ -109,9 +109,9 @@ This information describes characteristics of the incoming data. You will need t
 
 The files in Cloud Storage are updated frequently, either every 10 minutes or upon reaching 10.24 MB, whichever occurs first. You will need to create a database connection for this process.
 
-### Step 1 Understanding the data
+### Step 1. Understanding the data
 
-Set up an [event sync](https://cloud.google.com/storage-transfer/docs/event-driven-transfers) to replicate data from the source bucket into a bucket in your project. The change data is currently published to this topic `projects/paul-leroy/topics/flightdata-gcs-eventstream`, which you can subscribe to in your project. You will also need to check that the data transfer service API is enabled and that the data transfer service account has consume access on Pub/Sub, Bucket Viewer and Object Admin roles on your bucket. BigQuery DTS requires that the data source and BigQuery Dataset are in the same region so be cognizant of this as BigQuery will be unable to load data from other regions outside the dataset region. A daily sync is also acceptable, you can use the following template to decide on mechanisms:
+Set up an [event sync](https://cloud.google.com/storage-transfer/docs/event-driven-transfers) to replicate data from the source bucket into a bucket in your project. The change data is currently published to this topic `projects/paul-leroy/topics/flightdata-gcs-eventstream`, which you can subscribe to in your project. You will also need to check that the data transfer service API is enabled and that the data transfer service account has consume access on Pub/Sub, Bucket Viewer and Object Admin roles on your bucket. BigQuery DTS requires that the data source and BigQuery dataset are in the same region so be cognizant of this as BigQuery will be unable to load data from other regions outside the dataset region. A daily sync is also acceptable, you can use the following template to decide on mechanisms:
 
 Configure event synchronization to replicate data from a source bucket into a bucket within your Google Cloud project.
 
@@ -119,7 +119,7 @@ Configure event synchronization to replicate data from a source bucket into a bu
 
     Ensure that the Data Transfer Service API is enabled in your Google Cloud project.
 
-1. **Verify Data Transfer Service Account Permissions**
+1. **Verify Data Transfer Service account permissions**
 
     Confirm that the Data Transfer Service account possesses the following Identity and Access Management (IAM) roles:
 
@@ -129,15 +129,15 @@ Configure event synchronization to replicate data from a source bucket into a bu
 
     These roles are necessary for the service account to consume data from Pub/Sub and administer objects within your bucket.
 
-1. **Consider Regional Consistency for BigQuery Data Transfer Service (DTS)**
+1. **Consider regional consistency for BigQuery Data Transfer Service (DTS)**
     
     For BigQuery DTS, the data source and the BigQuery dataset must reside in the same region. BigQuery cannot load data from regions outside of the dataset's specified region. This is an important consideration for data transfer operations.
 
-1. **Subscribe to the Pub/Sub Topic**
+1. **Subscribe to the Pub/Sub topic**
 
     The change data is published to the Pub/Sub topic projects/paul-leroy/topics/flightdata-gcs-eventstream. You will need to subscribe to this topic within your project to receive data change notifications.
 
-1. **Determine Data Transfer Frequency**
+1. **Determine data transfer frequency**
 
     A daily synchronization is acceptable given the data characteristics:
 
@@ -145,9 +145,9 @@ Configure event synchronization to replicate data from a source bucket into a bu
     - Data Velocity: Roughly 3 MB per minute.
     - Reporting Frequency: Once per day, which is the primary factor determining the synchronization schedule.
 
-### Step 2 Choose a method for data loading
+### Step 2. Choose a method for data loading
 
-You will need to make the table visible in BigQuery. This can be achieved by either using Data Transfer Service ([DTS](https://cloud.google.com/bigquery/docs/dts-introduction)) to schedule data loads or by utilizing [object tables](https://cloud.google.com/bigquery/docs/biglake-intro).
+Make the table visible in BigQuery. This can be achieved by either using Data Transfer Service ([DTS](https://cloud.google.com/bigquery/docs/dts-introduction)) to schedule data loads or by utilizing [object tables](https://cloud.google.com/bigquery/docs/biglake-intro).
 
 Consider the following sample table structure:
 
@@ -164,9 +164,9 @@ Consider the following sample table structure:
 | MSG | 1  | 1   | 1   | 06A124 | 1   | 2025/03/10  | 0:23:29  | 2025/03/10  | 0:23:29  | QTR99Y | null | null | null | null | null | null | null | null | null | null| 0   |
 | MSG | 1  | 1   | 1   | 06A19F | 1   | 2025/03/10  | 8:29:02  | 2025/03/10  | 8:29:02  | QTR56Y | null | null | null | null | null | null | null | null | null | null| 0   |
 
-### Step 3 Clean and de-duplicate the data
+### Step 3. Clean and de-duplicate the data
 
-You will need to clean the data using SQL. The dates in the provided sample are unformatted and contain additional characters, making them difficult to use. You can use the `CAST` and `SAFE_CAST` functions to convert the data types, and you will need to utilize BigQuery's [date functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions) to properly format these date fields.
+Clean the data using SQL. The dates in the provided sample are unformatted and contain additional characters, making them difficult to use. You can use the `CAST` and `SAFE_CAST` functions to convert the data types, and you will need to utilize BigQuery's [date functions](https://cloud.google.com/bigquery/docs/reference/standard-sql/date_functions) to properly format these date fields.
 
 You should also implement a method to de-duplicate any data that may originate from multiple loggers. This will help ensure data accuracy and consistency.
 
@@ -187,8 +187,8 @@ If your queries encounter errors related to column mismatches, it indicates issu
 | 9 | MSG | 1  | 1   | 1   | 06A124 | 1   | 2025-03-10T00:23:29 | QTR99Y | null | null | null | null | null | null | null | null | null| 0   |
 | 10 | MSG | 1  | 1   | 1   | 06A19F | 1   | 2025-03-10T08:29:02 | QTR56Y | null | null | null | null | null | null | null | null | null| 0   |
 
-### Step 4 Handle duplicate rows and remove irrelevant fields
-You will need to address duplicate rows that may arise from overlapping receivers. While the generation date/time and data will be consistent across these duplicates, the logged date/time may vary depending on the specific logger that received the data. The granularity of this logging time is not sufficient for precise triangulation of aircraft, so you can decide how to best manage this field.
+### Step 4. Handle duplicate rows and remove irrelevant fields
+Address duplicate rows that may arise from overlapping receivers. While the generation date/time and data will be consistent across these duplicates, the logged date/time may vary depending on the specific logger that received the data. The granularity of this logging time is not sufficient for precise triangulation of aircraft, so you can decide how to best manage this field.
 
 The `AID`, `FID`, and `SID` fields from the remote devices are currently misconfigured and do not provide relevant data or insight. You should remove these fields from your dataset.
 
@@ -208,19 +208,19 @@ Consider the following example of the cleaned data, where `MT`, `TT`, `Hex`, `MG
 | 10 | MSG | 1  | 06A19F | 2025-03-10T08:29:02 | QTR56Y | null | null | null | null | null | null | null | null | null| 0   |
 
 
-## Task 2. Transition to a Dataflow-oriented ETL Process
+## Task 2. Transition to a Dataflow-oriented ETL process
 This task involves transitioning from a BigQuery-oriented ELT process to a Dataflow-oriented ETL process. This change enables data transformation during the loading phase, which facilitates the conversion of date/time fields into `datetime` or `timestamp` types upon loading.
 
-### Step 1. Develop a Dataflow Job for BigQuery Data Loading
-You will need to create a Dataflow job to load data into BigQuery from Cloud Storage. Utilizing [Workbenches](https://cloud.google.com/dataflow/docs/guides/interactive-pipeline-development) can expedite the development process for this job.
+### Step 1. Develop a Dataflow job for BigQuery data loading
+Create a Dataflow job to load data into BigQuery from Cloud Storage. Utilizing [Workbenches](https://cloud.google.com/dataflow/docs/guides/interactive-pipeline-development) can expedite the development process for this job.
 
-### Step 2. Implement Data Validation and Transformation
+### Step 2. Implement data validation and transformation
 The data should be validated against a regular expression to ensure its structure conforms to the required input. This validation helps to address instances where inconsistent data is written into Cloud Storage, which might impact the data view in BigQuery. Dates and times can be combined into a single field, which you can then use for data partitioning. Empty fields within the `CSV` should be converted into null values. You can also use Geography data types for the `Latitude` and `Longitude` data.
 
-### Step 3. Handle Non-conforming Data
+### Step 3. Handle non-conforming data
 If data does not match the regular expression, it should be written to a separate Cloud Storage bucket for review. This allows for evaluation of whether the data can be salvaged through improved ETL processes or if it can be safely discarded.
 
-### Step 4. Remove Duplicate Data
+### Step 4. Remove duplicate data
 Duplicate data, such as messages from a single aircraft received by two loggers, will require removal.
 
 <!----
@@ -230,11 +230,11 @@ Consolidate data from transactional databases and object storage into a single l
 
 ---->
 
-## Task 3. Orchestrate the Data Pipeline
+## Task 3. Orchestrate the data pipeline
 This task involves orchestrating the previously developed data pipeline to enable daily batch processing. The goal is to trigger the pipeline to move the previous day's data into the data warehouse.
 
-### Step 1. Create a Dataflow Template for Scheduled Execution
-You will need to create either a [dataflow template](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) or a [dataflow flex template](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates#python) from your pipeline. This template will allow the pipeline to be parameterized and invoked periodically. You can choose to call this template from [Cloud Composer](https://cloud.google.com/composer/docs/composer-3/composer-overview) or [Cloud Scheduler](https://cloud.google.com/scheduler/docs).
+### Step 1. Create a Dataflow template for scheduled execution
+Create either a [dataflow template](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) or a [dataflow flex template](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates#python) from your pipeline. This template will allow the pipeline to be parameterized and invoked periodically. You can choose to call this template from [Cloud Composer](https://cloud.google.com/composer/docs/composer-3/composer-overview) or [Cloud Scheduler](https://cloud.google.com/scheduler/docs).
 
 For this project, using Cloud Scheduler may be more cost-effective. In a production environment, Cloud Composer offers advantages for managing multiple pipelines and scaling across various teams. A quickstart guide for building templates can be found  [here](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates).
 
@@ -245,14 +245,14 @@ Orchestrate the first two tasks via an orchestration tool such as Composer or Da
 
 ---->
 
-## Task 4. Process Streaming Data with Pub/Sub and Dataflow
+## Task 4. Process streaming data with Pub/Sub and Dataflow
 
 The Data Capture team has upgraded data collection to use Pub/Sub, enabling near real-time data analytics. You will explore this streaming data and write a Dataflow pipeline to parse the data and store it in BigQuery, ensuring data validity.
 
-### Step 1. Ingest Data from Pub/Sub
-The data structure remains consistent, but the data source is now an API rather than a Google Cloud Storage bucket. Your initial Dataflow step will need to be compatible with both Google Cloud Storage and Pub/Sub for batch and stream processing. The data is available on the Pub/Sub topic `projects/paul-leroy/topics/flight-transponder`. You will need to create a subscription in your project, or you can dynamically create the subscription when your pipeline starts. This is an implicit feature when using the PubsubIO handler to read from a topic.
+### Step 1. Ingest data from Pub/Sub
+The data structure remains consistent, but the data source is now an API rather than a Google Cloud Storage bucket. Your initial Dataflow step will need to be compatible with both Google Cloud Storage and Pub/Sub for batch and stream processing. The data is available on the Pub/Sub topic `projects/paul-leroy/topics/flight-transponder`. Create a subscription in your project, or you can dynamically create the subscription when your pipeline starts. This is an implicit feature when using the PubsubIO handler to read from a topic.
 
-### Step 2. Structure Data for Analysis
+### Step 2. Structure data for analysis
 You now have access to a continuous stream of data. The next step involves restructuring this data to enable nesting of data per session. A session is defined as the period from when an aircraft is first detected to when it is last detected. For visualization purposes, the key fields are the Timestamp/DateTime, the aircraft's `ICAO24` identifier, altitude, and location (latitude and longitude). Aircraft may remain airborne past midnight, so the session logic should accommodate flights that span multiple days.
 
 An example of the data structure, with chronological ordering, is provided below:
@@ -260,7 +260,7 @@ An example of the data structure, with chronological ordering, is provided below
 <!----
 Initial request
 
-Now visit streaming data via Pub/Sub and Dataflow. Explore the data (that has been written to a sink in GCS) and write a pipeline to properly parse the data and store it in BigQuery. Ensure that the data is valid.
+Now visit streaming data via Pub/Sub and Dataflow. Explore the data (that has been written to a sink in Cloud Storage) and write a pipeline to properly parse the data and store it in BigQuery. Ensure that the data is valid.
 
 ---->
 
@@ -296,7 +296,7 @@ In this task, you will be responsible for loading data from an external website 
 
 ### Step 1
 
-**Provision a Cloud SQL PostgreSQL Instance**
+**Provision a Cloud SQL PostgreSQL instance**
 
 Your first step is to set up a Cloud SQL PostgreSQL instance. This instance will serve as the initial repository for the aircraft metadata you'll be downloading.
 
