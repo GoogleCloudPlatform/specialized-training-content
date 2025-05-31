@@ -8,11 +8,11 @@ Fictional Aircraft Tracking Company is a leading provider of flight tracking dat
 
 Our mission is to revolutionize the way flight tracking data is utilized, empowering our partners to make informed decisions, optimize operations, and mitigate potential risks. By harnessing the power of data, Fictional Aircraft Tracking Company is committed to ensuring the highest standards of safety and efficiency in the global aviation industry.
 
-The flight data is gathered from a distributed network of ADS-B receivers connected to small, remote publishing edge compute platforms. These send all data received to Pub/Sub. There are multiple sensors in each region. The busiest airspaces can have more than 2,000 messages per second being received from over 100 aircraft. The messages are published to a Pub/Sub topic for easy consumption and this is backed up to a Google Cloud Storage bucket. The flight data is collected through a network of ADS-B receivers, which are strategically distributed and linked to compact, remote edge computing platforms. These platforms are designed for efficient data processing at the source. Each receiver within the network plays a crucial role in capturing real-time data from aircraft within its coverage area.
 
-Due to the dynamic nature of air traffic, the volume of data generated can be substantial. In densely populated airspace, the system can handle an influx of over 2,000 messages per second, originating from more than 100 aircraft. To manage this high-velocity data stream, the messages are published to a Pub/Sub topic. This approach ensures that the data is readily available for consumption by various applications and services. Additionally, the data is backed up to a Google Cloud Storage bucket, providing a durable and reliable storage solution for long-term retention and analysis.
+Flight data is gathered from a distributed network of ADS-B receivers connected to remote edge compute platforms that efficiently process data at the source. The dynamic nature of air traffic results in significant data velocity variations, with busy airspaces generating over 2,000 messages per second from 100+ aircraft. This high-velocity stream is published to a Pub/Sub topic for easy consumption. To meet durability requirements for long-term retention and analysis, the data is also backed up to a Google Cloud Storage bucket, providing a reliable storage solution.
 
-The rough architecture of the system is shown below with the existing infrastructure on the left and the challenges for you as the visualization analyst on the right.
+
+The rough architecture of the system is shown below with the existing infrastructure on the left and the challenges for the visualization analyst on the right.
 
 ![Architecture](images/Architecture.svg)
 
@@ -216,31 +216,31 @@ USING
 
 ## Task 1: Connect Cloud SQL to BigQuery to reduce operational database load
 
-To complete this task, you will need to analyze data, evaluate query performance, and establish a connection between Cloud SQL and BigQuery. The goal is to address performance issues that affect daily operations, which are a result of the current database server's limitations in handling full table scans.
+Investigate the query performance, and perform the initial connection of the data into bigquery establish a connection between Cloud SQL and BigQuery. The goal is to address performance issues that affect daily operations, which are a result of the current database server's limitations in handling full table scans. Keep in mind that the CloudSQL database is the Operational Data Source (ODS) and is used for other services outside the scope of this challenge and as such the data has to be accessible from BigQuery but cannot be moved in its entirety.
 
 A key part of this task is to move analytical queries from the operational database to BigQuery. This will involve:
 
-- **Establishing a Federated connection**: You will create a connection from BigQuery to Cloud SQL. This process uses BigQuery's federated query capabilities, allowing BigQuery to directly read data from your operational database. This method shifts the computational load of joins to BigQuery, thereby reducing the strain on the Cloud SQL instance.
-- **Analyzing performance with Looker Studio**: You will investigate the Looker Studio dashboard to understand the causes of current performance issues and data inconsistencies.
+- **Establishing a Federated connection**: Create a connection from BigQuery to Cloud SQL. This process uses BigQuery's federated query capabilities, allowing BigQuery to directly read data from the operational database. This method shifts the computational load of joins to BigQuery, thereby reducing the strain on the Cloud SQL instance.
+- **Analyzing performance with Looker Studio**: Investigate the Looker Studio dashboard to understand the causes of current performance issues and data inconsistencies.
 
 The current database performance problems are worsened by the database server's limited capacity. Using federated queries with BigQuery is a strategy to reduce the operational database load, as BigQuery will handle the sequential scanning and joining of data. This is particularly relevant because current queries are slow even with a single day's data, indicating that scaling to larger datasets (e.g., 30 days) would significantly worsen performance.
 
-You will need to create a database connection. Refer to the documentation on BigQuery federated queries with Cloud SQL for guidance: <https://cloud.google.com/bigquery/docs/cloud-sql-federated-queries>.
+Create a database connection. Refer to the documentation on BigQuery federated queries with Cloud SQL for guidance: <https://cloud.google.com/bigquery/docs/cloud-sql-federated-queries>.
 
 ## Task 2. Move the larger of the two datasets into BigQuery using a scheduled query
 <!---Create a new table (or tables) with appropriate schema to optimize query performance. Leverage repeated and nested fields where appropriate.  Create a scheduled query to repopulate this new table once per day.--->
 
-Moving a portion of the data to BigQuery offloads the operational data source (ODS) from query burdens. You will transfer the larger ADSB dataset to BigQuery.
+Moving a portion of the data to BigQuery offloads the operational data source (ODS) from query burdens. Transfer the larger ADSB dataset to BigQuery.
 
 Some tables, potentially subject to frequent updates by operational systems, can remain in Cloud SQL. Joining a smaller Cloud SQL table with larger BigQuery data is feasible.
 
-You will create a scheduled query for the ADSB aircraft data to import it into BigQuery. Aircraft details can remain in Cloud SQL. In this scenario, assume that the aircraft database might be updated frequently, making it less suitable for BigQuery.
+Create a scheduled query for the ADSB aircraft data to import it into BigQuery. Aircraft details can remain in Cloud SQL. In this scenario, assume that the aircraft database might be updated frequently, making it less suitable for BigQuery.
 
 When building the dashboarding infrastructure, note that federated data sources, such as Cloud SQL, must reside in the same region or multi-regional area as the BigQuery execution engine. Cross-region joins between Cloud SQL and BigQuery are not supported (e.g., Cloud SQL in `europe-west1` and BigQuery in `US` should show an error). This regional alignment is important when joining data between native and federated data sources.
 
-You will also need to perform an initial data load, followed by subsequent loads using a high-water mark strategy.
+Perform an initial data load, followed by subsequent loads using a high-water mark strategy.
 
-To initiate the load and perform type conversions, you will need to create a database connection.
+To initiate the load and perform type conversions, create a database connection.
 
 ```sql
 drop table if exists flightData.adsbData;
@@ -262,37 +262,37 @@ FROM
 
 ![Architecture](images/lookerstudio_01.png)
 
-To create a report showing the minimum and maximum altitude for each flight and display information about flights, manufacturers, and operators, you will need to perform a join between your ADSB data in BigQuery and your aircraft details in Cloud SQL. The icao24 field, when lowercased, can be used as the join key.
+To create a report showing the minimum and maximum altitude for each flight and display information about flights, manufacturers, and operators, Perform a join between the ADSB data in BigQuery and the aircraft details in Cloud SQL. The icao24 field, when lowercased, can be used as the join key.
 
-Here is a BigQuery SQL query to achieve this. This query assumes you have:
+Here is a BigQuery SQL query to achieve this. This query assumes that the following exists:
 
 A BigQuery dataset named your_adsb_dataset with a table named `adsb_flights` containing `generated` (timestamp) and `altitude_feet` fields, along with `icao24`.
-An external table in BigQuery named `your_operational_dataset.aircraft_details` that connects to your Cloud SQL instance, containing `manufacturericao`,` model`, `owner`, and `icao24` fields.
+An external table in BigQuery named `your_operational_dataset.aircraft_details` that connects to the Cloud SQL instance, containing `manufacturericao`,` model`, `owner`, and `icao24` fields.
 
-Before running this query, ensure you have:
+Before running this query, ensure that the following has been done:
 
-1. Loaded your ADSB data into a BigQuery table.
-1. Created an external table in BigQuery that connects to your Cloud SQL instance. This external table allows BigQuery to query data directly from Cloud SQL without importing it.
-1. Configured regional co-location for your BigQuery dataset and Cloud SQL instance. As mentioned, BigQuery federated queries to Cloud SQL require them to be in the same region or multi-regional area.
+1. Loaded the ADSB data into a BigQuery table.
+1. Created an external table in BigQuery that connects to the Cloud SQL instance. This external table allows BigQuery to query data directly from Cloud SQL without importing it.
+1. Configured regional co-location for the BigQuery dataset and Cloud SQL instance. As mentioned, BigQuery federated queries to Cloud SQL require them to be in the same region or multi-regional area.
 
 ![Architecture](images/lookerstudio_02.png)
 
-To accurately count unique aircraft, you will need to create a calculated field. The existing record count may display the total number of records, which will be higher than the actual number of distinct aircraft.
+Create a calculated field to accurately count unique aircraft. The existing record count may display the total number of records, which will be higher than the actual number of distinct aircraft.
 
 Create a new calculated field.
 
 1. Use the `icao24` identifier to count unique aircraft. This will provide a more precise representation of the number of aircraft observed, rather than the total data entries.
-1. This step will highlight data quality considerations, which are an integral part of this data quality challenge. Your role is to present the data as observed.
+1. This step will highlight data quality considerations, which are an integral part of this data quality challenge. The expectation is to present the data as observed.
 
 ## Task 4. Optimize query performance with materialized views and BI Engine
 
-To improve query performance, you will need to create materialized views. Additionally, configure BI Engine to further enhance performance.
+Create materialized views to improve query performance. Additionally, configure BI Engine to further enhance performance.
 
 It is recommended to filter data by removing altitudes exceeding 43,000 feet or below 0 feet. Records without location and altitude data should also be removed.
 
-Enable BI Engine and target the tables relevant to your queries to accelerate response times.
+Enable BI Engine and target the tables relevant to the queries to accelerate response times.
 
-Rebuild your Looker query to utilize the newly created materialized views and federated data. You can aggregate flight data into single rows by nesting the geometry data into a line.
+Rebuild the Looker query to utilize the newly created materialized views and federated data. Aggregate flight data into single rows by nesting the geometry data into a line.
 
 ![Architecture](images/lookerstudio_03.png)
 
@@ -300,20 +300,16 @@ Rebuild your Looker query to utilize the newly created materialized views and fe
 
 ### Dashboard Enhancements: Integrating additional metrics and visualizations
 
-You are now tasked with enhancing the existing dashboard by incorporating new metrics and visualizations, as requested by the business team. This involves revisiting your previous work and integrating these new requirements into the dashboard.
+Enhance the existing dashboard with additional metrics and visualizations, as requested by the business team. This involves revisiting the previous work and integrating these new requirements into the dashboard.
 
 ### Aircraft data tooltip
 
-The business team requires a tooltip displaying aircraft data. You will need to create a data connection that fetches information from the following endpoint:
-Aircraft Data Endpoint: <https://api.planespotters.net/pub/photos/hex/0101DB>
-
-###  Aircraft image and information link
-
-The application team has exposed an API that provides an image of the aircraft based on its ICAO number. It is also beneficial to link this thumbnail image to a detailed aircraft information page.
+The business team requires a tooltip displaying aircraft data. There is flight information at the following endpoint:
+Aircraft Data Endpoint: <https://api.planespotters.net/pub/photos/hex/0101DB> which the application team has exposed as an API that provides an image of the aircraft based on its ICAO number. It is also beneficial to link this thumbnail image to a detailed aircraft information page.
 
 - Aircraft Image API: <https://aircraftimage-707366556769.us-central1.run.app/0101DB>
 
-You can refer to the following Looker Studio dashboard as an example for integrating these features:
+Refer to the following Looker Studio dashboard as an example for integrating these features:
 
 - Example Looker Studio Dashboard: <https://lookerstudio.google.com/reporting/1zOZ2aPL8HYl4JIhjsMQKvj5BSWwcKRdv/page/EQxK>
 

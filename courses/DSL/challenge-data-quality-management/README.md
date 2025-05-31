@@ -6,15 +6,11 @@
 
 Fictional Aircraft Tracking Company is a leading provider of flight tracking data analytics, dedicated to enhancing the safety of civil aviation worldwide. With a team of experienced aviation professionals and data scientists, we leverage advanced technologies to analyze vast amounts of flight data, providing critical insights to airlines, airports, and regulatory authorities.
 
-
 Our mission is to revolutionize the way flight tracking data is utilized, empowering our partners to make informed decisions, optimize operations, and mitigate potential risks. By harnessing the power of data, Fictional Aircraft Tracking Company is committed to ensuring the highest standards of safety and efficiency in the global aviation industry.
 
+Flight data is gathered from a distributed network of ADS-B receivers connected to remote edge compute platforms that efficiently process data at the source. The dynamic nature of air traffic results in significant data velocity variations, with busy airspaces generating over 2,000 messages per second from 100+ aircraft. This high-velocity stream is published to a Pub/Sub topic for easy consumption. To meet durability requirements for long-term retention and analysis, the data is also backed up to a Google Cloud Storage bucket, providing a reliable storage solution.
 
-The flight data is gathered from a distributed network of ADS-B receivers connected to small, remote publishing edge compute platforms. These send all data received to Pub/Sub. There are multiple sensors in each region. The busiest airspaces can have more than 2,000 messages per second being received from over 100 aircraft. The messages are published to a Pub/Sub topic for easy consumption and this is backed up to a Google Cloud Storage bucket. The flight data is collected through a network of ADS-B receivers, which are strategically distributed and linked to compact, remote edge computing platforms. These platforms are designed for efficient data processing at the source. Each receiver within the network plays a crucial role in capturing real-time data from aircraft within its coverage area.
-
-Due to the dynamic nature of air traffic, the volume of data generated can be substantial. In densely populated airspace, the system can handle an influx of over 2,000 messages per second, originating from more than 100 aircraft. To manage this high-velocity data stream, the messages are published to a Pub/Sub topic. This approach ensures that the data is readily available for consumption by various applications and services. Additionally, the data is backed up to a Google Cloud Storage bucket, providing a durable and reliable storage solution for long-term retention and analysis.
-
-The rough architecture of the system is shown below with the existing infrastructure on the left and the challenges for you as the visualization analyst on the right.
+The rough architecture of the system is shown below with the existing infrastructure on the left and the challenges for later labs as the visualization analyst on the right.
 
 ![Architecture](images/Architecture.svg)
 
@@ -57,7 +53,7 @@ The rough architecture of the system is shown below with the existing infrastruc
 ## Task 1. Identify data issues
 This task involves examining datasets for potential problems. Data is collected in two message formats from aircraft. One format sends multiple messages over the air, while the other sends a single message that is decoded into multiple messages upon receipt. Both formats utilize the same structure across BigQuery, Cloud Storage, and Pub/Sub. A common issue is that individual messages may contain only partial data.
 
-You will query the raw data from Cloud Storage, the messages from the subscription, and the BigQuery table.
+Query the raw data from Cloud Storage, the messages from the subscription, and the BigQuery table.
 
 ### Step 1. Investigate data coverage gaps
 Ground-based ADS-B systems have line-of-sight limitations, which can result in coverage gaps over oceans, mountainous regions, and at low altitudes.
@@ -72,10 +68,12 @@ Write a query to analyze the volume of missing data per aircraft. This will help
 ### Step 3. Identify transponder and data source anomalies
 Aircraft may broadcast incorrect transponder codes, such as default codes like "000000" or "123456." This can lead to misidentification or the appearance of multiple aircraft when only one is present.
 
-Since the current data streams are exclusively from ADS-B, you can expect these to be the primary data quality issues requiring consideration.
+Since the current data streams are exclusively from ADS-B, expect these to be the primary data quality issues requiring consideration.
+
+Filter out data that does not match a 24-bit hexadecimal representation or all-zeroes for the aircraft identifier (`icao24` or `Hex` field)
 
 ## Task 2. Create a data mesh with Dataplex
-You will create a data mesh with Dataplex to track different data sources and streams. You will use data profiling to identify potential issues in your datasets. This task involves creating the data lake and profiles for Cloud Storage. The Pub/Sub source will be addressed later in the challenge.
+Create a data mesh with Dataplex to track different data sources and streams. Use data profiling to identify potential issues in the datasets. This task involves creating the data lake and profiles for Cloud Storage. The Pub/Sub source will be addressed later in the challenge.
 
 - **Lakes:** A Dataplex Lake, such as "FlightOperationsDataDomain," functions as the top-level logical container for flight-related data and metadata within the data mesh. It represents a business domain, unifying distributed data assets under a common governance umbrella.
 - **Zones (Raw and Curated):** Within this lake, data is organized into Zones, which can represent sub-domains or stages of data processing.
@@ -83,7 +81,7 @@ You will create a data mesh with Dataplex to track different data sources and st
     - **Curated zones:** Data that has been processed, validated, and cleansed is promoted to curated zones. These zones typically house structured data in BigQuery, ready for consumption by analytical tools and operational applications. Data in curated zones must conform to predefined schemas and meet established quality standards. The transition from a raw zone to a curated zone is not merely a change in data state but represents a data quality gating mechanism. Only data that successfully passes through the defined transformation and validation pipelines (e.g., Dataflow processing and Dataplex quality checks) is promoted to a curated zone. Access controls can be more stringent for curated zones, ensuring that downstream consumers primarily interact with data that has met these quality benchmarks.
 - **Assets:** Physical storage resources, such as Cloud Storage buckets for raw data feeds and BigQuery datasets for curated flight information, are mapped as assets within their respective zones. This links the logical data mesh structure defined in Dataplex to the underlying data storage, enabling centralized discovery, metadata management, and governance.
 
-Some potential data issues you may encounter:
+Some potential data issues that may be encountered:
 
 - **Out-of-range values:** Altitudes exceeding 73,000 feet, negative ground speeds, or latitudes outside the -90 to +90 range. There may be U2 aircraft in the feed (service ceiling of 73,000 ft) in addition to commercial aircraft.
 - **Unexpected nulls:** Missing aircraft ICAO24 identifiers, timestamps, or positional data.
@@ -94,39 +92,39 @@ Some potential data issues you may encounter:
 Create a Dataplex Lake named "FlightOperationsDataDomain".
 
 ### Step 2. Create zones within the lake
-Create two zones within your "FlightOperationsDataDomain" lake:
+Create two zones within the "FlightOperationsDataDomain" lake:
 
 - A "Raw Zone" for unprocessed data.
 - A "Curated Zone" for processed and validated data.
 
 ### Step 3. Add assets to the zones
-Map your Cloud Storage buckets (for raw data) and BigQuery datasets (for curated data) as assets within their respective zones. This establishes the link between your logical data mesh and the physical data storage.
+Map the Cloud Storage buckets (for raw data) and BigQuery datasets (for curated data) as assets within their respective zones. This establishes the link between the logical data mesh and the physical data storage.
 
 ### Step 4. Configure data profiling
-Configure data profiling for your Cloud Storage assets. This will help you identify potential data quality issues, such as out-of-range values, unexpected nulls, and cardinality anomalies, and recommend data quality rules.
+Configure data profiling for the Cloud Storage assets. This will help identify potential data quality issues, such as out-of-range values, unexpected nulls, and cardinality anomalies, and recommend data quality rules.
 
 ## Task 3. Define and implement data quality rules
-This task involves defining and implementing data quality rules within the Google Cloud environment. You will translate general aviation data quality principles and domain-specific knowledge into executable checks.
+This task involves defining and implementing data quality rules within the Google Cloud environment. Translate general aviation data quality principles and domain-specific knowledge into executable checks.
 
 ### Step 1. Create Pub/Sub topics
-Create two Pub/Sub topics. One topic will serve as the primary feed for your project, and the second will be a dead-letter queue for data that requires further review. Additionally, set the schema on the primary topic to match the expected output of your Dataflow pipeline.
+Create two Pub/Sub topics. One topic will serve as the primary feed for the project, and the second will be a dead-letter queue for data that requires further review. Additionally, set the schema on the primary topic to match the expected output of the Dataflow pipeline.
 
 ### Step 2. Develop a Dataflow pipeline
 Write a Dataflow pipeline to clean the data. The cleaned data will be written to the ingest topic. Any data that does not conform to the required structure will be output to the hospitalization topic.
 
 ### Step 3. Configure alerts for data mismatches
-Set a pull subscription on the hospitalization topic. An alert will be configured on the number of unacknowledged messages on this topic, ensuring you are notified of any data mismatches.
+Set a pull subscription on the hospitalization topic. An alert will be configured on the number of unacknowledged messages on this topic, ensuring notifications are sent when there are issues with any data mismatches.
 
 ### Step 4. Sink data to BigQuery
 Directly sink data from the ingest topic into the BigQuery curated table.
 
-## Task 4
+## Task 4. Add additional validations on the data based on domain knowledge
 
 <!---
 Original ask
 Create a data quality workflow in Dataplex to capture issues as they arise. Schedule tasks to run on a regular basis and alert you when there are issues.--->
 
-You can add additional checks, some ideas are:
+Implement additional check in Dataplex, some examples are below, but keep in mind edge cases:
 
 - **Implementing predefined Dataplex rules for common flight data checks**:
 Dataplex offers a suite of predefined rule types that can be directly applied to BigQuery tables containing flight data 26:
@@ -156,10 +154,10 @@ Dataplex offers a suite of predefined rule types that can be directly applied to
         - `altitude < 1000 AND ground_speed > 150` (flag potential error: aircraft too fast at very low altitude, unless it's a specific known takeoff/landing phase for certain aircraft).
         - `ABS(vertical_rate) > 12000` (flag potentially erroneous extreme vertical speeds).
         - Check for consistency between reported flight phase (e.g., climb, cruise, descent) and telemetry (e.g., flight_phase = 'CRUISE' AND vertical_rate > 500).
-        - Referential integrity for simple lookups: airport_code IN (`SELECT code FROM master_airport_list_table`) (though complex joins might be better handled in Dataflow or via pre-materialized views as Dataplex rules primarily focus on a single table 28).
+        - Referential integrity for simple lookups: airport_code IN (`SELECT code FROM master_airport_list_table`) (though complex joins might be better handled in Dataflow or via pre-materialized views as Dataplex rules primarily focus on a single table).
     - **Aggregate SQL expression (evaluates once per table, SQL expression returns boolean)**:
         - `SELECT COUNT(*) = 0 FROM my_flight_data WHERE on_ground = TRUE AND altitude_ft > 1000` (ensure no aircraft reported as on ground are at significant altitude).
-        - Referential integrity check: `(SELECT COUNT(DISTINCT f.aircraft_id) FROM flight_movements f WHERE f.aircraft_id NOT IN (SELECT DISTINCT a.aircraft_id FROM aircraft_master a)) = 0` (ensure all aircraft in movement logs exist in the master aircraft registry). 29 provides an example for checking UUID existence. While predefined rules cover many scenarios, the ability to define custom SQL rules allows domain experts to directly translate their specific knowledge of flight operations and data characteristics into executable quality checks, particularly for validations on already loaded and curated data.
+        - Referential integrity check: `(SELECT COUNT(DISTINCT f.aircraft_id) FROM flight_movements f WHERE f.aircraft_id NOT IN (SELECT DISTINCT a.aircraft_id FROM aircraft_master a)) = 0` (ensure all aircraft in movement logs exist in the master aircraft registry). provides an example for checking UUID existence. While predefined rules cover many scenarios, the ability to define custom SQL rules allows domain experts to directly translate their specific knowledge of flight operations and data characteristics into executable quality checks, particularly for validations on already loaded and curated data.
 - Employing Dataflow for Real-time Validation, Cleansing, and Enrichment:
 While Dataplex excels at validating data at rest in BigQuery, Google Cloud Dataflow is the preferred service for performing complex, real-time validation, cleansing, and enrichment on streaming flight data as it arrives from Pub/Sub and before it lands in curated BigQuery tables.30 Dataflow pipelines, built using the Apache Beam SDK, can implement sophisticated logic:
     - **Complex data cleansing**:
@@ -183,20 +181,20 @@ Original ask
 Some of the issues arising are happening with incoming streaming data. Implement controls on the Pub/Sub topic (such as schemas) and post-processing (using Dataflow or continuous queries) to clean data as it arrives for the data warehouse. Store both raw data and transformed data into different datasets. Update your data mesh with this in mind.--->
 
 ## Task 5. Modify Dataflow pipeline
-You will need to update your dataflow pipeline to filter flights and modify data fields.
+Update the dataflow pipeline to filter flights and modify data fields.
 
 ### Step 1. Filter flights
-Modify the existing rule to exclude flights with an altitude exceeding 43,100 feet. Apply this filter to the appropriate field in your data.
+Modify the existing rule to exclude flights with an altitude exceeding 43,100 feet. Apply this filter to the appropriate field in the data.
 
 ### Step 2. Concatenate and drop fields
-Adjust the data structure requirements within your dataflow pipeline. Concatenate the TMG and DMG fields into a new `DATETIME` field. Additionally, drop the `DML` and `TML` fields from the dataflow as you may get messages from two receivers picking up the same message. 
+Adjust the data structure requirements within the dataflow pipeline. Concatenate the TMG and DMG fields into a new `DATETIME` field. Additionally, drop the `DML` and `TML` fields from the dataflow as two receivers pick up the same message. 
 
 ### Step 3. Update Pub/Sub messages, schema, and quality controls
-Republish the Pub/Sub messages with the updated data. Modify the Pub/Sub schema to reflect the new `DATETIME` field and the removal of the `DML` and `TML` fields. Update your quality controls to align with these changes.
+Republish the Pub/Sub messages with the updated data. Modify the Pub/Sub schema to reflect the new `DATETIME` field and the removal of the `DML` and `TML` fields. Update the quality controls to align with these changes.
 
-You are interested in only commercial airlines, change the rules to remove any flights above 43,100 feet. The upstream team are amending the data structure requirements to have the `TMG` and `DMG` field concatenated into a `DATETIME` field and drop the `DML` and `TML` fields. Update your dataflow pipeline that is republishing the Pub/Sub messages, the schema, and quality controls.
+F-ATC are interested in only commercial airlines, change the rules to remove any flights above 43,100 feet. The upstream team are amending the data structure requirements to have the `TMG` and `DMG` field concatenated into a `DATETIME` field and drop the `DML` and `TML` fields. Update the dataflow pipeline that is republishing the Pub/Sub messages, the schema, and quality controls.
 
-When running this, you may end up with this error which indicates one of the receivers is appending garbage to the end of the line. Rather than fail the `int` conversion set it to null. `{'error': "Type conversion error: invalid literal for int() with base 10: '\\r'", 'data': {'MT': 'MSG', 'TT': '6', 'SID': '1', 'AID': '1', 'Hex': '39CF01', 'FID': '1', 'DMG': '2025-05-23', 'TMG': '09:28:19.864', 'DML': '2025-05-23', 'TML': '09:28:19.918', 'VR': '352', 'Sq': 6307, 'Alrt': 0, 'Emer': 0, 'SPI': 0, 'Gnd': '\r'}}`. Notice the `\r` in the `Ground` field, this means that the data is being added with a Windows style newline `\r\n` and Pub/Sub will remove the `\n` but not the `\r`. If this field is not numeric, it would be a good idea to null it rather than trigger an error.
+When running this, an error which indicates one of the receivers is appending garbage to the end of the line may be received. Rather than fail the `int` conversion set it to null. `{'error': "Type conversion error: invalid literal for int() with base 10: '\\r'", 'data': {'MT': 'MSG', 'TT': '6', 'SID': '1', 'AID': '1', 'Hex': '39CF01', 'FID': '1', 'DMG': '2025-05-23', 'TMG': '09:28:19.864', 'DML': '2025-05-23', 'TML': '09:28:19.918', 'VR': '352', 'Sq': 6307, 'Alrt': 0, 'Emer': 0, 'SPI': 0, 'Gnd': '\r'}}`. Notice the `\r` in the `Ground` field, this means that the data is being added with a Windows style newline `\r\n` and Pub/Sub will remove the `\n` but not the `\r`. If this field is not numeric, it would be a good idea to null it rather than trigger an error.
 
 Sample data going into the `hospitalization` topic:
 ```json
@@ -215,7 +213,7 @@ Sample data going into the `hospitalization` topic:
 {"quality": "altitude", "data": {"MT": "MSG", "TT": "7", "SID": "1", "AID": "1", "Hex": "402EE4", "FID": "1", "DMG": "2025-05-23", "TMG": "10:12:39.526", "DML": "2025-05-23", "TML": "10:12:39.570", "Alt": -100}}
 ```
 
-Update the schema on Pub/Sub to match your new structure. You can use this schema (but you'll need to make sure your data matches):
+Update the schema on Pub/Sub to match the new structure. Below is a schema that can be used as a starting point but the data structure will need to match it.
 
 ```json
 {
