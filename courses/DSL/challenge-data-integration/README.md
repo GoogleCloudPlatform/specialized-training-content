@@ -14,13 +14,13 @@ The rough architecture of the system is shown below, with the existing infrastru
 
 ![Architecture](images/Architecture.svg)
 
-## Task 1. Initial Batch Data Processing
+## Task 1. Initial batch data processing
 
 The critical challenges from a data engineering perspective, beyond the potentially dirty data, lie in the physical implementation of the system. In data engineering, it is preferred to have duplicate data rather than to lose data. However, this means that the system must be designed to tolerate duplicate data throughout the pipeline. Duplication may occur at:
 
 Data duplication is a common challenge in data engineering. Duplication can occur at various stages of a data pipeline.
 
-**Sources of Data Duplication**
+**Sources of data duplication**
 
 - **Aircraft Data Transmission:** An aircraft might transmit the same data multiple times, potentially with identical generation timestamps.
 - **Logger Data Reception:** The logger responsible for collecting data may record the reception of the same data more than once.
