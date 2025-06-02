@@ -216,7 +216,7 @@ USING
 
 ## Task 1: Connect Cloud SQL to BigQuery to reduce operational database load
 
-Investigate the query performance, and perform the initial connection of the data into bigquery establish a connection between Cloud SQL and BigQuery. The goal is to address performance issues that affect daily operations, which are a result of the current database server's limitations in handling full table scans. Keep in mind that the CloudSQL database is the Operational Data Source (ODS) and is used for other services outside the scope of this challenge and as such the data has to be accessible from BigQuery but cannot be moved in its entirety.
+Investigate the query performance, and perform the initial connection of the data into BigQuery. Establish a connection between Cloud SQL and BigQuery. The goal is to address performance issues that affect daily operations, which are a result of the current database server's limitations in handling full table scans. Keep in mind that the Cloud SQL database is the Operational Data Source (ODS) and is used for other services outside the scope of this challenge and as such the data has to be accessible from BigQuery but cannot be moved in its entirety.
 
 A key part of this task is to move analytical queries from the operational database to BigQuery. This will involve:
 
@@ -262,7 +262,7 @@ FROM
 
 ![Architecture](images/lookerstudio_01.png)
 
-To create a report showing the minimum and maximum altitude for each flight and display information about flights, manufacturers, and operators, Perform a join between the ADSB data in BigQuery and the aircraft details in Cloud SQL. The icao24 field, when lowercased, can be used as the join key.
+To create a report showing the minimum and maximum altitude for each flight and display information about flights, manufacturers, and operators, perform a join between the ADSB data in BigQuery and the aircraft details in Cloud SQL. The icao24 field, when lowercased, can be used as the join key.
 
 Here is a BigQuery SQL query to achieve this. This query assumes that the following exists:
 
