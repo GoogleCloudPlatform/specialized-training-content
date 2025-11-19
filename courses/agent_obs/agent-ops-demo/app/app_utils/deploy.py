@@ -275,6 +275,9 @@ def deploy_agent_engine_app(
     # Generate class methods spec from register_operations
     class_methods_list = generate_class_methods_from_agent(agent_instance)
 
+    env_vars['GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY'] = 'true'
+    env_vars['OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT'] = 'true'
+
     config = AgentEngineConfig(
         display_name=display_name,
         description=description,
