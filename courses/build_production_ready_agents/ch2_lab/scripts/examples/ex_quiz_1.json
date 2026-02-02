@@ -1,0 +1,27 @@
+{
+  "contents_example": {
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Please give me a quiz on the following topic: Phoenix APIs."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "expected_contents": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": "📝 Quiz: Gemini APIs\n\nQuestion 1: Which of the following is a key characteristic of Gemini APIs in terms of modality?\nA) Strictly text-based input and output.\nB) Capable of understanding and processing multiple types of information, including text, images, audio, and video.\nC) Primarily designed for tabular data analysis.\nD) Limited to only image generation.\n\nQuestion 2: What is the primary purpose of using Phoenix APIs for developers?\nA) To build traditional software applications with no AI components.\nB) To integrate advanced AI capabilities, such as natural language understanding and generation, into their applications.\nC) To perform basic database operations.\nD) To create simple websites with static content.\n\nQuestion 3: Which of the following is a core concept or technology that powers Phoenix APIs?\nA) Large Language Models (LLMs)\nB) Relational Databases\nC) Simple Mail Transfer Protocol (SMTP)\nD) Hypertext Transfer Protocol (HTTP)\n\nQuestion 4: When interacting with Phoenix APIs, what is a common way to send prompts or input data?\nA) Via FTP transfers.\nB) Through direct SQL queries.\nC) By sending email attachments.\nD) Using structured requests, often in JSON format, via an API endpoint.\n\nQuestion 5: What is a potential benefit of using Phoenix APIs for content creation tasks?\nA) Automating the generation of creative text formats, code, and other content.\nB) Replacing all human creative input.\nC) Exclusively for data entry.\nD) Only for debugging existing code.\n\n---\nAnswers: 1-B, 2-B, 3-A, 4-D, 5-A"
+            }
+          ],
+          "role": "model"
+        }
+      }
+    ]
+  },
+  "search_key": "Please give me a quiz on the following topic: Phoenix APIs."
+}

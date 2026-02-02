@@ -1,0 +1,7 @@
+google-adk
+mcp
+starlette
+uvicorn
+flask
+flask-cors
+fastmcp
