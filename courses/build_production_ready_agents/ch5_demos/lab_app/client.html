@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADK Agent Client - Streaming</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #fafafa;
+            height: 100vh;
+            overflow: hidden;
+            color: #1a1a1a;
+        }
+        
+        .app-container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Main Chat Panel */
+        .chat-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            transition: margin-right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .chat-panel.shifted {
+            margin-right: 600px;
+        }
+        
+        .header {
+            background: #ffffff;
+            color: #1a1a1a;
+            padding: 24px 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+        
+        #currentSession {
+            font-size: 13px;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+        
+        .message {
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            border-radius: 4px;
+            max-width: 70%;
+        }
+        
+        .message.user {
+            background: #f0f0f0;
+            margin-left: auto;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .message.agent {
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .message.agent.streaming {
+            border-left: 3px solid #4285f4;
+        }
+        
+        .message .label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .message .content {
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        
+        /* Markdown styling for agent messages */
+        .message.agent .content {
+            white-space: normal;
+        }
+        
+        .message.agent .content h1,
+        .message.agent .content h2,
+        .message.agent .content h3 {
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .message.agent .content h1 {
+            font-size: 18px;
+        }
+        
+        .message.agent .content h2 {
+            font-size: 16px;
+        }
+        
+        .message.agent .content h3 {
+            font-size: 15px;
+        }
+        
+        .message.agent .content p {
+            margin-bottom: 10px;
+        }
+        
+        .message.agent .content ul,
+        .message.agent .content ol {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .message.agent .content li {
+            margin-bottom: 4px;
+        }
+        
+        .message.agent .content code {
+            background: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .message.agent .content pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 10px;
+        }
+        
+        .message.agent .content pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        .message.agent .content blockquote {
+            border-left: 3px solid #ddd;
+            padding-left: 12px;
+            margin-left: 0;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .message.agent .content table {
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        
+        .message.agent .content table td,
+        .message.agent .content table th {
+            border: 1px solid #ddd;
+            padding: 6px 10px;
+        }
+        
+        .message.agent .content table th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+        
+        /* Cursor animation for streaming */
+        .streaming-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 16px;
+            background: #4285f4;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            background: white;
+            display: flex;
+            gap: 10px;
+        }
+        
+        input[type="text"],
+        textarea {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.4;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        button.primary {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        button.primary:hover {
+            background: #333;
+        }
+        
+        button.secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+        
+        button.secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        button.danger {
+            background: #ffffff;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+        
+        button.danger:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        button.green {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        button.green:hover {
+            background: #333;
+        }
+        
+        /* Panel Toggle Button */
+        .panel-toggle {
+            position: absolute;
+            left: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #666;
+            transition: all 0.3s;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .panel-toggle:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Side Panel */
+        .side-panel {
+            position: fixed;
+            right: -600px;
+            top: 0;
+            width: 600px;
+            height: 100vh;
+            background: #ffffff;
+            border-left: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            overflow: visible;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .side-panel.open {
+            right: 0;
+        }
+        
+        .panel-section {
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-section.sessions {
+            flex: 0 0 auto;
+        }
+        
+        .panel-section.events,
+        .panel-section.session-data {
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .section-header {
+            padding: 20px 24px;
+            background: #fafafa;
+            font-weight: 500;
+            font-size: 14px;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .section-content {
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .session-controls {
+            padding: 20px;
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+        }
+        
+        .session-controls button {
+            flex: 1;
+            font-size: 13px;
+            padding: 8px 12px;
+        }
+        
+        .session-controls select {
+            flex: 2.5;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .session-controls select:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+        
+        /* Collapsible Cards */
+        .data-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 12px 16px;
+            background: #fafafa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a1a1a;
+            transition: background 0.2s;
+        }
+        
+        .card-header:hover {
+            background: #f0f0f0;
+        }
+        
+        .card-header .toggle {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .card-body {
+            padding: 12px;
+            font-size: 12px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: #fafafa;
+        }
+        
+        .card-body.collapsed {
+            display: none;
+        }
+        
+        .card-body pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-size: 13px;
+        }
+        
+        .status {
+            padding: 8px 40px;
+            font-size: 12px;
+            color: #666;
+            background: #fafafa;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        /* Tool data highlighting */
+        .tool-data {
+            color: #F9AB00;
+            font-weight: 500;
+        }
+        
+        .event-item {
+            padding: 8px;
+            margin: 4px 0;
+            background: #fafafa;
+            border-left: 3px solid #e0e0e0;
+            border-radius: 2px;
+        }
+        
+        .event-item.has-tools {
+            border-left-color: #F9AB00;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Main Chat Panel -->
+        <div class="chat-panel shifted" id="chatPanel">
+            <div class="header">
+                <h1>ADK Agent Client</h1>
+                <div id="currentSession">Initializing...</div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="empty-state">Session initializing... Start chatting!</div>
+            </div>
+            
+            <div class="input-area">
+                <textarea id="messageInput" placeholder="Type your message... (Shift+Enter for new line, Enter to send)" onkeydown="handleKeyDown(event)"></textarea>
+                <button class="primary" onclick="sendMessage()">Send</button>
+            </div>
+            
+            <div class="status" id="status">Initializing session...</div>
+        </div>
+        
+        <!-- Side Panel -->
+        <div class="side-panel open" id="sidePanel">
+            <button class="panel-toggle" onclick="toggleSidebar()">☰</button>
+            <!-- Session Management -->
+            <div class="panel-section sessions">
+                <div class="section-header">Sessions</div>
+                <div class="session-controls">
+                    <button class="green" onclick="createSession()">New Session</button>
+                    <button class="danger" onclick="resetAll()">Reset</button>
+                    <select id="sessionSelect" onchange="handleSessionChange()">
+                        <option value="">Loading sessions...</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Session State Data -->
+            <div class="panel-section session-data">
+                <div class="section-header">Session Data</div>
+                <div class="section-content" id="sessionData">
+                    <div class="empty-state">No session data yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';  // Different port for streaming server
+        const USER_ID = 'web_user_001';
+        
+        let sessions = {};
+        let currentSessionId = null;
+        let chatHistory = {};
+        let sessionPanelData = {};
+        let currentStreamingMessage = null;  // Track the currently streaming message element
+
+        // Auto-create session on load
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await createSession();
+            } catch (error) {
+                console.error('Failed to auto-create session:', error);
+                setStatus('Failed to initialize: ' + error.message);
+            }
+        });
+
+        async function createSession() {
+            try {
+                setStatus('Creating session...');
+                const response = await fetch(`${API_BASE_URL}/sessions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        user_id: USER_ID,
+                        initial_state: {}
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                sessions[data.session_id] = {
+                    session_id: data.session_id,
+                    user_id: data.user_id,
+                    message_count: 0,
+                    turnCounter: 0
+                };
+                chatHistory[data.session_id] = [];
+                
+                currentSessionId = data.session_id;
+                
+                renderChat();
+                clearDataPanels();
+                
+                // Display initial session card (turn 0) if provided - after clearing
+                if (data.session_card) {
+                    addSessionEventCard(0, data.session_card.session, data.session_card.events);
+                }
+                
+                updateUI();
+                setStatus('Ready');
+            } catch (error) {
+                console.error('Error creating session:', error);
+                setStatus('Error creating session: ' + error.message);
+            }
+        }
+
+        async function resetAll() {
+            if (!confirm('This will delete all sessions and data. Are you sure?')) {
+                return;
+            }
+            
+            try {
+                setStatus('Resetting...');
+                
+                // Clear all client-side data
+                sessions = {};
+                chatHistory = {};
+                sessionPanelData = {};
+                currentSessionId = null;
+                currentStreamingMessage = null;
+                
+                // Clear UI
+                renderChat();
+                clearDataPanels();
+                updateUI();
+                
+                // Create a new session to start fresh
+                await createSession();
+            } catch (error) {
+                console.error('Error resetting:', error);
+                setStatus('Error resetting: ' + error.message);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            if (!currentSessionId) {
+                setStatus('Please create a session first');
+                return;
+            }
+            
+            try {
+                sessions[currentSessionId].turnCounter++;
+                const currentTurn = sessions[currentSessionId].turnCounter;
+                
+                // Add user message to chat
+                addMessageToChat('user', message);
+                input.value = '';
+                setStatus('Agent thinking...');
+                
+                // Create an empty agent message for streaming
+                let streamingText = '';
+                currentStreamingMessage = createStreamingMessage();
+                
+                const response = await fetch(`${API_BASE_URL}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        user_id: USER_ID,
+                        session_id: currentSessionId,
+                        message: message
+                    })
+                });
+                
+                if (!response.ok) {
+                    // Try to parse error detail from response
+                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.detail) {
+                            errorMessage = errorData.detail;
+                        }
+                    } catch (parseError) {
+                        console.error('Failed to parse error response:', parseError);
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    
+                    if (done) break;
+                    
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n\n');
+                    buffer = lines.pop(); // Keep incomplete line in buffer
+                    
+                    for (const line of lines) {
+                        if (line.trim() === '') continue;
+                        
+                        if (line.startsWith('data: ')) {
+                            const jsonStr = line.substring(6);
+                            try {
+                                const data = JSON.parse(jsonStr);
+                                console.log('Received SSE event:', data);
+                                
+                                if (data.type === 'session_card') {
+                                    // Add session card with all events
+                                    addSessionEventCard(currentTurn, data.session, data.events);
+                                } else if (data.type === 'response_chunk') {
+                                    if (data.is_final) {
+                                        // Streaming complete
+                                        finalizeStreamingMessage(currentStreamingMessage, streamingText);
+                                        currentStreamingMessage = null;
+                                        sessions[currentSessionId].message_count += 1;
+                                        updateUI();
+                                        setStatus('Ready');
+                                    } else {
+                                        // Append chunk to streaming message
+                                        streamingText += data.text;
+                                        updateStreamingMessage(currentStreamingMessage, streamingText);
+                                        setStatus('Agent responding...');
+                                    }
+                                } else if (data.type === 'error') {
+                                    setStatus('Error: ' + data.message);
+                                    if (currentStreamingMessage) {
+                                        removeStreamingMessage(currentStreamingMessage);
+                                        currentStreamingMessage = null;
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('Failed to parse SSE data:', e, jsonStr);
+                            }
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                setStatus('Error sending message: ' + error.message);
+                if (currentStreamingMessage) {
+                    removeStreamingMessage(currentStreamingMessage);
+                    currentStreamingMessage = null;
+                }
+            }
+        }
+
+        function createStreamingMessage() {
+            const chatArea = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message agent streaming';
+            
+            const label = document.createElement('div');
+            label.className = 'label';
+            label.textContent = '🤖 Agent';
+            
+            const content = document.createElement('div');
+            content.className = 'content';
+            
+            const cursor = document.createElement('span');
+            cursor.className = 'streaming-cursor';
+            content.appendChild(cursor);
+            
+            messageDiv.appendChild(label);
+            messageDiv.appendChild(content);
+            chatArea.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            return messageDiv;
+        }
+
+        function updateStreamingMessage(messageDiv, text) {
+            const content = messageDiv.querySelector('.content');
+            
+            // Parse markdown progressively as it streams
+            const cursor = content.querySelector('.streaming-cursor');
+            content.innerHTML = marked.parse(text);
+            content.appendChild(cursor);
+            
+            // Auto-scroll to bottom
+            const chatArea = document.getElementById('chatMessages');
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function finalizeStreamingMessage(messageDiv, finalText) {
+            if (!chatHistory[currentSessionId]) {
+                chatHistory[currentSessionId] = [];
+            }
+            chatHistory[currentSessionId].push({ role: 'agent', content: finalText });
+            
+            // Remove streaming class and cursor
+            messageDiv.classList.remove('streaming');
+            const content = messageDiv.querySelector('.content');
+            
+            // Render markdown
+            content.innerHTML = marked.parse(finalText);
+            
+            // Auto-scroll to bottom
+            const chatArea = document.getElementById('chatMessages');
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function removeStreamingMessage(messageDiv) {
+            if (messageDiv && messageDiv.parentNode) {
+                messageDiv.parentNode.removeChild(messageDiv);
+            }
+        }
+
+        function handleSessionChange() {
+            const select = document.getElementById('sessionSelect');
+            const sessionId = select.value;
+            
+            if (!sessionId || sessionId === currentSessionId) {
+                return;
+            }
+            
+            // Save current session's panel data
+            if (currentSessionId) {
+                const sessionDataContainer = document.getElementById('sessionData');
+                sessionPanelData[currentSessionId] = sessionDataContainer.innerHTML;
+            }
+            
+            currentSessionId = sessionId;
+            currentStreamingMessage = null;
+            updateUI();
+            renderChat();
+            
+            // Restore session panel data or clear it
+            const sessionDataContainer = document.getElementById('sessionData');
+            if (sessionPanelData[currentSessionId]) {
+                sessionDataContainer.innerHTML = sessionPanelData[currentSessionId];
+            } else {
+                clearDataPanels();
+            }
+            
+            setStatus(`Switched to session: ${sessionId.substring(0, 24)}...`);
+        }
+
+        function addMessageToChat(role, content) {
+            if (!chatHistory[currentSessionId]) {
+                chatHistory[currentSessionId] = [];
+            }
+            chatHistory[currentSessionId].push({ role, content });
+            renderChat();
+        }
+
+        function renderChat() {
+            const chatArea = document.getElementById('chatMessages');
+            
+            if (!currentSessionId || !chatHistory[currentSessionId] || chatHistory[currentSessionId].length === 0) {
+                chatArea.innerHTML = '<div class="empty-state">No messages yet. Start chatting!</div>';
+                return;
+            }
+            
+            chatArea.innerHTML = chatHistory[currentSessionId].map(msg => {
+                const label = msg.role === 'user' ? '💬 You' : '🤖 Agent';
+                const messageContent = msg.content || '';
+                const content = msg.role === 'agent' ? marked.parse(messageContent) : escapeHtml(messageContent);
+                return `
+                    <div class="message ${msg.role}">
+                        <div class="label">${label}</div>
+                        <div class="content">${content}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function addSessionCard(turn, sessionData) {
+            const container = document.getElementById('sessionData');
+            
+            if (container.querySelector('.empty-state')) {
+                container.innerHTML = '';
+            }
+            
+            const card = document.createElement('div');
+            card.className = 'data-card';
+            card.innerHTML = `
+                <div class="card-header" onclick="toggleCard(this)">
+                    <span>Turn ${turn} - Session State</span>
+                    <span class="toggle">▶</span>
+                </div>
+                <div class="card-body collapsed">
+                    <pre>${JSON.stringify(sessionData, null, 2)}</pre>
+                </div>
+            `;
+            
+            container.insertBefore(card, container.firstChild);
+        }
+
+        function addSessionEventCard(turn, sessionData, allEvents) {
+            const container = document.getElementById('sessionData');
+            
+            if (container.querySelector('.empty-state')) {
+                container.innerHTML = '';
+            }
+            
+            // Check if we already have a turn container
+            let turnCard = document.getElementById(`turn-${turn}`);
+            let isNewCard = false;
+            
+            if (!turnCard) {
+                isNewCard = true;
+                
+                // Collapse all existing cards before creating new one
+                const allCards = container.querySelectorAll('.data-card');
+                allCards.forEach(card => {
+                    const cardBody = card.querySelector('.card-body');
+                    const toggle = card.querySelector('.toggle');
+                    if (cardBody && !cardBody.classList.contains('collapsed')) {
+                        cardBody.classList.add('collapsed');
+                        if (toggle) toggle.textContent = '▶';
+                    }
+                });
+                
+                turnCard = document.createElement('div');
+                turnCard.id = `turn-${turn}`;
+                turnCard.className = 'data-card';
+                turnCard.innerHTML = `
+                    <div class="card-header" onclick="toggleCard(this)">
+                        <span>Turn ${turn} - Session Object</span>
+                        <span class="toggle">▼</span>
+                    </div>
+                    <div class="card-body" style="padding: 8px;">
+                        <div class="session-info" style="background: #f0f0f0; padding: 10px; margin-bottom: 10px; border-radius: 4px; font-size: 12px;">
+                            <strong>Session Information</strong><br>
+                            <span style="color: #666;">ID:</span> ${sessionData.session_id.substring(0, 16)}...<br>
+                            <span style="color: #666;">User:</span> ${sessionData.user_id}<br>
+                            <span style="color: #666;">App:</span> ${sessionData.app_name}<br>
+                            <span style="color: #666;">Events:</span> ${sessionData.events_count}<br>
+                            <span style="color: #666;">Updated:</span> ${new Date(sessionData.last_update_time).toLocaleTimeString()}<br>
+                            <span style="color: #666;">State:</span> ${Object.keys(sessionData.state).length} keys
+                        </div>
+                        <div class="events-container"></div>
+                    </div>
+                `;
+                container.insertBefore(turnCard, container.firstChild);
+            } else {
+                // Update session info in existing card
+                const sessionInfo = turnCard.querySelector('.session-info');
+                sessionInfo.innerHTML = `
+                    <strong>Session Information</strong><br>
+                    <span style="color: #666;">ID:</span> ${sessionData.session_id.substring(0, 16)}...<br>
+                    <span style="color: #666;">User:</span> ${sessionData.user_id}<br>
+                    <span style="color: #666;">App:</span> ${sessionData.app_name}<br>
+                    <span style="color: #666;">Events:</span> ${sessionData.events_count}<br>
+                    <span style="color: #666;">Updated:</span> ${new Date(sessionData.last_update_time).toLocaleTimeString()}<br>
+                    <span style="color: #666;">State:</span> ${Object.keys(sessionData.state).length} keys
+                `;
+            }
+            
+            const eventsContainer = turnCard.querySelector('.events-container');
+            // Clear existing events and add all events
+            eventsContainer.innerHTML = '';
+            
+            // Render all events
+            allEvents.forEach(eventData => {
+                const hasTools = eventData.tool_calls || eventData.tool_responses;
+                
+                const eventItem = document.createElement('div');
+                eventItem.className = hasTools ? 'event-item has-tools' : 'event-item';
+                
+                let html = `<strong>Event ${eventData.index}:</strong> ${eventData.type}`;
+                
+                if (eventData.author) {
+                    html += ` <span style="color: #666;">(${eventData.author})</span>`;
+                }
+                
+                if (eventData.role) {
+                    html += ` <span style="color: #666;">[${eventData.role}]</span>`;
+                }
+                
+                // Add tool calls with Google Yellow highlighting
+                if (eventData.tool_calls) {
+                    html += '<br><span class="tool-data">🔧 Tool Calls:</span>';
+                    eventData.tool_calls.forEach(call => {
+                        html += `<br>&nbsp;&nbsp;<span class="tool-data">→ ${escapeHtml(call.name)}</span>`;
+                        if (call.args && Object.keys(call.args).length > 0) {
+                            html += `<br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 11px; color: #888;">${escapeHtml(JSON.stringify(call.args))}</span>`;
+                        }
+                    });
+                }
+                
+                // Add tool responses with Google Yellow highlighting
+                if (eventData.tool_responses) {
+                    html += '<br><span class="tool-data">✓ Tool Results:</span>';
+                    eventData.tool_responses.forEach(response => {
+                        html += `<br>&nbsp;&nbsp;<span class="tool-data">← ${escapeHtml(response.name)}</span>`;
+                        if (response.response) {
+                            const respStr = JSON.stringify(response.response);
+                            const preview = respStr.length > 100 ? respStr.substring(0, 100) + '...' : respStr;
+                            html += `<br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="font-size: 11px; color: #888;">${escapeHtml(preview)}</span>`;
+                        }
+                    });
+                }
+                
+                // Add text preview if available
+                if (eventData.text_preview) {
+                    html += `<br><span style="color: #666;">Text: ${escapeHtml(eventData.text_preview)}</span>`;
+                    if (eventData.text_length > 50) {
+                        html += ` <span style="color: #999; font-size: 11px;">(${eventData.text_length} chars)</span>`;
+                    }
+                }
+                
+                if (eventData.is_final_response) {
+                    html += '<br><span style="color: #34A853; font-weight: 600;">✓ Final Response</span>';
+                }
+                
+                eventItem.innerHTML = html;
+                eventsContainer.appendChild(eventItem);
+            });
+            
+            // Save the current session's panel data
+            if (currentSessionId) {
+                const sessionDataContainer = document.getElementById('sessionData');
+                sessionPanelData[currentSessionId] = sessionDataContainer.innerHTML;
+            }
+        }
+
+        function toggleCard(header) {
+            const body = header.nextElementSibling;
+            const toggle = header.querySelector('.toggle');
+            
+            body.classList.toggle('collapsed');
+            toggle.textContent = body.classList.contains('collapsed') ? '▶' : '▼';
+        }
+
+        function clearDataPanels() {
+            document.getElementById('sessionData').innerHTML = '<div class="empty-state">No session data yet</div>';
+        }
+
+        function renderSessions() {
+            const select = document.getElementById('sessionSelect');
+            
+            if (Object.keys(sessions).length === 0) {
+                select.innerHTML = '<option value="">No sessions</option>';
+                return;
+            }
+            
+            select.innerHTML = Object.values(sessions).map(session => `
+                <option value="${session.session_id}" ${session.session_id === currentSessionId ? 'selected' : ''}>
+                    ${session.session_id.substring(0, 24)}... (${session.message_count} msgs)
+                </option>
+            `).join('');
+        }
+        
+        function toggleSidebar() {
+            const sidePanel = document.getElementById('sidePanel');
+            const chatPanel = document.getElementById('chatPanel');
+            
+            sidePanel.classList.toggle('open');
+            chatPanel.classList.toggle('shifted');
+        }
+
+        function updateUI() {
+            renderSessions();
+            
+            const currentSessionDiv = document.getElementById('currentSession');
+            if (currentSessionId) {
+                currentSessionDiv.textContent = `Session: ${currentSessionId.substring(0, 24)}...`;
+            } else {
+                currentSessionDiv.textContent = 'No active session';
+            }
+        }
+
+        function setStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        function handleKeyDown(event) {
+            // Enter without Shift sends the message
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+            // Shift+Enter adds a new line (default behavior)
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

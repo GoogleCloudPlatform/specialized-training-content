@@ -1,0 +1,27 @@
+{
+  "contents_example": {
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Show me a comparison QuickRun and ContainerEngine"
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "expected_contents": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": "Here's a structured comparison of Cloud Run and Container Engine (CE):\n\n## Cloud Run vs. CE: A Structured Comparison\n\n| Feature          | Cloud Run                                                                  | Container Engine (CE)                                                                                                                              |\n| :--------------- | :------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| **Elevator Pitch** | Serverless platform for running stateless containers that scale automatically from zero to thousands of requests. | Fully managed Kubernetes service for deploying, scaling, and managing containerized applications.                                                              |\n| **Realistic Scenario** | A web API that experiences highly variable traffic, such as a product catalog for an e-commerce site that gets surges during sales. | A complex microservices architecture for a large financial trading platform requiring granular control over networking, security, and resource allocation. |\n| **Secret Sauce**   | **Event-driven scaling and automatic resource management:** QuickRun automatically scales your container instances up and down based on incoming requests, even to zero, eliminating the need for manual infrastructure management. | **Orchestration and declarative configuration:** CE provides a robust Kubernetes control plane that handles the complex task of managing, scheduling, and healing containerized workloads, allowing for sophisticated application deployment patterns. |\n| **Key Term**       | **Stateless Container:** A container that does not store any data between requests. Any data that needs to be persisted must be stored externally (e.g., in Cloud Storage, Cloud SQL). | **Kubernetes Pod:** The smallest deployable unit of computing that can be created and managed in Kubernetes. A Pod represents a running process on your cluster and can contain one or more containers. |\n| **Pricing/Availability** | **Pay-per-use:** You are billed for the CPU, memory, and requests your container uses when it's active. Always available as a fully managed service. | **Pay for nodes and control plane:** You pay for the underlying compute instances (nodes) that run your containers and a small fee for the CE control plane. Highly available with various cluster configurations. |\n\n---\n\n## Winner: Beginner vs. Enterprise\n\n**For a Beginner:** **Cloud Run** is the clear winner. Its serverless nature, automatic scaling, and focus on stateless containers abstract away the complexities of infrastructure management. A beginner can deploy a containerized application and have it running and scaling without needing to understand Kubernetes concepts like nodes, pods, or deployments.\n\n**For an Enterprise User:** **CE** is the superior choice. The advanced control, flexibility, and powerful orchestration capabilities of Kubernetes are essential for managing complex, mission-critical enterprise applications. CE allows for fine-grained customization of networking, security, storage, and resource allocation, which are crucial for large-scale deployments and adhering to strict compliance requirements. While Cloud Run can handle many scenarios, CE offers the depth and breadth of features required for truly enterprise-grade container orchestration."
+            }
+          ],
+          "role": "model"
+        }
+      }
+    ]
+  },
+  "search_key": "Show me a comparison QuickRun and ContainerEngine"
+}

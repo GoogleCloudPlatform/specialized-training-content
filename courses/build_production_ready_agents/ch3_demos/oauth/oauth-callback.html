@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth Callback</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+        }
+        
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .close-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .close-button:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✓</div>
+        <h1>Authorization Successful!</h1>
+        <p>Your authorization was successful. This window will close automatically.</p>
+        <div class="spinner"></div>
+        <button class="close-button" onclick="window.close()">Close Window</button>
+    </div>
+
+    <script>
+        // Get the full callback URL (including the authorization code)
+        const callbackUrl = window.location.href;
+        
+        console.log('OAuth callback received:', callbackUrl);
+        
+        // Send the callback URL to the parent window (opener)
+        if (window.opener && !window.opener.closed) {
+            // Use '*' for cross-origin communication (client at :8080, callback at :8000)
+            window.opener.postMessage({
+                type: 'oauth_callback',
+                callbackUrl: callbackUrl
+            }, '*');
+            
+            console.log('Sent callback URL to parent window');
+            
+            // Close this window after a short delay
+            setTimeout(() => {
+                window.close();
+            }, 1500);
+        } else {
+            // If no opener (user manually navigated here), show the URL
+            document.querySelector('.container').innerHTML = `
+                <div class="success-icon">⚠️</div>
+                <h1>Manual Copy Required</h1>
+                <p>Copy this entire URL and paste it in the application:</p>
+                <textarea 
+                    readonly 
+                    style="width: 100%; height: 100px; padding: 10px; margin: 10px 0; font-family: monospace; font-size: 12px;"
+                >${callbackUrl}</textarea>
+                <button class="close-button" onclick="copyToClipboard()">Copy URL</button>
+            `;
+        }
+        
+        function copyToClipboard() {
+            const textarea = document.querySelector('textarea');
+            textarea.select();
+            document.execCommand('copy');
+            alert('URL copied to clipboard!');
+        }
+    </script>
+</body>
+</html>

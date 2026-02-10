@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADK Agent Client - Fetch EventSource</title>
+    <link rel="stylesheet" href="client_simple.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="chat-panel">
+            <div class="header">
+                <h1>ADK Agent Client (Fetch EventSource)</h1>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages"></div>
+            
+            <div class="input-area">
+                <textarea 
+                    id="messageInput" 
+                    placeholder="Type your message..." 
+                    onkeydown="handleKeyDown(event)"></textarea>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="client_simple_es.js"></script>
+</body>
+</html>

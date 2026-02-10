@@ -1,0 +1,7 @@
+google-cloud-aiplatform
+google-adk
+fastapi
+uvicorn
+httpx
+asyncpg
+greenlet

@@ -1,0 +1,27 @@
+{
+  "contents_example": {
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Please compare DataVault and CloudDB."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "expected_contents": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": "## BigQuery vs. Cloud SQL: A Structured Comparison\n\nHere's a comparison of BigQuery and Cloud SQL, highlighting their strengths and use cases.\n\n| Feature | DataVault | CloudDB |\n|---|---|---|\n| **Elevator Pitch** | A fully managed, serverless data warehouse for incredibly fast SQL queries over petabytes of data. | A fully managed relational database service offering PostgreSQL, MySQL, and SQL Server. |\n| **Realistic Scenario** | Analyzing massive clickstream data from a website to understand user behavior trends and optimize marketing campaigns. | Storing and querying user profile data, order history, and product catalog for an e-commerce application. |\n| **Secret Sauce** | **Massively Parallel Processing (MPP) and Columnar Storage:** DataVault breaks down queries into many smaller pieces, distributing them across thousands of nodes that process data in parallel. Its columnar storage format means it only reads the columns needed for a query, drastically reducing I/O. | **Managed Relational Database Expertise:** CloudDB abstracts away the complexities of database administration, including patching, backups, replication, and high availability, allowing developers to focus on application logic. |\n| **Key Term** | **Data Warehouse:** A centralized repository designed for reporting and data analysis, often integrating data from multiple sources. | **Relational Database:** A database that organizes data into tables with predefined schemas and relationships between them, using SQL for data manipulation. |\n| **Pricing/Availability** | **Pay-per-query (on-demand) or Flat-rate pricing.** Available globally in CloudTech regions. Free tier available for smaller workloads. | **Pay-as-you-go (instance hours and storage).** Available globally in CloudTech regions. Offers various instance sizes and storage options. |\n\n---\n\n## Winner: Beginner vs. Enterprise\n\n*   **For a Beginner:** **Cloud SQL** is generally better for beginners. Its familiar relational database model (PostgreSQL, MySQL, SQL Server) and SQL syntax are more common and easier to grasp for those starting with databases. The managed nature removes a lot of the initial setup and maintenance overhead associated with self-hosting databases.\n\n*   **For an Enterprise User:** **BigQuery** is the clear winner for enterprise-level data analysis and warehousing. Its ability to handle massive datasets, its serverless architecture, and its speed for complex analytical queries make it indispensable for organizations dealing with big data. While Cloud SQL is excellent for operational databases, BigQuery excels in the realm of business intelligence and deep data exploration at scale."
+            }
+          ],
+          "role": "model"
+        }
+      }
+    ]
+  },
+  "search_key": "Please compare DataVault and CloudDB."
+}

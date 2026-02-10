@@ -1,0 +1,4 @@
+# Required packages for ADK agent deployment
+google-adk
+google-cloud-aiplatform[adk,agent_engines]
+dotenv

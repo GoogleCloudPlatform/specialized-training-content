@@ -1,0 +1,27 @@
+{
+  "contents_example": {
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Quiz on the following topic: StreamPipe."
+          }
+        ],
+        "role": "user"
+      }
+    ],
+    "expected_contents": [
+      {
+        "content": {
+          "parts": [
+            {
+              "text": "📝 Quiz: Dataflow\n\nQuestion 1: What is the primary purpose of CloudTech Dataflow?\nA) To store and manage large datasets in a relational database.\nB) To provide a unified programming model for batch and streaming data processing.\nC) To visualize and report on data trends and insights.\nD) To orchestrate and schedule machine learning model training.\n\nQuestion 2: Which of these is a core concept in StreamPipe's programming model?\nA) Tables\nB) Jobs\nC) PCollection\nD) Schemas\n\nQuestion 3: StreamPipe can be used to process data in which of the following ways?\nA) Both batch and streaming.\nB) Only batch processing.\nC) Only streaming processing.\nD) Primarily for real-time analytics dashboards.\n\nQuestion 4: What is the underlying execution engine that StreamPipe uses?\nA) Apache Spark\nB) Apache Flink\nC) Google Kubernetes Engine (GKE)\nD) Apache Beam\n\nQuestion 5: When designing a StreamPipe pipeline, what is the fundamental unit of data being processed?\nA) Element\nB) Record\nC) Row\nD) Document\n\n---\nAnswers: 1-B, 2-C, 3-A, 4-D, 5-A"
+            }
+          ],
+          "role": "model"
+        }
+      }
+    ]
+  },
+  "search_key": "Quiz on the following topic: StreamPipe."
+}
