@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cymbal Meet: As-Is Process</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      font-size: 1.4rem;
+    }
+
+    .presentation {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 48px 32px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .header .logo .material-symbols-outlined {
+      font-size: 2.4rem;
+      color: black;
+    }
+
+    .header .logo h1 {
+      margin: 0;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+      color: #1f1f1f;
+    }
+
+    /* Breadcrumb-as-title */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+      color: #999;
+      margin-bottom: 40px;
+    }
+
+    .breadcrumb a {
+      color: #999;
+      text-decoration: none;
+      font-weight: 400;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .breadcrumb .material-symbols-outlined {
+      font-size: 1.4rem;
+      color: #ccc;
+    }
+
+    .breadcrumb .current {
+      color: #1f1f1f;
+      font-weight: 500;
+    }
+
+    /* Narrative */
+    .narrative {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .narrative h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #444;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .narrative h2 .material-symbols-outlined {
+      font-size: 1.4rem;
+      color: #4285f4;
+    }
+
+    .narrative .collapsible-body p {
+      font-size: 1rem;
+      color: #1f1f1f;
+      line-height: 1.7;
+      margin: 16px 0 0 0;
+    }
+
+    /* Related Processes Card */
+    .related-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .related-card h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #444;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .related-card h2 .material-symbols-outlined {
+      font-size: 1.4rem;
+      color: #4285f4;
+    }
+
+    .related-card .process-grid {
+      margin-top: 16px;
+    }
+
+    /* Process Grid */
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .process-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      font-size: 0.92rem;
+      color: #666;
+    }
+
+    .process-tag .tag-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #999;
+      flex-shrink: 0;
+    }
+
+    .process-tag.active {
+      border-color: #4285f4;
+      background: #e8f0fe;
+      color: #1f1f1f;
+      font-weight: 500;
+    }
+
+    .process-tag.active .tag-num {
+      background: #4285f4;
+      color: white;
+    }
+
+    .process-tag.placeholder {
+      border-style: dashed;
+      color: #bbb;
+    }
+
+    .process-tag.placeholder .tag-num {
+      background: transparent;
+      border: 1px dashed #ccc;
+      color: #ccc;
+    }
+
+    /* Process Card */
+    .process-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .process-card .collapsible-body .timeline {
+      margin-top: 32px;
+    }
+
+    /* Section Title */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 0;
+    }
+
+    .section-title h3 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #444;
+      margin: 0;
+    }
+
+    .section-title .material-symbols-outlined {
+      font-size: 1.6rem;
+      color: #4285f4;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 50px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 40px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, #4285f4 0%, #4285f4 25%, #34a853 50%, #fbbc04 75%, #ea4335 100%);
+      border-radius: 1px;
+    }
+
+    /* Stage Row */
+    .stage-row {
+      position: relative;
+      margin-bottom: 48px;
+    }
+
+    .stage-row:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Stage badge */
+    .stage-badge {
+      position: absolute;
+      left: -46px;
+      top: -14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: white;
+      z-index: 1;
+      white-space: nowrap;
+    }
+
+    .stage-row:nth-child(1) .stage-badge { background: #4285f4; }
+    .stage-row:nth-child(2) .stage-badge { background: #34a853; }
+    .stage-row:nth-child(3) .stage-badge { background: #fbbc04; color: #1f1f1f; }
+    .stage-row:nth-child(4) .stage-badge { background: #ea4335; }
+
+    /* Stage Card */
+    .stage-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .stage-card-inner {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+    }
+
+    .stage-main {
+      padding: 24px 28px;
+    }
+
+    .stage-name-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .stage-name {
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: #1f1f1f;
+    }
+
+    .stage-goal {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .tasks-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .task-list li {
+      font-size: 0.92rem;
+      color: #444;
+      line-height: 1.55;
+      padding: 5px 0 5px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .task-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 3px;
+      background: #f0f0f0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #888;
+      flex-shrink: 0;
+    }
+
+    /* Pain Point Sidebar */
+    .pain-sidebar {
+      border-left: 1px solid #f0f0f0;
+      background: #fffbf0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .pain-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+    }
+
+    .pain-text {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: #b06000;
+      line-height: 1.5;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .pain-text::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: #e8a000;
+    }
+
+    .pain-item {
+      white-space: nowrap;
+    }
+
+    /* Collapsible Cards */
+    .collapsible-header {
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      user-select: none;
+      transition: opacity 0.2s;
+    }
+
+    .collapsible-header:hover {
+      opacity: 0.8;
+    }
+
+    .collapsible-header:focus {
+      outline: 2px solid #4285f4;
+      outline-offset: -4px;
+      border-radius: 4px;
+    }
+
+    .collapsible-header:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    .expand-icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #f5f5f5;
+      margin-top: 2px;
+      transition: background 0.2s;
+    }
+
+    .expand-icon .material-symbols-outlined {
+      font-size: 1.4rem;
+      color: #666;
+      transition: transform 0.3s ease;
+    }
+
+    .collapsible-header:hover .expand-icon {
+      background: #e8e8e8;
+    }
+
+    .collapsible-section.expanded .expand-icon .material-symbols-outlined {
+      transform: rotate(180deg);
+    }
+
+    .collapsible-body {
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+    }
+
+    .collapsible-body.collapsed {
+      max-height: 0;
+      opacity: 0;
+    }
+
+    .collapsible-body.expanded {
+      max-height: 3000px;
+      opacity: 1;
+    }
+
+    @media print {
+      .collapsible-body.collapsed {
+        max-height: none !important;
+        opacity: 1 !important;
+      }
+
+      .expand-icon {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <span class="material-symbols-outlined">schema</span>
+        <h1>Cymbal Meet: As-Is Process Analysis</h1>
+      </div>
+    </div>
+
+    <!-- Breadcrumb as Title -->
+    <div class="breadcrumb">
+      <a href="problems.html">Big Problem 1</a>
+      <span class="material-symbols-outlined">chevron_right</span>
+      <span>Processes</span>
+      <span class="material-symbols-outlined">chevron_right</span>
+      <span class="current">Scaled Product Engagement Interventions</span>
+    </div>
+
+    <!-- Narrative -->
+    <div class="narrative collapsible-section expanded">
+      <div class="collapsible-header" tabindex="0" role="button" aria-expanded="true">
+        <h2><span class="material-symbols-outlined">route</span> Approach</h2>
+        <div class="expand-icon">
+          <span class="material-symbols-outlined">expand_more</span>
+        </div>
+      </div>
+      <div class="collapsible-body expanded">
+        <p>
+          The Agentic Innovation team takes <strong>Problem 1: Improving Revenue Retention</strong> and decomposes it into the distinct operational processes that drive retention outcomes today. For each process, the team collects data, interviews stakeholders, and fills in gaps to produce a reviewable <strong>"as-is" process diagram</strong>—a clear picture of what happens today, before any agent is introduced.
+        </p>
+      </div>
+    </div>
+
+    <!-- Related Processes -->
+    <div class="related-card collapsible-section">
+      <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false">
+        <h2><span class="material-symbols-outlined">account_tree</span> Related Processes</h2>
+        <div class="expand-icon">
+          <span class="material-symbols-outlined">expand_more</span>
+        </div>
+      </div>
+      <div class="collapsible-body collapsed">
+        <div class="process-grid">
+          <div class="process-tag active">
+            <span class="tag-num">1</span> Scaled Product Engagement Interventions
+          </div>
+          <div class="process-tag">
+            <span class="tag-num">2</span> Scaled Account Health Management
+          </div>
+          <div class="process-tag">
+            <span class="tag-num">3</span> High-Touch Product Engagement Intervention
+          </div>
+          <div class="process-tag">
+            <span class="tag-num">4</span> High-Touch Account Health Management
+          </div>
+          <div class="process-tag placeholder">
+            <span class="tag-num">…</span> Additional processes identified as needed
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Process Card -->
+    <div class="process-card collapsible-section">
+      <div class="collapsible-header" tabindex="0" role="button" aria-expanded="false">
+        <div class="section-title">
+          <span class="material-symbols-outlined">account_tree</span>
+          <h3>As-Is Process: Scaled Product Engagement Interventions</h3>
+        </div>
+        <div class="expand-icon">
+          <span class="material-symbols-outlined">expand_more</span>
+        </div>
+      </div>
+      <div class="collapsible-body collapsed">
+        <!-- Timeline -->
+        <div class="timeline">
+
+          <!-- Stage 1: Detection -->
+          <div class="stage-row">
+            <div class="stage-badge">Stage 1</div>
+            <div class="stage-card">
+              <div class="stage-card-inner">
+                <div class="stage-main">
+                  <div class="stage-name-row">
+                    <span class="stage-name">Detection</span>
+                  </div>
+                  <div class="stage-goal">Identify deltas and patterns</div>
+                  <div class="tasks-label">Manual Tasks (Pre-Agent)</div>
+                  <ul class="task-list">
+                    <li><span class="task-num">1</span> Collect data (telemetry, CRM data, support ticket data)</li>
+                    <li><span class="task-num">2</span> Calculate variances</li>
+                    <li><span class="task-num">3</span> Identify and categorize instances where performance is 20%+ below target</li>
+                    <li><span class="task-num">4</span> Identify additional unusual/undesirable patterns</li>
+                  </ul>
+                </div>
+                <div class="pain-sidebar">
+                  <div class="pain-label">Pain Points</div>
+                  <div class="pain-text">
+                    <span class="pain-item">Manual toil</span>
+                  </div>
+                  <div class="pain-text">
+                    <span class="pain-item">Missed signals</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 2: Design -->
+          <div class="stage-row">
+            <div class="stage-badge">Stage 2</div>
+            <div class="stage-card">
+              <div class="stage-card-inner">
+                <div class="stage-main">
+                  <div class="stage-name-row">
+                    <span class="stage-name">Design</span>
+                  </div>
+                  <div class="stage-goal">Map gaps to interventions</div>
+                  <div class="tasks-label">Manual Tasks (Pre-Agent)</div>
+                  <ul class="task-list">
+                    <li><span class="task-num">1</span> Cross-reference gaps with playbooks</li>
+                    <li><span class="task-num">2</span> Draft custom outreach/actions</li>
+                  </ul>
+                </div>
+                <div class="pain-sidebar">
+                  <div class="pain-label">Pain Points</div>
+                  <div class="pain-text">
+                    <span class="pain-item">Manual toil</span>
+                  </div>
+                  <div class="pain-text">
+                    <span class="pain-item">Mapping friction</span>
+                  </div>
+                  <div class="pain-text">
+                    <span class="pain-item">Inconsistency</span>
+                  </div>
+                  <div class="pain-text">
+                    <span class="pain-item">Lack of purpose-built assets</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 3: Execution -->
+          <div class="stage-row">
+            <div class="stage-badge">Stage 3</div>
+            <div class="stage-card">
+              <div class="stage-card-inner">
+                <div class="stage-main">
+                  <div class="stage-name-row">
+                    <span class="stage-name">Execution</span>
+                  </div>
+                  <div class="stage-goal">Deploy intervention</div>
+                  <div class="tasks-label">Manual Tasks (Pre-Agent)</div>
+                  <ul class="task-list">
+                    <li><span class="task-num">1</span> Create and send admin outreach emails</li>
+                    <li><span class="task-num">2</span> Create and send admin notifications</li>
+                    <li><span class="task-num">3</span> Configure system to surface prompts to end users</li>
+                  </ul>
+                </div>
+                <div class="pain-sidebar">
+                  <div class="pain-label">Pain Points</div>
+                  <div class="pain-text">
+                    <span class="pain-item">Manual toil</span>
+                  </div>
+                  <div class="pain-text">
+                    <span class="pain-item">High latency</span>
+                  </div>
+                  <div class="pain-text">
+                    <span class="pain-item">Quality</span>
+                  </div>
+                  <div class="pain-text">
+                    <span class="pain-item">Poor completion rates</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stage 4: Sync & Report -->
+          <div class="stage-row">
+            <div class="stage-badge">Stage 4</div>
+            <div class="stage-card">
+              <div class="stage-card-inner">
+                <div class="stage-main">
+                  <div class="stage-name-row">
+                    <span class="stage-name">Sync and Report</span>
+                  </div>
+                  <div class="stage-goal">Update systems / track KPI</div>
+                  <div class="tasks-label">Manual Tasks (Pre-Agent)</div>
+                  <ul class="task-list">
+                    <li><span class="task-num">1</span> Update CRM with information about issue and intervention</li>
+                    <li><span class="task-num">2</span> Update Customer Success dashboard with intervention information</li>
+                    <li><span class="task-num">3</span> Create intervention results dashboard</li>
+                  </ul>
+                </div>
+                <div class="pain-sidebar">
+                  <div class="pain-label">Pain Points</div>
+                  <div class="pain-text">
+                    <span class="pain-item">Manual toil</span>
+                  </div>
+                  <div class="pain-text">
+                    <span class="pain-item">Stale data</span>
+                  </div>
+                  <div class="pain-text">
+                    <span class="pain-item">Siloed insights</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function() {
+      document.querySelectorAll('.collapsible-header').forEach(header => {
+        const section = header.closest('.collapsible-section');
+        const body = section.querySelector('.collapsible-body');
+
+        const toggle = () => {
+          const isExpanded = section.classList.contains('expanded');
+          if (isExpanded) {
+            section.classList.remove('expanded');
+            body.classList.remove('expanded');
+            body.classList.add('collapsed');
+            header.setAttribute('aria-expanded', 'false');
+          } else {
+            section.classList.add('expanded');
+            body.classList.remove('collapsed');
+            body.classList.add('expanded');
+            header.setAttribute('aria-expanded', 'true');
+          }
+        };
+
+        header.addEventListener('click', toggle);
+        header.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggle();
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

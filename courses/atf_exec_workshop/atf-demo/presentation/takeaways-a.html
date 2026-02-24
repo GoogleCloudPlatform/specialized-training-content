@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cymbal Meet: Takeaways</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      font-size: 1.4rem;
+    }
+
+    .presentation {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 32px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .header .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .header .logo .material-symbols-outlined {
+      font-size: 2.4rem;
+      color: black;
+    }
+
+    .header .logo h1 {
+      margin: 0;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+      color: #1f1f1f;
+    }
+
+    .header .subtitle {
+      font-size: 1.2rem;
+      color: #666;
+    }
+
+    /* Card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 1fr;
+      gap: 20px;
+    }
+
+    .takeaway-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .takeaway-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .takeaway-card:nth-child(1)::before { background: #7ba5f7; }
+    .takeaway-card:nth-child(2)::before { background: #6bc882; }
+    .takeaway-card:nth-child(3)::before { background: #d4a049; }
+    .takeaway-card:nth-child(4)::before { background: #f07d6f; }
+
+    .card-icon {
+      flex-shrink: 0;
+    }
+
+    .card-icon .material-symbols-outlined {
+      font-size: 4rem;
+    }
+
+    .takeaway-card:nth-child(1) .card-icon .material-symbols-outlined { color: #7ba5f7; }
+    .takeaway-card:nth-child(2) .card-icon .material-symbols-outlined { color: #6bc882; }
+    .takeaway-card:nth-child(3) .card-icon .material-symbols-outlined { color: #d4a049; }
+    .takeaway-card:nth-child(4) .card-icon .material-symbols-outlined { color: #f07d6f; }
+
+    .card-text {
+      font-size: 1.15rem;
+      font-weight: 400;
+      color: #444;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation">
+
+    <div class="header">
+      <div class="logo">
+        <span class="material-symbols-outlined">lightbulb</span>
+        <h1>Takeaways</h1>
+      </div>
+      <div class="subtitle">Four things we learned about agentic innovation</div>
+    </div>
+
+    <div class="card-grid">
+
+      <div class="takeaway-card">
+        <div class="card-icon">
+          <span class="material-symbols-outlined">monitoring</span>
+        </div>
+        <div class="card-text">Start with the business, not the technology</div>
+      </div>
+
+      <div class="takeaway-card">
+        <div class="card-icon">
+          <span class="material-symbols-outlined">partner_exchange</span>
+        </div>
+        <div class="card-text">Not everything is agents/AI</div>
+      </div>
+
+      <div class="takeaway-card">
+        <div class="card-icon">
+          <span class="material-symbols-outlined">flowsheet</span>
+        </div>
+        <div class="card-text">Results and consistency are a product of process and discipline</div>
+      </div>
+
+      <div class="takeaway-card">
+        <div class="card-icon">
+          <span class="material-symbols-outlined">smart_toy</span>
+        </div>
+        <div class="card-text">Agents thrive on repetitive, data-intensive work that spans systems, requires reasoning, and produces personalized, adaptive outputs</div>
+      </div>
+
+    </div>
+
+  </div>
+</body>
+</html>

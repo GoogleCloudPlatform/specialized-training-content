@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Admin - Cymbal Meet</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .status-dot.enabled { background: var(--success); }
+    .status-dot.pending { background: var(--warning); }
+    .status-dot.disabled { background: var(--error); }
+
+    .campaigns-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .campaigns-header h2 {
+      font-weight: 400;
+    }
+
+    .empty-campaigns {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-campaigns .material-symbols-outlined {
+      font-size: 48px;
+      color: var(--border);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 16px;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo"><a href="/demo/"><span class="material-symbols-outlined" style="font-size: 20px;">videocam</span> Cymbal Meet</a></div>
+    <div class="topbar-title">Backend Admin</div>
+  </div>
+
+  <div class="page-content">
+    <div class="campaigns-header">
+      <h2>In-App Messaging Campaigns</h2>
+      <button class="btn btn-sm" disabled style="opacity: 0.5;">
+        <span class="material-symbols-outlined" style="font-size: 16px;">add</span> Create
+      </button>
+    </div>
+
+    <div id="campaigns-area">
+      <div class="empty-campaigns">
+        <span class="material-symbols-outlined">campaign</span>
+        <p>Loading campaigns...</p>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="status-dot enabled"></span> Enabled</div>
+      <div class="legend-item"><span class="status-dot pending"></span> Pending Approval</div>
+      <div class="legend-item"><span class="status-dot disabled"></span> Disabled</div>
+    </div>
+  </div>
+
+<script>
+const API = '';
+
+async function init() {
+  const [campaignsRes, stateRes] = await Promise.all([
+    fetch(`${API}/api/campaigns`),
+    fetch(`${API}/api/state`),
+  ]);
+  const campaigns = await campaignsRes.json();
+  const state = await stateRes.json();
+  renderCampaigns(campaigns, state);
+}
+
+function renderCampaigns(campaigns, state) {
+  const area = document.getElementById('campaigns-area');
+
+  if (!state.agent_has_run) {
+    area.innerHTML = `
+      <div class="empty-campaigns">
+        <span class="material-symbols-outlined">campaign</span>
+        <p>No campaigns configured.</p>
+        <p class="text-muted" style="margin-top: 4px;">Campaigns will appear here after the agent runs.</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (campaigns.length === 0) {
+    area.innerHTML = `
+      <div class="empty-campaigns">
+        <span class="material-symbols-outlined">campaign</span>
+        <p>No campaigns found.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Separate by status
+  const enabled = campaigns.filter(c => c.status === 'enabled');
+  const pending = campaigns.filter(c => c.status === 'pending');
+  const disabled = campaigns.filter(c => c.status === 'disabled');
+
+  let html = '';
+
+  // Enabled campaigns
+  html += `
+    <div class="section-label mb-1">Enabled Campaigns (${enabled.length})</div>
+    <div class="card mb-2" style="padding: 0; overflow: hidden;">
+  `;
+
+  if (enabled.length > 0) {
+    html += `<table class="table">
+      <thead><tr>
+        <th>Status</th>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Customer</th>
+        <th>Created By</th>
+      </tr></thead><tbody>`;
+    for (const c of enabled) {
+      html += `<tr>
+        <td><span class="status-dot enabled"></span> Enabled</td>
+        <td>${c.type}</td>
+        <td>${c.name}</td>
+        <td>${c.company_name}</td>
+        <td>${c.created_by}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+  } else {
+    html += '<p class="text-muted" style="padding: 16px;">No enabled campaigns.</p>';
+  }
+  html += '</div>';
+
+  // Pending campaigns
+  html += `
+    <div class="section-label mb-1">Pending Approval (${pending.length})</div>
+    <div class="card mb-2" style="padding: 0; overflow: hidden;">
+  `;
+
+  if (pending.length > 0) {
+    html += `<table class="table">
+      <thead><tr>
+        <th>Status</th>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Customer</th>
+        <th>Created By</th>
+      </tr></thead><tbody>`;
+    for (const c of pending) {
+      html += `<tr>
+        <td><span class="status-dot pending"></span> Pending</td>
+        <td>${c.type}</td>
+        <td>${c.name}</td>
+        <td>${c.company_name}</td>
+        <td>${c.created_by}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+  } else {
+    html += '<p class="text-muted" style="padding: 16px;">No campaigns pending approval.</p>';
+  }
+  html += '</div>';
+
+  area.innerHTML = html;
+}
+
+// Smart polling: only re-render when data actually changes
+let lastDataHash = '';
+let pollTimer = null;
+
+async function poll() {
+  try {
+    const [campaignsRes, stateRes] = await Promise.all([
+      fetch(`${API}/api/campaigns`),
+      fetch(`${API}/api/state`),
+    ]);
+    const campaigns = await campaignsRes.json();
+    const state = await stateRes.json();
+    const hash = JSON.stringify({ campaigns, state });
+    if (hash !== lastDataHash) {
+      lastDataHash = hash;
+      renderCampaigns(campaigns, state);
+    }
+  } catch (e) { /* ignore */ }
+}
+
+// Pause polling when tab is hidden
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  } else {
+    if (!pollTimer) pollTimer = setInterval(poll, 3000);
+    poll();
+  }
+});
+
+poll();
+pollTimer = setInterval(poll, 3000);
+</script>
+</body>
+</html>

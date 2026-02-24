@@ -1,0 +1,25 @@
+company_id,name,segment,industry,total_employees,in_office_employees,total_conf_rooms,purchased_boxes,licensed_users,annual_contract_value,contract_start_year,mdm_system
+1,Nexus Tech,Enterprise,Tech,3722,2605,173,146,3476,709120,2022,Jamf Pro
+2,GreenLeaf,SMB,Healthcare,155,139,9,7,138,30560,2024,Microsoft Intune
+3,BlueHorizon,Enterprise,Logistics,7173,5021,334,289,6425,1349000,2021,
+4,Summit Peak,SMB,Finance,237,213,14,12,216,49920,2023,
+5,Nova Retail,Enterprise,Retail,2168,1517,101,87,1986,412320,2022,VMware Workspace ONE
+6,Apex Mfg,Mid-Market,Manufacturing,1095,876,58,53,935,218200,2023,
+7,Swift Delivery,SMB,Logistics,118,106,7,5,108,22960,2024,
+8,Vanguard Health,Enterprise,Healthcare,4270,2989,199,184,4037,852440,2021,Jamf Pro
+9,Solaris Energy,Mid-Market,Energy,1951,1560,104,91,1674,382880,2022,Microsoft Intune
+10,Ironclad,Mid-Market,Security,1952,1561,104,92,1766,395920,2023,
+11,Luna Media,SMB,Media,80,72,4,3,74,14880,2024,
+12,Orbit Aero,Enterprise,Tech,7165,5015,334,296,6301,1348120,2021,Jamf Pro
+13,Pulse Wellness,SMB,Healthcare,273,245,16,14,256,58720,2023,
+14,Crestline Legal,Mid-Market,Legal,1035,828,55,48,958,210960,2022,
+15,Stellar Edu,Enterprise,Education,4189,2932,195,176,3971,828520,2021,Microsoft Intune
+16,Terra AgTech,SMB,Tech,216,194,12,11,184,44080,2024,
+17,Velocity Motors,Mid-Market,Manufacturing,526,420,28,21,454,96480,2023,
+18,Zenith Arch,SMB,Legal,219,197,13,11,190,44800,2024,
+19,Quantum Robotics,Enterprise,Tech,6561,4592,306,230,5886,1166320,2022,VMware Workspace ONE
+20,Harbor Maritime,Mid-Market,Logistics,516,412,27,24,463,103560,2023,
+21,Ember Hospitality,SMB,Retail,227,204,13,11,193,45160,2024,
+22,Titan Heavy,Enterprise,Manufacturing,5086,3560,237,184,4606,920720,2021,
+23,Oasis Real Estate,Mid-Market,Finance,1946,1556,103,83,1811,383320,2022,
+24,Glow Skincare,SMB,Retail,127,114,7,6,110,25200,2024,

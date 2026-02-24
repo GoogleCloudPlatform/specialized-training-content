@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sent Messages - Cymbal Meet</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    /* --- Layout --- */
+    .inbox-layout {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      height: calc(100vh - 52px);
+    }
+
+    /* --- Sidebar Folders --- */
+    .folder-sidebar {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 16px 0;
+    }
+
+    .folder-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      font-size: 17px;
+      color: var(--text-muted);
+      cursor: default;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .folder-item.active {
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 500;
+      border-left: 3px solid var(--accent);
+      padding-left: 17px;
+    }
+
+    .folder-item .material-symbols-outlined { font-size: 24px; }
+
+    .folder-count {
+      margin-left: auto;
+      font-size: 14px;
+      font-weight: 500;
+      background: var(--accent);
+      color: white;
+      border-radius: 10px;
+      padding: 1px 7px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    /* --- Main content (email list + preview) --- */
+    .inbox-main {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      overflow: hidden;
+    }
+
+    /* --- Email List --- */
+    .email-list {
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .email-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .email-item:hover { background: var(--bg); }
+
+    .email-item.selected {
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+      padding-left: 17px;
+    }
+
+    .email-icon {
+      margin-top: 2px;
+      color: var(--text-muted);
+    }
+
+    .email-icon .material-symbols-outlined { font-size: 24px; }
+
+    .email-content { flex: 1; min-width: 0; }
+
+    .email-subject {
+      font-size: 17px;
+      color: var(--text);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .email-to {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .email-date {
+      font-size: 15px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    /* --- Email Preview --- */
+    .email-preview {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+      background: var(--bg);
+    }
+
+    .preview-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-muted);
+    }
+
+    .preview-empty .material-symbols-outlined {
+      font-size: 48px;
+      color: var(--border);
+      margin-bottom: 8px;
+    }
+
+    .preview-header {
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .preview-header h2 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .preview-meta {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .preview-meta strong { color: var(--text); font-weight: 500; }
+
+    .preview-body { padding: 24px; }
+
+    .preview-body iframe {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: white;
+    }
+
+    /* --- Empty state --- */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .material-symbols-outlined {
+      font-size: 48px;
+      margin-bottom: 12px;
+      color: var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="logo"><a href="/demo/"><span class="material-symbols-outlined" style="font-size: 20px;">videocam</span> Cymbal Meet</a></div>
+    <div class="topbar-title">Sent Messages</div>
+    <nav>
+      <a href="#" onclick="return false">Inbox</a>
+      <a href="/inbox/" class="active">Sent</a>
+      <a href="#" onclick="return false">Drafts</a>
+    </nav>
+  </div>
+
+  <div class="inbox-layout">
+
+    <!-- Folder Sidebar -->
+    <div class="folder-sidebar">
+      <div class="folder-item">
+        <span class="material-symbols-outlined">inbox</span>
+        Inbox
+      </div>
+      <div class="folder-item active" id="folderSent">
+        <span class="material-symbols-outlined">send</span>
+        Sent
+        <span class="folder-count" id="sentCount">0</span>
+      </div>
+      <div class="folder-item">
+        <span class="material-symbols-outlined">drafts</span>
+        Drafts
+      </div>
+      <div class="folder-item">
+        <span class="material-symbols-outlined">report</span>
+        Spam
+      </div>
+    </div>
+
+    <!-- Main Area -->
+    <div class="inbox-main">
+      <div class="email-list" id="emailList">
+        <!-- Populated by JS -->
+      </div>
+      <div class="email-preview" id="emailPreview">
+        <div class="preview-empty">
+          <span class="material-symbols-outlined">send</span>
+          <div>Select a sent message to preview</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = '';
+    let emails = [];
+    let selectedId = null;
+    let lastDataHash = '';
+
+    // ---------------------------------------------------------------
+    // Metric display names
+    // ---------------------------------------------------------------
+    const METRIC_NAMES = {
+      '7da_users': 'Weekly Active Users',
+      'call_volume': 'Weekly Call Volume',
+      'device_utilization': 'Device Call Sessions',
+      'dialin_sessions': 'Dial-in Sessions',
+      'calendar_meetings': 'Calendared Meetings',
+    };
+
+    // ---------------------------------------------------------------
+    // Generate HTML email content for admin_weekly emails
+    // ---------------------------------------------------------------
+    function buildAdminEmailHtml(email) {
+      const iv = email.intervention || {};
+      const highlights = iv.highlights || [];
+      const improvements = iv.improvements || [];
+      const rec = iv.feature_rec || {};
+      const positiveFeedback = (iv.feedback_positive || []).slice(0, 3);
+      const negativeFeedback = (iv.feedback_negative || []).slice(0, 3);
+
+      const remediations = iv.remediations || [];
+
+      let highlightsHtml = '';
+      for (const h of highlights) {
+        const pct = Math.round(h.ratio * 100);
+        const pctile = h.percentile || '';
+        highlightsHtml += `
+          <div style="display:inline-block; margin:8px; padding:14px 18px; background:#f5f5f5; border-radius:6px; vertical-align:top; min-width:190px;">
+            <strong>${METRIC_NAMES[h.metric] || h.metric}</strong><br>
+            <span style="color:#2E7D32; font-size:1.1em;">${pct}% of target</span><br>
+            ${pctile ? `<small style="color:#666;">${pctile}th percentile in cohort</small>` : ''}
+          </div>`;
+      }
+
+      let issuesHtml = '';
+      for (const iss of improvements) {
+        const pct = Math.round(iss.ratio * 100);
+        const pctile = iss.percentile || '';
+        issuesHtml += `
+          <div style="display:inline-block; margin:8px; padding:14px 18px; background:#f5f5f5; border-radius:6px; vertical-align:top; min-width:190px;">
+            <strong>${METRIC_NAMES[iss.metric] || iss.metric}</strong><br>
+            <span style="color:#C62828; font-size:1.1em;">${pct}% of target</span><br>
+            ${pctile ? `<small style="color:#666;">${pctile}th percentile in cohort</small>` : ''}
+          </div>`;
+      }
+
+      let remediationsHtml = '';
+      for (const rem of remediations) {
+        remediationsHtml += `
+          <div style="background:#f5f7fa; padding:16px; border-left:4px solid #FF8F00; margin:12px 0; border-radius:0 4px 4px 0;">
+            <p style="margin:0 0 4px 0; font-size:14px; color:#666;">${METRIC_NAMES[rem.metric] || rem.metric}</p>
+            <p style="margin:0 0 8px 0; font-weight:600;">${rem.name}</p>
+            <p style="margin:0 0 8px 0; font-size:14px;">${rem.description}</p>
+            <div style="margin-top:10px; padding:10px 14px; background:#fff8e1; border-left:3px solid #FF8F00; border-radius:4px;">
+              <p style="font-size:13px; font-weight:600; color:#E65100; margin:0 0 4px 0;">Why this was selected for your team</p>
+              <p style="font-size:13px; color:#333; margin:0;">${rem.rationale}</p>
+            </div>
+          </div>`;
+      }
+
+      const feedbackPosHtml = positiveFeedback.map(f => `<li style="margin-bottom:6px;">${f}</li>`).join('');
+      const feedbackNegHtml = negativeFeedback.map(f => `<li style="margin-bottom:6px;">${f}</li>`).join('');
+
+      return `<!DOCTYPE html><html><head><style>
+        body { font-family: -apple-system, 'Segoe UI', sans-serif; color: #333; margin: 0; }
+        .header { background: #1a1a1a; color: white; padding: 24px; }
+        .header h1 { margin: 0 0 4px 0; font-size: 1.3rem; font-weight: 500; }
+        .header p { margin: 4px 0; font-size: 14px; opacity: 0.8; }
+        .section { padding: 20px 24px; border-bottom: 1px solid #eee; }
+        .section h2 { font-size: 1rem; font-weight: 600; margin: 0 0 12px 0; }
+        .section h3 { font-size: 0.9rem; font-weight: 500; margin: 16px 0 8px 0; color: #555; }
+        .section ul { padding-left: 20px; color: #555; font-size: 14px; list-style-type: none; }
+        .section li { margin-bottom: 6px; padding-left: 4px; }
+        .section li::before { content: '\\2022'; color: #999; margin-right: 8px; }
+        .feature-box { background: #f5f7fa; padding: 16px; border-left: 4px solid #4285f4; margin: 12px 0; border-radius: 0 4px 4px 0; }
+        .feature-box p { margin: 4px 0; font-size: 14px; }
+        a { color: #4285f4; }
+        .footer { text-align: center; color: #999; padding: 20px; font-size: 12px; }
+      </style></head><body>
+        <div class="header">
+          <h1>Cymbal Meet Weekly Report</h1>
+          <p>Performance insights for ${email.company_name}</p>
+          <p>Week of February 3\u20139, 2026</p>
+        </div>
+        ${highlights.length ? `<div class="section">
+          <h2>You're Excelling In</h2>
+          ${highlightsHtml}
+          ${positiveFeedback.length ? `<h3>Common themes from user feedback:</h3><ul>${feedbackPosHtml}</ul>` : ''}
+        </div>` : ''}
+        ${improvements.length ? `<div class="section">
+          <h2>Opportunities for Improvement</h2>
+          ${issuesHtml}
+          ${negativeFeedback.length ? `<h3>Themes to watch:</h3><ul>${feedbackNegHtml}</ul>` : ''}
+        </div>` : ''}
+        ${remediations.length ? `<div class="section">
+          <h2>Recommended Actions</h2>
+          <p style="font-size:14px; color:#555; margin-bottom:12px;">Based on your usage patterns and account history, here are targeted actions to address the areas above:</p>
+          ${remediationsHtml}
+        </div>` : ''}
+        ${rec.name ? `<div class="section">
+          <h2>Feature Spotlight: ${rec.name}</h2>
+          <div class="feature-box">
+            <p><strong>${rec.description}</strong></p>
+            <p>${rec.relevance}</p>
+            ${rec.why_recommended ? `<div style="margin-top:14px; padding:12px 16px; background:#f0f4ff; border-left:3px solid #4285f4; border-radius:4px;">
+              <p style="font-size:13px; font-weight:600; color:#4285f4; margin-bottom:4px;">Why we're recommending this for your team</p>
+              <p style="font-size:13px; color:#333;">${rec.why_recommended}</p>
+            </div>` : ''}
+            <p style="margin-top:12px;"><a href="#">Learn more and schedule \u2192</a></p>
+          </div>
+        </div>` : ''}
+        <div class="footer">
+          <p>Questions? Reply to this email or contact your CSM.</p>
+          <p>Cymbal Meet \u00b7 123 Tech Parkway \u00b7 San Francisco, CA 94107</p>
+        </div>
+      </body></html>`;
+    }
+
+    // ---------------------------------------------------------------
+    // Generate HTML email content for device_performance emails
+    // ---------------------------------------------------------------
+    function buildDeviceEmailHtml(email) {
+      const iv = email.intervention || {};
+      const devices = iv.devices || [];
+
+      let rowsHtml = '';
+      for (const d of devices) {
+        rowsHtml += `<tr>
+          <td style="padding:10px; border-bottom:1px solid #eee;">${d.name}</td>
+          <td style="padding:10px; border-bottom:1px solid #eee;">${d.location}</td>
+          <td style="padding:10px; border-bottom:1px solid #eee;">${d.avg_fps} fps</td>
+          <td style="padding:10px; border-bottom:1px solid #eee;">${d.avg_resolution}</td>
+          <td style="padding:10px; border-bottom:1px solid #eee; color:#C62828;">${(d.issues || []).join(', ')}</td>
+        </tr>`;
+      }
+
+      const pct = devices.length > 0 ? Math.round((devices.length / (devices.length + 3)) * 100) : 27;
+
+      return `<!DOCTYPE html><html><head><style>
+        body { font-family: -apple-system, 'Segoe UI', sans-serif; color: #333; margin: 0; }
+        .header { background: #1a1a1a; color: white; padding: 24px; }
+        .header h1 { margin: 0 0 4px 0; font-size: 1.3rem; font-weight: 500; }
+        .header p { margin: 4px 0; font-size: 14px; opacity: 0.8; }
+        .section { padding: 20px 24px; border-bottom: 1px solid #eee; }
+        .section h2 { font-size: 1rem; font-weight: 600; margin: 0 0 12px 0; }
+        .alert { background: #FFF3E0; padding: 16px; border-left: 4px solid #F57C00; margin-bottom: 16px; border-radius: 0 4px 4px 0; }
+        .alert strong { display: block; margin-bottom: 4px; }
+        .alert p { margin: 4px 0; font-size: 14px; color: #555; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f5f5f5; padding: 10px; text-align: left; font-size: 13px; font-weight: 600; }
+        .steps { padding-left: 0; list-style: none; margin: 0; }
+        .steps li { margin: 0; padding: 14px 0; font-size: 14px; border-bottom: 1px solid #f0f0f0; display: flex; gap: 12px; }
+        .steps li:last-child { border-bottom: none; }
+        .step-num { background: #f5f5f5; color: #333; border-radius: 4px; min-width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+        .steps li strong { display: block; margin-bottom: 2px; }
+        .footer { text-align: center; color: #999; padding: 20px; font-size: 12px; }
+      </style></head><body>
+        <div class="header">
+          <h1>Device Performance Alert</h1>
+          <p>${email.company_name} \u2014 Action Required</p>
+        </div>
+        <div class="section">
+          <div class="alert">
+            <strong>We've detected video quality issues on some of your devices</strong>
+            <p>${pct}% of your call sessions this week experienced frame rate drops or reduced resolution.</p>
+          </div>
+          <h2>Affected Devices</h2>
+          <table>
+            <thead><tr><th>Device Name</th><th>Location</th><th>Avg Frame Rate</th><th>Avg Resolution</th><th>Issues</th></tr></thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+        <div class="section">
+          <h2>Recommended Troubleshooting Steps</h2>
+          <ol class="steps">
+            <li><span class="step-num">1</span><div><strong>Run on-device bandwidth test</strong>Navigate to Settings \u2192 Diagnostics \u2192 Network Test. Target: &gt;5 Mbps up, &gt;10 Mbps down.</div></li>
+            <li><span class="step-num">2</span><div><strong>Run on-device video test</strong>Settings \u2192 Diagnostics \u2192 Video Test. Verify camera captures 1080p @ 30fps.</div></li>
+            <li><span class="step-num">3</span><div><strong>Check network connection type</strong>Switch WiFi devices to wired Ethernet where available.</div></li>
+            <li><span class="step-num">4</span><div><strong>Verify network bandwidth</strong>Connect a laptop to the same port and run a speed test. Target: &gt;1.5 Mbps per device.</div></li>
+            <li><span class="step-num">5</span><div><strong>Engage network team if needed</strong>Investigate port config, VLAN settings, and QoS prioritization.</div></li>
+            <li><span class="step-num">6</span><div><strong>Consider device RMA</strong>If the device passes network tests but still shows poor performance, contact Cymbal Support.</div></li>
+          </ol>
+        </div>
+        <div class="section">
+          <h2>Need Help?</h2>
+          <p style="font-size:14px;">
+            <strong>Email:</strong> support@cymbalmeet.com<br>
+            <strong>Phone:</strong> 1-800-CYMBAL-1 (24/7)<br>
+            <strong>Live Chat:</strong> Available in your admin portal
+          </p>
+        </div>
+        <div class="footer">
+          <p>Cymbal Meet \u00b7 123 Tech Parkway \u00b7 San Francisco, CA 94107</p>
+        </div>
+      </body></html>`;
+    }
+
+    // ---------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------
+    function formatNum(n) {
+      if (n == null) return '\u2014';
+      return Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function formatDateFull(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr + 'T06:15:00');
+      return d.toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+      }) + ' 6:15 AM';
+    }
+
+    // ---------------------------------------------------------------
+    // Data fetching — only re-render list when data changes
+    // ---------------------------------------------------------------
+    async function loadEmails() {
+      try {
+        const res = await fetch(`${API}/api/emails`);
+        const agentEmails = await res.json();
+        const hash = JSON.stringify(agentEmails);
+        if (hash === lastDataHash) return; // nothing changed
+        lastDataHash = hash;
+
+        emails = agentEmails.map(e => ({
+          email_id: e.email_id,
+          subject: e.subject,
+          to: e.recipient,
+          to_email: e.recipient ? e.recipient.toLowerCase().replace(/\s+/g, '.') + '@' + e.company_name.toLowerCase().replace(/\s+/g, '') + '.com' : '',
+          date: formatDate(e.date),
+          date_full: formatDateFull(e.date),
+          type: e.type,
+          company_name: e.company_name,
+          intervention: e.intervention,
+          raw: e,
+        }));
+
+        renderList();
+      } catch (e) {
+        if (!emails.length) renderList();
+      }
+    }
+
+    // ---------------------------------------------------------------
+    // Render email list (left pane) — does NOT touch the preview pane
+    // ---------------------------------------------------------------
+    function renderList() {
+      const list = document.getElementById('emailList');
+      document.getElementById('sentCount').textContent = emails.length || '';
+
+      if (emails.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <span class="material-symbols-outlined">send</span>
+            <p>No sent messages yet.</p>
+            <p style="font-size: 13px;">Run the agent from the CSM Dashboard first.</p>
+          </div>`;
+        return;
+      }
+
+      let html = '';
+      for (const e of emails) {
+        const icon = e.type === 'device_performance' ? 'warning' :
+                     e.type === 'admin_weekly' ? 'analytics' : 'mail';
+        const sel = String(e.email_id) === String(selectedId) ? 'selected' : '';
+        html += `
+          <div class="email-item ${sel}" onclick="selectEmail(${e.email_id})">
+            <div class="email-icon"><span class="material-symbols-outlined">${icon}</span></div>
+            <div class="email-content">
+              <div class="email-subject">${e.subject}</div>
+              <div class="email-to">To: ${e.to} \u2014 ${e.company_name}</div>
+            </div>
+            <div class="email-date">${e.date}</div>
+          </div>`;
+      }
+      list.innerHTML = html;
+    }
+
+    // ---------------------------------------------------------------
+    // Render preview (right pane)
+    // ---------------------------------------------------------------
+    function renderPreview() {
+      const preview = document.getElementById('emailPreview');
+      const e = emails.find(em => String(em.email_id) === String(selectedId));
+
+      if (!e) {
+        preview.innerHTML = `
+          <div class="preview-empty">
+            <span class="material-symbols-outlined">send</span>
+            <div>Select a sent message to preview</div>
+          </div>`;
+        return;
+      }
+
+      const to = e.to_email ? `${e.to} &lt;${e.to_email}&gt;` : (e.to || '');
+
+      let bodyHtml = '';
+      if (e.type === 'admin_weekly') {
+        bodyHtml = buildAdminEmailHtml(e.raw || e);
+      } else if (e.type === 'device_performance') {
+        bodyHtml = buildDeviceEmailHtml(e.raw || e);
+      }
+
+      preview.innerHTML = `
+        <div class="preview-header">
+          <h2>${e.subject}</h2>
+          <div class="preview-meta">
+            <strong>From:</strong> Cymbal Meet Agent &lt;success@cymbalmeet.com&gt;<br>
+            <strong>To:</strong> ${to}<br>
+            <strong>Date:</strong> ${e.date_full || e.date}
+          </div>
+        </div>
+        <div class="preview-body">
+          <iframe id="emailFrame" srcdoc="${escapeAttr(bodyHtml)}" frameborder="0" style="min-height: 600px;" onload="resizeFrame(this)"></iframe>
+        </div>`;
+    }
+
+    function escapeAttr(str) {
+      return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function resizeFrame(frame) {
+      try {
+        frame.style.height = frame.contentDocument.body.scrollHeight + 40 + 'px';
+      } catch (e) { /* cross-origin fallback */ }
+    }
+
+    function selectEmail(id) {
+      selectedId = id;
+      renderList();   // update selection highlight
+      renderPreview(); // show the email
+    }
+
+    // ---------------------------------------------------------------
+    // Smart polling — only when visible, only re-render on change
+    // ---------------------------------------------------------------
+    let pollTimer = null;
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      } else {
+        if (!pollTimer) pollTimer = setInterval(loadEmails, 5000);
+        loadEmails();
+      }
+    });
+
+    loadEmails();
+    pollTimer = setInterval(loadEmails, 5000);
+  </script>
+
+</body>
+</html>

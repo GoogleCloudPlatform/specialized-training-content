@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM - Cymbal Meet</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    /* --- CRM Layout --- */
+
+    .crm-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* --- Customer Sidebar List --- */
+
+    .customer-list {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .customer-list-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .customer-list-header input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 15px;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .customer-list-header input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .customer-item {
+      padding: 10px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 13px;
+    }
+
+    .customer-item:hover {
+      background: var(--bg);
+    }
+
+    .customer-item.active {
+      background: var(--bg);
+      font-weight: 500;
+      border-left: 3px solid var(--accent);
+      padding-left: 13px;
+    }
+
+    .customer-item .segment {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* --- Detail Panel --- */
+
+    .crm-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .detail-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 20px;
+    }
+
+    .detail-card .section-label {
+      margin-bottom: 12px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 24px;
+    }
+
+    .info-item {
+      font-size: 17px;
+    }
+
+    .info-item .label {
+      color: var(--text-muted);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-item .value {
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    /* --- Contacts --- */
+
+    .contact-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 17px;
+    }
+
+    .contact-row:last-child {
+      border-bottom: none;
+    }
+
+    .contact-name {
+      font-weight: 500;
+    }
+
+    .contact-role {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .primary-badge {
+      font-size: 13px;
+      background: var(--accent-light);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+
+    /* --- Activity Feed --- */
+
+    .activity-filters {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+
+    .activity-filters button {
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 15px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .activity-filters button.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .activity-item {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-date {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .activity-type {
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .activity-type.agent { color: var(--accent); }
+    .activity-type.support { color: var(--success); }
+    .activity-type.sales { color: #7b1fa2; }
+    .activity-type.csm { color: var(--warning); }
+
+    .activity-note {
+      font-size: 17px;
+      color: var(--text);
+    }
+
+    /* --- Responsive --- */
+
+    @media (max-width: 768px) {
+      .crm-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo"><a href="/demo/"><span class="material-symbols-outlined" style="font-size: 20px;">videocam</span> Cymbal Meet</a></div>
+    <div class="topbar-title">CRM System</div>
+  </div>
+
+  <div class="page-content">
+    <div class="section-label mb-2">Customer Relationship Management</div>
+
+    <div class="crm-layout">
+      <!-- Left: Customer List -->
+      <div class="customer-list">
+        <div class="customer-list-header">
+          <input type="text" id="crm-search" placeholder="Search customers...">
+        </div>
+        <div id="customer-sidebar"></div>
+      </div>
+
+      <!-- Right: Customer Detail -->
+      <div class="crm-detail" id="crm-detail">
+        <div class="detail-card" style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+          <span class="material-symbols-outlined" style="font-size: 48px; color: var(--border);">contact_page</span>
+          <p style="margin-top: 12px;">Select a customer from the list</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API = '';
+let allCompanies = [];
+let currentCrmId = null;
+
+async function init() {
+  const res = await fetch(`${API}/api/companies`);
+  allCompanies = await res.json();
+  renderSidebar(allCompanies);
+
+  // Auto-select first company
+  if (allCompanies.length > 0) {
+    selectCompany(allCompanies[0].company_id);
+  }
+}
+
+function renderSidebar(companies) {
+  const el = document.getElementById('customer-sidebar');
+  el.innerHTML = '';
+  for (const c of companies) {
+    const div = document.createElement('div');
+    div.className = 'customer-item' + (c.company_id === currentCrmId ? ' active' : '');
+    div.innerHTML = `<div>${c.name}</div><div class="segment">${c.segment} · ${c.industry}</div>`;
+    div.onclick = () => selectCompany(c.company_id);
+    el.appendChild(div);
+  }
+}
+
+document.getElementById('crm-search').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase();
+  const filtered = allCompanies.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    c.segment.toLowerCase().includes(q) ||
+    c.industry.toLowerCase().includes(q)
+  );
+  renderSidebar(filtered);
+});
+
+async function selectCompany(companyId) {
+  currentCrmId = companyId;
+  // Highlight in sidebar
+  document.querySelectorAll('.customer-item').forEach(el => el.classList.remove('active'));
+  const items = document.querySelectorAll('.customer-item');
+  for (const item of items) {
+    if (item.textContent.includes(allCompanies.find(c => c.company_id === companyId)?.name)) {
+      item.classList.add('active');
+    }
+  }
+
+  const res = await fetch(`${API}/api/companies/${companyId}`);
+  const data = await res.json();
+  renderDetail(data);
+}
+
+function renderDetail(data) {
+  const c = data.company;
+  const contacts = data.contacts;
+  const activities = data.activities;
+  const el = document.getElementById('crm-detail');
+
+  const primary = contacts.find(ct => ct.is_primary) || contacts[0];
+
+  el.innerHTML = `
+    <!-- Company Info -->
+    <div class="detail-card">
+      <div class="section-label">Company Information</div>
+      <h2 style="margin-bottom: 12px;">${c.name}</h2>
+      <div class="info-grid">
+        <div class="info-item"><div class="label">Segment</div><div class="value">${c.segment}</div></div>
+        <div class="info-item"><div class="label">Industry</div><div class="value">${c.industry}</div></div>
+        <div class="info-item"><div class="label">Total Employees</div><div class="value">${c.total_employees.toLocaleString()}</div></div>
+        <div class="info-item"><div class="label">In-Office</div><div class="value">${c.in_office_employees.toLocaleString()}</div></div>
+        <div class="info-item"><div class="label">Contract Value</div><div class="value">$${c.annual_contract_value.toLocaleString()}/yr</div></div>
+        <div class="info-item"><div class="label">Conference Rooms</div><div class="value">${c.total_conf_rooms}</div></div>
+        <div class="info-item"><div class="label">Licensed Users</div><div class="value">${c.licensed_users.toLocaleString()}</div></div>
+        <div class="info-item"><div class="label">Purchased Boxes</div><div class="value">${c.purchased_boxes}</div></div>
+        <div class="info-item"><div class="label">Customer Since</div><div class="value">${c.contract_start_year || '\u2014'}</div></div>
+        <div class="info-item"><div class="label">MDM System</div><div class="value">${c.mdm_system || '\u2014'}</div></div>
+      </div>
+    </div>
+
+    <!-- Contacts -->
+    <div class="detail-card">
+      <div class="section-label">Contacts</div>
+      ${contacts.map(ct => `
+        <div class="contact-row">
+          <div>
+            <div class="contact-name">${ct.full_name}</div>
+            <div class="contact-role">${ct.role}</div>
+          </div>
+          ${ct.is_primary ? '<span class="primary-badge">Primary</span>' : ''}
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Activities -->
+    <div class="detail-card">
+      <div class="section-label">Activity History</div>
+      <div class="activity-filters" id="activity-filters">
+        <button class="active" data-filter="all">All</button>
+        <button data-filter="Agent Intervention">Agent</button>
+        <button data-filter="CSM">CSM</button>
+        <button data-filter="Support">Support</button>
+        <button data-filter="Sales">Sales</button>
+      </div>
+      <div id="activity-feed"></div>
+    </div>
+  `;
+
+  // Render activities and wire up filters
+  renderActivities(activities, 'all');
+
+  document.querySelectorAll('#activity-filters button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#activity-filters button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderActivities(activities, btn.dataset.filter);
+    });
+  });
+}
+
+function renderActivities(activities, filter) {
+  const feed = document.getElementById('activity-feed');
+  const filtered = filter === 'all'
+    ? activities
+    : activities.filter(a => a.type === filter);
+
+  if (filtered.length === 0) {
+    feed.innerHTML = '<p class="text-muted" style="padding: 12px 0;">No activities found.</p>';
+    return;
+  }
+
+  feed.innerHTML = filtered.map(a => {
+    const typeClass = a.type.toLowerCase().includes('agent') ? 'agent'
+      : a.type.toLowerCase().includes('support') ? 'support'
+      : a.type.toLowerCase().includes('sales') || a.type.toLowerCase().includes('renewal') ? 'sales'
+      : 'csm';
+    return `
+      <div class="activity-item">
+        <div class="activity-date">${a.activity_date}</div>
+        <div class="activity-type ${typeClass}">${a.type}</div>
+        <div class="activity-note">${a.note}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+init();
+</script>
+</body>
+</html>

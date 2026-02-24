@@ -1,0 +1,293 @@
+activity_id,company_id,activity_date,type,note
+1,1,2026-01-01,Support,Met with primary contact to discuss usage reports for last month.
+2,1,2026-02-07,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+3,1,2026-01-22,Health Check,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+4,1,2026-01-03,Renewal Discussion,Confirmed all rooms online. Hardware uptime looks excellent.
+5,1,2026-01-06,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+6,1,2026-02-05,Renewal Discussion,Performed scheduled firmware update on all purchased boxes.
+7,1,2026-01-30,Support,Performed scheduled firmware update on all purchased boxes.
+8,1,2026-01-29,Renewal Discussion,Confirmed all rooms online. Hardware uptime looks excellent.
+9,1,2026-01-03,Maintenance,Discussed expansion of software seats for the new remote cohort.
+10,1,2026-01-05,Support,Performed scheduled firmware update on all purchased boxes.
+11,1,2026-01-23,Maintenance,Met with primary contact to discuss usage reports for last month.
+12,1,2026-01-14,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+13,2,2026-01-30,Executive Review,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+14,2,2026-01-01,Executive Review,Confirmed all rooms online. Hardware uptime looks excellent.
+15,2,2026-02-08,Maintenance,Discussed expansion of software seats for the new remote cohort.
+16,2,2026-01-03,Health Check,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+17,2,2026-01-23,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+18,2,2026-01-18,Executive Review,Confirmed all rooms online. Hardware uptime looks excellent.
+19,2,2026-01-21,Health Check,Performed scheduled firmware update on all purchased boxes.
+20,2,2026-01-03,Renewal Discussion,Performed scheduled firmware update on all purchased boxes.
+21,2,2026-01-06,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+22,2,2026-01-03,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+23,2,2026-01-24,Renewal Discussion,Performed scheduled firmware update on all purchased boxes.
+24,2,2026-01-31,Support,Discussed expansion of software seats for the new remote cohort.
+25,3,2026-01-06,Health Check,User reported audio lag in Room 302. Cable reset fixed the issue.
+26,3,2026-01-27,Executive Review,Discussed expansion of software seats for the new remote cohort.
+27,3,2026-01-21,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+28,3,2026-02-07,Support,Discussed expansion of software seats for the new remote cohort.
+29,3,2026-01-13,Renewal Discussion,User reported audio lag in Room 302. Cable reset fixed the issue.
+30,3,2026-02-02,Health Check,Discussed expansion of software seats for the new remote cohort.
+31,3,2026-02-06,Executive Review,Discussed expansion of software seats for the new remote cohort.
+32,3,2026-01-30,Maintenance,Met with primary contact to discuss usage reports for last month.
+33,3,2026-02-05,Health Check,Met with primary contact to discuss usage reports for last month.
+34,3,2026-01-31,Support,Discussed expansion of software seats for the new remote cohort.
+35,3,2026-01-21,Health Check,Met with primary contact to discuss usage reports for last month.
+36,3,2026-02-06,Maintenance,Performed scheduled firmware update on all purchased boxes.
+37,4,2026-01-07,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+38,4,2026-01-28,Support,Confirmed all rooms online. Hardware uptime looks excellent.
+39,4,2026-02-02,Support,Discussed expansion of software seats for the new remote cohort.
+40,4,2026-01-11,Support,Discussed expansion of software seats for the new remote cohort.
+41,4,2026-01-14,Support,Confirmed all rooms online. Hardware uptime looks excellent.
+42,4,2026-01-02,Executive Review,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+43,4,2026-01-31,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+44,4,2026-01-20,Maintenance,Discussed expansion of software seats for the new remote cohort.
+45,4,2026-01-16,Executive Review,Performed scheduled firmware update on all purchased boxes.
+46,4,2026-01-28,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+47,4,2026-01-04,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+48,4,2026-01-26,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+49,5,2026-01-30,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+50,5,2026-02-05,Health Check,Discussed expansion of software seats for the new remote cohort.
+51,5,2026-01-08,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+52,5,2026-01-28,Health Check,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+53,5,2026-01-20,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+54,5,2026-02-07,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+55,5,2026-01-22,Renewal Discussion,Performed scheduled firmware update on all purchased boxes.
+56,5,2026-01-21,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+57,5,2026-01-16,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+58,5,2026-01-20,Executive Review,Discussed expansion of software seats for the new remote cohort.
+59,5,2026-01-25,Support,Confirmed all rooms online. Hardware uptime looks excellent.
+60,5,2026-01-12,Health Check,Confirmed all rooms online. Hardware uptime looks excellent.
+61,6,2026-01-06,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+62,6,2026-01-30,Health Check,Confirmed all rooms online. Hardware uptime looks excellent.
+63,6,2026-01-25,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+64,6,2026-01-06,Health Check,Discussed expansion of software seats for the new remote cohort.
+65,6,2026-01-27,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+66,6,2026-01-29,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+67,6,2026-01-25,Health Check,Confirmed all rooms online. Hardware uptime looks excellent.
+68,6,2026-01-15,Health Check,User reported audio lag in Room 302. Cable reset fixed the issue.
+69,6,2026-01-17,Health Check,Discussed expansion of software seats for the new remote cohort.
+70,6,2026-01-08,Executive Review,Performed scheduled firmware update on all purchased boxes.
+71,6,2026-01-06,Executive Review,Discussed expansion of software seats for the new remote cohort.
+72,6,2026-02-03,Executive Review,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+73,7,2026-02-08,Health Check,Confirmed all rooms online. Hardware uptime looks excellent.
+74,7,2026-01-23,Health Check,User reported audio lag in Room 302. Cable reset fixed the issue.
+75,7,2026-01-08,Renewal Discussion,Performed scheduled firmware update on all purchased boxes.
+76,7,2026-01-04,Executive Review,Met with primary contact to discuss usage reports for last month.
+77,7,2026-01-01,Support,Performed scheduled firmware update on all purchased boxes.
+78,7,2026-01-18,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+79,7,2026-01-13,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+80,7,2026-01-06,Executive Review,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+81,7,2026-01-05,Health Check,Met with primary contact to discuss usage reports for last month.
+82,7,2026-01-12,Executive Review,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+83,7,2026-01-04,Renewal Discussion,User reported audio lag in Room 302. Cable reset fixed the issue.
+84,7,2026-01-16,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+85,8,2026-01-24,Health Check,Met with primary contact to discuss usage reports for last month.
+86,8,2026-01-08,Executive Review,Met with primary contact to discuss usage reports for last month.
+87,8,2026-02-04,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+88,8,2026-01-11,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+89,8,2026-01-13,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+90,8,2026-02-07,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+91,8,2026-02-08,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+92,8,2026-01-03,Executive Review,Discussed expansion of software seats for the new remote cohort.
+93,8,2026-01-08,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+94,8,2026-01-10,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+95,8,2026-02-02,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+96,8,2026-01-01,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+97,9,2026-02-04,Support,Performed scheduled firmware update on all purchased boxes.
+98,9,2026-01-09,Support,Met with primary contact to discuss usage reports for last month.
+99,9,2026-01-01,Health Check,Discussed expansion of software seats for the new remote cohort.
+100,9,2026-02-06,Support,Met with primary contact to discuss usage reports for last month.
+101,9,2026-01-12,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+102,9,2026-01-05,Maintenance,Performed scheduled firmware update on all purchased boxes.
+103,9,2026-02-03,Health Check,Met with primary contact to discuss usage reports for last month.
+104,9,2026-01-04,Renewal Discussion,Confirmed all rooms online. Hardware uptime looks excellent.
+105,9,2026-01-02,Health Check,Confirmed all rooms online. Hardware uptime looks excellent.
+106,9,2026-01-17,Support,Confirmed all rooms online. Hardware uptime looks excellent.
+107,9,2026-02-04,Executive Review,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+108,9,2026-01-14,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+109,10,2026-02-05,Executive Review,Performed scheduled firmware update on all purchased boxes.
+110,10,2026-02-03,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+111,10,2026-01-08,Maintenance,Performed scheduled firmware update on all purchased boxes.
+112,10,2026-01-18,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+113,10,2026-02-08,Support,Confirmed all rooms online. Hardware uptime looks excellent.
+114,10,2026-01-24,Support,Confirmed all rooms online. Hardware uptime looks excellent.
+115,10,2026-01-13,Support,Discussed expansion of software seats for the new remote cohort.
+116,10,2026-01-04,Executive Review,Discussed expansion of software seats for the new remote cohort.
+117,10,2026-01-14,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+118,10,2026-01-31,Health Check,Met with primary contact to discuss usage reports for last month.
+119,10,2026-01-23,Maintenance,Discussed expansion of software seats for the new remote cohort.
+120,10,2026-01-31,Maintenance,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+121,11,2026-01-10,Support,Discussed expansion of software seats for the new remote cohort.
+122,11,2026-01-28,Renewal Discussion,User reported audio lag in Room 302. Cable reset fixed the issue.
+123,11,2026-01-12,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+124,11,2026-01-07,Support,Confirmed all rooms online. Hardware uptime looks excellent.
+125,11,2026-02-02,Support,Discussed expansion of software seats for the new remote cohort.
+126,11,2026-01-02,Health Check,Met with primary contact to discuss usage reports for last month.
+127,11,2026-01-09,Support,Discussed expansion of software seats for the new remote cohort.
+128,11,2026-02-08,Maintenance,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+129,11,2026-02-05,Executive Review,Performed scheduled firmware update on all purchased boxes.
+130,11,2026-01-05,Health Check,Performed scheduled firmware update on all purchased boxes.
+131,11,2026-01-25,Health Check,Discussed expansion of software seats for the new remote cohort.
+132,11,2026-01-21,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+133,12,2026-01-20,Health Check,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+134,12,2026-02-07,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+135,12,2026-01-23,Health Check,Performed scheduled firmware update on all purchased boxes.
+136,12,2026-01-23,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+137,12,2026-02-08,Executive Review,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+138,12,2026-01-12,Support,Performed scheduled firmware update on all purchased boxes.
+139,12,2026-01-23,Health Check,Met with primary contact to discuss usage reports for last month.
+140,12,2026-01-14,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+141,12,2026-01-02,Executive Review,Performed scheduled firmware update on all purchased boxes.
+142,12,2026-01-20,Maintenance,Met with primary contact to discuss usage reports for last month.
+143,12,2026-01-11,Health Check,Performed scheduled firmware update on all purchased boxes.
+144,12,2026-01-19,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+145,13,2026-01-30,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+146,13,2026-01-29,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+147,13,2026-01-01,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+148,13,2026-01-28,Maintenance,Discussed expansion of software seats for the new remote cohort.
+149,13,2026-01-10,Renewal Discussion,Performed scheduled firmware update on all purchased boxes.
+150,13,2026-01-27,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+151,13,2026-01-11,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+152,13,2026-01-27,Renewal Discussion,Confirmed all rooms online. Hardware uptime looks excellent.
+153,13,2026-01-07,Maintenance,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+154,13,2026-01-15,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+155,13,2026-01-26,Executive Review,Confirmed all rooms online. Hardware uptime looks excellent.
+156,13,2026-01-09,Support,Met with primary contact to discuss usage reports for last month.
+157,14,2026-02-04,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+158,14,2026-01-18,Support,Performed scheduled firmware update on all purchased boxes.
+159,14,2026-02-02,Maintenance,Discussed expansion of software seats for the new remote cohort.
+160,14,2026-02-05,Maintenance,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+161,14,2026-01-19,Renewal Discussion,Confirmed all rooms online. Hardware uptime looks excellent.
+162,14,2026-01-04,Maintenance,Performed scheduled firmware update on all purchased boxes.
+163,14,2026-01-12,Support,Met with primary contact to discuss usage reports for last month.
+164,14,2026-01-20,Health Check,Discussed expansion of software seats for the new remote cohort.
+165,14,2026-02-01,Health Check,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+166,14,2026-01-09,Executive Review,Confirmed all rooms online. Hardware uptime looks excellent.
+167,14,2026-01-28,Health Check,Confirmed all rooms online. Hardware uptime looks excellent.
+168,14,2026-02-01,Health Check,User reported audio lag in Room 302. Cable reset fixed the issue.
+169,15,2026-01-16,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+170,15,2026-01-05,Health Check,Discussed expansion of software seats for the new remote cohort.
+171,15,2026-01-06,Executive Review,Discussed expansion of software seats for the new remote cohort.
+172,15,2026-01-14,Health Check,Met with primary contact to discuss usage reports for last month.
+173,15,2026-01-30,Executive Review,Performed scheduled firmware update on all purchased boxes.
+174,15,2026-01-22,Renewal Discussion,User reported audio lag in Room 302. Cable reset fixed the issue.
+175,15,2026-01-27,Health Check,Discussed expansion of software seats for the new remote cohort.
+176,15,2026-01-16,Executive Review,Confirmed all rooms online. Hardware uptime looks excellent.
+177,15,2026-02-01,Maintenance,Discussed expansion of software seats for the new remote cohort.
+178,15,2026-01-26,Executive Review,Discussed expansion of software seats for the new remote cohort.
+179,15,2026-01-26,Health Check,Met with primary contact to discuss usage reports for last month.
+180,15,2026-01-24,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+181,16,2026-02-04,Renewal Discussion,Confirmed all rooms online. Hardware uptime looks excellent.
+182,16,2026-02-05,Maintenance,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+183,16,2026-01-17,Renewal Discussion,Discussed expansion of software seats for the new remote cohort.
+184,16,2026-01-01,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+185,16,2026-01-06,Support,Discussed expansion of software seats for the new remote cohort.
+186,16,2026-01-30,Health Check,Discussed expansion of software seats for the new remote cohort.
+187,16,2026-02-03,Health Check,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+188,16,2026-01-15,Maintenance,Performed scheduled firmware update on all purchased boxes.
+189,16,2026-01-01,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+190,16,2026-01-03,Renewal Discussion,Confirmed all rooms online. Hardware uptime looks excellent.
+191,16,2026-01-29,Renewal Discussion,User reported audio lag in Room 302. Cable reset fixed the issue.
+192,16,2026-01-08,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+193,17,2026-01-30,Renewal Discussion,Performed scheduled firmware update on all purchased boxes.
+194,17,2026-01-01,Renewal Discussion,Confirmed all rooms online. Hardware uptime looks excellent.
+195,17,2026-01-15,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+196,17,2026-01-21,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+197,17,2026-01-11,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+198,17,2026-02-07,Executive Review,Confirmed all rooms online. Hardware uptime looks excellent.
+199,17,2026-01-18,Support,Performed scheduled firmware update on all purchased boxes.
+200,17,2026-02-05,Maintenance,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+201,17,2026-01-07,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+202,17,2026-01-04,Support,Performed scheduled firmware update on all purchased boxes.
+203,17,2026-02-07,Maintenance,Performed scheduled firmware update on all purchased boxes.
+204,17,2026-01-28,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+205,18,2026-01-05,Health Check,Confirmed all rooms online. Hardware uptime looks excellent.
+206,18,2026-01-29,Health Check,Discussed expansion of software seats for the new remote cohort.
+207,18,2026-01-09,Health Check,User reported audio lag in Room 302. Cable reset fixed the issue.
+208,18,2026-01-22,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+209,18,2026-01-26,Executive Review,Performed scheduled firmware update on all purchased boxes.
+210,18,2026-01-02,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+211,18,2026-01-19,Support,Performed scheduled firmware update on all purchased boxes.
+212,18,2026-01-03,Renewal Discussion,Performed scheduled firmware update on all purchased boxes.
+213,18,2026-01-31,Health Check,Confirmed all rooms online. Hardware uptime looks excellent.
+214,18,2026-01-30,Maintenance,Performed scheduled firmware update on all purchased boxes.
+215,18,2026-01-26,Support,Performed scheduled firmware update on all purchased boxes.
+216,18,2026-02-05,Maintenance,Discussed expansion of software seats for the new remote cohort.
+217,19,2026-01-02,Executive Review,Discussed expansion of software seats for the new remote cohort.
+218,19,2026-01-12,Health Check,Confirmed all rooms online. Hardware uptime looks excellent.
+219,19,2026-02-08,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+220,19,2026-01-29,Maintenance,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+221,19,2026-01-08,Health Check,User reported audio lag in Room 302. Cable reset fixed the issue.
+222,19,2026-01-31,Health Check,User reported audio lag in Room 302. Cable reset fixed the issue.
+223,19,2026-01-11,Support,Met with primary contact to discuss usage reports for last month.
+224,19,2026-01-31,Maintenance,Discussed expansion of software seats for the new remote cohort.
+225,19,2026-01-19,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+226,19,2026-02-02,Maintenance,Performed scheduled firmware update on all purchased boxes.
+227,19,2026-02-06,Support,Met with primary contact to discuss usage reports for last month.
+228,19,2026-01-05,Maintenance,Met with primary contact to discuss usage reports for last month.
+229,20,2026-02-06,Maintenance,Performed scheduled firmware update on all purchased boxes.
+230,20,2026-01-28,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+231,20,2026-02-03,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+232,20,2026-01-29,Maintenance,Performed scheduled firmware update on all purchased boxes.
+233,20,2026-01-15,Executive Review,Performed scheduled firmware update on all purchased boxes.
+234,20,2026-01-05,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+235,20,2026-02-02,Support,Performed scheduled firmware update on all purchased boxes.
+236,20,2026-01-17,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+237,20,2026-01-22,Renewal Discussion,Discussed expansion of software seats for the new remote cohort.
+238,20,2026-02-03,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+239,20,2026-01-21,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+240,20,2026-01-25,Health Check,Performed scheduled firmware update on all purchased boxes.
+241,21,2026-01-09,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+242,21,2026-02-08,Maintenance,User reported audio lag in Room 302. Cable reset fixed the issue.
+243,21,2026-02-02,Executive Review,Performed scheduled firmware update on all purchased boxes.
+244,21,2026-01-05,Health Check,Performed scheduled firmware update on all purchased boxes.
+245,21,2026-01-31,Support,Discussed expansion of software seats for the new remote cohort.
+246,21,2026-01-22,Renewal Discussion,Confirmed all rooms online. Hardware uptime looks excellent.
+247,21,2026-01-27,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+248,21,2026-01-30,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+249,21,2026-02-08,Executive Review,Performed scheduled firmware update on all purchased boxes.
+250,21,2026-01-23,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+251,21,2026-01-18,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+252,21,2026-01-30,Executive Review,Confirmed all rooms online. Hardware uptime looks excellent.
+253,22,2026-01-14,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+254,22,2026-01-19,Health Check,User reported audio lag in Room 302. Cable reset fixed the issue.
+255,22,2026-02-06,Executive Review,Confirmed all rooms online. Hardware uptime looks excellent.
+256,22,2026-01-14,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+257,22,2026-01-10,Executive Review,Confirmed all rooms online. Hardware uptime looks excellent.
+258,22,2026-02-02,Health Check,Performed scheduled firmware update on all purchased boxes.
+259,22,2026-01-07,Executive Review,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+260,22,2026-01-24,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+261,22,2026-01-25,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+262,22,2026-01-30,Executive Review,Discussed expansion of software seats for the new remote cohort.
+263,22,2026-01-17,Renewal Discussion,Performed scheduled firmware update on all purchased boxes.
+264,22,2026-01-29,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+265,23,2026-01-18,Executive Review,Performed scheduled firmware update on all purchased boxes.
+266,23,2026-02-06,Health Check,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+267,23,2026-01-20,Executive Review,Performed scheduled firmware update on all purchased boxes.
+268,23,2026-01-24,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+269,23,2026-01-22,Executive Review,Performed scheduled firmware update on all purchased boxes.
+270,23,2026-01-06,Executive Review,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+271,23,2026-01-08,Support,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+272,23,2026-01-03,Executive Review,Performed scheduled firmware update on all purchased boxes.
+273,23,2026-01-11,Renewal Discussion,Met with primary contact to discuss usage reports for last month.
+274,23,2026-01-24,Renewal Discussion,Confirmed all rooms online. Hardware uptime looks excellent.
+275,23,2026-01-22,Maintenance,Performed scheduled firmware update on all purchased boxes.
+276,23,2026-01-03,Renewal Discussion,Hardware health check passed. Recommended a refresh for legacy units in 2027.
+277,24,2026-02-01,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+278,24,2026-01-17,Maintenance,Confirmed all rooms online. Hardware uptime looks excellent.
+279,24,2026-01-06,Executive Review,User reported audio lag in Room 302. Cable reset fixed the issue.
+280,24,2026-01-19,Health Check,Met with primary contact to discuss usage reports for last month.
+281,24,2026-01-23,Renewal Discussion,Discussed expansion of software seats for the new remote cohort.
+282,24,2026-02-04,Renewal Discussion,Discussed expansion of software seats for the new remote cohort.
+283,24,2026-01-03,Support,Confirmed all rooms online. Hardware uptime looks excellent.
+284,24,2026-01-30,Support,User reported audio lag in Room 302. Cable reset fixed the issue.
+285,24,2026-01-09,Health Check,Met with primary contact to discuss usage reports for last month.
+286,24,2026-01-18,Maintenance,Performed scheduled firmware update on all purchased boxes.
+287,24,2026-01-16,Health Check,Performed scheduled firmware update on all purchased boxes.
+288,24,2026-01-03,Health Check,User reported audio lag in Room 302. Cable reset fixed the issue.
+289,1,2026-01-15,CSM,Department heads have been slow to promote Cymbal Meet adoption within their teams. Several managers still default to legacy tools for recurring meetings.
+290,1,2026-01-28,CSM,Admin requested change management assets and internal communication templates to help drive platform adoption across engineering and product departments.
+291,3,2026-01-20,CSM,Team culture is very competitive — they ran a successful steps challenge last quarter. CIO mentioned interest in using gamification to drive tool adoption.
+292,3,2026-02-03,CSM,BlueHorizon IT lead asked about leaderboard features. They use internal contests regularly to drive engagement with new tools.
