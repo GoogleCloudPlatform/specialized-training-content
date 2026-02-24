@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cymbal Meet: Company Overview</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      font-size: 1.4rem;
+    }
+
+    .header .logo .material-symbols-outlined {
+      color: black;
+    }
+
+    .presentation {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 48px 32px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .header .logo .material-symbols-outlined {
+      font-size: 2.4rem;
+      color: black;
+    }
+
+    .header .logo h1 {
+      margin: 0;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+      color: #1f1f1f;
+    }
+
+    .header .subtitle {
+      font-size: 1.2rem;
+      color: #666;
+    }
+
+    /* Hero Stats */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: #4285f4;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.95rem;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    /* Company Overview Section */
+    .company-overview {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 40px;
+      margin-bottom: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+    }
+
+    .overview-column h2 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #1f1f1f;
+      margin: 0 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .overview-column h2 .material-symbols-outlined {
+      font-size: 1.5rem;
+      color: #4285f4;
+    }
+
+    .overview-column p {
+      font-size: 1rem;
+      color: #666;
+      line-height: 1.7;
+      margin: 0 0 16px 0;
+    }
+
+    .overview-column p:last-child {
+      margin-bottom: 0;
+    }
+
+    .overview-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .overview-list li {
+      font-size: 0.95rem;
+      color: #1f1f1f;
+      padding: 10px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .overview-list li:before {
+      content: "▸";
+      color: #4285f4;
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Strategic Planning Section */
+    .strategic-section {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 40px;
+    }
+
+    .strategic-section h2 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #1f1f1f;
+      margin: 0 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .strategic-section h2 .material-symbols-outlined {
+      font-size: 1.5rem;
+      color: #4285f4;
+    }
+
+    .strategic-intro {
+      font-size: 1rem;
+      color: #666;
+      line-height: 1.7;
+      margin: 0 0 32px 0;
+      max-width: 800px;
+    }
+
+    /* Process Steps */
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      position: relative;
+    }
+
+    .process-steps::before {
+      content: '';
+      position: absolute;
+      top: 24px;
+      left: 12%;
+      right: 12%;
+      height: 2px;
+      background: linear-gradient(to right, #4285f4 0%, #4285f4 25%, #34a853 25%, #34a853 50%, #fbbc04 50%, #fbbc04 75%, #ea4335 75%, #ea4335 100%);
+      z-index: 0;
+    }
+
+    .process-step {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      color: white;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      background: white;
+      border: 3px solid;
+    }
+
+    .process-step:nth-child(1) .step-icon { background: #4285f4; border-color: #4285f4; }
+    .process-step:nth-child(2) .step-icon { background: #34a853; border-color: #34a853; }
+    .process-step:nth-child(3) .step-icon { background: #fbbc04; border-color: #fbbc04; }
+    .process-step:nth-child(4) .step-icon { background: #ea4335; border-color: #ea4335; }
+
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #1f1f1f;
+      margin-bottom: 8px;
+    }
+
+    .step-description {
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.5;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="presentation">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <span class="material-symbols-outlined">videocam</span>
+        <h1>Cymbal Meet: Company Overview</h1>
+      </div>
+      <div class="subtitle">Global leader in enterprise video communication</div>
+    </div>
+
+    <!-- Key Stats -->
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="stat-value">$500M</div>
+        <div class="stat-label">Annual Revenue</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">Global</div>
+        <div class="stat-label">Market Coverage</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">Hardware + Software</div>
+        <div class="stat-label">Integrated Offering</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">Enterprise, MSE, SMB</div>
+        <div class="stat-label">Segments Served</div>
+      </div>
+    </div>
+
+    <!-- Company Overview -->
+    <div class="company-overview">
+      <div class="overview-column">
+        <h2><span class="material-symbols-outlined">business</span> The Business</h2>
+        <p>Cymbal Meet operates in a competitive enterprise communications market where innovation and customer success are critical. The company has built a strong market position through proven technology and deep customer relationships.</p>
+        <p>Revenue is anchored by 50 strategic enterprise accounts (40% of total), while MSE customers drive growth and operational scale.</p>
+      </div>
+      <div class="overview-column">
+        <h2><span class="material-symbols-outlined">lightbulb</span> The Opportunity</h2>
+        <ul class="overview-list">
+          <li>Intense competitive pressure from established and emerging players</li>
+          <li>Rapidly evolving customer expectations around AI and automation</li>
+          <li>Critical need to accelerate product innovation cycles</li>
+          <li>Opportunity to strengthen customer retention and expand account value</li>
+          <li>Potential to modernize operations through agentic innovation</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Strategic Planning Section -->
+    <div class="strategic-section">
+      <h2><span class="material-symbols-outlined">analytics</span> 2026 Strategic Planning Initiative</h2>
+      <p class="strategic-intro">To identify the highest-impact opportunities and stay competitive, Cymbal Meet's executive team conducted a comprehensive strategic review. The process evaluated key business challenges and identified which are best suited for agentic solutions.</p>
+
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="step-icon">
+            <span class="material-symbols-outlined">search</span>
+          </div>
+          <div class="step-title">Identify Opportunities</div>
+          <div class="step-description">Discover critical business challenges and strategic opportunities</div>
+        </div>
+
+        <div class="process-step">
+          <div class="step-icon">
+            <span class="material-symbols-outlined">straighten</span>
+          </div>
+          <div class="step-title">Define State and Targets</div>
+          <div class="step-description">Establish current performance, targets, and financial impact</div>
+        </div>
+
+        <div class="process-step">
+          <div class="step-icon">
+            <span class="material-symbols-outlined">description</span>
+          </div>
+          <div class="step-title">Estimate Value</div>
+          <div class="step-description">Quantify business value of solving each challenge</div>
+        </div>
+
+        <div class="process-step">
+          <div class="step-icon">
+            <span class="material-symbols-outlined">auto_awesome</span>
+          </div>
+          <div class="step-title">Assess Agentic Fit</div>
+          <div class="step-description">With experts, evaluate suitability for autonomous agent solutions</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

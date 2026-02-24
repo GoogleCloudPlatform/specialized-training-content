@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cymbal Meet: Big Business Problems</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      font-size: 1.4rem;
+    }
+
+    .presentation {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 48px 32px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .header .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .header .logo .material-symbols-outlined {
+      font-size: 2.4rem;
+      color: black;
+    }
+
+    .header .logo h1 {
+      margin: 0;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+      color: #1f1f1f;
+    }
+
+    .header .subtitle {
+      font-size: 1.2rem;
+      color: #666;
+    }
+
+    /* Problem Section */
+    .problem-section {
+      margin-bottom: 48px;
+    }
+
+    /* Collapsible Problem Sections */
+    .problem-header {
+      cursor: pointer;
+      padding: 28px 32px 24px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      user-select: none;
+      transition: opacity 0.2s;
+    }
+
+    .problem-header:hover {
+      opacity: 1;
+    }
+
+    .problem-header-content {
+      flex: 1;
+    }
+
+    .expand-icon {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #f5f5f5;
+      margin-top: 4px;
+      transition: background 0.2s, transform 0.3s ease;
+    }
+
+    .expand-icon .material-symbols-outlined {
+      font-size: 1.6rem;
+      color: #666;
+      transition: transform 0.3s ease;
+    }
+
+    .problem-header:hover .expand-icon {
+      background: #e8e8e8;
+    }
+
+    .problem-section.expanded .expand-icon .material-symbols-outlined {
+      transform: rotate(180deg);
+    }
+
+    /* Collapsible card body */
+    .card-body-wrapper {
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+    }
+
+    .card-body-wrapper.collapsed {
+      max-height: 0;
+      opacity: 0;
+    }
+
+    .card-body-wrapper.expanded {
+      max-height: 2000px;
+      opacity: 1;
+    }
+
+    .card-stripe {
+      height: 5px;
+      flex-shrink: 0;
+    }
+
+    /* Keyboard accessibility */
+    .problem-header:focus {
+      outline: 2px solid #4285f4;
+      outline-offset: -4px;
+      border-radius: 4px;
+    }
+
+    .problem-header:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    /* Print support - expand all when printing */
+    @media print {
+      .card-body-wrapper.collapsed {
+        max-height: none !important;
+        opacity: 1 !important;
+      }
+
+      .expand-icon {
+        display: none;
+      }
+    }
+
+    .problem-label {
+      font-size: 0.95rem;
+      color: #4c4c4c;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .problem-label .material-symbols-outlined {
+      font-size: 1.4rem;
+      color: #666;
+    }
+
+    .problem-title {
+      font-size: 1.35rem;
+      font-weight: 400;
+      color: #4c4c4c;
+      margin-bottom: 4px;
+    }
+
+    .problem-subtitle {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 0;
+    }
+
+    /* ---- V3: Card with colored top stripe ---- */
+    .problem-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .card-stripe {
+      height: 5px;
+    }
+
+    .problem-section:nth-child(2) .card-stripe { background: #4285f4; }
+    .problem-section:nth-child(3) .card-stripe { background: #34a853; }
+    .problem-section:nth-child(4) .card-stripe { background: #ea4335; }
+
+    .card-body {
+      padding: 32px;
+    }
+
+    .card-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 32px;
+    }
+
+    .business-column {
+      border-right: 1px solid #f0f0f0;
+      padding-right: 32px;
+    }
+
+    .agent-column {
+      padding-left: 8px;
+    }
+
+    .column-header {
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #444;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .section-label {
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #444;
+      margin-bottom: 12px;
+      margin-top: 28px;
+    }
+
+    .section-label:first-of-type {
+      margin-top: 0;
+    }
+
+    .body-text {
+      font-size: 1rem;
+      color: #1f1f1f;
+      line-height: 1.7;
+    }
+
+    /* Gauge Cards */
+    .gauge-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .gauge-card {
+      padding: 16px;
+      background: #fafafa;
+      border: 1px solid #e8e8e8;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .gauge-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0;
+    }
+
+    .gauge-values-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .gauge-current {
+      font-size: 1rem;
+      color: #1f1f1f;
+    }
+
+    .gauge-arrow {
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .gauge-arrow .material-symbols-outlined {
+      font-size: 1.2rem;
+      color: #bbb;
+    }
+
+    .gauge-target-val {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1f1f1f;
+    }
+
+    .gauge-footnote {
+      grid-column: 1 / -1;
+      font-size: 0.9rem;
+      color: #999;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    /* ---- V3: Why-list icons in colored circles ---- */
+    .why-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .why-list li {
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #1f1f1f;
+      padding-left: 42px;
+      position: relative;
+    }
+
+    .why-list li .icon-circle {
+      position: absolute;
+      left: 0;
+      top: 1px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .why-list li .icon-circle .material-symbols-outlined {
+      font-size: 1.1rem;
+      color: white;
+    }
+
+    /* Positive fit icons: blue circles */
+    .icon-circle.fit {
+      background: #4285f4;
+    }
+
+    /* Negative fit icons: light red circles */
+    .icon-circle.no-fit {
+      background: #ea4335;
+    }
+
+    .why-list strong {
+      font-weight: 500;
+      color: #1f1f1f;
+    }
+
+    /* ---- V3: Colored decision box ---- */
+    .decision-box {
+      margin-top: 24px;
+      padding: 20px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .decision-box.prioritize {
+      background: #e6f4ea;
+    }
+
+    .decision-box.deprioritize {
+      background: #fce8e6;
+    }
+
+    .decision-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .decision-box.prioritize .decision-label { color: #1b7a3d; }
+    .decision-box.deprioritize .decision-label { color: #c5221f; }
+
+    .decision-text {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .decision-box.prioritize .decision-text { color: #1b7a3d; }
+    .decision-box.deprioritize .decision-text { color: #c5221f; }
+
+    .decision-rationale {
+      font-size: 0.95rem;
+      color: #666;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation">
+    <div class="header">
+      <div class="logo">
+        <span class="material-symbols-outlined">troubleshoot</span>
+        <h1>Cymbal Meet: Big Business Problems</h1>
+      </div>
+      <div class="subtitle">Identified by the executive team working with internal and external consulting teams as high-priority problems to pursue</div>
+    </div>
+
+    <!-- Problem 1: Revenue Retention -->
+    <div class="problem-section">
+      <div class="problem-card">
+        <div class="card-stripe"></div>
+        <div class="problem-header" data-problem="1">
+          <div class="problem-header-content">
+            <div class="problem-label"><span class="material-symbols-outlined">trending_down</span> Problem 1</div>
+            <div class="problem-title">Improving Revenue Retention</div>
+            <div class="problem-subtitle">$65M in Year 1 NRR potential at risk</div>
+          </div>
+          <div class="expand-icon">
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </div>
+        <div class="card-body-wrapper collapsed">
+          <div class="card-body">
+            <div class="card-layout">
+              <div class="business-column">
+                <div class="column-header">Business Problem</div>
+
+                <div class="body-text">
+                  Cymbal Meet is currently losing <strong>$65M in Year 1 NRR potential</strong> due to "silent churn" (customers who stop using features before their contract ends) and a failure to capture identified upsell opportunities in high-growth accounts.
+                </div>
+
+                <div class="section-label">Performance</div>
+                <div class="gauge-row">
+                  <div class="gauge-card">
+                    <div class="gauge-label">Gross Retention</div>
+                    <div class="gauge-values-row">
+                      <span class="gauge-current">88%</span>
+                      <span class="gauge-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                      <span class="gauge-target-val">95%</span>
+                    </div>
+                  </div>
+                  <div class="gauge-card">
+                    <div class="gauge-label">Net Retention</div>
+                    <div class="gauge-values-row">
+                      <span class="gauge-current">102%</span>
+                      <span class="gauge-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                      <span class="gauge-target-val">115%</span>
+                    </div>
+                  </div>
+                  <div class="gauge-card">
+                    <div class="gauge-label">Intervention Rate*</div>
+                    <div class="gauge-values-row">
+                      <span class="gauge-current">35%</span>
+                      <span class="gauge-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                      <span class="gauge-target-val">100%</span>
+                    </div>
+                  </div>
+                  <div class="gauge-footnote">* Percentage of identified "at-risk" behavior changes (20%+ deviance from target engagement) that result in a CSM outreach campaign</div>
+                </div>
+
+                <div class="section-label">Value Estimation</div>
+                <div class="body-text">
+                  A <strong>13% improvement in NRR</strong> (from 102% to 115%) unlocks an immediate <strong>$65M in Year 1 revenue</strong>. More critically, this shift creates a compounding growth engine: over a 5-year horizon, this "Retention Delta" accounts for <strong>$450M+ in cumulative revenue</strong> from the same $500M segment—effectively doubling the size of the enterprise business without adding a single new customer.
+                </div>
+              </div>
+
+              <div class="agent-column">
+                <div class="column-header">Agentic Innovation Fit</div>
+
+                <ul class="why-list">
+                  <li><span class="icon-circle fit"><span class="material-symbols-outlined">visibility</span></span> <strong>Identification:</strong> Agents can Observe unstructured usage data and Reason to identify "gap signals" (e.g., a drop in mobile client usage vs. web) with minimal coding.</li>
+                  <li><span class="icon-circle fit"><span class="material-symbols-outlined">assignment</span></span> <strong>Autonomous Playbooks:</strong> Agents can Plan multi-step interventions—drafting a custom technical training plan based on the customer's tickets and updating the CRM.</li>
+                  <li><span class="icon-circle fit"><span class="material-symbols-outlined">bolt</span></span> <strong>Action at Scale:</strong> Agents can Act by executing these plays across thousands of accounts simultaneously, ensuring no deviance goes unaddressed due to human bandwidth constraints.</li>
+                </ul>
+
+                <div class="decision-box prioritize">
+                  <div class="decision-label">Recommendation</div>
+                  <div class="decision-text">Prioritize for Agent Implementation</div>
+                  <div class="decision-rationale">
+                    High volume, data-driven decisions, structured playbooks, and low per-error risk make this an ideal candidate for agentic systems.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Problem 2: Product Velocity -->
+    <div class="problem-section">
+      <div class="problem-card">
+        <div class="card-stripe"></div>
+        <div class="problem-header" data-problem="2">
+          <div class="problem-header-content">
+            <div class="problem-label"><span class="material-symbols-outlined">speed</span> Problem 2</div>
+            <div class="problem-title">Accelerating Product Velocity</div>
+            <div class="problem-subtitle">$30M annual sales at risk due to 9-month development cycles</div>
+          </div>
+          <div class="expand-icon">
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </div>
+        <div class="card-body-wrapper collapsed">
+          <div class="card-body">
+            <div class="card-layout">
+              <div class="business-column">
+                <div class="column-header">Business Problem</div>
+
+                <div class="body-text">
+                  Cymbal Meet is losing an estimated <strong>$30M in annual sales</strong> to competitors because core "Tier 1" feature requests (e.g., advanced AI transcription or regional hardware compliance) are stalled in a <strong>9-month development lifecycle</strong>, causing high prospect "drop-outs" and existing customer frustration.
+                </div>
+
+                <div class="section-label">Performance</div>
+                <div class="gauge-row">
+                  <div class="gauge-card">
+                    <div class="gauge-label">Cycle Time</div>
+                    <div class="gauge-values-row">
+                      <span class="gauge-current">270 days</span>
+                      <span class="gauge-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                      <span class="gauge-target-val">135 days</span>
+                    </div>
+                  </div>
+                  <div class="gauge-card">
+                    <div class="gauge-label">Roadmap Adherence</div>
+                    <div class="gauge-values-row">
+                      <span class="gauge-current">60%</span>
+                      <span class="gauge-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                      <span class="gauge-target-val">90%</span>
+                    </div>
+                  </div>
+                  <div class="gauge-card">
+                    <div class="gauge-label">Revenue Loss</div>
+                    <div class="gauge-values-row">
+                      <span class="gauge-current">$30M/yr</span>
+                      <span class="gauge-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                      <span class="gauge-target-val">$0</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section-label">Value Estimation</div>
+                <div class="body-text">
+                  Using a revenue-impact model, accelerating the delivery of high-demand features by 4 months is projected to recapture <strong>$30M in "at-risk" sales</strong> and increase NRR by an additional <strong>2%</strong> through improved satisfaction.
+                </div>
+              </div>
+
+              <div class="agent-column">
+                <div class="column-header">Agentic Innovation Fit</div>
+
+                <ul class="why-list">
+                  <li><span class="icon-circle fit"><span class="material-symbols-outlined">transform</span></span> <strong>Complex Transformation:</strong> Agents can Transform thousands of disparate customer feedback notes and sales call transcripts into structured PRDs (Product Requirement Documents), a task that takes human PMs weeks.</li>
+                  <li><span class="icon-circle fit"><span class="material-symbols-outlined">build</span></span> <strong>SWE Performance:</strong> In the development phase, a multi-agent system can Collaborate with engineers by autonomously generating unit tests, reviewing PRs for security compliance, and suggesting code optimizations.</li>
+                  <li><span class="icon-circle fit"><span class="material-symbols-outlined">psychology</span></span> <strong>Reasoning and Planning:</strong> Agents can Reason through the dependencies between a new feature and existing legacy hardware protocols, identifying architectural risks before coding begins.</li>
+                </ul>
+
+                <div class="decision-box prioritize">
+                  <div class="decision-label">Recommendation</div>
+                  <div class="decision-text">Prioritize for Agent Implementation</div>
+                  <div class="decision-rationale">
+                    Complex transformation tasks, code assistance capabilities, and systematic dependency reasoning make this an excellent fit. Human-in-the-loop review mitigates risk.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Problem 3: Strategic Partnerships -->
+    <div class="problem-section">
+      <div class="problem-card">
+        <div class="card-stripe"></div>
+        <div class="problem-header" data-problem="3">
+          <div class="problem-header-content">
+            <div class="problem-label"><span class="material-symbols-outlined">handshake</span> Problem 3</div>
+            <div class="problem-title">High-Touch Strategic Partnerships</div>
+            <div class="problem-subtitle">$200M annual revenue requiring nuanced relationship management</div>
+          </div>
+          <div class="expand-icon">
+            <span class="material-symbols-outlined">expand_more</span>
+          </div>
+        </div>
+        <div class="card-body-wrapper collapsed">
+          <div class="card-body">
+            <div class="card-layout">
+              <div class="business-column">
+                <div class="column-header">Business Problem</div>
+
+                <div class="body-text">
+                  Cymbal Meet's <strong>Top 50 "Global Strategic" accounts represent 40% of total revenue</strong>. These accounts require highly nuanced, multi-year relationship management, bespoke contract negotiations, and deep "human-to-human" trust to navigate complex internal politics and board-level buy-in.
+                </div>
+
+                <div class="section-label">Performance</div>
+                <div class="gauge-row">
+                  <div class="gauge-card">
+                    <div class="gauge-label">Retention</div>
+                    <div class="gauge-values-row">
+                      <span class="gauge-current">98%</span>
+                      <span class="gauge-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                      <span class="gauge-target-val">100%</span>
+                    </div>
+                  </div>
+                  <div class="gauge-card">
+                    <div class="gauge-label">Contract Length</div>
+                    <div class="gauge-values-row">
+                      <span class="gauge-current">18 mo</span>
+                      <span class="gauge-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                      <span class="gauge-target-val">36 mo</span>
+                    </div>
+                  </div>
+                  <div class="gauge-card">
+                    <div class="gauge-label">SAM Coverage</div>
+                    <div class="gauge-values-row">
+                      <span class="gauge-current">1:2 ratio</span>
+                      <span class="gauge-arrow"><span class="material-symbols-outlined">arrow_forward</span></span>
+                      <span class="gauge-target-val">1:2</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="section-label">Value Estimation</div>
+                <div class="body-text">
+                  Protecting this core segment secures <strong>$200M+ in annual recurring revenue</strong>. A single lost account in this tier results in a "catastrophic" revenue hit (<strong>$5M-$15M</strong>) and a significant blow to brand reputation in the enterprise market.
+                </div>
+              </div>
+
+              <div class="agent-column">
+                <div class="column-header">Agentic Innovation Fit</div>
+
+                <ul class="why-list">
+                  <li><span class="icon-circle no-fit"><span class="material-symbols-outlined">block</span></span> <strong>The Trust Deficit:</strong> High-stakes negotiation relies on Emotional Intelligence and "reading the room." Agents currently struggle with the subtle social cues and political maneuvering required to close a $10M deal with a skeptical CFO.</li>
+                  <li><span class="icon-circle no-fit"><span class="material-symbols-outlined">block</span></span> <strong>Lack of Creative Synthesis:</strong> These partnerships often require "out-of-the-box" creative deal-making (e.g., trading hardware subsidies for marketing co-branding) that doesn't exist in historical data or structured playbooks.</li>
+                  <li><span class="icon-circle no-fit"><span class="material-symbols-outlined">block</span></span> <strong>Low Repetition, High Stakes:</strong> Agents thrive on Scale and Repetition. This problem set is low-volume (only 50 accounts) and high-consequence; the risk of an autonomous agent hallucinating a contractual term or misinterpreting a client's tone far outweighs the efficiency gains.</li>
+                </ul>
+
+                <div class="decision-box deprioritize">
+                  <div class="decision-label">Recommendation</div>
+                  <div class="decision-text">Deprioritize for Agent Implementation</div>
+                  <div class="decision-rationale">
+                    Low volume, high stakes, and the requirement for emotional intelligence and creative synthesis make this a poor fit. Keep this human-driven.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      const problemHeaders = document.querySelectorAll('.problem-header');
+
+      problemHeaders.forEach(header => {
+        header.setAttribute('tabindex', '0');
+        header.setAttribute('role', 'button');
+        header.setAttribute('aria-expanded', 'false');
+
+        const section = header.closest('.problem-section');
+        const bodyWrapper = section.querySelector('.card-body-wrapper');
+        const problemNum = header.dataset.problem;
+
+        header.setAttribute('aria-label', `Toggle Problem ${problemNum} details`);
+
+        const toggleSection = () => {
+          const isExpanded = section.classList.contains('expanded');
+
+          if (isExpanded) {
+            section.classList.remove('expanded');
+            bodyWrapper.classList.remove('expanded');
+            bodyWrapper.classList.add('collapsed');
+            header.setAttribute('aria-expanded', 'false');
+          } else {
+            section.classList.add('expanded');
+            bodyWrapper.classList.remove('collapsed');
+            bodyWrapper.classList.add('expanded');
+            header.setAttribute('aria-expanded', 'true');
+          }
+        };
+
+        header.addEventListener('click', toggleSection);
+
+        header.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleSection();
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+contact_id,company_id,full_name,role,is_primary
+1,1,Morgan Black,CIO,True
+2,1,Chris Wilson,Facilities Manager,False
+3,1,Chris Black,Office Manager,False
+4,2,Mark Horton,CIO,True
+5,2,Elena Smith,Operations Lead,False
+6,2,Taylor Vance,Office Manager,False
+7,3,Alex Horton,AV Specialist,True
+8,3,Alex Chen,AV Specialist,False
+9,3,Elena Horton,CIO,False
+10,4,Jordan Hayes,Facilities Manager,True
+11,4,Sam Smith,AV Specialist,False
+12,4,Pat Smith,CIO,False
+13,5,Chris Horton,Office Manager,True
+14,5,Mark Wilson,Operations Lead,False
+15,5,Alex Chen,Facilities Manager,False
+16,6,Sarah Black,CIO,True
+17,6,Morgan Wilson,CIO,False
+18,6,Jordan Smith,AV Specialist,False
+19,7,Jordan Vance,Director of IT,True
+20,7,Mark Chen,Facilities Manager,False
+21,7,Taylor Smith,CIO,False
+22,8,Taylor Wilson,AV Specialist,True
+23,8,Elena Chen,AV Specialist,False
+24,8,Elena Horton,Office Manager,False
+25,9,Jordan Wilson,AV Specialist,True
+26,9,Morgan Black,Operations Lead,False
+27,9,Elena Horton,Office Manager,False
+28,10,Morgan Vance,CIO,True
+29,10,Morgan Smith,Operations Lead,False
+30,10,Mark Vance,CIO,False
+31,11,Alex Chen,AV Specialist,True
+32,11,Alex Wilson,Facilities Manager,False
+33,11,Sarah Chen,AV Specialist,False
+34,12,Elena Vance,Office Manager,True
+35,12,Elena Vance,Director of IT,False
+36,12,Mark Black,Facilities Manager,False
+37,13,Mark Vance,AV Specialist,True
+38,13,Chris Black,Director of IT,False
+39,13,Taylor Vance,Operations Lead,False
+40,14,Jordan Rodriguez,Facilities Manager,True
+41,14,Elena Black,Office Manager,False
+42,14,Alex Wilson,CIO,False
+43,15,Alex Rodriguez,Operations Lead,True
+44,15,Jordan Bridges,Director of IT,False
+45,15,Pat Chen,Operations Lead,False
+46,16,Chris Wilson,Director of IT,True
+47,16,Pat Smith,Director of IT,False
+48,16,Sam Bridges,Facilities Manager,False
+49,17,Mark Vance,Operations Lead,True
+50,17,Taylor Horton,CIO,False
+51,17,Elena Smith,AV Specialist,False
+52,18,Elena Bridges,Operations Lead,True
+53,18,Morgan Black,AV Specialist,False
+54,18,Jordan Black,AV Specialist,False
+55,19,Jordan Horton,Facilities Manager,True
+56,19,Sarah Chen,CIO,False
+57,19,Elena Chen,Operations Lead,False
+58,20,Jordan Black,Director of IT,True
+59,20,Sam Bridges,AV Specialist,False
+60,20,Sarah Horton,AV Specialist,False
+61,21,Morgan Vance,Director of IT,True
+62,21,Chris Smith,AV Specialist,False
+63,21,Morgan Wilson,Operations Lead,False
+64,22,Jordan Chen,CIO,True
+65,22,Elena Rodriguez,Operations Lead,False
+66,22,Elena Vance,Director of IT,False
+67,23,Alex Bridges,AV Specialist,True
+68,23,Mark Rodriguez,Director of IT,False
+69,23,Jordan Chen,Office Manager,False
+70,24,Mark Wilson,Operations Lead,True
+71,24,Chris Black,Office Manager,False
+72,24,Chris Vance,CIO,False

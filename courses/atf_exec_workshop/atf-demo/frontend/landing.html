@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cymbal Meet — Agentic Innovation</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    .landing {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 120px 24px 80px;
+      text-align: center;
+    }
+
+    .landing h1 {
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .landing h1 .material-symbols-outlined {
+      font-size: 36px;
+      color: #1a1a1a;
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      text-align: left;
+    }
+
+    .choice-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .choice-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-md);
+      text-decoration: none;
+    }
+
+    .choice-card .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .choice-card .card-icon .material-symbols-outlined {
+      font-size: 28px;
+      color: white;
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .choice-card.presentation .card-icon {
+      background: #34a853;
+    }
+
+    .choice-card.demo .card-icon {
+      background: var(--accent);
+    }
+
+    .choice-card h2 {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .choice-card .desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      flex-grow: 1;
+      margin-bottom: 20px;
+    }
+
+    .choice-card .card-action {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .choice-card .card-action .material-symbols-outlined {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="landing">
+    <h1><span class="material-symbols-outlined">videocam</span> Cymbal Meet — Agentic Innovation</h1>
+
+    <div class="choice-grid">
+
+      <a href="/presentation/" class="choice-card presentation">
+        <div class="card-icon">
+          <span class="material-symbols-outlined">slideshow</span>
+        </div>
+        <h2>Presentation</h2>
+        <div class="desc">
+          Walk through the Agentic Innovation Framework — business problems, process deep-dives, and the case for agents.
+        </div>
+        <div class="card-action">
+          Open <span class="material-symbols-outlined">arrow_forward</span>
+        </div>
+      </a>
+
+      <a href="/demo/" class="choice-card demo">
+        <div class="card-icon">
+          <span class="material-symbols-outlined">terminal</span>
+        </div>
+        <h2>Live Demo</h2>
+        <div class="desc">
+          Interact with the Cymbal Meet agentic system — CRM, dashboards, inbox, and the agent in action.
+        </div>
+        <div class="card-action">
+          Open <span class="material-symbols-outlined">arrow_forward</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+</body>
+</html>

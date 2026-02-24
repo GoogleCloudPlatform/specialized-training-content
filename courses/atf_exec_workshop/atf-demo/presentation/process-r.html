@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cymbal Meet: Reimagined Process</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      font-size: 1.4rem;
+    }
+
+    .presentation {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 48px 32px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .header .logo .material-symbols-outlined {
+      font-size: 2.4rem;
+      color: black;
+    }
+
+    .header .logo h1 {
+      margin: 0;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+      color: #1f1f1f;
+    }
+
+    /* Breadcrumb-as-title */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+      color: #999;
+      margin-bottom: 40px;
+    }
+
+    .breadcrumb a {
+      color: #999;
+      text-decoration: none;
+      font-weight: 400;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .breadcrumb .material-symbols-outlined {
+      font-size: 1.4rem;
+      color: #ccc;
+    }
+
+    .breadcrumb .current {
+      color: #1f1f1f;
+      font-weight: 500;
+    }
+
+    /* Narrative */
+    .narrative {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .narrative h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #444;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .narrative h2 .material-symbols-outlined {
+      font-size: 1.4rem;
+      color: #4285f4;
+    }
+
+    .narrative .collapsible-body p {
+      font-size: 1rem;
+      color: #1f1f1f;
+      line-height: 1.7;
+      margin: 16px 0 0 0;
+    }
+
+    /* Process Card */
+    .process-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 32px;
+      margin-bottom: 32px;
+    }
+
+    .process-card .collapsible-body .timeline {
+      margin-top: 32px;
+    }
+
+    /* Section Title */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 0;
+    }
+
+    .section-title h3 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #444;
+      margin: 0;
+    }
+
+    .section-title .material-symbols-outlined {
+      font-size: 1.6rem;
+      color: #4285f4;
+    }
+
+    /* Touch Legend */
+    .touch-legend {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 14px 20px;
+      background: #fafafa;
+      border: 1px solid #e8e8e8;
+      border-radius: 4px;
+      margin-bottom: 28px;
+    }
+
+    .touch-legend .legend-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+      margin-right: 4px;
+    }
+
+    .touch-legend .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .touch-legend .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .touch-legend .legend-dot.replace {
+      background: #4285f4;
+    }
+
+    .touch-legend .legend-dot.augment {
+      background: #34a853;
+    }
+
+    .touch-legend .legend-dot.add-to {
+      background: #9c27b0;
+    }
+
+    .touch-legend .legend-dot.integrate {
+      background: #fbbc04;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 50px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 40px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, #4285f4 0%, #4285f4 25%, #34a853 50%, #fbbc04 75%, #ea4335 100%);
+      border-radius: 1px;
+    }
+
+    /* Stage Row */
+    .stage-row {
+      position: relative;
+      margin-bottom: 48px;
+    }
+
+    .stage-row:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Stage badge */
+    .stage-badge {
+      position: absolute;
+      left: -46px;
+      top: -14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: white;
+      z-index: 1;
+      white-space: nowrap;
+    }
+
+    .stage-row:nth-child(1) .stage-badge {
+      background: #4285f4;
+    }
+
+    .stage-row:nth-child(2) .stage-badge {
+      background: #34a853;
+    }
+
+    .stage-row:nth-child(3) .stage-badge {
+      background: #fbbc04;
+      color: #1f1f1f;
+    }
+
+    .stage-row:nth-child(4) .stage-badge {
+      background: #ea4335;
+    }
+
+    /* Stage Card */
+    .stage-card {
+      position: relative;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .stage-card-inner {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+    }
+
+    .stage-main {
+      padding: 24px 28px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .stage-name-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .stage-name {
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: #1f1f1f;
+    }
+
+    .stage-goal {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 16px;
+    }
+
+    .tasks-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+
+    .task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .task-list li {
+      font-size: 0.92rem;
+      color: #444;
+      line-height: 1.55;
+      padding: 5px 0 5px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .task-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 3px;
+      background: #f0f0f0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #888;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .task-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Task status classes */
+    .task-removed {
+      opacity: 0.4;
+      text-decoration: line-through;
+      color: #999;
+    }
+
+    .task-removed .task-num {
+      opacity: 0.6;
+      color: #bbb;
+    }
+
+    .task-augmented {
+      color: #444;
+    }
+
+    .task-augmented .inline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 8px;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      background: #e6f4ea;
+      color: #34a853;
+      margin-left: 6px;
+      white-space: nowrap;
+      vertical-align: middle;
+      text-decoration: none;
+    }
+
+    .task-new {
+      color: #7b1fa2;
+    }
+
+    .task-new .task-num {
+      background: #f3e5f5;
+      color: #9c27b0;
+      font-weight: 700;
+    }
+
+    .task-csm {
+      color: #444;
+    }
+
+    .task-csm .inline-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 8px;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      background: #f0f0f0;
+      color: #666;
+      margin-left: 6px;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    /* Ribbon anchor — colored square pushed to right edge of task row */
+    .ribbon-anchor {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      margin-left: auto;
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+
+    .ribbon-anchor.r-replace {
+      background: #4285f4;
+    }
+
+    .ribbon-anchor.r-augment {
+      background: #34a853;
+    }
+
+    .ribbon-anchor.r-add-to {
+      background: #9c27b0;
+    }
+
+    .ribbon-anchor.r-integrate {
+      background: #fbbc04;
+    }
+
+    /* SVG ribbon overlay — sits BEHIND content */
+    .connector-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ribbon-path {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.15;
+      transition: opacity 0.3s ease;
+    }
+
+    .stage-card:hover .ribbon-path {
+      opacity: 0.22;
+    }
+
+    /* Agent Sidebar */
+    .agent-sidebar {
+      border-left: 1px solid #e0e0f0;
+      background: #f0f0ff;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .agent-sidebar-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+      margin-bottom: -4px;
+    }
+
+    .agent-touch {
+      padding: 0;
+    }
+
+    .touch-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 4px;
+    }
+
+    .touch-type-badge .material-symbols-outlined {
+      font-size: 0.9rem;
+    }
+
+    .touch-type-badge.type-replace {
+      background: #e8f0fe;
+      color: #4285f4;
+    }
+
+    .touch-type-badge.type-augment {
+      background: #e6f4ea;
+      color: #34a853;
+    }
+
+    .touch-type-badge.type-add-to {
+      background: #f3e5f5;
+      color: #9c27b0;
+    }
+
+    .touch-type-badge.type-integrate {
+      background: #fef7e0;
+      color: #b06d00;
+    }
+
+    .touch-desc {
+      font-size: 0.84rem;
+      color: #444;
+      line-height: 1.45;
+      margin-bottom: 3px;
+    }
+
+    .touch-owner {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      color: #999;
+      font-weight: 500;
+    }
+
+    .touch-owner .material-symbols-outlined {
+      font-size: 0.85rem;
+    }
+
+    /* Collapsible Cards */
+    .collapsible-header {
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      user-select: none;
+      transition: opacity 0.2s;
+    }
+
+    .collapsible-header:hover {
+      opacity: 0.8;
+    }
+
+    .collapsible-header:focus {
+      outline: 2px solid #4285f4;
+      outline-offset: -4px;
+      border-radius: 4px;
+    }
+
+    .collapsible-header:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    .expand-icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #f5f5f5;
+      margin-top: 2px;
+      transition: background 0.2s;
+    }
+
+    .expand-icon .material-symbols-outlined {
+      font-size: 1.4rem;
+      color: #666;
+      transition: transform 0.3s ease;
+    }
+
+    .collapsible-header:hover .expand-icon {
+      background: #e8e8e8;
+    }
+
+    .collapsible-section.expanded .expand-icon .material-symbols-outlined {
+      transform: rotate(180deg);
+    }
+
+    .collapsible-body {
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+    }
+
+    .collapsible-body.collapsed {
+      max-height: 0;
+      opacity: 0;
+    }
+
+    .collapsible-body.expanded {
+      max-height: 5000px;
+      opacity: 1;
+    }
+
+    @media print {
+      .collapsible-body.collapsed {
+        max-height: none !important;
+        opacity: 1 !important;
+      }
+
+      .expand-icon {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="presentation">
+
+    <div class="header">
+      <div class="logo">
+        <span class="material-symbols-outlined">auto_awesome</span>
+        <h1>Cymbal Meet: Reimagined Process</h1>
+      </div>
+    </div>
+
+    <div class="breadcrumb">
+      <a href="problems.html">Big Problem 1</a>
+      <span class="material-symbols-outlined">chevron_right</span>
+      <span>Processes</span>
+      <span class="material-symbols-outlined">chevron_right</span>
+      <span class="current">Reimagined: Scaled Product Engagement Interventions</span>
+    </div>
+
+    <div class="narrative collapsible-section expanded">
+      <div class="collapsible-header" tabindex="0" role="button" aria-expanded="true">
+        <h2><span class="material-symbols-outlined">route</span> Approach</h2>
+        <div class="expand-icon">
+          <span class="material-symbols-outlined">expand_more</span>
+        </div>
+      </div>
+      <div class="collapsible-body expanded">
+        <p>
+          The Agentic Innovation team takes the documented as-is process and systematically maps each task to an agent
+          capability. Tasks are classified by their agent touch type: <strong>Replace</strong> (agent takes over
+          entirely), <strong>Augment</strong> (agent assists the CSM), <strong>Add to</strong> (agent creates new value
+          previously impossible), or <strong>Integrate with</strong> (agent bridges system gaps). The result is a
+          reimagined process where the CSM focuses on high-judgment decisions while the agent handles detection, design,
+          execution, and system updates at scale.
+        </p>
+      </div>
+    </div>
+
+    <div class="process-card collapsible-section expanded">
+      <div class="collapsible-header" tabindex="0" role="button" aria-expanded="true">
+        <div class="section-title">
+          <span class="material-symbols-outlined">auto_awesome</span>
+          <h3>Reimagined Process: Scaled Product Engagement Interventions</h3>
+        </div>
+        <div class="expand-icon">
+          <span class="material-symbols-outlined">expand_more</span>
+        </div>
+      </div>
+      <div class="collapsible-body expanded">
+
+        <div class="touch-legend" style="margin-top: 24px;">
+          <span class="legend-label">Touch Types</span>
+          <span class="legend-item"><span class="legend-dot replace"></span> Replace</span>
+          <span class="legend-item"><span class="legend-dot augment"></span> Augment</span>
+          <span class="legend-item"><span class="legend-dot add-to"></span> Add to</span>
+          <span class="legend-item"><span class="legend-dot integrate"></span> Integrate with</span>
+        </div>
+
+        <div class="timeline">
+
+          <div class="stage-row" data-stage="1">
+            <div class="stage-badge">Stage 1</div>
+            <div class="stage-card">
+              <div class="stage-card-inner">
+                <div class="stage-main">
+                  <div class="stage-name-row">
+                    <span class="stage-name">Detection</span>
+                  </div>
+                  <div class="stage-goal">Identify deltas and patterns</div>
+                  <div class="tasks-label">Tasks (Post-Agent)</div>
+                  <ul class="task-list">
+                    <li data-target="0"><span class="task-num">1</span> <span class="task-text">Collect data (telemetry,
+                        CRM data, support ticket data)</span> <span class="ribbon-anchor r-replace"></span></li>
+                    <li data-target="0"><span class="task-num">2</span> <span class="task-text">Calculate
+                        variances</span> <span class="ribbon-anchor r-replace"></span></li>
+                    <li data-target="0"><span class="task-num">3</span> <span class="task-text">Identify and categorize
+                        instances where performance is 20%+ below target</span> <span
+                        class="ribbon-anchor r-replace"></span></li>
+                    <li data-target="0"><span class="task-num">4</span> <span class="task-text">Identify additional
+                        unusual/undesirable patterns</span> <span class="ribbon-anchor r-replace"></span></li>
+                    <li class="task-new" data-target="1"><span class="task-num">+</span> <span class="task-text">Analyze
+                        CRM history for context signals</span> <span class="ribbon-anchor r-add-to"></span></li>
+                  </ul>
+                </div>
+                <div class="agent-sidebar">
+                  <div class="agent-sidebar-label">Agent Touchpoints</div>
+                  <div class="agent-touch">
+                    <div class="touch-type-badge type-replace">
+                      <span class="material-symbols-outlined">swap_horiz</span> Replace
+                    </div>
+                    <div class="touch-desc">Agent queries all customers, applies threshold detection, and reviews usage
+                      patterns to discern undesirable behaviors without hard/fast rules</div>
+                    <div class="touch-owner"><span class="material-symbols-outlined">smart_toy</span> Agent</div>
+                  </div>
+                  <div class="agent-touch">
+                    <div class="touch-type-badge type-add-to">
+                      <span class="material-symbols-outlined">add_circle</span> Add to
+                    </div>
+                    <div class="touch-desc">Mines CRM notes for contextual signals to inform intervention design</div>
+                    <div class="touch-owner"><span class="material-symbols-outlined">smart_toy</span> Agent</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-row" data-stage="2">
+            <div class="stage-badge">Stage 2</div>
+            <div class="stage-card">
+              <div class="stage-card-inner">
+                <div class="stage-main">
+                  <div class="stage-name-row">
+                    <span class="stage-name">Design</span>
+                  </div>
+                  <div class="stage-goal">Map gaps to interventions</div>
+                  <div class="tasks-label">Tasks (Post-Agent)</div>
+                  <ul class="task-list">
+                    <li class="task-new" data-target="0"><span class="task-num">+</span> <span class="task-text">Perform
+                        root cause analysis</span> <span class="ribbon-anchor r-add-to"></span></li>
+                    <li data-target="1"><span class="task-num">1</span> <span class="task-text">Cross-reference gaps
+                        with playbooks</span> <span class="ribbon-anchor r-replace"></span></li>
+                    <li class="task-augmented" data-target="2"><span class="task-num">2</span> <span
+                        class="task-text">Draft custom outreach/actions <span class="inline-badge">CSM +
+                          Agent</span></span> <span class="ribbon-anchor r-augment"></span></li>
+                  </ul>
+                </div>
+                <div class="agent-sidebar">
+                  <div class="agent-sidebar-label">Agent Touchpoints</div>
+                  <div class="agent-touch">
+                    <div class="touch-type-badge type-add-to">
+                      <span class="material-symbols-outlined">add_circle</span> Add to
+                    </div>
+                    <div class="touch-desc">Analyzes why metrics are low—calculates adoption rates, segments affected
+                      users, and identifies root causes to inform intervention design</div>
+                    <div class="touch-owner"><span class="material-symbols-outlined">smart_toy</span> Agent</div>
+                  </div>
+                  <div class="agent-touch">
+                    <div class="touch-type-badge type-replace">
+                      <span class="material-symbols-outlined">swap_horiz</span> Replace
+                    </div>
+                    <div class="touch-desc">LLM intelligently maps issues to relevant playbooks and intervention
+                      documentation</div>
+                    <div class="touch-owner"><span class="material-symbols-outlined">smart_toy</span> Agent</div>
+                  </div>
+                  <div class="agent-touch">
+                    <div class="touch-type-badge type-augment">
+                      <span class="material-symbols-outlined">handshake</span> Augment
+                    </div>
+                    <div class="touch-desc">Agent generates customized outreach content tailored to each customer's
+                      situation; CSM reviews high-impact items</div>
+                    <div class="touch-owner"><span class="material-symbols-outlined">group</span> CSM + Agent</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-row" data-stage="3">
+            <div class="stage-badge">Stage 3</div>
+            <div class="stage-card">
+              <div class="stage-card-inner">
+                <div class="stage-main">
+                  <div class="stage-name-row">
+                    <span class="stage-name">Execution</span>
+                  </div>
+                  <div class="stage-goal">Deploy intervention</div>
+                  <div class="tasks-label">Tasks (Post-Agent)</div>
+                  <ul class="task-list">
+                    <li data-target="0"><span class="task-num">1</span> <span class="task-text">Create and send admin
+                        outreach emails</span> <span class="ribbon-anchor r-replace"></span></li>
+                    <li class="task-augmented" data-target="1"><span class="task-num">2</span> <span
+                        class="task-text">Pre-stage in-app campaign; CSM revises and approves <span class="inline-badge">CSM + Agent</span></span> <span class="ribbon-anchor r-augment"></span></li>
+                    <li class="task-new" data-target="2"><span class="task-num">+</span> <span
+                        class="task-text">Activate approved configurations</span> <span
+                        class="ribbon-anchor r-integrate"></span></li>
+                  </ul>
+                </div>
+                <div class="agent-sidebar">
+                  <div class="agent-sidebar-label">Agent Touchpoints</div>
+                  <div class="agent-touch">
+                    <div class="touch-type-badge type-replace">
+                      <span class="material-symbols-outlined">swap_horiz</span> Replace
+                    </div>
+                    <div class="touch-desc">Agent auto-generates and sends personalized emails</div>
+                    <div class="touch-owner"><span class="material-symbols-outlined">smart_toy</span> Agent</div>
+                  </div>
+                  <div class="agent-touch">
+                    <div class="touch-type-badge type-augment">
+                      <span class="material-symbols-outlined">handshake</span> Augment
+                    </div>
+                    <div class="touch-desc">Agent pre-stages in-app campaigns; CSM revises and approves</div>
+                    <div class="touch-owner"><span class="material-symbols-outlined">group</span> CSM + Agent</div>
+                  </div>
+                  <div class="agent-touch">
+                    <div class="touch-type-badge type-integrate">
+                      <span class="material-symbols-outlined">sync_alt</span> Integrate with
+                    </div>
+                    <div class="touch-desc">Agent activates approved configurations in backend</div>
+                    <div class="touch-owner"><span class="material-symbols-outlined">smart_toy</span> Agent</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage-row" data-stage="4">
+            <div class="stage-badge">Stage 4</div>
+            <div class="stage-card">
+              <div class="stage-card-inner">
+                <div class="stage-main">
+                  <div class="stage-name-row">
+                    <span class="stage-name">Sync and Report</span>
+                  </div>
+                  <div class="stage-goal">Update systems/track KPI</div>
+                  <div class="tasks-label">Tasks (Post-Agent)</div>
+                  <ul class="task-list">
+                    <li data-target="0"><span class="task-num">1</span> <span class="task-text">Update CRM with
+                        information about issue and intervention</span> <span class="ribbon-anchor r-integrate"></span>
+                    </li>
+                    <li data-target="0"><span class="task-num">2</span> <span class="task-text">Update Customer Success
+                        dashboard with intervention information</span> <span class="ribbon-anchor r-integrate"></span>
+                    </li>
+                    <li class="task-removed"><span class="task-num">3</span> <span class="task-text">Create intervention results
+                        dashboard</span></li>
+                    <li class="task-new" data-target="1"><span class="task-num">+</span> <span class="task-text">Create
+                        an audit trail</span> <span class="ribbon-anchor r-add-to"></span></li>
+                  </ul>
+                </div>
+                <div class="agent-sidebar">
+                  <div class="agent-sidebar-label">Agent Touchpoints</div>
+                  <div class="agent-touch">
+                    <div class="touch-type-badge type-integrate">
+                      <span class="material-symbols-outlined">sync_alt</span> Integrate with
+                    </div>
+                    <div class="touch-desc">Agent auto-creates CRM records and updates dashboard in real-time</div>
+                    <div class="touch-owner"><span class="material-symbols-outlined">smart_toy</span> Agent</div>
+                  </div>
+                  <div class="agent-touch">
+                    <div class="touch-type-badge type-add-to">
+                      <span class="material-symbols-outlined">add_circle</span> Add to
+                    </div>
+                    <div class="touch-desc">Creates a comprehensive audit trail of all agent decisions and actions</div>
+                    <div class="touch-owner"><span class="material-symbols-outlined">smart_toy</span> Agent</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Collapsible toggle
+    (function () {
+      document.querySelectorAll('.collapsible-header').forEach(function (header) {
+        var section = header.closest('.collapsible-section');
+        var body = section.querySelector('.collapsible-body');
+
+        var toggle = function () {
+          var isExpanded = section.classList.contains('expanded');
+          if (isExpanded) {
+            section.classList.remove('expanded');
+            body.classList.remove('expanded');
+            body.classList.add('collapsed');
+            header.setAttribute('aria-expanded', 'false');
+          } else {
+            section.classList.add('expanded');
+            body.classList.remove('collapsed');
+            body.classList.add('expanded');
+            header.setAttribute('aria-expanded', 'true');
+          }
+        };
+
+        header.addEventListener('click', toggle);
+        header.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggle();
+          }
+        });
+      });
+    })();
+
+    // Ribbon connectors
+    (function () {
+      var ANCHOR_COLORS = {
+        'r-replace': '#4285f4',
+        'r-augment': '#34a853',
+        'r-add-to': '#9c27b0',
+        'r-integrate': '#fbbc04'
+      };
+
+      function getAnchorColor(anchor) {
+        for (var cls in ANCHOR_COLORS) {
+          if (anchor.classList.contains(cls)) return ANCHOR_COLORS[cls];
+        }
+        return '#999';
+      }
+
+      function drawRibbons() {
+        var cards = document.querySelectorAll('.stage-card');
+
+        cards.forEach(function (card) {
+          var stageRow = card.closest('.stage-row');
+          var stageNum = stageRow ? stageRow.getAttribute('data-stage') : null;
+
+          var svg = card.querySelector('.connector-overlay');
+          if (!svg) {
+            svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'connector-overlay');
+            card.appendChild(svg);
+          }
+
+          var cardRect = card.getBoundingClientRect();
+          svg.setAttribute('width', cardRect.width);
+          svg.setAttribute('height', cardRect.height);
+          svg.setAttribute('viewBox', '0 0 ' + cardRect.width + ' ' + cardRect.height);
+
+          while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+          var taskItems = card.querySelectorAll('.task-list li[data-target]');
+          var touches = card.querySelectorAll('.agent-touch');
+          var sidebar = card.querySelector('.agent-sidebar');
+          var sidebarRect = sidebar.getBoundingClientRect();
+          var spineX = sidebarRect.left - cardRect.left;
+          var radius = 14;
+          var midX = spineX - 16;
+
+          taskItems.forEach(function (task) {
+            var targetIdx = parseInt(task.getAttribute('data-target'), 10);
+            var touch = touches[targetIdx];
+            if (!touch) return;
+            var anchor = task.querySelector('.ribbon-anchor');
+            if (!anchor) return;
+
+            var aRect = anchor.getBoundingClientRect();
+            var tRect = touch.getBoundingClientRect();
+
+            var x1 = aRect.left - cardRect.left + aRect.width / 2;
+            var y1 = aRect.top - cardRect.top + aRect.height / 2;
+            var x2 = tRect.left - cardRect.left;
+            var y2 = tRect.top - cardRect.top + tRect.height / 2;
+
+            var d;
+
+            // Revised Logic for Stage 2 (L-shape: down then right)
+            if (stageNum === "2" && anchor.classList.contains('r-augment')) {
+              d = 'M ' + x1 + ' ' + y1;
+              d += ' L ' + x1 + ' ' + (y2 - radius);
+              d += ' Q ' + x1 + ' ' + y2 + ' ' + (x1 + radius) + ' ' + y2;
+              d += ' L ' + x2 + ' ' + y2;
+            }
+            // Consistent logic for Stage 4 convergence (Yellow Lines)
+            else if (stageNum === "4" && anchor.classList.contains('r-integrate')) {
+              d = 'M ' + x1 + ' ' + y1;
+              d += ' L ' + (midX - radius) + ' ' + y1;
+              if (Math.abs(y2 - y1) > radius) {
+                if (y2 > y1) {
+                  d += ' Q ' + midX + ' ' + y1 + ' ' + midX + ' ' + (y1 + radius);
+                  d += ' L ' + midX + ' ' + (y2 - radius);
+                  d += ' Q ' + midX + ' ' + y2 + ' ' + (midX + radius) + ' ' + y2;
+                } else {
+                  d += ' Q ' + midX + ' ' + y1 + ' ' + midX + ' ' + (y1 - radius);
+                  d += ' L ' + midX + ' ' + (y2 + radius);
+                  d += ' Q ' + midX + ' ' + y2 + ' ' + (midX + radius) + ' ' + y2;
+                }
+              } else {
+                d += ' L ' + x2 + ' ' + y2;
+              }
+              d += ' L ' + x2 + ' ' + y2;
+            }
+            // Standard smooth S-curve/Rounded Path for others
+            else if (Math.abs(y2 - y1) < radius * 2) {
+              var cpX = (x1 + x2) / 2;
+              d = 'M ' + x1 + ' ' + y1 + ' C ' + cpX + ' ' + y1 + ' ' + cpX + ' ' + y2 + ' ' + x2 + ' ' + y2;
+            } else {
+              d = 'M ' + x1 + ' ' + y1;
+              d += ' L ' + (midX - radius) + ' ' + y1;
+              if (y2 > y1) {
+                d += ' Q ' + midX + ' ' + y1 + ' ' + midX + ' ' + (y1 + radius);
+                d += ' L ' + midX + ' ' + (y2 - radius);
+                d += ' Q ' + midX + ' ' + y2 + ' ' + (midX + radius) + ' ' + y2;
+              } else {
+                d += ' Q ' + midX + ' ' + y1 + ' ' + midX + ' ' + (y1 - radius);
+                d += ' L ' + midX + ' ' + (y2 + radius);
+                d += ' Q ' + midX + ' ' + y2 + ' ' + (midX + radius) + ' ' + y2;
+              }
+              d += ' L ' + x2 + ' ' + y2;
+            }
+
+            var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('class', 'ribbon-path');
+            path.setAttribute('d', d);
+            path.setAttribute('stroke', getAnchorColor(anchor));
+            svg.appendChild(path);
+          });
+        });
+      }
+
+      window.addEventListener('load', function () {
+        setTimeout(drawRibbons, 150);
+      });
+
+      window.addEventListener('resize', function () {
+        requestAnimationFrame(drawRibbons);
+      });
+
+      document.querySelectorAll('.collapsible-header').forEach(function (header) {
+        header.addEventListener('click', function () {
+          setTimeout(drawRibbons, 450);
+        });
+      });
+    })();
+  </script>
+</body>
+
+</html>

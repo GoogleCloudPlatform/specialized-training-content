@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cymbal Meet: Agentic Solution Design</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    body {
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      font-size: 1.4rem;
+    }
+
+    .presentation {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 48px 32px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .header .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .header .logo .material-symbols-outlined {
+      font-size: 2.4rem;
+      color: black;
+    }
+
+    .header .logo h1 {
+      margin: 0;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+      color: #1f1f1f;
+    }
+
+    .header .subtitle {
+      font-size: 1.2rem;
+      color: #666;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* Context bar */
+    .context-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px 20px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+
+    .context-bar .stage-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+    }
+
+    .context-bar .stage-pip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1rem;
+      color: #bbb;
+    }
+
+    .context-bar .stage-pip .material-symbols-outlined {
+      font-size: 1.15rem;
+      color: #ddd;
+    }
+
+    .context-bar .stage-pip.done {
+      color: #34a853;
+    }
+
+    .context-bar .stage-pip.done .material-symbols-outlined {
+      color: #34a853;
+    }
+
+    .context-bar .stage-pip.active {
+      color: #4285f4;
+      font-weight: 600;
+    }
+
+    .context-bar .stage-pip.active .material-symbols-outlined {
+      color: #4285f4;
+    }
+
+    .context-bar .divider {
+      width: 24px;
+      height: 2px;
+      background: #e0e0e0;
+    }
+
+    .context-bar .divider.done {
+      background: #34a853;
+    }
+
+    /* Main area */
+    .main-area {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 28px 32px 24px;
+      display: flex;
+      flex-direction: column;
+      margin-top: 32px;
+    }
+
+    /* Pipeline rail */
+    .pipeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 24px;
+      flex-shrink: 0;
+    }
+
+    .pipeline-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .pipeline-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      z-index: 1;
+    }
+
+    .pipeline-circle .material-symbols-outlined {
+      font-size: 1.6rem;
+    }
+
+    .pipeline-step:nth-child(1) .pipeline-circle { background: #4285f4; }
+    .pipeline-step:nth-child(3) .pipeline-circle { background: #34a853; }
+    .pipeline-step:nth-child(5) .pipeline-circle { background: #fbbc04; }
+    .pipeline-step:nth-child(5) .pipeline-circle .material-symbols-outlined { color: #1f1f1f; }
+
+    .pipeline-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+    }
+
+    .pipeline-step:nth-child(1) .pipeline-label { color: #4285f4; }
+    .pipeline-step:nth-child(3) .pipeline-label { color: #34a853; }
+    .pipeline-step:nth-child(5) .pipeline-label { color: #b06d00; }
+
+    .pipeline-connector {
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+      margin-bottom: 20px;
+    }
+
+    .connector-line {
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(to right, var(--from), var(--to));
+    }
+
+    .pipeline-connector:nth-child(2) .connector-line {
+      --from: #4285f4;
+      --to: #34a853;
+    }
+
+    .pipeline-connector:nth-child(4) .connector-line {
+      --from: #34a853;
+      --to: #fbbc04;
+    }
+
+    .connector-chevron {
+      color: #ccc;
+      display: flex;
+    }
+
+    .connector-chevron .material-symbols-outlined {
+      font-size: 1.2rem;
+    }
+
+    /* Three columns below pipeline */
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .column-panel {
+      border: 1px solid #f0f0f0;
+      border-radius: 4px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .column-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .column-panel:nth-child(1)::before { background: #4285f4; }
+    .column-panel:nth-child(2)::before { background: #34a853; }
+    .column-panel:nth-child(3)::before { background: #fbbc04; }
+
+    .panel-title {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: #1f1f1f;
+      margin-bottom: 4px;
+    }
+
+    .panel-desc {
+      font-size: 1rem;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .panel-section-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+      margin-bottom: 4px;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 2px 0;
+      font-size: 0.95rem;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    .activity-item .material-symbols-outlined {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: #bbb;
+    }
+
+    /* Artifacts section */
+    .artifacts-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #bbb;
+      margin-top: 24px;
+      padding-top: 8px;
+      border-top: 1px solid #f0f0f0;
+      margin-bottom: 6px;
+    }
+
+    .artifacts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 8px;
+    }
+
+    .artifact-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: #f5f5f5;
+      color: #666;
+      border: 1px solid #e8e8e8;
+    }
+
+    .artifact-chip .material-symbols-outlined {
+      font-size: 1.1rem;
+    }
+
+    .column-panel:nth-child(1) .artifact-chip {
+      background: #e8f0fe;
+      color: #4285f4;
+      border-color: #d2e3fc;
+    }
+
+    .column-panel:nth-child(2) .artifact-chip {
+      background: #e6f4ea;
+      color: #34a853;
+      border-color: #ceead6;
+    }
+
+    .column-panel:nth-child(3) .artifact-chip {
+      background: #fef7e0;
+      color: #b06d00;
+      border-color: #fde293;
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <span class="material-symbols-outlined">precision_manufacturing</span>
+        <h1>Cymbal Meet: Agentic Solution Design</h1>
+      </div>
+      <div class="subtitle">Translating the reimagined process into a concrete agent architecture</div>
+    </div>
+
+    <!-- Main card -->
+    <div class="main-area">
+
+
+      <!-- Detail columns -->
+      <div class="columns">
+
+        <!-- Column 1: Define Actions -->
+        <div class="column-panel">
+          <div class="panel-title">Define Agent Actions</div>
+          <div class="panel-desc">What can each agent do? Enumerate the discrete capabilities and tool access needed.</div>
+          <div class="panel-section-label">Activities</div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">checklist</span>
+            Map new process tasks to agent actions
+          </div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">database</span>
+            Identify required data sources and APIs
+          </div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">shield</span>
+            Define guardrails and permission boundaries
+          </div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">tune</span>
+            Specify input/output contracts per action
+          </div>
+          <div class="artifacts-label">Outputs</div>
+          <div class="artifacts">
+            <span class="artifact-chip"><span class="material-symbols-outlined">description</span> Action Catalog</span>
+            <span class="artifact-chip"><span class="material-symbols-outlined">api</span> Tool Specs</span>
+            <span class="artifact-chip"><span class="material-symbols-outlined">security</span> Guardrails Doc</span>
+          </div>
+        </div>
+
+        <!-- Column 2: Design Agent -->
+        <div class="column-panel">
+          <div class="panel-title">Design the Agent</div>
+          <div class="panel-desc">How does the agent think? Define reasoning loops, memory, and human review points.</div>
+          <div class="panel-section-label">Activities</div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">account_tree</span>
+            Define reasoning and planning approach
+          </div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">memory</span>
+            Design state management and memory
+          </div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">handshake</span>
+            Map human-in-the-loop checkpoints
+          </div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">science</span>
+            Establish eval criteria and test scenarios
+          </div>
+          <div class="artifacts-label">Outputs</div>
+          <div class="artifacts">
+            <span class="artifact-chip"><span class="material-symbols-outlined">smart_toy</span> Agent Spec</span>
+            <span class="artifact-chip"><span class="material-symbols-outlined">rule</span> Eval Suite</span>
+            <span class="artifact-chip"><span class="material-symbols-outlined">schema</span> State Model</span>
+          </div>
+        </div>
+
+        <!-- Column 3: Define Ecosystem -->
+        <div class="column-panel">
+          <div class="panel-title">Define the Ecosystem</div>
+          <div class="panel-desc">How do agents talk to each other, where do they run, and how do they integrate?</div>
+          <div class="panel-section-label">Activities</div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">swap_calls</span>
+            Design agent-to-agent communication
+          </div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">cloud</span>
+            Define hosting and execution environment
+          </div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">integration_instructions</span>
+            Map enterprise system integration points
+          </div>
+          <div class="activity-item">
+            <span class="material-symbols-outlined">monitoring</span>
+            Plan observability and audit trails
+          </div>
+          <div class="artifacts-label">Outputs</div>
+          <div class="artifacts">
+            <span class="artifact-chip"><span class="material-symbols-outlined">lan</span> Arch Diagram</span>
+            <span class="artifact-chip"><span class="material-symbols-outlined">sync_alt</span> API Contracts</span>
+            <span class="artifact-chip"><span class="material-symbols-outlined">deployed_code</span> Infra Spec</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

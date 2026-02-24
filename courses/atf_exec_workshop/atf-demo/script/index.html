@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presenter Script — Navigator</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      line-height: 1.6;
+    }
+
+    /* --- Layout --- */
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* --- Sidebar --- */
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid #e0e0e0;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      z-index: 50;
+    }
+
+    .sidebar-header {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #1f1f1f;
+    }
+
+    .sidebar-header p {
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .nav-section {
+      padding: 12px 0;
+    }
+
+    .nav-group-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #bbb;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 20px 4px;
+    }
+
+    .nav-item {
+      display: block;
+      padding: 7px 20px 7px 28px;
+      font-size: 0.85rem;
+      color: #666;
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: color 0.15s, background 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      color: #333;
+      background: #f5f5f5;
+    }
+
+    .nav-item.active {
+      color: #4285f4;
+      background: #e8f0fe;
+      border-left-color: #4285f4;
+      font-weight: 500;
+    }
+
+    /* --- Main content --- */
+    .main {
+      margin-left: 280px;
+      flex: 1;
+      padding: 48px 56px 160px;
+      max-width: 880px;
+    }
+
+    .main-title {
+      font-size: 2rem;
+      font-weight: 300;
+      color: #1f1f1f;
+      margin-bottom: 6px;
+    }
+
+    .main-subtitle {
+      color: #999;
+      font-size: 1rem;
+      margin-bottom: 56px;
+    }
+
+    /* --- Sections --- */
+    .section {
+      margin-bottom: 56px;
+      scroll-margin-top: 24px;
+    }
+
+    .section-heading {
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: #1f1f1f;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #4285f4;
+      margin-bottom: 28px;
+      letter-spacing: -0.3px;
+    }
+
+    .subsection {
+      margin-bottom: 36px;
+    }
+
+    .subsection-heading {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .context-line {
+      color: #888;
+      font-style: italic;
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+
+    /* --- Points --- */
+    .point {
+      padding: 7px 0 7px 20px;
+      border-left: 2px solid #e0e0e0;
+      margin-bottom: 4px;
+      font-size: 1rem;
+      transition: border-left-color 0.15s, background 0.15s;
+    }
+
+    .point.selected {
+      border-left-color: #4285f4;
+      background: #e8f0fe;
+    }
+
+    .point .num {
+      color: inherit;
+      margin-right: 6px;
+      font-weight: 500;
+    }
+
+    .sub-point {
+      padding: 5px 0 5px 44px;
+      border-left: 2px solid #f0f0f0;
+      margin-bottom: 3px;
+      color: #555;
+      font-size: 0.95rem;
+      transition: border-left-color 0.15s, background 0.15s;
+    }
+
+    .sub-point.selected {
+      border-left-color: #4285f4;
+      background: #e8f0fe;
+    }
+
+    .sub-point .num {
+      color: inherit;
+      margin-right: 6px;
+      font-weight: 500;
+    }
+
+    .sub-sub-point {
+      padding: 4px 0 4px 68px;
+      border-left: 2px solid #f5f5f5;
+      margin-bottom: 2px;
+      color: #666;
+      font-size: 0.9rem;
+      transition: border-left-color 0.15s, background 0.15s;
+    }
+
+    .sub-sub-point.selected {
+      border-left-color: #4285f4;
+      background: #e8f0fe;
+    }
+
+    .sub-sub-point .num {
+      color: inherit;
+      margin-right: 6px;
+      font-weight: 500;
+    }
+
+    .sub-sub-sub-point {
+      padding: 3px 0 3px 92px;
+      border-left: 2px solid #f8f8f8;
+      margin-bottom: 2px;
+      color: #777;
+      font-size: 0.85rem;
+      transition: border-left-color 0.15s, background 0.15s;
+    }
+
+    .sub-sub-sub-point.selected {
+      border-left-color: #4285f4;
+      background: #e8f0fe;
+    }
+
+    .sub-sub-sub-point .num {
+      color: inherit;
+      margin-right: 6px;
+      font-weight: 500;
+    }
+
+    /* --- Action cue --- */
+    .action-cue {
+      background: #e8f0fe;
+      border: 1px solid #c5d8f8;
+      border-radius: 4px;
+      padding: 12px 16px;
+      margin: 14px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .action-cue .material-symbols-outlined {
+      color: #4285f4;
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .action-cue-text {
+      font-size: 0.9rem;
+      color: #1a56c4;
+      font-weight: 500;
+    }
+
+    /* --- Discussion --- */
+    .discussion {
+      background: #e6f4ea;
+      border: 1px solid #b7e1c4;
+      border-radius: 4px;
+      padding: 12px 16px;
+      margin: 14px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .discussion .material-symbols-outlined {
+      color: #34a853;
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .discussion-text {
+      font-size: 0.9rem;
+      color: #1e7e34;
+    }
+
+    .discussion-text strong {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    /* --- Divider --- */
+    .divider {
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      margin: 48px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>Presenter Script</h2>
+        <p>Click to jump to section</p>
+      </div>
+      <div class="nav-section">
+
+        <div class="nav-group-label">Setup</div>
+        <a class="nav-item" data-target="before-start">Before You Start</a>
+
+        <div class="nav-group-label">Intro to Cymbal Meet</div>
+        <a class="nav-item" data-target="the-business">The Business</a>
+        <a class="nav-item" data-target="2026-planning">2026 Planning</a>
+
+        <div class="nav-group-label">Big Business Problems</div>
+        <a class="nav-item" data-target="high-level">High-level Overview</a>
+        <a class="nav-item" data-target="problem-1">Drill Down — Problem 1</a>
+        <a class="nav-item" data-target="other-problems">Problems 2 &amp; 3</a>
+        <a class="nav-item" data-target="agentic-fit">Agentic Innovation Fit</a>
+
+        <div class="nav-group-label">Current Processes</div>
+        <a class="nav-item" data-target="process-approach">Approach</a>
+        <a class="nav-item" data-target="process-focus">Focus Process</a>
+        <a class="nav-item" data-target="process-map">Process Map</a>
+
+        <div class="nav-group-label">Reimagined Process</div>
+        <a class="nav-item" data-target="touchpoints">Agent Touchpoint Types</a>
+        <a class="nav-item" data-target="reimagined">Reimagined Process</a>
+
+        <div class="nav-group-label">Design &amp; Build</div>
+        <a class="nav-item" data-target="solution-design">Agentic Solution Design</a>
+        <a class="nav-item" data-target="build-deploy">Build &amp; Deploy</a>
+
+        <div class="nav-group-label">Agent Demo</div>
+        <a class="nav-item" data-target="demo-intro">Intro</a>
+        <a class="nav-item" data-target="demo-crm">CRM</a>
+        <a class="nav-item" data-target="demo-csm">CSM Dashboard</a>
+        <a class="nav-item" data-target="demo-action">Agents in Action</a>
+        <a class="nav-item" data-target="demo-results">The Results</a>
+
+        <div class="nav-group-label">Wrap-up</div>
+        <a class="nav-item" data-target="takeaways">Takeaways</a>
+
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main">
+      <h1 class="main-title">Presenter Script</h1>
+      <p class="main-subtitle">Step-by-step guide for delivering the demo scenario</p>
+
+      <!-- Before you start -->
+      <div class="section" id="before-start">
+        <h2 class="section-heading">Before You Start</h2>
+        <div class="point">Start the demo server locally, or deploy to Cloud Run (see README.md)</div>
+        <div class="point">Open to <strong>Intro to Cymbal Meet</strong> page</div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- The Business -->
+      <div class="section" id="the-business">
+        <h2 class="section-heading">Intro to Cymbal Meet</h2>
+        <div class="subsection">
+          <h3 class="subsection-heading">The Business</h3>
+          <div class="point"><span class="num">1.</span>Let's look at Cymbal Meet, a videoconferencing company that sells hardware for conference rooms and SaaS subscriptions for rooms and end-users</div>
+          <div class="point"><span class="num">2.</span>They do $500M a year in revenue, sell globally, and serve SMB, mid-market, and enterprise customers</div>
+        </div>
+      </div>
+
+      <!-- 2026 Planning -->
+      <div class="section" id="2026-planning">
+        <div class="subsection">
+          <h3 class="subsection-heading">2026 Planning</h3>
+          <div class="point"><span class="num">1.</span>The executive team kicked off 2026 with a strategic planning effort focused on identifying the biggest problems and opportunities for the business</div>
+          <div class="point"><span class="num">2.</span>For each, they defined the current state of the business, where they wanted the business to go, and what impact these changes would have</div>
+          <div class="point"><span class="num">3.</span>Then, they worked with an AI consulting team to evaluate these high priority initiatives and identify which might be good candidates for agentic AI innovation</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Big Business Problems - High-level -->
+      <div class="section" id="high-level">
+        <h2 class="section-heading">Big Business Problems</h2>
+        <div class="subsection">
+          <h3 class="subsection-heading">High-level</h3>
+          <p class="context-line">So let's look at the top three business problems the executive team decided to tackle</p>
+          <div class="point"><span class="num">1.</span>Improving net retention (kind of the holy grail for recurring revenue businesses)</div>
+          <div class="point"><span class="num">2.</span>Accelerating product development (get features to market faster)</div>
+          <div class="point"><span class="num">3.</span>Optimize the entire approach to long-term, strategic customer contracts</div>
+        </div>
+      </div>
+
+      <!-- Drill down Problem 1 -->
+      <div class="section" id="problem-1">
+        <div class="subsection">
+          <h3 class="subsection-heading">Drill Down into Problem 1</h3>
+          <div class="point"><span class="num">1.</span>Let's expand the problem 1 card and drill down</div>
+          <div class="point"><span class="num">2.</span>The problem is basically that there are customers who fall short of desired engagement levels, and they end up failing to upsell, or even worse, they churn</div>
+          <div class="point"><span class="num">3.</span>Cymbal Meet is failing to address the majority of these shortfalls actively and with high-quality interventions</div>
+          <div class="point"><span class="num">4.</span>Leadership estimates that if they can improve interventions, and as a result improve engagement, they can drive up gross and net retention</div>
+          <div class="point"><span class="num">5.</span>You can see their goals are to move from good to world-class gross/net retention rates</div>
+          <div class="point"><span class="num">6.</span>And the estimate is that in the first year, this could drive $65M in additional revenue; and over 5 years drive $450M</div>
+          <div class="point"><span class="num">7.</span>Now, notice that at this point we're not talking about agents, or even AI, at all. This is important. Building valuable solutions starts by looking at the business, not the technology</div>
+          <div class="point"><span class="num">8.</span>We'll come back and talk about whether agents makes sense in a minute</div>
+        </div>
+      </div>
+
+      <!-- The Other Problems -->
+      <div class="section" id="other-problems">
+        <div class="subsection">
+          <h3 class="subsection-heading">The Other Problems</h3>
+          <div class="point"><span class="num">1.</span>Let's expand the problem 2 card</div>
+          <div class="sub-point"><span class="num">a.</span>You can see a similar analysis, and similar goal setting has taken place here. We won't dig too deep on this one</div>
+          <div class="point"><span class="num">2.</span>But I do want to dig into problem 3 (expand card)</div>
+          <div class="sub-point"><span class="num">a.</span>Notice this problem is about increasing retention and increasing contract length with the top 50 customers</div>
+          <div class="sub-point"><span class="num">b.</span>You can see in the description of the business problem that this requires a lot of relationship management and very complex contract negotiations</div>
+        </div>
+      </div>
+
+      <!-- Agentic Innovation Fit -->
+      <div class="section" id="agentic-fit">
+        <div class="subsection">
+          <h3 class="subsection-heading">Agentic Innovation Fit</h3>
+          <div class="point"><span class="num">1.</span>The executive team brought in a consulting team to help evaluate these strategic initiatives to determine which are most likely to be good candidates for agentic innovation</div>
+          <div class="point"><span class="num">2.</span>Let's look at problem 1</div>
+          <div class="sub-point"><span class="num">a.</span>Agents are good at looking at structured and unstructured data and identifying patterns, even when not given explicit instructions on what to look for. Since finding undesirable engagement patterns is key to this problem, that seems a good fit.</div>
+          <div class="sub-point"><span class="num">b.</span>Agents are good at reading, understanding, reasoning about, and creating content. This means agents can look at CRM data, documentation, professional services engagement summaries, and other sources to identify good ways to respond to engagement shortfalls, and they can craft personalized interventions for each customer.</div>
+          <div class="sub-point"><span class="num">c.</span>And obviously agents, being software, are good at doing these things at scale.</div>
+          <div class="sub-point"><span class="num">d.</span>Given these characteristics, this problem seems promising, so the leadership team is going to task the internal innovation team to explore how agentic AI can be applied</div>
+          <div class="point"><span class="num">3.</span>Problem 3 is another story</div>
+          <div class="sub-point"><span class="num">a.</span>It's heavily reliant on personal relationships and EQ</div>
+          <div class="sub-point"><span class="num">b.</span>It requires creation and vetting of complex legal documents that are often unique</div>
+          <div class="sub-point"><span class="num">c.</span>And it's a problem that doesn't affect thousands of instances; there's really only 50 customers, and typically you negotiate annually or every few years.</div>
+          <div class="sub-point"><span class="num">d.</span>This is not a great candidate, and so while the company will tackle this problem, it's not one that the internal innovation team is going to prioritize for agentic intervention</div>
+        </div>
+        <div class="discussion">
+          <span class="material-symbols-outlined">forum</span>
+          <div class="discussion-text">
+            <strong>Ask for their reaction</strong>
+            Does that make sense? Any thoughts/questions?
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Analyzing Current Processes -->
+      <div class="section" id="process-approach">
+        <h2 class="section-heading">Analyzing the Current Processes</h2>
+        <div class="subsection">
+          <h3 class="subsection-heading">Approach</h3>
+          <div class="point"><span class="num">1.</span>So the innovation team begins their investigation into how agents might have an impact on this problem</div>
+          <div class="point"><span class="num">2.</span>The team takes the problem and finds the various operational process currently in place for this area of the business</div>
+          <div class="point"><span class="num">3.</span>For each of those processes, they're going to build a process map to understand what is done today, and where help might be beneficial</div>
+        </div>
+      </div>
+
+      <div class="section" id="process-focus">
+        <div class="subsection">
+          <h3 class="subsection-heading">Processes</h3>
+          <div class="point"><span class="num">1.</span>So for our example, we're going to focus on one of the discovered processes</div>
+          <div class="point"><span class="num">2.</span>This is a process for identifying when SMB and mid-market customers are falling short of expected engagement, and the creating and executing intervention campaigns at scale</div>
+        </div>
+      </div>
+
+      <div class="section" id="process-map">
+        <div class="subsection">
+          <h3 class="subsection-heading">The Scaled Product Engagement Intervention Process</h3>
+          <div class="point"><span class="num">1.</span>So the team gathers existing documentation, and does research where there are gaps, and comes up with a process map</div>
+          <div class="point"><span class="num">2.</span>The process is comprised of stages, and stages are comprised of tasks</div>
+          <div class="sub-point"><span class="num">a.</span>In real, complex processes, stages might have sub-stages and tasks might have steps</div>
+          <div class="sub-point"><span class="num">b.</span>We've simplified a bit for this discussion</div>
+          <div class="point"><span class="num">3.</span>The detection phase is where:</div>
+          <div class="sub-point"><span class="num">a.</span>Customer Success managers collect usage data</div>
+          <div class="sub-point"><span class="num">b.</span>They compare data against targets</div>
+          <div class="sub-point"><span class="num">c.</span>They identify and characterize different types of engagement shortfalls</div>
+          <div class="sub-point"><span class="num">d.</span>And they do sort a fuzzy-logic scan to identify undesirable patterns that aren't as simple as falling 20% below target on a specific metric</div>
+          <div class="point"><span class="num">4.</span>The design phase is where:</div>
+          <div class="sub-point"><span class="num">a.</span>The CSM looks at templates for interventions</div>
+          <div class="sub-point"><span class="num">b.</span>They look at CRM system details, internal knowledgebases, etc.</div>
+          <div class="sub-point"><span class="num">c.</span>They tweak the template or create a new intervention based on what they find</div>
+          <div class="point"><span class="num">5.</span>The execution phase is where:</div>
+          <div class="sub-point"><span class="num">a.</span>The CSM sends emails</div>
+          <div class="sub-point"><span class="num">b.</span>They configure backend systems to do in-product notifications</div>
+          <div class="point"><span class="num">6.</span>And the sync &amp; report phase is where:</div>
+          <div class="sub-point"><span class="num">a.</span>The CRM gets updated with information about outreach</div>
+          <div class="sub-point"><span class="num">b.</span>Systems are configured to collect and report intervention results</div>
+          <div class="sub-point"><span class="num">c.</span>Etc.</div>
+          <div class="point"><span class="num">7.</span>Pain points</div>
+          <div class="sub-point"><span class="num">a.</span>You'll notice that the team went above and beyond and actually identified pain points for each of the stages</div>
+          <div class="sub-point"><span class="num">b.</span>All of the stages have one common pain point which is that it's a lot of manual toil</div>
+          <div class="sub-point"><span class="num">c.</span>And due to that sheer amount of work, you run into things like missed signals and poorly conceived interventions</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Reimagining the Process -->
+      <div class="section" id="touchpoints">
+        <h2 class="section-heading">Reimagining the Process</h2>
+        <div class="subsection">
+          <h3 class="subsection-heading">Agent Touchpoint Types</h3>
+          <div class="point"><span class="num">1.</span>The next phase entails going through the current process, and identifying how/why agents can be integrated</div>
+          <div class="point"><span class="num">2.</span>Types of touchpoints:</div>
+          <div class="sub-point"><span class="num">a.</span>Agents may take over a task entirely (that's <strong>replacement</strong>)</div>
+          <div class="sub-point"><span class="num">b.</span>Agents may work with a human to accomplish a task (that's <strong>augmentation</strong>)</div>
+          <div class="sub-point"><span class="num">c.</span>Agents may actually make possible new steps that weren't feasible before (that's <strong>adding</strong>)</div>
+          <div class="sub-point"><span class="num">d.</span>And agents may act as a bridge between systems (that's <strong>integration</strong>)</div>
+          <div class="point"><span class="num">3.</span>Processes might also end up with certain tasks removed as they're no longer needed</div>
+        </div>
+      </div>
+
+      <div class="section" id="reimagined">
+        <div class="subsection">
+          <h3 class="subsection-heading">The Reimagined Process</h3>
+          <div class="point"><span class="num">1.</span>You can see that for most of the detection phase tasks:</div>
+          <div class="sub-point"><span class="num">a.</span>Agents replace the human effort</div>
+          <div class="sub-point"><span class="num">b.</span>They query the data sources, detect shortfalls, categorize, etc.</div>
+          <div class="sub-point"><span class="num">c.</span>One task that's added is checking a new data source—the CRM—is used to make detection smarter</div>
+          <div class="point"><span class="num">2.</span>In the design phase:</div>
+          <div class="sub-point"><span class="num">a.</span>The agent does additional work to identify why the shortfall is occurring</div>
+          <div class="sub-point"><span class="num">b.</span>It takes over defining the intervention</div>
+          <div class="sub-point"><span class="num">c.</span>And for complex interventions, it proposes tailored content to the CSM, who reviews and updates</div>
+          <div class="point"><span class="num">3.</span>In the execution phase:</div>
+          <div class="sub-point"><span class="num">a.</span>The agent takes over the work of sending the emails</div>
+          <div class="sub-point"><span class="num">b.</span>It surfaces in-product outreach programs to the CSM for review/approval</div>
+          <div class="sub-point"><span class="num">c.</span>And if the CSM approves, it then activates the in-product campaign</div>
+          <div class="point"><span class="num">4.</span>In the sync and report phase:</div>
+          <div class="sub-point"><span class="num">a.</span>The agent updates backend systems like the CRM and the Customer Success dashboard</div>
+          <div class="sub-point"><span class="num">b.</span>The manual effort to create results reports is deleted since the CSM dashboard will show results</div>
+          <div class="sub-point"><span class="num">c.</span>And the agentic system will create an audit trail showing all intervention activity</div>
+        </div>
+        <div class="discussion">
+          <span class="material-symbols-outlined">forum</span>
+          <div class="discussion-text">
+            <strong>Ask for their reaction</strong>
+            Do the different types of touchpoints make sense? Any thoughts/questions?
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Agentic Solution Design -->
+      <div class="section" id="solution-design">
+        <h2 class="section-heading">Agentic Solution Design</h2>
+        <div class="point"><span class="num">1.</span>At this point, it's time to turn general ideas about agent involvement into actual agent designs</div>
+        <div class="point"><span class="num">2.</span>You can see the activities in this phase include:</div>
+        <div class="sub-point"><span class="num">a.</span>Defining exactly what each agent does</div>
+        <div class="sub-point"><span class="num">b.</span>Designing how the agent will do those things</div>
+        <div class="sub-point"><span class="num">c.</span>And spelling out how the agents talk to each other, where they run, and how they integrate with external systems</div>
+        <div class="point"><span class="num">3.</span>And there's a list here of typical artifacts generated during these activities:</div>
+        <div class="sub-point"><span class="num">a.</span>Documentation</div>
+        <div class="sub-point"><span class="num">b.</span>Evaluation data</div>
+        <div class="sub-point"><span class="num">c.</span>Etc.</div>
+      </div>
+
+      <!-- Building and Deploying -->
+      <div class="section" id="build-deploy">
+        <h2 class="section-heading">Building and Deploying Agents</h2>
+        <div class="point"><span class="num">1.</span>Once the agents have been designed it's time to start building</div>
+        <div class="point"><span class="num">2.</span>You prototype, pilot, and validate agent concepts</div>
+        <div class="point"><span class="num">3.</span>Then you build, launch, and operate production agents</div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Agent Demo -->
+      <div class="section" id="demo-intro">
+        <h2 class="section-heading">Agent Demo</h2>
+        <div class="subsection">
+          <h3 class="subsection-heading">Intro</h3>
+          <div class="point"><span class="num">1.</span>Ok, so that's all great — but what will an agentic solution really look like?</div>
+          <div class="point"><span class="num">2.</span>Well, we've put together a demo that illustrates the types of things you can expect</div>
+        </div>
+      </div>
+
+      <div class="section" id="demo-crm">
+        <div class="subsection">
+          <h3 class="subsection-heading">CRM</h3>
+          <div class="action-cue">
+            <span class="material-symbols-outlined">touch_app</span>
+            <div class="action-cue-text">Click the button in CRM System card</div>
+          </div>
+          <div class="point"><span class="num">1.</span>CRM: Here we have a CRM system with our customers</div>
+          <div class="sub-point"><span class="num">a.</span>There are 24 in this demo system, but assume we're closer to 2400 in real life</div>
+          <div class="point"><span class="num">2.</span>Note that for each customer we have a history of interactions which span support, sales, customer success, etc.</div>
+        </div>
+      </div>
+
+      <div class="section" id="demo-csm">
+        <div class="subsection">
+          <h3 class="subsection-heading">CSM Dashboard</h3>
+          <div class="action-cue">
+            <span class="material-symbols-outlined">touch_app</span>
+            <div class="action-cue-text">Click Cymbal Meet Logo in center panel to return to home page. Click the button in CSM Dashboard card.</div>
+          </div>
+          <div class="point"><span class="num">1.</span>This is a dashboard that Customer Success Managers use to track:</div>
+          <div class="sub-point"><span class="num">a.</span>Customer health</div>
+          <div class="sub-point"><span class="num">b.</span>Customer engagement with the product</div>
+          <div class="sub-point"><span class="num">c.</span>Outreach and intervention activities</div>
+          <div class="sub-point"><span class="num">d.</span>Etc.</div>
+          <div class="point"><span class="num">2.</span>If we drill down into a customer (Nexus Tech), you can see that we chart actual engagement behaviors against targets</div>
+          <div class="sub-point"><span class="num">a.</span>These engagement signals are known to be important; drops in engagement are highly correlated with stalled expansion and churn.</div>
+          <div class="sub-point"><span class="num">b.</span>You can see that this customer has a shortfall in 7-Day Active users over the last 30 days, and a big shortfall in the frequency with which they schedule meetings that use Cymbal Meet</div>
+          <div class="point"><span class="num">3.</span>As we noted in the problem/process pages, because finding these issues and building/running interventions is time consuming and prone to consistency/quality issues, we're failing to address them all successfully. That's where the agents come in.</div>
+        </div>
+      </div>
+
+      <div class="section" id="demo-action">
+        <div class="subsection">
+          <h3 class="subsection-heading">The Agents in Action</h3>
+          <div class="action-cue">
+            <span class="material-symbols-outlined">touch_app</span>
+            <div class="action-cue-text">Return to CSM Dashboard listing</div>
+          </div>
+          <div class="point"><span class="num">1.</span>Cymbal Meet has built an agentic system that kicks in weekly to find and address these engagement issues</div>
+          <div class="point"><span class="num">2.</span>I'm going to invoke the system as though it was early Monday morning (click button)</div>
+          <div class="point"><span class="num">3.</span>Don't worry about reading the status report; this is just showing that the agentic system is doing it's thing</div>
+          <div class="point"><span class="num">4.</span>We can see that the unattended system scans all the customers and finds those with engagement issues</div>
+          <div class="point"><span class="num">5.</span>For each issue, it searches internal docs, the CRM system, and other sources of data, then composes an appropriate, customized response</div>
+          <div class="point"><span class="num">6.</span>Some interventions are tailored emails; some are configurations of the backend system to trigger in-product guidance for users, etc.</div>
+        </div>
+      </div>
+
+      <div class="section" id="demo-results">
+        <div class="subsection">
+          <h3 class="subsection-heading">The Results</h3>
+          <div class="action-cue">
+            <span class="material-symbols-outlined">touch_app</span>
+            <div class="action-cue-text">Close the agent run modal</div>
+          </div>
+          <div class="point"><span class="num">1.</span>You'll notice that the dashboard has been updated, and shows interventions that are underway and pending approval</div>
+          <div class="sub-point"><span class="num">a.</span>This is a clue that some things the agent can do entirely on its own; others, you want a human-in-the-loop making approvals and/or tweaks</div>
+          <div class="point"><span class="num">2.</span>If we look at Nexus Tech, we can see:</div>
+          <div class="sub-point"><span class="num">a.</span>There's a messaging campaign recommended which would touch end-users directly</div>
+          <div class="sub-sub-point"><span class="num">i.</span>This is something that requires CSM approval before it is executed</div>
+          <div class="sub-sub-point"><span class="num">ii.</span>We'll approve, and the agentic system will then do the activation</div>
+          <div class="sub-point"><span class="num">b.</span>You can also see that this customer had a second intervention, which is a custom email outreach to the administrator</div>
+          <div class="sub-point"><span class="num">c.</span>Let's actually look at each of these to see what was done, and why agents are helpful</div>
+          <div class="point"><span class="num">3.</span>Here is the customer success manager's email. You can see:</div>
+          <div class="sub-point"><span class="num">a.</span>The agent has sent emails of various types to primary technical contacts at the customers who have engagement issues</div>
+          <div class="sub-point"><span class="num">b.</span>If we look at the email to Nexus Tech, you can see it calls out:</div>
+          <div class="sub-sub-point"><span class="num">i.</span>Things that are good, including positive themes received from users of the product. These themes will differ across customers, and LLM-backed agents are particularly good at reading, classifying, and measuring the sentiment of text input</div>
+          <div class="sub-sub-point"><span class="num">ii.</span>Areas that are underperforming, again with themes pulled out from text responses of end users</div>
+          <div class="sub-sub-point"><span class="num">iii.</span>Recommended actions that are built particularly for this customer</div>
+          <div class="sub-sub-sub-point"><span class="num">—</span>You'll notice each action says why it was selected, and in this case, the first one is based on CRM notes. The scanning of the CRM notes, the decision on what to suggest, and the phrasing of the email and explanation is all done by the agents.</div>
+          <div class="sub-point"><span class="num">c.</span>If we look at Greenleaf, you can see the format is similar but the recommendations and reasoning are different</div>
+          <div class="sub-point"><span class="num">d.</span>If we look at the third email, you can see this is more of a direct intervention, telling the customer what's wrong and what to do about it. Again, the agent can decide what performance details to share, how to format, and what directions to pull from troubleshooting guides and present neatly in the email</div>
+          <div class="point"><span class="num">4.</span>If we check out the VC system backend we can see:</div>
+          <div class="sub-point"><span class="num">a.</span>The intervention the CSM approved has been enabled</div>
+          <div class="sub-point"><span class="num">b.</span>The other similar interventions are pending CSM approval</div>
+          <div class="point"><span class="num">5.</span>And what exactly is being approved/enabled?</div>
+          <div class="sub-point"><span class="num">a.</span>Well, when a user logs into the VC client, they see a UI like this</div>
+          <div class="sub-point"><span class="num">b.</span>But if it's a Nexus Tech employee where the calendar outreach interventions have been built and enabled, it looks like this:</div>
+          <div class="sub-sub-point"><span class="num">i.</span>The agent has composed the text presented</div>
+          <div class="sub-sub-point"><span class="num">ii.</span>The agent has decided what actions to enable</div>
+          <div class="sub-sub-point"><span class="num">iii.</span>With CSM approval, the agent configured the system to present the prompt to the user in product</div>
+          <div class="sub-sub-point"><span class="num">iv.</span>Because this outreach directly affects lots of users, the agent didn't do this automatically, the CSM applies some judgement in allowing/disallowing the outreach</div>
+        </div>
+        <div class="discussion">
+          <span class="material-symbols-outlined">forum</span>
+          <div class="discussion-text">
+            <strong>Ask for their reaction</strong>
+            Does that give you a sense for the types of things an agent can do, and the benefits it might achieve?
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Takeaways -->
+      <div class="section" id="takeaways">
+        <h2 class="section-heading">Takeaways</h2>
+        <div class="point"><span class="num">1.</span>Okay, that was quite the involved demo scenario</div>
+        <div class="point"><span class="num">2.</span>But hopefully it did a good job driving home these takeaways</div>
+        <div class="sub-point"><span class="num">a.</span>Success with agentic innovation starts with a focus on the business, not the cool technology</div>
+        <div class="sub-point"><span class="num">b.</span>Agents aren't always the answer; some things are best handled by people with important skills that agents don't have</div>
+        <div class="sub-point"><span class="num">c.</span>The process is non-trivial. It requires a methodical approach to executing a clearly laid out blueprint</div>
+        <div class="sub-point"><span class="num">d.</span>Agents are really good at things that are data intensive, require straightforward reasoning about data, and produce personalized, adaptive outputs</div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    var sections = document.querySelectorAll('.section[id]');
+    var navItems = document.querySelectorAll('.nav-item[data-target]');
+
+    // Build an ordered list of all selectable lines
+    var allLines = Array.prototype.slice.call(
+      document.querySelectorAll('.point, .sub-point, .sub-sub-point, .sub-sub-sub-point')
+    );
+    var currentIndex = -1;
+
+    function selectLine(index) {
+      // Clear previous
+      if (currentIndex >= 0 && currentIndex < allLines.length) {
+        allLines[currentIndex].classList.remove('selected');
+      }
+      currentIndex = index;
+      if (currentIndex >= 0 && currentIndex < allLines.length) {
+        var el = allLines[currentIndex];
+        el.classList.add('selected');
+        // Keep the selected line visible in the viewport
+        el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+
+    // Arrow key navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (currentIndex < allLines.length - 1) {
+          selectLine(currentIndex + 1);
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (currentIndex > 0) {
+          selectLine(currentIndex - 1);
+        }
+      }
+    });
+
+    // Sidebar nav click — scroll to section and select its first line
+    navItems.forEach(function(item) {
+      item.addEventListener('click', function() {
+        var target = document.getElementById(item.getAttribute('data-target'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          var firstLine = target.querySelector('.point, .sub-point, .sub-sub-point, .sub-sub-sub-point');
+          if (firstLine) {
+            var idx = allLines.indexOf(firstLine);
+            if (idx !== -1) selectLine(idx);
+          }
+        }
+      });
+    });
+
+    // Intersection Observer for scroll-spy (sidebar highlighting)
+    var observer = new IntersectionObserver(
+      function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            var id = entry.target.id;
+            navItems.forEach(function(n) { n.classList.remove('active'); });
+            var active = document.querySelector('.nav-item[data-target="' + id + '"]');
+            if (active) {
+              active.classList.add('active');
+              active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+          }
+        });
+      },
+      { rootMargin: '-10% 0px -80% 0px', threshold: 0 }
+    );
+
+    sections.forEach(function(s) { observer.observe(s); });
+  </script>
+</body>
+</html>

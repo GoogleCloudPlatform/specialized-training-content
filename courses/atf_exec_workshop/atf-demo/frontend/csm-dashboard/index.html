@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSM Dashboard - Cymbal Meet</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <style>
+    /* --- Customer List --- */
+
+    .list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .list-header h2 {
+      font-weight: 400;
+    }
+
+    .search-box {
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 16px;
+      width: 280px;
+      font-family: inherit;
+      background: var(--bg-card);
+      color: var(--text);
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    #customer-table td:not(:first-child) {
+      font-size: 20px;
+    }
+
+    .health-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .health-dot.healthy { background: var(--success); }
+    .health-dot.attention { background: var(--warning); }
+
+    .iv-badges {
+      display: flex;
+      gap: 4px;
+    }
+
+    /* --- Customer Detail --- */
+
+    .detail-header {
+      margin-bottom: 20px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-muted);
+      font-size: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .back-link:hover {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .company-meta {
+      color: var(--text-muted);
+      font-size: 16px;
+      margin-top: 4px;
+    }
+
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* --- Engagement Metrics --- */
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .metric-name {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .metric-target {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .metric-actual {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .chart-container {
+      height: 140px;
+      position: relative;
+    }
+
+    /* --- Feedback Card --- */
+
+    .feedback-bar {
+      display: flex;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .feedback-bar .positive { background: var(--success); }
+    .feedback-bar .neutral  { background: var(--border); }
+    .feedback-bar .negative { background: var(--error); }
+
+    .feedback-legend {
+      display: flex;
+      gap: 16px;
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .feedback-comments {
+      margin-top: 12px;
+    }
+
+    .feedback-comments p {
+      font-size: 16px;
+      color: var(--text-muted);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .feedback-comments p:last-child {
+      border-bottom: none;
+    }
+
+    /* --- Intervention Sidebar --- */
+
+    .sidebar {
+      position: sticky;
+      top: 72px;
+    }
+
+    .sidebar-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .sidebar-label {
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sidebar-label .material-symbols-outlined {
+      font-size: 20px;
+    }
+
+    .iv-card {
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .iv-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .iv-card h4 {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .iv-card p {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .iv-card .iv-detail {
+      font-size: 15px;
+      color: var(--text-muted);
+      padding-left: 12px;
+      border-left: 2px solid var(--border);
+      margin: 8px 0;
+    }
+
+    .iv-card .iv-detail p {
+      margin-bottom: 2px;
+    }
+
+    .iv-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    /* --- Agent Narration Modal --- */
+
+    .narration-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .narration-overlay.open {
+      display: flex;
+    }
+
+    .narration-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      width: 760px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .narration-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .narration-header h3 {
+      font-size: 1.2rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .narration-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      font-family: inherit;
+      font-size: 17px;
+      line-height: 1.7;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 340px;
+    }
+
+    .narration-body .line {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 2px 0;
+    }
+
+    .narration-body .line .material-symbols-outlined {
+      font-size: 16px;
+      margin-top: 3px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .narration-body .line.section-heading {
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .narration-body .line.sub {
+      padding-left: 24px;
+      color: var(--text-muted);
+    }
+
+    .narration-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 10px 0;
+    }
+
+    .narration-body .line.header-line {
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .narration-footer {
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      text-align: right;
+    }
+
+    /* --- Empty / Loading States --- */
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .material-symbols-outlined {
+      font-size: 48px;
+      color: var(--border);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    /* --- Responsive --- */
+
+    @media (max-width: 900px) {
+      .detail-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="logo">
+      <a href="/demo/"><span class="material-symbols-outlined" style="font-size: 20px;">videocam</span> Cymbal Meet</a>
+    </div>
+    <div class="topbar-title">CSM Dashboard</div>
+  </div>
+
+  <!-- Page Content — swapped between list and detail via JS -->
+  <div class="page-content">
+
+    <!-- =================== CUSTOMER LIST VIEW =================== -->
+    <div id="list-view">
+      <div class="list-header">
+        <h2>All Customers <span id="customer-count" class="text-muted" style="font-weight: 400;"></span></h2>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <input type="text" class="search-box" id="search" placeholder="Search customers...">
+          <button class="btn btn-primary btn-lg" id="run-agent-btn" style="white-space: nowrap;">
+            <span class="material-symbols-outlined" style="font-size: 18px;">smart_toy</span>
+            Run Like It's Monday
+          </button>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 0; overflow: hidden;">
+        <table class="table" id="customer-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Segment</th>
+              <th>Health</th>
+              <th>Interventions</th>
+            </tr>
+          </thead>
+          <tbody id="customer-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- =================== CUSTOMER DETAIL VIEW =================== -->
+    <div id="detail-view" style="display: none;">
+      <div class="detail-header">
+        <a class="back-link" onclick="showList()">
+          <span class="material-symbols-outlined" style="font-size: 18px;">arrow_back</span>
+          Back to Customers
+        </a>
+        <h1 id="detail-name"></h1>
+        <div class="company-meta" id="detail-meta"></div>
+      </div>
+
+      <div class="detail-layout">
+        <!-- Left: Engagement Metrics -->
+        <div id="metrics-area"></div>
+        <!-- Right: Intervention Sidebar -->
+        <div class="sidebar" id="sidebar-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== AGENT NARRATION MODAL =================== -->
+  <div class="narration-overlay" id="narration-overlay">
+    <div class="narration-box">
+      <div class="narration-header">
+        <h3>
+          <span class="material-symbols-outlined">smart_toy</span>
+          Agent Run
+        </h3>
+        <button class="btn btn-sm" id="narration-close-btn" style="display: none;" onclick="closeNarration()">Close</button>
+      </div>
+      <div class="narration-body" id="narration-body"></div>
+      <div class="narration-footer">
+        <span class="text-muted" id="narration-status">Running...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== TOAST =================== -->
+  <div class="toast" id="toast"></div>
+
+<script>
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+
+const API = '';  // same origin
+let allCustomers = [];
+let currentCompanyId = null;
+let agentHasRun = false;
+let charts = {};  // chart instances keyed by metric name
+
+// ---------------------------------------------------------------------------
+// Init
+// ---------------------------------------------------------------------------
+
+async function init() {
+  // Check if agent already ran
+  const stateRes = await fetch(`${API}/api/state`);
+  const stateData = await stateRes.json();
+  agentHasRun = stateData.agent_has_run;
+  if (agentHasRun) {
+    const btn = document.getElementById('run-agent-btn');
+    btn.disabled = true;
+    btn.textContent = 'Agent Has Run';
+    btn.classList.remove('btn-primary');
+    btn.style.background = '#888';
+    btn.style.borderColor = '#888';
+    btn.style.color = '#fff';
+    btn.style.cursor = 'default';
+  }
+
+  await loadCustomerList();
+}
+
+// ---------------------------------------------------------------------------
+// Customer List
+// ---------------------------------------------------------------------------
+
+async function loadCustomerList() {
+  const res = await fetch(`${API}/api/companies`);
+  allCustomers = await res.json();
+  renderCustomerList(allCustomers);
+}
+
+function renderCustomerList(customers) {
+  document.getElementById('customer-count').textContent = `(${customers.length})`;
+  const tbody = document.getElementById('customer-tbody');
+  tbody.innerHTML = '';
+
+  for (const c of customers) {
+    const tr = document.createElement('tr');
+    tr.onclick = () => showDetail(c.company_id);
+
+    // Health cell
+    const healthClass = c.health === 'Healthy' ? 'healthy' : 'attention';
+    const healthLabel = c.health;
+
+    // Intervention badges
+    let badges = '';
+    if (c.pending_interventions > 0) {
+      badges += `<span class="badge badge-pending">Pending (${c.pending_interventions})</span>`;
+    }
+    if (c.active_interventions > 0) {
+      badges += `<span class="badge badge-active">Active (${c.active_interventions})</span>`;
+    }
+    if (!badges) badges = '<span class="text-muted">—</span>';
+
+    tr.innerHTML = `
+      <td style="font-weight: 500;">${c.name}</td>
+      <td>${c.segment}</td>
+      <td><span class="health-dot ${healthClass}"></span>${healthLabel}</td>
+      <td><div class="iv-badges">${badges}</div></td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+// Search filter
+document.getElementById('search').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase();
+  const filtered = allCustomers.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    c.segment.toLowerCase().includes(q) ||
+    c.industry.toLowerCase().includes(q)
+  );
+  renderCustomerList(filtered);
+});
+
+// ---------------------------------------------------------------------------
+// Customer Detail
+// ---------------------------------------------------------------------------
+
+async function showDetail(companyId) {
+  currentCompanyId = companyId;
+  document.getElementById('list-view').style.display = 'none';
+  document.getElementById('detail-view').style.display = 'block';
+
+  const res = await fetch(`${API}/api/companies/${companyId}`);
+  const data = await res.json();
+
+  renderDetailHeader(data);
+  renderMetrics(data.engagement, data.company);
+  renderSidebar(data.interventions, data.company);
+}
+
+function showList() {
+  document.getElementById('detail-view').style.display = 'none';
+  document.getElementById('list-view').style.display = 'block';
+  currentCompanyId = null;
+
+  // Destroy chart instances
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+
+  // Refresh list in case state changed (approvals, agent run)
+  loadCustomerList();
+}
+
+function renderDetailHeader(data) {
+  const c = data.company;
+  const primary = data.contacts.find(ct => ct.is_primary) || data.contacts[0];
+  document.getElementById('detail-name').textContent = c.name;
+
+  let meta = `${c.segment} · ${c.industry} · Customer since ${c.contract_start_year}`;
+  if (primary) {
+    meta += ` · Primary Contact: ${primary.full_name} (${primary.role})`;
+  }
+  document.getElementById('detail-meta').textContent = meta;
+}
+
+// ---------------------------------------------------------------------------
+// Engagement Metrics
+// ---------------------------------------------------------------------------
+
+const METRIC_LABELS = {
+  '7da_users': '7-Day Active Users',
+  'call_volume': '7-Day Call Volume',
+  'device_utilization': 'Device Call Sessions',
+  'dialin_sessions': '7-Day Dial-in Sessions',
+  'calendar_meetings': 'Calendared Meetings',
+};
+
+const METRIC_KEYS = ['7da_users', 'call_volume', 'device_utilization', 'dialin_sessions', 'calendar_meetings'];
+
+function renderMetrics(eng, company) {
+  const area = document.getElementById('metrics-area');
+  area.innerHTML = '';
+
+  // Destroy old charts
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+
+  // Section label
+  const label = document.createElement('div');
+  label.className = 'section-label mb-2';
+  label.textContent = 'Engagement Performance — Last 30 Days';
+  area.appendChild(label);
+
+  for (const metric of METRIC_KEYS) {
+    const actual = eng.averages[metric];
+    const target = eng.targets[metric];
+    const ratio = target > 0 ? actual / target : 1;
+    const pct = Math.round(ratio * 100);
+
+    let statusColor, statusLabel;
+    if (ratio >= 0.80) {
+      statusColor = 'var(--success)';
+      statusLabel = 'On Track';
+    } else if (ratio >= 0.60) {
+      statusColor = 'var(--warning)';
+      statusLabel = 'Below Target';
+    } else {
+      statusColor = 'var(--error)';
+      statusLabel = 'Critical';
+    }
+
+    const card = document.createElement('div');
+    card.className = 'metric-card';
+    card.innerHTML = `
+      <div class="metric-row">
+        <span class="metric-name">${METRIC_LABELS[metric]}</span>
+        <span class="metric-target">Target: ${target.toLocaleString()}</span>
+      </div>
+      <div class="metric-actual" style="color: ${statusColor};">
+        ${actual.toLocaleString()} (${pct}% of target) · ${statusLabel}
+      </div>
+      <div class="chart-container"><canvas id="chart-${metric}"></canvas></div>
+    `;
+    area.appendChild(card);
+
+    // Render chart
+    const daily = eng.daily.map(d => d[metric]);
+    const labels = eng.daily.map((_, i) => `Day ${i + 1}`);
+    renderChart(`chart-${metric}`, labels, daily, target, statusColor);
+  }
+
+  // Feedback section
+  renderFeedback(eng, area);
+}
+
+function renderChart(canvasId, labels, data, target, color) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+
+  // Resolve CSS variable colors to actual hex for Chart.js
+  const resolvedColor = getComputedStyle(document.documentElement)
+    .getPropertyValue(color.replace('var(', '').replace(')', '')).trim() || color;
+
+  const threshold = Math.round(target * 0.80);
+
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Actual',
+          data: data,
+          borderColor: resolvedColor,
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0.3,
+        },
+        {
+          label: 'Target',
+          data: Array(data.length).fill(target),
+          borderColor: '#999',
+          borderDash: [4, 4],
+          borderWidth: 1,
+          pointRadius: 0,
+        },
+        {
+          label: '80% Threshold',
+          data: Array(data.length).fill(threshold),
+          borderColor: '#ea4335',
+          borderDash: [2, 3],
+          borderWidth: 1,
+          pointRadius: 0,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            boxWidth: 16,
+            boxHeight: 2,
+            padding: 12,
+            font: { size: 13 },
+            color: '#999',
+            usePointStyle: false,
+          },
+        },
+      },
+      scales: {
+        x: {
+          display: false,
+        },
+        y: {
+          display: true,
+          grid: { color: 'rgba(0,0,0,0.04)' },
+          ticks: { font: { size: 13 }, color: '#999' },
+        },
+      },
+    },
+  });
+  charts[canvasId] = chart;
+}
+
+function renderFeedback(eng, area) {
+  const feedback = eng.feedback || [];
+  const avg = eng.averages.feedback_score || 0;
+
+  // Classify comments
+  const positive = feedback.filter(f =>
+    f.includes('excellent') || f.includes('smooth') || f.includes('easy') ||
+    f.includes('Love') || f.includes('stable') || f.includes('intuitive') ||
+    f.includes('Best') || f.includes('helpful') || f.includes('seamless') ||
+    f.includes('fantastic')
+  );
+  const negative = feedback.filter(f =>
+    f.includes('Wish') || f.includes('better') || f.includes('hard') ||
+    f.includes('competitor') || f.includes('drops') || f.includes('echo') ||
+    f.includes('drains') || f.includes('steps') || f.includes('curve') ||
+    f.includes('Need')
+  );
+  const neutral = feedback.length - positive.length - negative.length;
+
+  const posPct = feedback.length ? Math.round(positive.length / feedback.length * 100) : 0;
+  const negPct = feedback.length ? Math.round(negative.length / feedback.length * 100) : 0;
+  const neuPct = 100 - posPct - negPct;
+
+  const card = document.createElement('div');
+  card.className = 'metric-card';
+  card.innerHTML = `
+    <div class="metric-row">
+      <span class="metric-name">End-of-Call Feedback</span>
+      <span class="metric-target">Avg: ${avg.toFixed(1)} / 5.0</span>
+    </div>
+    <div class="feedback-bar">
+      <div class="positive" style="width: ${posPct}%;"></div>
+      <div class="neutral" style="width: ${neuPct}%;"></div>
+      <div class="negative" style="width: ${negPct}%;"></div>
+    </div>
+    <div class="feedback-legend">
+      <span>${posPct}% Positive</span>
+      <span>${neuPct}% Neutral</span>
+      <span>${negPct}% Negative</span>
+    </div>
+    <div class="feedback-comments">
+      ${feedback.slice(0, 5).map(f => `<p>"${f}"</p>`).join('')}
+    </div>
+  `;
+  area.appendChild(card);
+}
+
+// ---------------------------------------------------------------------------
+// Intervention Sidebar
+// ---------------------------------------------------------------------------
+
+function renderSidebar(interventions, company) {
+  const sidebar = document.getElementById('sidebar-area');
+  sidebar.innerHTML = '';
+
+  const pending = interventions.filter(iv => iv.status === 'pending');
+  const active = interventions.filter(iv => iv.status === 'approved' || iv.status === 'auto_executed');
+  const rejected = interventions.filter(iv => iv.status === 'rejected');
+
+  // No interventions at all
+  if (interventions.length === 0) {
+    sidebar.innerHTML = `
+      <div class="sidebar-section">
+        <div class="sidebar-label">
+          <span class="material-symbols-outlined">info</span>
+          Interventions
+        </div>
+        <div class="empty-state" style="padding: 20px 0;">
+          <span class="material-symbols-outlined" style="font-size: 36px;">task_alt</span>
+          <p style="margin-top: 8px;">No interventions yet.</p>
+          <p>Run the agent to analyze this customer.</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Pending approvals
+  if (pending.length > 0) {
+    const section = document.createElement('div');
+    section.className = 'sidebar-section';
+    section.innerHTML = `<div class="sidebar-label"><span class="material-symbols-outlined">pending_actions</span> Pending Approval</div>`;
+    for (const iv of pending) {
+      section.appendChild(renderInterventionCard(iv));
+    }
+    sidebar.appendChild(section);
+  }
+
+  // Active / executed
+  if (active.length > 0) {
+    const section = document.createElement('div');
+    section.className = 'sidebar-section';
+    section.innerHTML = `<div class="sidebar-label"><span class="material-symbols-outlined">check_circle</span> Active Interventions</div>`;
+    for (const iv of active) {
+      section.appendChild(renderInterventionCard(iv));
+    }
+    sidebar.appendChild(section);
+  }
+
+  // Rejected
+  if (rejected.length > 0) {
+    const section = document.createElement('div');
+    section.className = 'sidebar-section';
+    section.innerHTML = `<div class="sidebar-label"><span class="material-symbols-outlined">cancel</span> Rejected</div>`;
+    for (const iv of rejected) {
+      section.appendChild(renderInterventionCard(iv));
+    }
+    sidebar.appendChild(section);
+  }
+}
+
+function renderInterventionCard(iv) {
+  const card = document.createElement('div');
+  card.className = 'iv-card';
+  card.id = `iv-${iv.intervention_id}`;
+
+  if (iv.type === 'admin_email') {
+    const highlights = (iv.highlights || []).slice(0, 2);
+    const improvements = (iv.improvements || []).slice(0, 2);
+    card.innerHTML = `
+      <h4>Admin Weekly Email</h4>
+      <p>Sent to ${iv.recipient} (${iv.recipient_role})</p>
+      <p>Date sent: ${iv.created_at}</p>
+      <div class="iv-detail">
+        ${highlights.map(h => `<p>Highlighted: ${METRIC_LABELS[h.metric] || h.metric} at ${Math.round(h.ratio * 100)}%</p>`).join('')}
+        ${improvements.map(imp => `<p>Addressed: ${METRIC_LABELS[imp.metric] || imp.metric} below target</p>`).join('')}
+        ${iv.feature_rec ? `<p>Recommended: ${iv.feature_rec.name}</p>` : ''}
+        ${(iv.remediations || []).map(r => `<p>Action: ${r.name}</p>`).join('')}
+      </div>
+      <span class="badge badge-active">Auto-Executed</span>
+    `;
+  } else if (iv.type === 'inapp_calendar') {
+    card.innerHTML = `
+      <h4>In-App Messaging: Calendar Extension</h4>
+      <p>Created: ${iv.created_at}</p>
+      <div class="iv-detail">
+        <p>Extension installed: ${Math.round(iv.install_rate * 100)}% of users</p>
+        <p>Active usage: ${Math.round(iv.usage_rate * 100)}% of installed</p>
+        <p>Message A: Install prompt (${iv.message_a.user_count.toLocaleString()} users)</p>
+        <p>Message B: Usage tips (${iv.message_b.user_count.toLocaleString()} users)</p>
+      </div>
+      ${iv.status === 'pending' ? `
+        <div class="iv-actions">
+          <button class="btn btn-primary btn-sm" onclick="approveIntervention(${iv.intervention_id})">Approve</button>
+          <button class="btn btn-danger btn-sm" onclick="rejectIntervention(${iv.intervention_id})">Reject</button>
+        </div>
+      ` : iv.status === 'approved' ? `
+        <span class="badge badge-approved">Approved</span>
+      ` : `
+        <span class="badge badge-risk">Rejected</span>
+      `}
+    `;
+  } else if (iv.type === 'device_email') {
+    const devices = iv.devices || [];
+    card.innerHTML = `
+      <h4>Device Performance Email</h4>
+      <p>Sent to ${iv.recipient} (${iv.recipient_role})</p>
+      <p>Date sent: ${iv.created_at}</p>
+      <div class="iv-detail">
+        <p>${devices.length} devices flagged for remediation</p>
+        ${devices.slice(0, 2).map(d => `<p>${d.name}: ${d.issues.join(', ')}</p>`).join('')}
+      </div>
+      <span class="badge badge-active">Auto-Executed</span>
+    `;
+  }
+
+  return card;
+}
+
+// ---------------------------------------------------------------------------
+// Approve / Reject
+// ---------------------------------------------------------------------------
+
+async function approveIntervention(interventionId) {
+  const res = await fetch(`${API}/api/interventions/${interventionId}/approve`, { method: 'POST' });
+  const data = await res.json();
+  if (res.ok) {
+    showToast('Intervention approved. Backend systems updated.');
+    // Refresh the detail view
+    if (currentCompanyId) showDetail(currentCompanyId);
+  } else {
+    showToast(data.error || 'Failed to approve', true);
+  }
+}
+
+async function rejectIntervention(interventionId) {
+  const res = await fetch(`${API}/api/interventions/${interventionId}/reject`, { method: 'POST' });
+  const data = await res.json();
+  if (res.ok) {
+    showToast('Intervention rejected.');
+    if (currentCompanyId) showDetail(currentCompanyId);
+  } else {
+    showToast(data.error || 'Failed to reject', true);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Agent Run (SSE)
+// ---------------------------------------------------------------------------
+
+document.getElementById('run-agent-btn').addEventListener('click', () => {
+  if (agentHasRun) return;
+  openNarration();
+  runAgent();
+});
+
+function openNarration() {
+  document.getElementById('narration-overlay').classList.add('open');
+  document.getElementById('narration-body').innerHTML = '';
+  document.getElementById('narration-close-btn').style.display = 'none';
+  document.getElementById('narration-status').textContent = 'Running...';
+}
+
+function closeNarration() {
+  document.getElementById('narration-overlay').classList.remove('open');
+  loadCustomerList();
+}
+
+function runAgent() {
+  const body = document.getElementById('narration-body');
+
+  fetch(`${API}/api/agent/run`, { method: 'POST' })
+    .then(response => {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      function read() {
+        reader.read().then(({ done, value }) => {
+          if (done) {
+            onAgentComplete();
+            return;
+          }
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();  // keep incomplete line in buffer
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = JSON.parse(line.slice(6));
+              if (data.message === 'COMPLETE') {
+                onAgentComplete();
+                return;
+              }
+              appendNarrationLine(data.message);
+            }
+          }
+          read();
+        });
+      }
+      read();
+    });
+}
+
+function appendNarrationLine(text) {
+  const body = document.getElementById('narration-body');
+
+  // Divider lines → <hr>
+  if (text === '---') {
+    body.appendChild(document.createElement('hr'));
+    body.scrollTop = body.scrollHeight;
+    return;
+  }
+
+  // Empty lines → small spacer
+  if (!text.trim()) {
+    const sp = document.createElement('div');
+    sp.style.height = '6px';
+    body.appendChild(sp);
+    body.scrollTop = body.scrollHeight;
+    return;
+  }
+
+  const div = document.createElement('div');
+  div.className = 'line';
+
+  // Determine icon and class based on content
+  let icon = '';
+  let cls = '';
+  let display = text;
+
+  if (text.startsWith('Cymbal Meet Agent')) {
+    icon = 'smart_toy';
+    cls = 'header-line';
+  } else if (text.startsWith('✓') || text.startsWith('✅') || text.startsWith('Done')) {
+    icon = 'check_circle';
+    display = text.replace(/^[✓✅]\s*/, '').replace(/^Done\s*[—–-]\s*/, '');
+  } else if (text.startsWith('⚠') || text.startsWith('Issue')) {
+    icon = 'flag';
+    display = text.replace(/^⚠\s*/, '');
+  } else if (text.startsWith('Processing:')) {
+    icon = 'arrow_forward';
+    cls = 'section-heading';
+  } else if (text.startsWith('  ├─') || text.startsWith('  ✓')) {
+    display = text.replace(/^\s*[├✓─]+\s*/, '');
+    cls = 'sub';
+    icon = text.includes('✓') ? 'check' : 'subdirectory_arrow_right';
+  } else if (text.startsWith('Collecting') || text.startsWith('Analyzing') || text.startsWith('Scanning') || text.startsWith('Generating') || text.startsWith('Updating') || text.startsWith('Creating')) {
+    icon = 'pending';
+  } else if (text.startsWith('Selecting intervention:')) {
+    icon = 'play_arrow';
+    cls = 'section-heading';
+  } else if (text.startsWith('Summary:')) {
+    icon = 'summarize';
+    cls = 'section-heading';
+  } else if (text.startsWith('  •')) {
+    display = text.replace(/^\s*•\s*/, '');
+    cls = 'sub';
+    icon = 'check';
+  }
+
+  if (icon) {
+    const iconEl = document.createElement('span');
+    iconEl.className = 'material-symbols-outlined';
+    iconEl.textContent = icon;
+    div.appendChild(iconEl);
+  }
+
+  if (cls) div.classList.add(cls);
+
+  const span = document.createElement('span');
+  span.textContent = display;
+  div.appendChild(span);
+
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+function onAgentComplete() {
+  agentHasRun = true;
+  const btn = document.getElementById('run-agent-btn');
+  btn.disabled = true;
+  btn.textContent = 'Agent Has Run';
+  btn.classList.remove('btn-primary');
+  btn.style.background = '#888';
+  btn.style.borderColor = '#888';
+  btn.style.color = '#fff';
+  btn.style.cursor = 'default';
+  document.getElementById('narration-close-btn').style.display = 'inline-flex';
+  document.getElementById('narration-status').textContent = 'Complete';
+}
+
+// ---------------------------------------------------------------------------
+// Toast
+// ---------------------------------------------------------------------------
+
+function showToast(message, isError = false) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = 'toast show' + (isError ? ' toast-error' : '');
+  setTimeout(() => { toast.className = 'toast'; }, 3000);
+}
+
+// ---------------------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------------------
+
+init();
+</script>
+</body>
+</html>

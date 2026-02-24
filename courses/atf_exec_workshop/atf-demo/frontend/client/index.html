@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cymbal Meet Client</title>
+  <link rel="stylesheet" href="/shared/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    /* --- Client Layout --- */
+    .client-body {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* --- User Selector Bar --- */
+    .user-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      padding: 14px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .user-bar-label {
+      font-size: 15px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .user-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .user-chip {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+
+    .user-chip:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .user-chip.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .user-chip .chip-detail {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    /* --- Quick Actions --- */
+    .quick-actions {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 24px 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s;
+      flex: 1;
+    }
+
+    .action-btn:hover { background: var(--bg); }
+
+    .action-btn .material-symbols-outlined {
+      font-size: 40px;
+      color: var(--text-muted);
+    }
+
+    .action-btn span:last-child {
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* --- Next Meeting --- */
+    .next-meeting {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .next-meeting .section-label { margin-bottom: 12px; }
+
+    .meeting-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .meeting-time {
+      text-align: center;
+      padding: 12px 16px;
+      background: var(--bg);
+      border-radius: 4px;
+      min-width: 80px;
+    }
+
+    .meeting-time .time {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .meeting-time .period {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .meeting-details h3 { font-weight: 500; margin-bottom: 4px; }
+
+    .meeting-details p {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    .meeting-join { margin-left: auto; }
+
+    /* --- Recent Meetings --- */
+    .recent-meetings {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 20px;
+    }
+
+    .recent-meetings .section-label { margin-bottom: 12px; }
+
+    .meeting-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+      gap: 16px;
+    }
+
+    .meeting-row:last-child { border-bottom: none; }
+
+    .meeting-row .material-symbols-outlined {
+      color: var(--text-muted);
+      font-size: 20px;
+    }
+
+    .meeting-row-info { flex: 1; }
+
+    .meeting-row-info .name {
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .meeting-row-info .meta {
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .meeting-row .duration {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    /* --- Slideout Notification --- */
+    .slideout-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.15);
+      z-index: 200;
+    }
+
+    .slideout-overlay.visible { display: block; }
+
+    .slideout {
+      position: fixed;
+      top: 0; right: -400px; bottom: 0;
+      width: 380px;
+      background: var(--bg-card);
+      border-left: 1px solid var(--border);
+      box-shadow: -4px 0 20px rgba(0,0,0,0.08);
+      z-index: 201;
+      transition: right 0.35s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slideout.open { right: 0; }
+
+    .slideout-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .slideout-header h3 {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slideout-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 20px;
+      padding: 4px;
+    }
+
+    .slideout-close:hover { color: var(--text); }
+
+    .slideout-body {
+      flex: 1;
+      padding: 24px 20px;
+      overflow-y: auto;
+    }
+
+    .slideout-body h2 {
+      font-size: 1.4rem;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .slideout-body p {
+      font-size: 17px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .slideout-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .slideout-actions .btn {
+      justify-content: center;
+      width: 100%;
+    }
+
+    .slideout-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    /* --- No notification banner --- */
+    .no-notification {
+      margin-top: 20px;
+      padding: 16px 20px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="logo"><a href="/demo/"><span class="material-symbols-outlined" style="font-size: 20px;">videocam</span> Cymbal Meet</a></div>
+    <div class="topbar-title">End-User Client</div>
+    <nav>
+      <a href="#" onclick="return false">Start Meeting</a>
+      <a href="#" onclick="return false">Join Meeting</a>
+      <a href="#" onclick="return false">Schedule</a>
+      <a href="#" onclick="return false"><span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">settings</span></a>
+    </nav>
+  </div>
+
+  <div class="client-body">
+
+    <!-- User Persona Selector -->
+    <div class="user-bar">
+      <span class="user-bar-label">Viewing as</span>
+      <div class="user-chips" id="userChips">
+        <!-- Populated by JS after fetching interventions -->
+        <span class="text-muted" style="font-size: 13px;">Loading users...</span>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <div class="action-btn" onclick="return false">
+        <span class="material-symbols-outlined">video_call</span>
+        <span>Start Meeting</span>
+      </div>
+      <div class="action-btn" onclick="return false">
+        <span class="material-symbols-outlined">add_box</span>
+        <span>Join Meeting</span>
+      </div>
+      <div class="action-btn" onclick="return false">
+        <span class="material-symbols-outlined">calendar_month</span>
+        <span>Schedule</span>
+      </div>
+      <div class="action-btn" onclick="return false">
+        <span class="material-symbols-outlined">screen_share</span>
+        <span>Share Screen</span>
+      </div>
+    </div>
+
+    <!-- Next Meeting -->
+    <div class="next-meeting">
+      <div class="section-label">Next Meeting</div>
+      <div class="meeting-info">
+        <div class="meeting-time">
+          <div class="time">2:00</div>
+          <div class="period">PM</div>
+        </div>
+        <div class="meeting-details">
+          <h3>Weekly Team Standup</h3>
+          <p>With Sarah, James, and 4 others &middot; Recurring</p>
+        </div>
+        <div class="meeting-join">
+          <button class="btn btn-primary" onclick="return false">Join Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Meetings -->
+    <div class="recent-meetings">
+      <div class="section-label">Recent Meetings</div>
+
+      <div class="meeting-row">
+        <span class="material-symbols-outlined">videocam</span>
+        <div class="meeting-row-info">
+          <div class="name">Q4 Planning Review</div>
+          <div class="meta">Today, 10:00 AM &middot; 8 participants</div>
+        </div>
+        <div class="duration">45 min</div>
+      </div>
+
+      <div class="meeting-row">
+        <span class="material-symbols-outlined">videocam</span>
+        <div class="meeting-row-info">
+          <div class="name">Client Demo - Acme Corp</div>
+          <div class="meta">Yesterday, 3:30 PM &middot; 5 participants</div>
+        </div>
+        <div class="duration">30 min</div>
+      </div>
+
+      <div class="meeting-row">
+        <span class="material-symbols-outlined">videocam</span>
+        <div class="meeting-row-info">
+          <div class="name">Engineering Sync</div>
+          <div class="meta">Yesterday, 11:00 AM &middot; 12 participants</div>
+        </div>
+        <div class="duration">25 min</div>
+      </div>
+
+      <div class="meeting-row">
+        <span class="material-symbols-outlined">videocam</span>
+        <div class="meeting-row-info">
+          <div class="name">1:1 with Manager</div>
+          <div class="meta">Feb 7, 9:00 AM &middot; 2 participants</div>
+        </div>
+        <div class="duration">30 min</div>
+      </div>
+
+      <div class="meeting-row">
+        <span class="material-symbols-outlined">videocam</span>
+        <div class="meeting-row-info">
+          <div class="name">Design Review</div>
+          <div class="meta">Feb 6, 2:00 PM &middot; 6 participants</div>
+        </div>
+        <div class="duration">50 min</div>
+      </div>
+    </div>
+
+    <!-- Status message for no-notification users -->
+    <div id="statusMsg"></div>
+  </div>
+
+  <!-- Slideout Notification (hidden until triggered) -->
+  <div class="slideout-overlay" id="slideoutOverlay" onclick="dismissSlideout()"></div>
+  <div class="slideout" id="slideout">
+    <div class="slideout-header">
+      <h3><span class="material-symbols-outlined" style="font-size: 20px;">campaign</span> Cymbal Meet</h3>
+      <button class="slideout-close" onclick="dismissSlideout()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="slideout-body" id="slideoutBody"></div>
+    <div class="slideout-footer">
+      <button class="btn btn-secondary btn-sm" onclick="dismissSlideout()">Dismiss</button>
+    </div>
+  </div>
+
+  <script>
+    const API = '';
+
+    // User persona definitions — two types of users per company that has
+    // an approved inapp_calendar intervention:
+    //   "no_extension" user  → sees Message A (install prompt)
+    //   "has_extension" user → sees Message B (usage tips)
+    // We'll also add a "no notification" user to show contrast.
+
+    let interventions = [];
+    let currentUser = null;
+
+    // ---------------------------------------------------------------
+    // Build user chips from approved inapp_calendar interventions
+    // ---------------------------------------------------------------
+    function buildUserChips() {
+      const container = document.getElementById('userChips');
+
+      const approvedInapp = interventions.filter(
+        iv => iv.type === 'inapp_calendar' && iv.status === 'approved'
+      );
+
+      if (approvedInapp.length === 0) {
+        // No approved interventions yet — show a simple default
+        container.innerHTML = `
+          <div class="user-chip active" onclick="selectUser(null, this)">
+            Default User
+          </div>`;
+        selectUser(null, container.querySelector('.user-chip'));
+        return;
+      }
+
+      let html = '';
+
+      // For each approved intervention, create two user chips
+      for (const iv of approvedInapp) {
+        const company = iv.company_name;
+        const msgA = iv.message_a || {};
+        const msgB = iv.message_b || {};
+
+        html += `<div class="user-chip" onclick="selectUser('${iv.intervention_id}_a', this)" data-iv-id="${iv.intervention_id}" data-msg="a">
+          ${company} <span class="chip-detail">\u2014 No Extension (${(msgA.user_count || 0).toLocaleString()})</span>
+        </div>`;
+
+        html += `<div class="user-chip" onclick="selectUser('${iv.intervention_id}_b', this)" data-iv-id="${iv.intervention_id}" data-msg="b">
+          ${company} <span class="chip-detail">\u2014 Has Extension (${(msgB.user_count || 0).toLocaleString()})</span>
+        </div>`;
+      }
+
+      // Add a "no notification" user for contrast
+      html += `<div class="user-chip" onclick="selectUser('none', this)">
+        Regular User <span class="chip-detail">\u2014 No Notification</span>
+      </div>`;
+
+      container.innerHTML = html;
+    }
+
+    // ---------------------------------------------------------------
+    // Select a user persona
+    // ---------------------------------------------------------------
+    function selectUser(userId, chipEl) {
+      // Update chip UI
+      document.querySelectorAll('.user-chip').forEach(c => c.classList.remove('active'));
+      if (chipEl) chipEl.classList.add('active');
+
+      // Close any open slideout
+      dismissSlideout();
+      currentUser = userId;
+
+      const statusEl = document.getElementById('statusMsg');
+
+      if (!userId || userId === 'none') {
+        statusEl.innerHTML = userId === 'none'
+          ? '<div class="no-notification">This user is not targeted by any in-app campaign. No notification will appear.</div>'
+          : '';
+        return;
+      }
+
+      statusEl.innerHTML = '';
+
+      // Parse intervention id and message variant
+      const [ivIdStr, variant] = userId.split('_');
+      const iv = interventions.find(i => String(i.intervention_id) === ivIdStr);
+      if (!iv) return;
+
+      const msg = variant === 'b' ? (iv.message_b || {}) : (iv.message_a || {});
+      showSlideout(msg, iv.company_name, variant);
+    }
+
+    // ---------------------------------------------------------------
+    // Show the slideout notification
+    // ---------------------------------------------------------------
+    function showSlideout(msg, companyName, variant) {
+      const body = document.getElementById('slideoutBody');
+
+      const headline = msg.headline || 'Schedule Meetings Faster';
+      const msgBody = msg.body || '';
+      const cta = msg.cta || 'Learn More';
+
+      const ctaIcon = variant === 'b' ? 'play_circle' : 'extension';
+      const secondaryLabel = variant === 'b' ? 'View Calendar Tips' : 'Watch 2-Minute Tutorial';
+      const secondaryIcon = variant === 'b' ? 'tips_and_updates' : 'play_circle';
+
+      body.innerHTML = `
+        <h2>${headline}</h2>
+        <p>${msgBody}</p>
+        <div class="slideout-actions">
+          <button class="btn btn-accent" onclick="return false">
+            <span class="material-symbols-outlined" style="font-size: 18px;">${ctaIcon}</span>
+            ${cta}
+          </button>
+          <button class="btn btn-secondary" onclick="return false">
+            <span class="material-symbols-outlined" style="font-size: 18px;">${secondaryIcon}</span>
+            ${secondaryLabel}
+          </button>
+        </div>
+        <p style="font-size: 12px; color: var(--text-light);">
+          Recommended for ${companyName} by Cymbal Meet Agent based on your team's usage patterns.
+        </p>
+      `;
+
+      // Slide in after brief delay
+      setTimeout(() => {
+        document.getElementById('slideoutOverlay').classList.add('visible');
+        document.getElementById('slideout').classList.add('open');
+      }, 800);
+    }
+
+    function dismissSlideout() {
+      document.getElementById('slideout').classList.remove('open');
+      document.getElementById('slideoutOverlay').classList.remove('visible');
+    }
+
+    // ---------------------------------------------------------------
+    // Load interventions and build the UI
+    // ---------------------------------------------------------------
+    async function loadInterventions() {
+      try {
+        const res = await fetch(`${API}/api/interventions`);
+        const data = await res.json();
+        const hash = JSON.stringify(data);
+        if (hash === loadInterventions._lastHash) return;
+        loadInterventions._lastHash = hash;
+        interventions = data;
+        buildUserChips();
+      } catch (e) { /* ignore */ }
+    }
+    loadInterventions._lastHash = '';
+
+    // Smart polling
+    let pollTimer = null;
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      } else {
+        if (!pollTimer) pollTimer = setInterval(loadInterventions, 3000);
+        loadInterventions();
+      }
+    });
+
+    loadInterventions();
+    pollTimer = setInterval(loadInterventions, 3000);
+  </script>
+
+</body>
+</html>
