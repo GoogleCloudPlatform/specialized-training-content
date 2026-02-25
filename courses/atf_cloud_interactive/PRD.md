@@ -113,7 +113,7 @@ Students should get equal hands-on experience with:
 - **Tools:**
   - Vertex AI Search — retrieves relevant product docs, troubleshooting guides, and best practice content
   - WeasyPrint + Jinja2 — generates styled PDF documents
-  - GCS MCP server (`@google-cloud/storage-mcp`) — reads/writes objects in GCS via MCP. Deployed to Cloud Run as part of infrastructure setup. Provides tools like `write_object_new`, `read_object_content`, `list_objects`.
+  - GCS MCP server (custom Python FastMCP server wrapping `google-cloud-storage`) — reads/writes objects in GCS via MCP. Deployed to Cloud Run as part of infrastructure setup. Provides tools: `list_objects`, `read_object`, `write_object`.
 - **Workflow:**
   1. Receive customer context and issue description from Orchestrator
   2. Query Vertex AI Search for relevant reference content (troubleshooting, best practices, templates)
@@ -461,7 +461,7 @@ Create a small set of fictional Cymbal Meet documents that the Intervention Agen
 
 - **Templating:** Jinja2 HTML templates with CSS styling
 - **Rendering:** WeasyPrint converts styled HTML to PDF
-- **Storage:** Write to GCS via the GCS MCP server (`@google-cloud/storage-mcp` on Cloud Run). The bucket should be configured with public read access so intervention PDFs are accessible via URL.
+- **Storage:** Write to GCS via the GCS MCP server (custom FastMCP server on Cloud Run). The bucket should be configured with public read access so intervention PDFs are accessible via URL.
 
 ### 5.2 PDF Content Structure
 
@@ -594,14 +594,18 @@ The BigQuery MCP server is Google-hosted (no deployment required). Agent configu
 
 #### GCS MCP Server on Cloud Run
 
-Deploy with authentication required and grant the agent SA invoker access:
+The GCS MCP server is a custom Python FastMCP server wrapping `google-cloud-storage`. It exposes three tools (`list_objects`, `read_object`, `write_object`) over Streamable HTTP at `/mcp`. Deploy with authentication required and grant the agent SA invoker access:
 
 ```bash
 # Deploy with dedicated service account, auth required
+bash setup/deploy_gcs_mcp.sh
+
+# Or manually:
 gcloud run deploy gcs-mcp-server \
-  --source . \
+  --source ./setup/gcs-mcp-server/ \
   --service-account=gcs-mcp-sa@$PROJECT_ID.iam.gserviceaccount.com \
   --no-allow-unauthenticated \
+  --ingress=all \
   --region=us-central1
 
 # Grant agent SA permission to invoke
@@ -610,8 +614,6 @@ gcloud run services add-iam-policy-binding gcs-mcp-server \
   --member="serviceAccount:cymbal-agent@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/run.invoker"
 ```
-
-The GCS MCP server must be deployed with `--enable-destructive-tools` since the Intervention Agent writes PDFs to GCS.
 
 ### 6.5 Publishing to Gemini Enterprise
 
@@ -665,7 +667,7 @@ gcloud config set project $PROJECT_ID
 | --- | --- | --- |
 | Google Cloud CLI (`gcloud`) | Latest (run `gcloud components update`) | Project config, API enablement, IAM, deployments |
 | Python | 3.11+ (3.12+ recommended) | Agent development, setup scripts, data generation |
-| Node.js / npm | 20+ | Required for `@google-cloud/storage-mcp` package |
+| Node.js / npm | 20+ (optional) | Only needed for MCP Inspector testing (`npx @modelcontextprotocol/inspector`) |
 | Docker | Latest (optional) | Local container testing before Cloud Run deployment |
 
 **Python packages:**
@@ -698,7 +700,7 @@ Infrastructure must be provisioned in this order due to dependencies. The `setup
 11. **Wait for indexing to complete** — typically 5-10 minutes for small datasets, but can take up to 30 minutes. Monitor via Console (Data page > Activity tab) or poll the long-running operation.
 
 **Phase 4 — Cloud Run MCP server**
-12. Deploy `@google-cloud/storage-mcp` to Cloud Run with `--no-allow-unauthenticated`
+12. Deploy GCS MCP server (custom FastMCP) to Cloud Run with `--no-allow-unauthenticated`
 13. Grant `roles/run.invoker` to the agent SA on the Cloud Run service
 14. Record the Cloud Run service URL for agent MCP configuration
 
@@ -752,16 +754,20 @@ vertex_search_tool = VertexAiSearchTool(
 
 ### 7.4 Cloud Run MCP Server Deployment
 
+The GCS MCP server is a custom Python FastMCP server (`setup/gcs-mcp-server/server.py`) wrapping `google-cloud-storage`. It exposes three tools — `list_objects`, `read_object`, `write_object` — over Streamable HTTP at `/mcp`.
+
 **Deployment:**
 ```bash
-# Build and deploy the GCS MCP server
+# Build and deploy (recommended — handles all steps)
+bash setup/deploy_gcs_mcp.sh
+
+# Or manually:
 gcloud run deploy gcs-mcp-server \
   --source ./setup/gcs-mcp-server/ \
   --service-account=gcs-mcp-sa@$PROJECT_ID.iam.gserviceaccount.com \
   --no-allow-unauthenticated \
   --ingress=all \
-  --region=us-central1 \
-  --set-env-vars="ENABLE_DESTRUCTIVE_TOOLS=true"
+  --region=us-central1
 
 # Grant invoker access to the agent SA
 gcloud run services add-iam-policy-binding gcs-mcp-server \
@@ -770,7 +776,7 @@ gcloud run services add-iam-policy-binding gcs-mcp-server \
   --role="roles/run.invoker"
 ```
 
-**Transport:** Cloud Run supports SSE and Streamable HTTP (preferred). The MCP endpoint is typically at `/mcp` or `/sse`.
+**Transport:** Streamable HTTP (preferred). The MCP endpoint is at `/mcp`.
 
 **Agent connection:**
 ```python
@@ -821,7 +827,7 @@ After setup, verify each component before proceeding to agent deployment:
 | Agent framework      | Google ADK                                                                                                                                  | Latest stable |
 | Inter-agent protocol | A2A (Google)                                                                                                                                | Latest stable |
 | BigQuery integration | Google's official BigQuery MCP server                                                                                                       | Latest stable |
-| GCS integration      | `@google-cloud/storage-mcp` ([googleapis/gcloud-mcp](https://github.com/googleapis/gcloud-mcp/tree/main/packages/storage-mcp)) on Cloud Run | Latest stable |
+| GCS integration      | Custom FastMCP server wrapping `google-cloud-storage` on Cloud Run (`setup/gcs-mcp-server/server.py`)                                          | Latest stable |
 | Language             | Python                                                                                                                                      | 3.11+         |
 | PDF templating       | Jinja2                                                                                                                                      | Latest stable |
 | PDF rendering        | WeasyPrint                                                                                                                                  | Latest stable |
@@ -842,7 +848,7 @@ atf_cloud_interactive/
 │   ├── generate_data.py            # Generates synthetic data and loads into BQ
 │   ├── create_gcs_buckets.py       # Creates GCS buckets for refs and interventions
 │   ├── upload_reference_docs.py    # Uploads reference docs to GCS
-│   ├── deploy_gcs_mcp.sh           # Deploys @google-cloud/storage-mcp to Cloud Run
+│   ├── deploy_gcs_mcp.sh           # Deploys custom GCS MCP server to Cloud Run
 │   └── create_search_app.py        # Creates Vertex AI Search datastore and app
 ├── reference_docs/
 │   ├── best_practices_guide.md     # Product adoption best practices
