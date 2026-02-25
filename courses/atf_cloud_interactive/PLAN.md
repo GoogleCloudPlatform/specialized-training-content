@@ -14,7 +14,7 @@ Full spec: [PRD.md](PRD.md)
 - BigQuery MCP server is Google-hosted (no deployment needed); GCS MCP deploys to Cloud Run
 - Custom service account (`cymbal-agent@`) for agent deployment — explicit and teachable for lab
 - Separate service account (`gcs-mcp-sa@`) for the Cloud Run GCS MCP server
-- `VertexAiSearchTool` constraint: must be only tool on its agent, so Intervention Agent needs a sub-agent or custom tool wrapper for search
+- `VertexAiSearchTool` with `bypass_multi_tools_limit=True` (ADK v1.16.0+) — lives directly on Intervention Agent alongside other tools, no sub-agent needed
 - All scripts are project-agnostic — parameterized by `$PROJECT_ID` env var with `gcloud config` fallback, so they work in any lab project without edits
 - Infrastructure scripts are idempotent (safe to re-run) — important for lab environments where students may retry steps
 - GCS MCP server is a custom Python FastMCP server wrapping `google-cloud-storage` — deployed to Cloud Run with Streamable HTTP at `/mcp`. Replaces the earlier supergateway+npm approach (stdio bridge was unnecessarily complex). Google doesn't yet offer a managed GCS MCP endpoint like BigQuery's.
@@ -57,14 +57,16 @@ _(nothing yet)_
 - Scaffolding for early lab sections vs. open-ended final section
 - README.md for the repo
 
+## Resolved questions
+
+- **Build order for agents**: Dev order: Data Agent first (simpler, proves BQ MCP), then decide next. Lab order: Data Agent → Orchestrator → Intervention Agent. Students may do AI Applications ToS + Vertex AI Search setup early to allow indexing time.
+- **Local dev vs. cloud-first**: Develop and test locally with ADK first, then deploy to Agent Engine.
+- **VertexAiSearchTool constraint**: ADK v1.16.0+ supports `bypass_multi_tools_limit=True` parameter directly on `VertexAiSearchTool`. No sub-agent or custom wrapper needed — the tool lives directly on the Intervention Agent alongside PDF/GCS tools.
+- **PDF template fidelity**: Demo-quality with branding.
+- **Reference doc format for Vertex AI Search**: Keep as markdown. Vertex AI Search ingests unstructured markdown directly. Only revisit if retrieval quality is poor during testing.
+
 ## Open questions
 
-- **Build order for agents**: Start with Data Agent (simpler, proves BQ MCP) or Intervention Agent (more moving parts, longer lead time for Vertex AI Search indexing)?
-- **Local dev vs. cloud-first**: Do we develop/test agents locally with ADK before deploying to Agent Engine, or go straight to cloud?
-- **VertexAiSearchTool constraint**: Use a sub-agent within Intervention Agent for search, or wrap Vertex AI Search as a custom tool via the Discovery Engine client library?
-- **PDF template fidelity**: How polished do the intervention PDFs need to be for the lab? Functional with basic styling, or demo-quality with branding?
-- **`roles/mcp.toolUser`**: PRD section 6.3 lists this role for the agent SA, but it may not exist yet in IAM (not in current `gcloud` role list). Need to verify whether BigQuery MCP requires it or if the BQ data/job roles are sufficient. Omitted from `setup.sh` for now — add when confirmed.
-- **Reference doc format for Vertex AI Search**: Markdown files work for ingestion, but need to confirm chunking/parsing quality during the Vertex AI Search setup phase — if retrieval quality is poor, may need to convert to PDF or add metadata headers
 
 ## Assumptions and gotchas
 
@@ -78,7 +80,3 @@ _(nothing yet)_
 - `gcloud projects add-iam-policy-binding` with `--condition=None` is needed to avoid interactive prompts in scripts — discovered during setup.sh build
 - `gsutil iam ch allUsers:objectViewer` for the interventions bucket may hit org policy constraints in locked-down lab environments — may need a fallback (signed URLs or proxy)
 - Reference docs use fictional but internally consistent product details (firmware versions, DSCP values, bandwidth thresholds, quality score scales) — these must stay consistent with the synthetic data baselines in PRD 3.4 (e.g., healthy video_quality_score mean of 4.2 matches the "Good" threshold in the troubleshooting guides)
-
-## Next session
-
-Build `generate_data.py` — programmatic synthetic data generation for the `cymbal_meet` BigQuery dataset. 25 customers across 5 tables (~422K rows total), seeded RNG per PRD 3.4, with 5 problem customers exhibiting obvious engagement outliers. Output as JSONL files for `bq load`. This unblocks both the Data Agent (queryable tables) and Vertex AI Search (reference docs are ready for GCS upload + indexing in parallel).
