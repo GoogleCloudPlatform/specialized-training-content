@@ -65,6 +65,14 @@ gcloud services enable \
 echo "    APIs enabled."
 echo ""
 
+# Enable BigQuery MCP endpoint (separate from the regular API enablement)
+echo ">>> Enabling BigQuery MCP endpoint..."
+gcloud beta services mcp enable bigquery.googleapis.com \
+  --project="$PROJECT_ID" \
+  --quiet 2>/dev/null || true
+echo "    BigQuery MCP enabled."
+echo ""
+
 # ---------------------------------------------------------------------------
 # Phase 1b — Service accounts
 # ---------------------------------------------------------------------------
@@ -189,6 +197,9 @@ check() {
 
 check "APIs enabled (aiplatform)" \
   "gcloud services list --enabled --project=$PROJECT_ID --filter='name:aiplatform.googleapis.com' --format='value(name)' | grep -q aiplatform"
+
+check "BigQuery MCP enabled" \
+  "gcloud beta services mcp list --project=$PROJECT_ID 2>/dev/null | grep -q bigquery"
 
 check "Agent SA exists ($AGENT_SA_EMAIL)" \
   "gcloud iam service-accounts describe $AGENT_SA_EMAIL --project=$PROJECT_ID"

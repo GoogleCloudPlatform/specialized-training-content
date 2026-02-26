@@ -43,6 +43,11 @@ Full spec: [PRD.md](PRD.md)
 - `setup/upload_reference_docs.py` — uploads ref docs to GCS
 - `setup/create_search_app.py` — creates Vertex AI Search datastore, imports + indexes docs
 
+### Data Agent
+- `agents/data_agent/__init__.py` — ADK boilerplate (`from . import agent`)
+- `agents/data_agent/agent.py` — Data Agent: BQ MCP toolset, runtime schema discovery prompt, `root_agent`
+- `agents/requirements.txt` — shared Python deps for all agents
+
 ## Completed
 
 - [x] Setup scripts — infra provisioning (APIs, 2 service accounts, IAM, 3 buckets)
@@ -50,42 +55,9 @@ Full spec: [PRD.md](PRD.md)
 - [x] Reference docs — 5 fictional Cymbal Meet docs aligned to PRD 3.4 problem profiles
 - [x] Vertex AI Search — datastore creation, GCS import, indexing with polling
 - [x] BigQuery data layer — `create_bq_tables.py` (dataset + 5 tables) + `generate_data.py` (seeded numpy RNG, ~3.6M rows, 5 problem profiles with obvious outliers, `--dry-run` support)
+- [x] Data Agent (Steps 1–5) — directory structure, BQ MCP toolset (ADC auth + StreamableHTTP), system prompt (runtime schema discovery, UNNEST handling, read-only constraint), `root_agent` definition (`gemini-2.5-flash-preview`), environment config (`PROJECT_ID` with gcloud fallback)
 
-## Tasks — Data Agent Implementation
-
-### Step 1: Create agent directory structure
-- [ ] Create `agents/data_agent/__init__.py` — standard ADK boilerplate (`from . import agent`)
-- [ ] Create `agents/data_agent/agent.py` — main agent definition with `root_agent`
-- [ ] Create `agents/requirements.txt` — shared Python dependencies for all agents (`google-adk`, `google-auth`, `google-cloud-bigquery`)
-
-### Step 2: Configure McpToolset for BigQuery MCP endpoint
-- [ ] Set up `McpToolset` with `StreamableHTTPConnectionParams` pointing to `https://bigquery.googleapis.com/mcp`
-- [ ] Authenticate via ADC: `google.auth.default(scopes=["https://www.googleapis.com/auth/bigquery"])` → `credentials.refresh()` → pass Bearer token in headers
-- [ ] Pattern follows the [ADK BigQuery MCP sample](https://github.com/google/adk-python/tree/main/contributing/samples/bigquery_mcp): token obtained at agent module load time; for long sessions, restart the dev server
-
-### Step 3: Write the system prompt
-Per PRD 5.1, the Data Agent discovers schema at runtime (not hardcoded). The system prompt instructs the agent how to discover and query, not what the schema is:
-- [ ] **Identity & scope**: "You are the Cymbal Meet data domain expert. You accept natural language questions about customer engagement and translate them into SQL."
-- [ ] **Target dataset**: parameterized as `{PROJECT_ID}.cymbal_meet`
-- [ ] **Discovery protocol** (lazy, on-demand):
-  1. List tables: `SELECT table_name FROM \`{PROJECT_ID}.cymbal_meet.INFORMATION_SCHEMA.TABLES\``
-  2. Inspect columns: `SELECT column_name, data_type, is_nullable, description FROM \`{PROJECT_ID}.cymbal_meet.INFORMATION_SCHEMA.COLUMNS\` WHERE table_name = '{table}'`
-  3. Sample data: `SELECT * FROM \`{PROJECT_ID}.cymbal_meet.{table}\` LIMIT 5`
-- [ ] **Nested field handling**: when INFORMATION_SCHEMA shows a column with `data_type = 'RECORD'` and `mode = 'REPEATED'`, instruct the agent to use `UNNEST()` (specifically relevant for `customers.interactions`)
-- [ ] **Output format**: structured results with clear headers, suitable for downstream agents
-- [ ] **Read-only constraint**: only SELECT queries, never INSERT/UPDATE/DELETE
-- [ ] **Conversational memory**: schema discovered earlier in the conversation is already in context — reuse it rather than re-querying INFORMATION_SCHEMA
-
-### Step 4: Define root_agent
-- [ ] Model: `gemini-2.5-flash-preview`
-- [ ] Name: `data_agent`
-- [ ] Description (for A2A discoverability): "Cymbal Meet data domain expert. Accepts natural language questions about customer engagement, translates to SQL, executes via BigQuery, returns structured results."
-- [ ] Instruction: the system prompt from Step 3
-- [ ] Tools: `[bigquery_mcp_toolset]`
-
-### Step 5: Add environment configuration
-- [ ] Set required env vars in agent.py: `GOOGLE_CLOUD_PROJECT` (from env or `gcloud config`), `GOOGLE_CLOUD_LOCATION=us-central1`, `GOOGLE_GENAI_USE_VERTEXAI=True`
-- [ ] Follow project convention: parameterized by `$PROJECT_ID` env var with `gcloud config get-value project` fallback
+## Tasks — Data Agent Testing & Validation
 
 ### Step 6: Test locally with ADK dev server
 - [ ] Run `adk web agents/data_agent` from the course root
@@ -143,3 +115,6 @@ Each problem customer should be detectable via natural language questions:
 - BrightPath (declining usage) decline curve is `[1.0, 1.0, 1.0, 0.85, 0.65, 0.45, 0.35]` across 7 weeks — applied to logins, calls, and calendar events. Week-over-week decline should be clearly visible in SQL `GROUP BY EXTRACT(WEEK FROM ...)` queries
 - Pinnacle (low login adoption) generates emails for only ~25% of licensed users — the `COUNT(DISTINCT user_email) / licensed_users` signal depends on this, not just lower login frequency
 - `customers` table uses a `REPEATED RECORD` for interactions (BigQuery nested/repeated fields) — the Data Agent's system prompt must document this nested structure so the LLM generates correct `UNNEST()` SQL
+- BigQuery MCP endpoint requires a separate enablement (`gcloud beta services mcp enable bigquery.googleapis.com`) beyond the standard `gcloud services enable bigquery.googleapis.com`. Without it, `tools/list` succeeds but `tools/call` returns 403. Added to `setup.sh`
+- Gemini 3 models require `location='global'` — incompatible with Agent Engine which needs a regional location (e.g., `us-central1`). Workaround: `Gemini3(Gemini)` subclass that overrides `api_client` to force `location='global'`. For Agent Engine deployment, will need to capture/restore the env var around `AdkApp.set_up()`
+- ADC user credentials ignore the `scopes` parameter in `google.auth.default()` — the token carries whatever scopes were granted at `gcloud auth application-default login` time. Use `cloud-platform` scope (the default) rather than narrow scopes like `bigquery`
