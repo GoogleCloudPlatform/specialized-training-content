@@ -1,0 +1,1260 @@
+[
+  {
+    "timestamp": "2026-02-26T17:54:44.676499+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "[2212]    INFO:     Application startup complete.",
+    "labels": {},
+    "insert_id": "69a088e4000a5293f584d118"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.676312+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,676 root INFO Application is starting up...",
+    "labels": {},
+    "insert_id": "69a088e4000a51d896920cfd"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.675658+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "[2212]    INFO:     Waiting for application startup.",
+    "labels": {},
+    "insert_id": "69a088e4000a4f4a0969ee81"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.675462+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "[2212]    INFO:     Started server process [2212]",
+    "labels": {},
+    "insert_id": "69a088e4000a4e863206e140"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.673167+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,673 root WARNING OpenTelemetry tracing is not enabled. Please set the `OTEL_PYTHON_TRACER_PROVIDER` environment variable to enable tracing.",
+    "labels": {},
+    "insert_id": "69a088e4000a458f4df1f593"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.524163+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,524 urllib3.connectionpool DEBUG http://metadata.google.internal:80 \"GET /computeMetadata/v1/instance/service-accounts/default/token?scopes=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform HTTP/1.1\" 200 1082",
+    "labels": {},
+    "insert_id": "69a088e40007ff83d38061d2"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.521859+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,522 urllib3.connectionpool DEBUG http://metadata.google.internal:80 \"GET /computeMetadata/v1/instance/service-accounts/default/?recursive=true HTTP/1.1\" 200 641",
+    "labels": {},
+    "insert_id": "69a088e40007f683870cfdf0"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.520238+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,520 urllib3.connectionpool DEBUG Starting new HTTP connection (1): metadata.google.internal:80",
+    "labels": {},
+    "insert_id": "69a088e40007f02e77e1defc"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.504128+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,504 urllib3.connectionpool DEBUG http://metadata.google.internal:80 \"GET /computeMetadata/v1/universe/universe-domain HTTP/1.1\" 200 14",
+    "labels": {},
+    "insert_id": "69a088e40007b140f4cbf424"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.502631+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,503 urllib3.connectionpool DEBUG Starting new HTTP connection (1): metadata.google.internal:80",
+    "labels": {},
+    "insert_id": "69a088e40007ab673bd5951e"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.485484+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,486 data_agent.agent INFO MCP toolset created with HTTP bearer auth (ADC)",
+    "labels": {},
+    "insert_id": "69a088e40007686c12156c63"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.484900+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,485 data_agent.agent INFO MCP toolset: project=906184221373, token_expiry=2026-02-26 18:07:22.485431, endpoint=https://bigquery.googleapis.com/mcp",
+    "labels": {},
+    "insert_id": "69a088e4000766242208f274"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.484341+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,485 urllib3.connectionpool DEBUG http://metadata.google.internal:80 \"GET /computeMetadata/v1/instance/service-accounts/default/token?scopes=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform HTTP/1.1\" 200 1082",
+    "labels": {},
+    "insert_id": "69a088e4000763f5baab229b"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.482081+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,482 urllib3.connectionpool DEBUG http://metadata.google.internal:80 \"GET /computeMetadata/v1/instance/service-accounts/default/?recursive=true HTTP/1.1\" 200 641",
+    "labels": {},
+    "insert_id": "69a088e400075b21e22be8f5"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.473668+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,474 urllib3.connectionpool DEBUG Starting new HTTP connection (1): metadata.google.internal:80",
+    "labels": {},
+    "insert_id": "69a088e400073a442b1c6050"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.463753+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,464 google.auth._default DEBUG Cloud SDK credentials not found on disk; not using them",
+    "labels": {},
+    "insert_id": "69a088e400071389dc70021f"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.463668+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,464 google.auth._default DEBUG Checking Cloud SDK credentials as part of auth process...",
+    "labels": {},
+    "insert_id": "69a088e400071334be863b57"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:44.463611+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:44,464 google.auth._default DEBUG Checking None for explicit credentials as part of auth process...",
+    "labels": {},
+    "insert_id": "69a088e4000712fb9b09f4e9"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:31.788744+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "  from google.cloud.aiplatform.utils import gcs_utils",
+    "labels": {},
+    "insert_id": "69a088d7000c0908b85f4724"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:31.788736+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "/home/appuser/.cache/pypoetry/virtualenvs/reasoning-engine-assembly-service-MATOk_fk-py3.12/lib/python3.12/site-packages/google/cloud/aiplatform/models.py:52: FutureWarning: Support for google-cloud-storage < 3.0.0 will be removed in a future version of google-cloud-aiplatform. Please upgrade to google-cloud-storage >= 3.0.0.",
+    "labels": {},
+    "insert_id": "69a088d7000c0900139f8e5b"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.439367+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,440 google_adk.google.adk.tools.mcp_tool.session_context WARNING Error on session runner task: unhandled errors in a TaskGroup (1 sub-exception)",
+    "labels": {},
+    "insert_id": "69a088d10006b447e3aa52a5"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.438665+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,439 httpcore.http11 DEBUG response_closed.complete",
+    "labels": {},
+    "insert_id": "69a088d10006b1890d2bc740"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.438495+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,439 httpcore.http11 DEBUG response_closed.started",
+    "labels": {},
+    "insert_id": "69a088d10006b0df95465f5c"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.438344+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,439 httpx INFO HTTP Request: POST https://bigquery.googleapis.com/mcp \"HTTP/1.1 401 Unauthorized\"",
+    "labels": {},
+    "insert_id": "69a088d10006b048c0807542"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.438055+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,439 httpcore.http11 DEBUG receive_response_headers.complete return_value=(b'HTTP/1.1', 401, b'Unauthorized', [(b'WWW-Authenticate', b'Bearer realm=\"https://accounts.google.com/\", error=\"invalid_token\"'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Encoding', b'gzip'), (b'Date', b'Thu, 26 Feb 2026 17:54:25 GMT'), (b'Server', b'ESF'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Alt-Svc', b'h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])",
+    "labels": {},
+    "insert_id": "69a088d10006af2731f71d43"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.428589+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,429 httpcore.http11 DEBUG receive_response_headers.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d100068a2d1afcba06"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.428523+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,429 httpcore.http11 DEBUG send_request_body.complete",
+    "labels": {},
+    "insert_id": "69a088d1000689eba02cc492"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.428257+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,429 httpcore.http11 DEBUG send_request_body.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d1000688e105458054"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.428157+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,429 httpcore.http11 DEBUG send_request_headers.complete",
+    "labels": {},
+    "insert_id": "69a088d10006887db2ef2de9"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.427692+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,428 httpcore.http11 DEBUG send_request_headers.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d1000686ac0d1fb6ba"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.426897+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,428 mcp.client.streamable_http DEBUG Sending client message: root=JSONRPCRequest(method='tools/call', params={'_meta': {'baggage': 'google_traceparent=00-0000000000000000caad64bc8f1e91fb-ab278dc6f354d354-00'}, 'name': 'list_table_ids', 'arguments': {'projectId': '906184221373', 'datasetId': 'cymbal_meet'}}, jsonrpc='2.0', id=3)",
+    "labels": {},
+    "insert_id": "69a088d1000683918b7d5764"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.426137+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,427 data_agent.agent INFO >>> MCP TOOL CALL: 'list_table_ids' args={'projectId': '906184221373', 'datasetId': 'cymbal_meet'}",
+    "labels": {},
+    "insert_id": "69a088d100068099ae2d6d3b"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.423628+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,424 httpcore.connection DEBUG close.complete",
+    "labels": {},
+    "insert_id": "69a088d1000676ccae6e4490"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.423421+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,424 httpcore.connection DEBUG close.started",
+    "labels": {},
+    "insert_id": "69a088d1000675fdf26b8535"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.422678+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,423 httpcore.http11 DEBUG response_closed.complete",
+    "labels": {},
+    "insert_id": "69a088d1000673169e244296"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.422548+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,423 httpcore.http11 DEBUG response_closed.started",
+    "labels": {},
+    "insert_id": "69a088d100067294942dd521"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.422414+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,423 httpcore.http11 DEBUG receive_response_body.complete",
+    "labels": {},
+    "insert_id": "69a088d10006720e4be83dde"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.421859+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,422 httpcore.http11 DEBUG receive_response_body.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d100066fe3a600b0ae"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.421659+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,422 httpx INFO HTTP Request: POST https://us-central1-aiplatform.googleapis.com/v1beta1/projects/jwd-atf-int/locations/us-central1/reasoningEngines/7430494082952069120/sessions/571599948835979264:appendEvent \"HTTP/1.1 200 OK\"",
+    "labels": {},
+    "insert_id": "69a088d100066f1b0c36d03b"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.421288+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,422 httpcore.http11 DEBUG receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Thu, 26 Feb 2026 17:54:25 GMT'), (b'Server', b'ESF'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Alt-Svc', b'h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])",
+    "labels": {},
+    "insert_id": "69a088d100066da8d2dd1edc"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.335583+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,336 httpcore.http11 DEBUG receive_response_headers.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d100051edf24abfecf"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.335516+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,336 httpcore.http11 DEBUG send_request_body.complete",
+    "labels": {},
+    "insert_id": "69a088d100051e9cdda3b05b"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.335262+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,336 httpcore.http11 DEBUG send_request_body.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d100051d9e70d67821"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.335189+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,336 httpcore.http11 DEBUG send_request_headers.complete",
+    "labels": {},
+    "insert_id": "69a088d100051d558bbc5d61"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.334868+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,336 httpcore.http11 DEBUG send_request_headers.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d100051c148edd9ea0"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.334606+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,335 httpcore.connection DEBUG start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x7f895a6384d0>",
+    "labels": {},
+    "insert_id": "69a088d100051b0eb24b67ba"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.330486+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,331 httpcore.connection DEBUG start_tls.started ssl_context=<ssl.SSLContext object at 0x7f895a6521d0> server_hostname='us-central1-aiplatform.googleapis.com' timeout=None",
+    "labels": {},
+    "insert_id": "69a088d100050af63f019b78"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.330375+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,331 httpcore.connection DEBUG connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x7f895a5f7f80>",
+    "labels": {},
+    "insert_id": "69a088d100050a87d926f6e7"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.326842+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,327 httpcore.connection DEBUG connect_tcp.started host='us-central1-aiplatform.googleapis.com' port=443 local_address=None timeout=None socket_options=None",
+    "labels": {},
+    "insert_id": "69a088d10004fcbae4c7d482"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.325314+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,326 urllib3.connectionpool DEBUG http://metadata.google.internal:80 \"GET /computeMetadata/v1/instance/service-accounts/default/token?scopes=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform HTTP/1.1\" 200 1082",
+    "labels": {},
+    "insert_id": "69a088d10004f6c2790bf2d1"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.322994+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,324 urllib3.connectionpool DEBUG http://metadata.google.internal:80 \"GET /computeMetadata/v1/instance/service-accounts/default/?recursive=true HTTP/1.1\" 200 641",
+    "labels": {},
+    "insert_id": "69a088d10004edb297c3a2fb"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.321626+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,322 urllib3.connectionpool DEBUG Starting new HTTP connection (1): metadata.google.internal:80",
+    "labels": {},
+    "insert_id": "69a088d10004e85acf5af8ce"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.288815+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,290 httpcore.http11 DEBUG response_closed.complete",
+    "labels": {},
+    "insert_id": "69a088d10004682f4ffde8fc"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.288718+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,289 httpcore.http11 DEBUG response_closed.started",
+    "labels": {},
+    "insert_id": "69a088d1000467ce0d800883"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.288614+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,289 httpcore.http11 DEBUG receive_response_body.complete",
+    "labels": {},
+    "insert_id": "69a088d1000467669b3ad1e0"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.285432+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,286 httpcore.http11 DEBUG receive_response_body.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d100045af843545140"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.285289+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,286 httpx INFO HTTP Request: POST https://bigquery.googleapis.com/mcp \"HTTP/1.1 200 OK\"",
+    "labels": {},
+    "insert_id": "69a088d100045a69736891b2"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.284939+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,286 httpcore.http11 DEBUG receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Type', b'application/json; charset=UTF-8'), (b'Content-Encoding', b'gzip'), (b'Date', b'Thu, 26 Feb 2026 17:54:25 GMT'), (b'Server', b'ESF'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Alt-Svc', b'h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])",
+    "labels": {},
+    "insert_id": "69a088d10004590b2266d441"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.277058+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,278 httpcore.http11 DEBUG receive_response_headers.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d100043a42bd783c1e"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.277012+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,278 httpcore.http11 DEBUG send_request_body.complete",
+    "labels": {},
+    "insert_id": "69a088d100043a144da8f9e2"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.276815+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,278 httpcore.http11 DEBUG send_request_body.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d10004394f2207c23d"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.276765+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,277 httpcore.http11 DEBUG send_request_headers.complete",
+    "labels": {},
+    "insert_id": "69a088d10004391df65e0f18"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.276411+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,277 httpcore.http11 DEBUG send_request_headers.started request=<Request [b'POST']>",
+    "labels": {},
+    "insert_id": "69a088d1000437bb56307069"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275763+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "2026-02-26 17:54:25,276 mcp.client.streamable_http DEBUG Sending client message: root=JSONRPCRequest(method='tools/list', params=None, jsonrpc='2.0', id=2)",
+    "labels": {},
+    "insert_id": "69a088d1000435330b061c86"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275152+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "-----------------------------------------------------------",
+    "labels": {},
+    "insert_id": "69a088d1000432d04521d229"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275147+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": {
+      "usage_metadata": {
+        "thoughts_token_count": 48.0,
+        "traffic_type": "ON_DEMAND",
+        "candidates_token_count": 28.0,
+        "total_token_count": 1394.0,
+        "prompt_token_count": 1318.0,
+        "candidates_tokens_details": [
+          {
+            "modality": "TEXT",
+            "token_count": 28.0
+          }
+        ],
+        "prompt_tokens_details": [
+          {
+            "modality": "TEXT",
+            "token_count": 1318.0
+          }
+        ]
+      },
+      "create_time": "2026-02-26T17:54:23.890336Z",
+      "sdk_http_response": {
+        "headers": {
+          "date": "Thu, 26 Feb 2026 17:54:25 GMT",
+          "content-encoding": "gzip",
+          "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+          "transfer-encoding": "chunked",
+          "server": "scaffolding on HTTPServer2",
+          "x-content-type-options": "nosniff",
+          "vary": "Origin, X-Origin, Referer",
+          "content-type": "application/json; charset=UTF-8",
+          "x-frame-options": "SAMEORIGIN",
+          "x-xss-protection": "0"
+        }
+      },
+      "model_version": "gemini-3-flash-preview",
+      "candidates": [
+        {
+          "finish_reason": "STOP",
+          "content": {
+            "parts": [
+              {
+                "function_call": {
+                  "args": {
+                    "projectId": "906184221373",
+                    "datasetId": "cymbal_meet"
+                  },
+                  "name": "list_table_ids"
+                },
+                "thought_signature": "Cr0BAY89a1_rlyyO6YfQD0jMQTG0tjWDABekuguXdPB220olCVC1fTYcQIIKjbK6y02IaDIzagIBkKke7iq9wj3LkFnxWiaAFKikzOwawqtlIVFDAOrjl7JK6qY5Rl2oQEXtKAnfKgroLAUFNYQ9GZp6le00xPttQ7eeP1tFwZjJA0ig3Ijh7y9-ivHGDIwcdAhv2gnELpSbBlByB1AVRTo8scztuba_0Fl6UG8gJ18ZmPwjsSgARLi8arkpbymi"
+              }
+            ],
+            "role": "model"
+          },
+          "avg_logprobs": -0.3543764158088446
+        }
+      ],
+      "response_id": "z4igaeCrNu6O48AP_YfU2A4"
+    },
+    "labels": {},
+    "insert_id": "69a088d1000432cbc96c3666"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275128+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "Raw response:",
+    "labels": {},
+    "insert_id": "69a088d1000432b8191e3b35"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275126+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "-----------------------------------------------------------",
+    "labels": {},
+    "insert_id": "69a088d1000432b69c1ff2cd"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275125+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "name: list_table_ids, args: {'projectId': '906184221373', 'datasetId': 'cymbal_meet'}",
+    "labels": {},
+    "insert_id": "69a088d1000432b5f4ffbba0"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275123+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "Function calls:",
+    "labels": {},
+    "insert_id": "69a088d1000432b3dbc6ed2b"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275120+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "-----------------------------------------------------------",
+    "labels": {},
+    "insert_id": "69a088d1000432b0402a26a3"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275119+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "None",
+    "labels": {},
+    "insert_id": "69a088d1000432afd55cb802"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275117+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "Text:",
+    "labels": {},
+    "insert_id": "69a088d1000432ad5edc99b1"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275115+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "-----------------------------------------------------------",
+    "labels": {},
+    "insert_id": "69a088d1000432ab27a986dc"
+  },
+  {
+    "timestamp": "2026-02-26T17:54:25.275113+00:00",
+    "severity": null,
+    "log_name": "projects/jwd-atf-int/logs/aiplatform.googleapis.com%2Freasoning_engine_stderr",
+    "resource": {
+      "type": "aiplatform.googleapis.com/ReasoningEngine",
+      "labels": {
+        "location": "us-central1",
+        "reasoning_engine_id": "7430494082952069120",
+        "resource_container": "906184221373"
+      }
+    },
+    "payload": "LLM Response:",
+    "labels": {},
+    "insert_id": "69a088d1000432a94dd2a384"
+  }
+]

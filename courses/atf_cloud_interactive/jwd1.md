@@ -105,16 +105,16 @@ This is optional but useful for a teaching context where students benefit from s
 
 ### Summary of Streamlining Impact
 
-| Change | Effort | Impact |
-|--------|--------|--------|
-| Fold BQ steps into setup.sh | Low | Eliminates 2 manual steps |
-| Merge create_bq_tables into generate_data | Low | One less script to track |
-| Pre-commit PDFs, skip Node.js dep | Low | Removes entire toolchain dependency |
-| Unify all phases into single setup.sh | Medium | One-command setup |
-| Clean stale files | Trivial | Repo hygiene |
-| Add validation step | Medium | Confidence in setup correctness |
-| Parameterize datastore ID | Trivial | Consistency |
-| Makefile | Low-Medium | Discoverability (optional) |
+| Change                                    | Effort     | Impact                              |
+| ----------------------------------------- | ---------- | ----------------------------------- |
+| Fold BQ steps into setup.sh               | Low        | Eliminates 2 manual steps           |
+| Merge create_bq_tables into generate_data | Low        | One less script to track            |
+| Pre-commit PDFs, skip Node.js dep         | Low        | Removes entire toolchain dependency |
+| Unify all phases into single setup.sh     | Medium     | One-command setup                   |
+| Clean stale files                         | Trivial    | Repo hygiene                        |
+| Add validation step                       | Medium     | Confidence in setup correctness     |
+| Parameterize datastore ID                 | Trivial    | Consistency                         |
+| Makefile                                  | Low-Medium | Discoverability (optional)          |
 
 ---
 
@@ -402,11 +402,11 @@ agent_engines.delete(resource_name, force=True)
 
 ### Known Risks & Mitigations
 
-| Risk | Mitigation |
-|------|-----------|
+| Risk                                                              | Mitigation                                                                                                        |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | Gemini3 `location='global'` override doesn't work in Agent Engine | Test early. If broken, may need to pass model config differently or use env var manipulation in `AdkApp.set_up()` |
-| BigQuery MCP Bearer token expires | Agent Engine should use SA credentials with auto-refresh. Verify token refresh works for long sessions |
-| Cold start latency on Agent Engine | First query may take 30-60s. Pre-warm with a lightweight query before demo |
-| Schema discovery fails on first query | Ensure `list_table_ids` and `get_table_info` tools are available in the MCP toolset. Check MCP tool registration |
-| Session state lost between queries | Confirm `enable_session=True` in AdkApp config. Test multi-turn conversations explicitly (Test 3.8) |
-| Agent hallucinates SQL syntax | The system prompt teaches UNNEST explicitly. If hallucination persists, add few-shot examples to the prompt |
+| BigQuery MCP Bearer token expires                                 | Agent Engine should use SA credentials with auto-refresh. Verify token refresh works for long sessions            |
+| Cold start latency on Agent Engine                                | First query may take 30-60s. Pre-warm with a lightweight query before demo                                        |
+| Schema discovery fails on first query                             | Ensure `list_table_ids` and `get_table_info` tools are available in the MCP toolset. Check MCP tool registration  |
+| Session state lost between queries                                | Confirm `enable_session=True` in AdkApp config. Test multi-turn conversations explicitly (Test 3.8)               |
+| Agent hallucinates SQL syntax                                     | The system prompt teaches UNNEST explicitly. If hallucination persists, add few-shot examples to the prompt       |

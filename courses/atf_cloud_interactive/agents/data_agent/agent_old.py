@@ -1,92 +1,35 @@
-"""
-Deployable variant of the Data Agent.
-
-Compared to agent.py, the MCP toolset and credentials are created lazily
-via a factory function instead of at module import time.  This lets
-agent_engines.create() deepcopy the agent without hitting unpicklable
-HTTP connection objects.
-
-Local dev:  `adk web` still works — just point it at this file's root_agent.
-Cloud deploy:  import `app` and pass to agent_engines.create(agent_engine=app).
-"""
-
-import logging
 import os
-import sys
 from functools import cached_property
-from typing import cast
 
 import google.auth
 import google.auth.transport.requests
-from fastapi.openapi.models import HTTPBase
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.models import Gemini
 from google.adk.tools.mcp_tool.mcp_session_manager import \
     StreamableHTTPConnectionParams
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
-from google.auth.credentials import Credentials
 from google.genai import Client, types
-from vertexai import agent_engines
-
-# --- Logging setup (ensure output reaches Reasoning Engine stderr) ---
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s %(name)s %(levelname)s %(message)s",
-    stream=sys.stderr,
-    force=True,
-)
-logger = logging.getLogger(__name__)
-
-# Enable DEBUG logging for ADK MCP internals (session, transport, tool dispatch)
-logging.getLogger("google.adk.tools.mcp_tool").setLevel(logging.DEBUG)
 
 # --- Environment configuration ---
-PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT", "")
+# All env vars are set in .env (loaded automatically by ADK).
+PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
 
-# --- BigQuery MCP toolset (lazy) ---
+# --- BigQuery MCP toolset ---
+# Authenticate via ADC and pass Bearer token to the Google-hosted BQ MCP endpoint.
+# Token is obtained at module load time. For long-running dev sessions, restart
+# the ADK dev server to refresh.
 BIGQUERY_MCP_ENDPOINT = "https://bigquery.googleapis.com/mcp"
-BIGQUERY_SCOPES = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/bigquery",
-]
+BIGQUERY_SCOPE = "https://www.googleapis.com/auth/cloud-platform"
 
+credentials, _ = google.auth.default(scopes=[BIGQUERY_SCOPE])
+credentials.refresh(google.auth.transport.requests.Request())
 
-# --- MCP tool callbacks ---
-def _log_before_tool(tool, args, tool_context):
-    logger.info(">>> MCP TOOL CALL: '%s' args=%s", tool.name, args)
-
-
-def _log_after_tool(tool, args, tool_context, result):
-    if result and getattr(result, "error", None):
-        logger.error("<<< MCP TOOL ERROR: '%s' error=%s", tool.name, result.error)
-    else:
-        logger.info("<<< MCP TOOL OK: '%s'", tool.name)
-
-
-def _make_bigquery_mcp_toolset() -> McpToolset:
-    """Create the BigQuery MCP toolset with dynamic bearer auth via header_provider."""
-
-    credentials, project = google.auth.default(scopes=BIGQUERY_SCOPES)
-    credentials = cast(Credentials, credentials)
-
-    def _header_provider(context):
-        """Called on every tool invocation — refreshes token if needed."""
-        credentials.refresh(google.auth.transport.requests.Request())
-        headers = {
-            "Authorization": f"Bearer {credentials.token}",
-        }
-        if project:
-            headers["x-goog-user-project"] = project
-        return headers
-
-    return McpToolset(
-        connection_params=StreamableHTTPConnectionParams(
-            url=BIGQUERY_MCP_ENDPOINT,
-        ),
-        header_provider=_header_provider,
-        # NO auth_credential, NO auth_scheme
+bigquery_mcp_toolset = McpToolset(
+    connection_params=StreamableHTTPConnectionParams(
+        url=BIGQUERY_MCP_ENDPOINT,
+        headers={"Authorization": f"Bearer {credentials.token}"},
     )
-
+)
 
 # --- System prompt ---
 DATA_AGENT_INSTRUCTION = f"""\
@@ -130,7 +73,6 @@ include relevant benchmarks or segment averages for context.
   appropriate WHERE/LIMIT clauses.
 """
 
-
 class Gemini3(Gemini):
     """Gemini subclass that forces location='global' for Gemini 3 models."""
 
@@ -146,7 +88,6 @@ class Gemini3(Gemini):
             ),
         )
 
-
 # --- Agent definition ---
 root_agent = LlmAgent(
     model=Gemini3(model="gemini-3-flash-preview"),
@@ -157,10 +98,5 @@ root_agent = LlmAgent(
         "returns structured results."
     ),
     instruction=DATA_AGENT_INSTRUCTION,
-    tools=[_make_bigquery_mcp_toolset()],
-    before_tool_callback=_log_before_tool,
-    after_tool_callback=_log_after_tool,
+    tools=[bigquery_mcp_toolset],
 )
-
-# --- Deployable app (for agent_engines.create) ---
-app = agent_engines.AdkApp(agent=root_agent)
