@@ -16,15 +16,30 @@ Three agents coordinated via A2A:
 atf_cloud_interactive/
 ├── PLAN.md                        # Technical roadmap
 ├── PRD.md                         # Product requirements
-├── reference_docs/                # Fictional Cymbal Meet docs (for RAG)
-│   ├── admin_guide_user_onboarding.md
-│   ├── intervention_templates.md
-│   ├── product_best_practices_guide.md
-│   ├── troubleshooting_call_quality.md
-│   └── troubleshooting_device_performance.md
+├── agents/
+│   ├── requirements.txt           # Shared Python deps for all agents
+│   └── data_agent/
+│       ├── __init__.py            # ADK boilerplate
+│       ├── agent.py               # Data Agent (BQ MCP, schema discovery)
+│       ├── .env                   # Environment config
+│       └── .env.example           # Template env config
+├── reference_docs/
+│   ├── markdown/                  # Source docs (5 fictional Cymbal Meet docs)
+│   │   ├── admin_guide_user_onboarding.md
+│   │   ├── intervention_templates.md
+│   │   ├── product_best_practices_guide.md
+│   │   ├── troubleshooting_call_quality.md
+│   │   └── troubleshooting_device_performance.md
+│   └── pdf/                       # Converted PDFs (uploaded to GCS)
 └── setup/
-    ├── setup.sh                   # Phase 1: infrastructure provisioning
-    ├── deploy_gcs_mcp.sh          # Phase 2: GCS MCP server deployment
+    ├── setup.sh                   # Full provisioning pipeline
+    ├── deploy_gcs_mcp.sh          # GCS MCP server deployment to Cloud Run
+    ├── create_bq_tables.py        # BigQuery dataset + 5 tables (idempotent)
+    ├── generate_data.py           # Synthetic data gen (~3.6M rows, --dry-run)
+    ├── convert_md_to_pdf.sh       # Markdown → PDF conversion
+    ├── upload_reference_docs.py   # Upload PDFs to GCS
+    ├── create_datastore.py        # Vertex AI Search datastore + doc import
+    ├── requirements.txt           # Python deps for setup scripts
     └── gcs-mcp-server/
         ├── server.py              # FastMCP server (3 tools)
         ├── requirements.txt
@@ -38,8 +53,9 @@ atf_cloud_interactive/
 - Google Cloud project with billing enabled
 - `gcloud` CLI authenticated and configured
 - Owner or Editor role on the project
+- Node.js / npm (for `md-to-pdf` conversion and MCP Inspector)
 
-### Phase 1: Infrastructure Provisioning
+### Phase 1: Infrastructure + Vertex AI Search
 
 ```bash
 cd setup
@@ -50,9 +66,34 @@ cd setup
 ./setup.sh
 ```
 
-This enables required APIs, creates two service accounts (`cymbal-agent@` and `gcs-mcp-sa@`), assigns IAM roles, and creates three GCS buckets (agent staging, reference docs, interventions). The script is idempotent — safe to re-run.
+This script runs the full provisioning pipeline:
+1. Enables required APIs (including BigQuery MCP endpoint)
+2. Creates two service accounts (`cymbal-agent@` and `gcs-mcp-sa@`)
+3. Assigns IAM roles
+4. Creates three GCS buckets (agent staging, reference docs, interventions)
+5. Creates a Python venv and installs dependencies
+6. Converts reference docs from markdown to PDF
+7. Uploads PDFs to the refs GCS bucket
+8. Creates a Vertex AI Search datastore and imports docs
 
-### Phase 2: GCS MCP Server Deployment
+The script is idempotent — safe to re-run.
+
+> **Note:** Vertex AI Search requires ToS acceptance at the [AI Applications console](https://console.cloud.google.com/gen-app-builder) before the datastore creation step will succeed.
+
+### Phase 2: BigQuery Data Layer
+
+```bash
+# Create dataset and tables
+python create_bq_tables.py
+
+# Generate and load synthetic data (~3.6M rows)
+python generate_data.py
+
+# Validate without loading (optional)
+python generate_data.py --dry-run
+```
+
+### Phase 3: GCS MCP Server Deployment
 
 ```bash
 ./deploy_gcs_mcp.sh
@@ -75,3 +116,11 @@ npx @anthropic-ai/mcp-inspector
 ```
 
 Connect to the `/mcp` endpoint and confirm the three tools are listed.
+
+### Running the Data Agent (local dev)
+
+```bash
+cd agents/data_agent
+cp .env.example .env   # edit with your project ID
+adk web
+```

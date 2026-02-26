@@ -18,7 +18,7 @@ Full spec: [PRD.md](PRD.md)
 - All scripts are project-agnostic — parameterized by `$PROJECT_ID` env var with `gcloud config` fallback, so they work in any lab project without edits
 - Infrastructure scripts are idempotent (safe to re-run) — important for lab environments where students may retry steps
 - GCS MCP server is a custom Python FastMCP server wrapping `google-cloud-storage` — deployed to Cloud Run with Streamable HTTP at `/mcp`. Replaces the earlier supergateway+npm approach (stdio bridge was unnecessarily complex). Google doesn't yet offer a managed GCS MCP endpoint like BigQuery's.
-- Reference docs are markdown files in `reference_docs/` — Vertex AI Search ingests unstructured docs (markdown, PDF, HTML) so no conversion step needed before upload to GCS
+- Reference docs are authored as markdown in `reference_docs/markdown/`, converted to PDF via `convert_md_to_pdf.sh`, and uploaded as PDFs to GCS for Vertex AI Search ingestion
 - Reference doc content is deliberately aligned to the 5 problem customer profiles in PRD 3.4 — each problem customer's root cause maps to specific retrievable sections across the docs, so the Intervention Agent's RAG queries will return actionable content
 - Synthetic data is hand-designed profiles + programmatic generation — the 25 customers and 5 problem profiles are hand-specified in PRD 3.4, but the ~3.6M data rows (dominated by device telemetry) are generated via seeded numpy RNG (`generate_data.py`). This gives deterministic, reproducible data with obvious outliers detectable via simple SQL GROUP BY queries
 - Device telemetry is 1 reading/device every 5 minutes during business hours (8am–6pm weekdays) — ~3.1M rows across 746 devices × 120 readings/day × 35 weekdays
@@ -28,7 +28,7 @@ Full spec: [PRD.md](PRD.md)
 ## Key files
 
 ### Setup & infrastructure
-- `setup/setup.sh` — infra provisioning (APIs, SAs, IAM, buckets)
+- `setup/setup.sh` — full provisioning pipeline: APIs, SAs, IAM, buckets, Python venv, PDF conversion, doc upload, datastore creation
 - `setup/deploy_gcs_mcp.sh` — builds + deploys GCS MCP to Cloud Run
 
 ### BigQuery data layer
@@ -39,13 +39,16 @@ Full spec: [PRD.md](PRD.md)
 - `setup/gcs-mcp-server/server.py` — FastMCP server (list/read/write)
 
 ### Reference docs & search
-- `reference_docs/*.md` — 5 Cymbal Meet docs for RAG
-- `setup/upload_reference_docs.py` — uploads ref docs to GCS
-- `setup/create_search_app.py` — creates Vertex AI Search datastore, imports + indexes docs
+- `reference_docs/markdown/*.md` — 5 Cymbal Meet docs (source)
+- `reference_docs/pdf/*.pdf` — converted PDFs uploaded to GCS for Vertex AI Search
+- `setup/convert_md_to_pdf.sh` — converts markdown to PDF via `npx md-to-pdf`
+- `setup/upload_reference_docs.py` — uploads PDFs to GCS
+- `setup/create_datastore.py` — creates Vertex AI Search datastore, imports + indexes docs
 
 ### Data Agent
 - `agents/data_agent/__init__.py` — ADK boilerplate (`from . import agent`)
 - `agents/data_agent/agent.py` — Data Agent: BQ MCP toolset, runtime schema discovery prompt, `root_agent`
+- `agents/data_agent/.env` / `.env.example` — environment config (`GOOGLE_CLOUD_PROJECT`, etc.)
 - `agents/requirements.txt` — shared Python deps for all agents
 
 ## Completed
@@ -55,23 +58,11 @@ Full spec: [PRD.md](PRD.md)
 - [x] Reference docs — 5 fictional Cymbal Meet docs aligned to PRD 3.4 problem profiles
 - [x] Vertex AI Search — datastore creation, GCS import, indexing with polling
 - [x] BigQuery data layer — `create_bq_tables.py` (dataset + 5 tables) + `generate_data.py` (seeded numpy RNG, ~3.6M rows, 5 problem profiles with obvious outliers, `--dry-run` support)
-- [x] Data Agent (Steps 1–5) — directory structure, BQ MCP toolset (ADC auth + StreamableHTTP), system prompt (runtime schema discovery, UNNEST handling, read-only constraint), `root_agent` definition (`gemini-2.5-flash-preview`), environment config (`PROJECT_ID` with gcloud fallback)
+- [x] Data Agent (Steps 1–5) — directory structure, BQ MCP toolset (ADC auth + StreamableHTTP), system prompt (runtime schema discovery via MCP tools, UNNEST handling, read-only constraint), `root_agent` definition (`gemini-3-flash-preview` with `Gemini3` subclass for `location='global'`), environment config (`PROJECT_ID` with gcloud fallback)
 
-## Tasks — Data Agent Testing & Validation
+## Tasks
 
-### Step 6: Test locally with ADK dev server
-- [ ] Run `adk web agents/data_agent` from the course root
-- [ ] Smoke test: "What tables are in the cymbal_meet dataset?" → should trigger INFORMATION_SCHEMA discovery and list 5 tables
-- [ ] Query test: "How many customers are there and what segments are they in?" → should query customers table
-- [ ] Complex query test: "Which customer has the lowest login rate relative to their licensed users?" → should detect Pinnacle Financial Group
 
-### Step 7: Validate against all 5 problem customer profiles
-Each problem customer should be detectable via natural language questions:
-- [ ] **Pinnacle Financial** (low login adoption): "Which customers have fewer than 30% of licensed users logging in?" → `COUNT(DISTINCT user_email) / licensed_users` ≈ 0.25
-- [ ] **Quantum Dynamics** (low ad-hoc + quality): "Which customers have almost no ad-hoc calls and poor call quality?" → ad-hoc ratio ~3%, avg quality ~2.8
-- [ ] **Verdant Health** (meeting underutilization): "Which customers have normal login rates but very few calendar events?" → events/user far below segment avg
-- [ ] **Coastal Logistics** (device issues): "Which customers have device telemetry showing poor performance across all rooms?" → packet loss ~4%, latency ~95ms, quality ~2.2
-- [ ] **BrightPath Education** (declining usage): "Which customers show a declining trend in usage over the past 7 weeks?" → >50% drop weeks 1-3 → 5-7
 
 ## Upcoming (ordered)
 - [ ] Intervention Agent — RAG retrieval via Vertex AI Search, PDF generation (Jinja2 + WeasyPrint), GCS write via MCP
@@ -91,7 +82,7 @@ Each problem customer should be detectable via natural language questions:
 - **Local dev vs. cloud-first**: Develop and test locally with ADK first, then deploy to Agent Engine.
 - **VertexAiSearchTool constraint**: ADK v1.16.0+ supports `bypass_multi_tools_limit=True` parameter directly on `VertexAiSearchTool`. No sub-agent or custom wrapper needed — the tool lives directly on the Intervention Agent alongside PDF/GCS tools.
 - **PDF template fidelity**: Demo-quality with branding.
-- **Reference doc format for Vertex AI Search**: Keep as markdown. Vertex AI Search ingests unstructured markdown directly. Only revisit if retrieval quality is poor during testing.
+- **Reference doc format for Vertex AI Search**: Switched from raw markdown to PDF. Markdown source in `reference_docs/markdown/` is converted via `convert_md_to_pdf.sh` (`npx md-to-pdf`), and PDFs are uploaded to GCS for ingestion.
 - **Data gen deployment strategy**: `generate_data.py` produces deterministic output via seeded RNG. For lab deployment, pre-generate JSONL files and host in a shared GCS bucket so students load via `bq load` without needing Python/numpy locally. The script itself is for development and pre-generation.
 
 ## Open questions
@@ -116,5 +107,5 @@ Each problem customer should be detectable via natural language questions:
 - Pinnacle (low login adoption) generates emails for only ~25% of licensed users — the `COUNT(DISTINCT user_email) / licensed_users` signal depends on this, not just lower login frequency
 - `customers` table uses a `REPEATED RECORD` for interactions (BigQuery nested/repeated fields) — the Data Agent's system prompt must document this nested structure so the LLM generates correct `UNNEST()` SQL
 - BigQuery MCP endpoint requires a separate enablement (`gcloud beta services mcp enable bigquery.googleapis.com`) beyond the standard `gcloud services enable bigquery.googleapis.com`. Without it, `tools/list` succeeds but `tools/call` returns 403. Added to `setup.sh`
-- Gemini 3 models require `location='global'` — incompatible with Agent Engine which needs a regional location (e.g., `us-central1`). Workaround: `Gemini3(Gemini)` subclass that overrides `api_client` to force `location='global'`. For Agent Engine deployment, will need to capture/restore the env var around `AdkApp.set_up()`
+- Gemini 3 models require `location='global'` — incompatible with Agent Engine which needs a regional location (e.g., `us-central1`). Implemented workaround in Data Agent: `Gemini3(Gemini)` subclass that overrides `api_client` to force `location='global'`. For Agent Engine deployment, will need to capture/restore the env var around `AdkApp.set_up()`
 - ADC user credentials ignore the `scopes` parameter in `google.auth.default()` — the token carries whatever scopes were granted at `gcloud auth application-default login` time. Use `cloud-platform` scope (the default) rather than narrow scopes like `bigquery`

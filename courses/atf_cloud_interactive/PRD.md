@@ -103,18 +103,20 @@ Students should get equal hands-on experience with:
   - Translate questions into appropriate SQL queries against the Cymbal Meet schema
   - Execute queries against BigQuery via MCP
   - Return results in structured format suitable for downstream processing
-- **Schema discovery:** The Data Agent does **not** have the schema hardcoded in its system prompt. Instead, it discovers schema at runtime by querying `INFORMATION_SCHEMA` and sampling live data. This makes the agent generalizable — it can work against any dataset it is pointed at, not just the one it was built for.
-- **Discovery approach — lazy, on-demand:**
-  - On first invocation (or when pointed at a new dataset), the agent queries `INFORMATION_SCHEMA.TABLES` to get the list of tables in the target dataset.
-  - When a user question requires a specific table, the agent queries `INFORMATION_SCHEMA.COLUMNS` for that table (column names, types, nullability, descriptions) and runs `SELECT * FROM table LIMIT 5` to see sample data. It does **not** discover all tables upfront — only the ones relevant to the current question.
-  - If a question requires joining across tables, the agent discovers each involved table on demand.
-- **Session state:** Discovered schema and sample data are stored in the agent's session state (ADK `state`) so they persist across turns within a conversation. The agent checks state before re-querying — if it has already discovered a table's schema, it reuses the cached version. This avoids redundant BigQuery calls on follow-up questions.
+- **Model:** `gemini-3-flash-preview` via a `Gemini3(Gemini)` subclass that forces `location='global'` (required for Gemini 3 models, which are incompatible with Agent Engine's regional location setting)
+- **Schema discovery:** The Data Agent does **not** have the schema hardcoded in its system prompt. Instead, it discovers schema at runtime using the BigQuery MCP server's built-in tools. This makes the agent generalizable — it can work against any dataset it is pointed at, not just the one it was built for.
+- **Discovery approach — lazy, on-demand via MCP tools:**
+  - `list_table_ids` — lists all tables in the target dataset
+  - `get_table_info` — returns column names, types, modes (including REPEATED RECORD fields) for a specific table
+  - `execute_sql` with `SELECT * FROM ... LIMIT 5` — samples live data when needed to understand real values before composing queries
+  - The agent discovers tables on demand as questions require them, not all upfront.
+- **Conversational memory:** Discovered schema is retained in the LLM's conversation context across turns. The system prompt instructs the agent to reuse previously discovered schema rather than re-calling `get_table_info`. This avoids redundant BigQuery MCP calls on follow-up questions.
 - **System prompt contents:** Rather than schema details, the system prompt tells the agent:
-  - The target project and dataset identifier
-  - The `INFORMATION_SCHEMA` query patterns to use for discovery
-  - Instructions to cache discoveries in session state and reuse them
-  - How to interpret common column patterns (e.g., `customer_id` as a foreign key)
-  - That it should sample data (`LIMIT 5`) to understand real values before composing queries
+  - The target project and dataset identifier (with env var fallback)
+  - Which MCP tools to use for schema discovery (`list_table_ids`, `get_table_info`, `execute_sql`)
+  - How to handle RECORD REPEATED fields with `UNNEST()` (critical for the `customers.interactions` nested structure)
+  - Read-only constraint (SELECT only)
+  - Output formatting guidelines (percentages, currency, segment benchmarks)
 
 #### Intervention Agent
 - **Framework:** ADK
@@ -459,16 +461,17 @@ Create a small set of fictional Cymbal Meet documents that the Intervention Agen
 
 ### 4.2 Storage and Retrieval
 
-- Reference documents stored as files in a GCS bucket
-- Indexed by a Vertex AI Search datastore and search app
-- Intervention Agent queries the search app to retrieve relevant content based on the customer's specific issues
+- Reference documents are authored as markdown in `reference_docs/markdown/`, converted to PDF via `convert_md_to_pdf.sh` (`npx md-to-pdf`), and stored as PDFs in a GCS bucket
+- Indexed by a Vertex AI Search datastore (unstructured documents)
+- Intervention Agent queries the datastore via `VertexAiSearchTool` to retrieve relevant content based on the customer's specific issues
 
 ### 4.3 Vertex AI Search Setup
 
 - **Datastore type:** Unstructured documents
-- **Data source:** GCS bucket containing reference docs
-- **Search app:** Connected to the datastore, used by the Intervention Agent as a tool
-- Setup script should automate: bucket creation, document upload, datastore creation, document ingestion, search app creation
+- **Datastore ID:** `cymbal-meet-docs-2` (location: `global`)
+- **Data source:** GCS bucket containing reference doc PDFs
+- **Integration:** `VertexAiSearchTool` connects directly to the datastore — no separate search app needed
+- Setup script (`create_datastore.py`) automates: datastore creation, document import from GCS with FULL reconciliation mode, polling until indexing completes
 
 ## 5. Intervention PDF Generation
 
@@ -561,7 +564,6 @@ client.agent_engines.create(
 | ------------------------------ | ---------------------------------------------- |
 | `roles/bigquery.dataViewer`    | Read BigQuery tables                           |
 | `roles/bigquery.jobUser`       | Execute BigQuery queries                       |
-| `roles/mcp.toolUser`           | Make MCP tool calls (BigQuery MCP)             |
 | `roles/storage.objectAdmin`    | Read/write GCS objects (reference docs + PDFs) |
 | `roles/aiplatform.user`        | Deploy and manage Agent Engine agents          |
 | `roles/discoveryengine.editor` | Query Vertex AI Search datastores              |
@@ -693,37 +695,36 @@ pip install google-cloud-aiplatform[agent_engines,adk] google-adk a2a-sdk \
 
 ### 7.2 Provisioning Order
 
-Infrastructure must be provisioned in this order due to dependencies. The `setup.sh` script orchestrates these phases.
+Infrastructure must be provisioned in this order due to dependencies. `setup.sh` orchestrates Phases 1–3 in a single run; BigQuery data loading and Cloud Run deployment are separate scripts.
 
-**Phase 1 — Foundation (must be first)**
-1. Enable all APIs (section 6.2)
+**Phase 1 — Foundation (must be first) — `setup.sh` Phase 1**
+1. Enable all APIs (section 6.2), including BigQuery MCP endpoint (`gcloud beta services mcp enable`)
 2. Create service accounts: agent SA (`cymbal-agent`) and GCS MCP SA (`gcs-mcp-sa`)
 3. Grant IAM roles to both service accounts (section 6.3)
-4. Create Agent Engine staging bucket: `gs://$PROJECT_ID-agent-staging`
+4. Create three GCS buckets: `gs://$PROJECT_ID-agent-staging`, `gs://$PROJECT_ID-cymbal-meet-refs`, `gs://$PROJECT_ID-cymbal-meet-interventions` (public read)
+5. Provision Discovery Engine service agent with GCS read access
 
-**Phase 2 — Data layer (can run in parallel)**
-5. Create BigQuery dataset `cymbal_meet` and all tables (section 3)
-6. Generate and load synthetic data into BigQuery
-7. Create GCS buckets:
-   - `gs://$PROJECT_ID-cymbal-meet-refs` — reference documents
-   - `gs://$PROJECT_ID-cymbal-meet-interventions` — intervention PDFs (configure for public read)
+**Phase 2 — Reference docs + Vertex AI Search — `setup.sh` Phase 2**
+6. Create Python venv and install dependencies
+7. Convert reference docs from markdown to PDF (`convert_md_to_pdf.sh`)
+8. Upload PDFs to the refs GCS bucket (`upload_reference_docs.py`)
+9. Create Vertex AI Search datastore and import docs (`create_datastore.py`)
+10. **Wait for indexing to complete** — typically 5-10 minutes for small datasets, but can take up to 30 minutes
 
-**Phase 3 — Vertex AI Search (start early — indexing takes time)**
-8. Upload reference documents to the refs GCS bucket
-9. Create Vertex AI Search datastore (unstructured documents)
-10. Import documents from GCS into the datastore
-11. **Wait for indexing to complete** — typically 5-10 minutes for small datasets, but can take up to 30 minutes. Monitor via Console (Data page > Activity tab) or poll the long-running operation.
+**Phase 3 — BigQuery data layer (separate scripts)**
+11. Create BigQuery dataset `cymbal_meet` and all tables (`create_bq_tables.py`)
+12. Generate and load synthetic data into BigQuery (`generate_data.py`)
 
-**Phase 4 — Cloud Run MCP server**
-12. Deploy GCS MCP server (custom FastMCP) to Cloud Run with `--no-allow-unauthenticated`
-13. Grant `roles/run.invoker` to the agent SA on the Cloud Run service
-14. Record the Cloud Run service URL for agent MCP configuration
+**Phase 4 — Cloud Run MCP server — `deploy_gcs_mcp.sh`**
+13. Deploy GCS MCP server (custom FastMCP) to Cloud Run with `--no-allow-unauthenticated`
+14. Grant `roles/run.invoker` to the agent SA on the Cloud Run service
+15. Record the Cloud Run service URL for agent MCP configuration
 
 **Phase 5 — Agent deployment**
-15. Deploy Data Agent to Agent Engine (references BigQuery MCP)
-16. Deploy Intervention Agent to Agent Engine (references Cloud Run MCP URL + Vertex AI Search datastore)
-17. Deploy Orchestrator Agent to Agent Engine (references Data Agent and Intervention Agent resource IDs for A2A)
-18. Publish Orchestrator to Gemini Enterprise
+16. Deploy Data Agent to Agent Engine (references BigQuery MCP)
+17. Deploy Intervention Agent to Agent Engine (references Cloud Run MCP URL + Vertex AI Search datastore)
+18. Deploy Orchestrator Agent to Agent Engine (references Data Agent and Intervention Agent resource IDs for A2A)
+19. Publish Orchestrator to Gemini Enterprise
 
 ### 7.3 Vertex AI Search Setup Details
 
@@ -864,7 +865,7 @@ atf_cloud_interactive/
 │   ├── create_gcs_buckets.py       # Creates GCS buckets for refs and interventions
 │   ├── upload_reference_docs.py    # Uploads reference docs to GCS
 │   ├── deploy_gcs_mcp.sh           # Deploys custom GCS MCP server to Cloud Run
-│   └── create_search_app.py        # Creates Vertex AI Search datastore and app
+│   └── create_datastore.py          # Creates Vertex AI Search datastore
 ├── reference_docs/
 │   ├── best_practices_guide.md     # Product adoption best practices
 │   ├── troubleshooting_devices.md  # Device performance troubleshooting

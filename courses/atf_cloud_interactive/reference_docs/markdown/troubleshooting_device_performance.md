@@ -28,7 +28,7 @@ Understanding normal operating parameters is essential for identifying issues. D
 
 ### Device Telemetry
 
-Cymbal Meet devices report telemetry every 15 minutes during business hours (8 AM - 6 PM local time). Telemetry data includes CPU, memory, network, and video quality metrics. This data is available via the Cymbal Meet Admin Console and the BigQuery analytics pipeline.
+Cymbal Meet devices report telemetry every 5 minutes during business hours (8 AM - 6 PM local time). Telemetry data includes CPU, memory, network, and video quality metrics. This data is available via the Cymbal Meet Admin Console and the BigQuery analytics pipeline.
 
 ## 3. Common Issues and Solutions
 

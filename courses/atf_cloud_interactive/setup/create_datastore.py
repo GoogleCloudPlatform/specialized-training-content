@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""create_search_app.py — Create Vertex AI Search datastore and import reference docs.
+"""create_datastore.py — Create Vertex AI Search datastore and import reference docs.
 
 Creates an unstructured-document datastore in Vertex AI Search (Discovery Engine),
 imports reference docs from GCS, and polls until indexing completes.
@@ -12,8 +12,8 @@ Prerequisites:
   - AI Applications ToS accepted at console.cloud.google.com/gen-app-builder
 
 Usage:
-  python setup/create_search_app.py                        # uses gcloud's current project
-  PROJECT_ID=my-project python setup/create_search_app.py  # explicit project
+  python setup/create_datastore.py                        # uses gcloud's current project
+  PROJECT_ID=my-project python setup/create_datastore.py  # explicit project
 """
 
 import os

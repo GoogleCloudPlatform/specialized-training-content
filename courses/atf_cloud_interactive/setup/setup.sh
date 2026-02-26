@@ -227,19 +227,42 @@ fi
 
 echo "Phase 1 setup complete."
 echo ""
-echo "Next steps:"
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Python virtual environment & setup scripts
+# ---------------------------------------------------------------------------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VENV_DIR="$SCRIPT_DIR/.venv"
+
+echo ">>> Creating Python virtual environment..."
+if [[ -d "$VENV_DIR" ]]; then
+  echo "    $VENV_DIR already exists — skipping creation."
+else
+  python3 -m venv "$VENV_DIR"
+  echo "    Created $VENV_DIR"
+fi
+
+echo ">>> Installing Python dependencies..."
+"$VENV_DIR/bin/pip" install --quiet --upgrade pip
+"$VENV_DIR/bin/pip" install --quiet -r "$SCRIPT_DIR/requirements.txt"
+echo "    Dependencies installed."
 echo ""
-echo "  Create a virtualenv for the setup scripts:"
-echo "    python -m venv setup/.venv"
-echo "    source setup/.venv/bin/activate"
-echo "    pip install -r setup/requirements.txt"
+
+echo ">>> Converting markdown reference docs to PDF..."
+bash "$SCRIPT_DIR/convert_md_to_pdf.sh"
 echo ""
-echo "  Then run:"
-echo "    1. Create BigQuery dataset & tables:  python setup/create_bq_tables.py"
-echo "    2. Generate synthetic data:           python setup/generate_data.py"
-echo "    3. Upload reference docs to GCS:      python setup/upload_reference_docs.py"
-echo "    4. Create Vertex AI Search datastore: python setup/create_search_app.py"
-echo "    5. Deploy GCS MCP server:             bash setup/deploy_gcs_mcp.sh"
+
+echo ">>> Uploading reference docs to GCS..."
+"$VENV_DIR/bin/python" "$SCRIPT_DIR/upload_reference_docs.py"
+echo ""
+
+echo ">>> Creating Vertex AI Search datastore..."
+"$VENV_DIR/bin/python" "$SCRIPT_DIR/create_datastore.py"
+echo ""
+
+echo "============================================"
+echo " All setup steps complete!"
+echo "============================================"
 echo ""
 echo "NOTE: Vertex AI Search requires ToS acceptance at:"
 echo "  https://console.cloud.google.com/gen-app-builder?project=$PROJECT_ID"

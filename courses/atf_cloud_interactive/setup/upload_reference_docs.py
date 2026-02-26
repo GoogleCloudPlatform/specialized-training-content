@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """upload_reference_docs.py — Upload reference docs to GCS for Vertex AI Search ingestion.
 
-Uploads all markdown files from reference_docs/ to the refs GCS bucket.
+Uploads PDF files from reference_docs/pdf/ to the refs GCS bucket.
 Idempotent — re-running overwrites existing objects.
 
 Prerequisites:
   - setup.sh has been run (refs bucket exists)
+  - convert_md_to_pdf.sh has been run (PDFs exist)
   - gcloud CLI authenticated
 
 Usage:
@@ -39,17 +40,19 @@ def main():
     project_id = get_project_id()
     bucket_name = f"{project_id}-cymbal-meet-refs"
 
-    # Locate reference_docs/ relative to this script
+    # Locate reference_docs/pdf/ relative to this script
     script_dir = Path(__file__).resolve().parent
-    docs_dir = script_dir.parent / "reference_docs"
+    pdf_dir = script_dir.parent / "reference_docs" / "pdf"
 
-    if not docs_dir.is_dir():
-        print(f"ERROR: Reference docs directory not found: {docs_dir}")
+    if not pdf_dir.is_dir():
+        print(f"ERROR: PDF directory not found: {pdf_dir}")
+        print("Run 'bash setup/convert_md_to_pdf.sh' first.")
         sys.exit(1)
 
-    doc_files = sorted(docs_dir.glob("*.md"))
+    doc_files = sorted(pdf_dir.glob("*.pdf"))
     if not doc_files:
-        print(f"ERROR: No .md files found in {docs_dir}")
+        print(f"ERROR: No .pdf files found in {pdf_dir}")
+        print("Run 'bash setup/convert_md_to_pdf.sh' first.")
         sys.exit(1)
 
     print("=" * 48)
@@ -57,7 +60,7 @@ def main():
     print("=" * 48)
     print(f" Project:  {project_id}")
     print(f" Bucket:   gs://{bucket_name}")
-    print(f" Docs dir: {docs_dir}")
+    print(f" Docs dir: {pdf_dir}")
     print(f" Files:    {len(doc_files)}")
     print("=" * 48)
     print()
@@ -68,25 +71,25 @@ def main():
     for doc_path in doc_files:
         blob_name = doc_path.name
         blob = bucket.blob(blob_name)
-        blob.upload_from_filename(str(doc_path), content_type="text/plain")
+        blob.upload_from_filename(str(doc_path), content_type="application/pdf")
         print(f"  Uploaded {blob_name} ({doc_path.stat().st_size:,} bytes)")
 
     # Validation — list objects and confirm count
     print()
     print("Validation:")
     blobs = list(client.list_blobs(bucket_name))
-    md_blobs = [b for b in blobs if b.name.endswith(".md")]
-    if len(md_blobs) >= len(doc_files):
-        print(f"  [PASS] {len(md_blobs)} markdown files in gs://{bucket_name}")
+    pdf_blobs = [b for b in blobs if b.name.endswith(".pdf")]
+    if len(pdf_blobs) >= len(doc_files):
+        print(f"  [PASS] {len(pdf_blobs)} PDF files in gs://{bucket_name}")
     else:
-        print(f"  [FAIL] Expected {len(doc_files)} files, found {len(md_blobs)}")
+        print(f"  [FAIL] Expected {len(doc_files)} files, found {len(pdf_blobs)}")
         sys.exit(1)
 
     print()
     print("Upload complete.")
     print()
     print("Next step:")
-    print("  python setup/create_search_app.py")
+    print("  python setup/create_datastore.py")
     print()
 
 
