@@ -146,13 +146,24 @@ create_bucket_if_missing() {
   fi
 }
 
-create_bucket_if_missing "$STAGING_BUCKET"
-create_bucket_if_missing "$REFS_BUCKET"
-create_bucket_if_missing "$INTERVENTIONS_BUCKET"
+create_bucket_if_missing "$STAGING_BUCKET" "-b on"
+create_bucket_if_missing "$REFS_BUCKET" "-b on"
+create_bucket_if_missing "$INTERVENTIONS_BUCKET" "-b on"
 
 # Interventions bucket needs public read for PDF URLs (PRD requirement)
 echo "    Setting public read on interventions bucket..."
 gsutil iam ch allUsers:objectViewer "$INTERVENTIONS_BUCKET" 2>/dev/null || true
+
+# Provision Discovery Engine service agent and grant read access to refs bucket
+echo "    Provisioning Discovery Engine service agent..."
+gcloud beta services identity create \
+  --service=discoveryengine.googleapis.com \
+  --project="$PROJECT_ID" \
+  --quiet 2>/dev/null || true
+DISCOVERY_SA="service-${PROJECT_NUMBER}@gcp-sa-discoveryengine.iam.gserviceaccount.com"
+echo "    Granting Discovery Engine access to refs bucket..."
+gsutil iam ch "serviceAccount:${DISCOVERY_SA}:objectAdmin" "$REFS_BUCKET" 2>/dev/null || true
+gsutil iam ch "serviceAccount:${DISCOVERY_SA}:objectViewer" "$REFS_BUCKET" 2>/dev/null || true
 echo ""
 
 # ---------------------------------------------------------------------------
@@ -206,11 +217,18 @@ fi
 echo "Phase 1 setup complete."
 echo ""
 echo "Next steps:"
-echo "  1. Create BigQuery dataset & tables:  python setup/create_bq_tables.py"
-echo "  2. Generate synthetic data:           python setup/generate_data.py"
-echo "  3. Upload reference docs to GCS:      python setup/upload_reference_docs.py"
-echo "  4. Create Vertex AI Search datastore: python setup/create_search_app.py"
-echo "  5. Deploy GCS MCP server:             bash setup/deploy_gcs_mcp.sh"
+echo ""
+echo "  Create a virtualenv for the setup scripts:"
+echo "    python -m venv setup/.venv"
+echo "    source setup/.venv/bin/activate"
+echo "    pip install -r setup/requirements.txt"
+echo ""
+echo "  Then run:"
+echo "    1. Create BigQuery dataset & tables:  python setup/create_bq_tables.py"
+echo "    2. Generate synthetic data:           python setup/generate_data.py"
+echo "    3. Upload reference docs to GCS:      python setup/upload_reference_docs.py"
+echo "    4. Create Vertex AI Search datastore: python setup/create_search_app.py"
+echo "    5. Deploy GCS MCP server:             bash setup/deploy_gcs_mcp.sh"
 echo ""
 echo "NOTE: Vertex AI Search requires ToS acceptance at:"
 echo "  https://console.cloud.google.com/gen-app-builder?project=$PROJECT_ID"

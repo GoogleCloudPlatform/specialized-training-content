@@ -103,7 +103,18 @@ Students should get equal hands-on experience with:
   - Translate questions into appropriate SQL queries against the Cymbal Meet schema
   - Execute queries against BigQuery via MCP
   - Return results in structured format suitable for downstream processing
-- **Schema knowledge:** The Data Agent's system prompt includes the full BigQuery schema (table names, columns, types, relationships) so it can autonomously compose correct SQL
+- **Schema discovery:** The Data Agent does **not** have the schema hardcoded in its system prompt. Instead, it discovers schema at runtime by querying `INFORMATION_SCHEMA` and sampling live data. This makes the agent generalizable — it can work against any dataset it is pointed at, not just the one it was built for.
+- **Discovery approach — lazy, on-demand:**
+  - On first invocation (or when pointed at a new dataset), the agent queries `INFORMATION_SCHEMA.TABLES` to get the list of tables in the target dataset.
+  - When a user question requires a specific table, the agent queries `INFORMATION_SCHEMA.COLUMNS` for that table (column names, types, nullability, descriptions) and runs `SELECT * FROM table LIMIT 5` to see sample data. It does **not** discover all tables upfront — only the ones relevant to the current question.
+  - If a question requires joining across tables, the agent discovers each involved table on demand.
+- **Session state:** Discovered schema and sample data are stored in the agent's session state (ADK `state`) so they persist across turns within a conversation. The agent checks state before re-querying — if it has already discovered a table's schema, it reuses the cached version. This avoids redundant BigQuery calls on follow-up questions.
+- **System prompt contents:** Rather than schema details, the system prompt tells the agent:
+  - The target project and dataset identifier
+  - The `INFORMATION_SCHEMA` query patterns to use for discovery
+  - Instructions to cache discoveries in session state and reuse them
+  - How to interpret common column patterns (e.g., `customer_id` as a foreign key)
+  - That it should sample data (`LIMIT 5`) to understand real values before composing queries
 
 #### Intervention Agent
 - **Framework:** ADK
@@ -224,9 +235,11 @@ The data should be generated such that a subset of customers (~3-4) exhibit clea
 
 #### Time Range
 
-**2026-01-05 (Monday) through 2026-02-22 (Sunday) — 7 full weeks (49 days = 35 weekdays + 14 weekend days)**
+**7 full weeks (49 days = 35 weekdays + 14 weekend days) ending on the Sunday before the generation date.**
 
-Rationale: 7 weeks provides enough history for "trending downward" queries (weeks 1-3 vs weeks 5-7) and falls before the lab date so "past 30 days" queries work naturally.
+The script computes the end date as the most recent Sunday at or before today, then counts back 49 days (7 weeks) for the start date (a Monday). For example, if run on Wednesday 2026-02-25, the range would be 2026-01-05 (Monday) through 2026-02-22 (Sunday).
+
+Rationale: 7 weeks provides enough history for "trending downward" queries (weeks 1-3 vs weeks 5-7) and always falls before the run date so "past 30 days" queries work naturally. Making the range relative to the generation date keeps the data fresh regardless of when the lab is delivered.
 
 #### Customer Roster (25 total)
 
@@ -312,7 +325,7 @@ Rationale: 7 weeks provides enough history for "trending downward" queries (week
 | Calendar events per user per month | 14 | 10 | 7 |
 | Calls per user per month | 12 | 9 | 6 |
 | Ad-hoc call ratio | 35% | 30% | 25% |
-| Telemetry reports per device per day | 4 (business hours) | 4 (business hours) | 4 (business hours) |
+| Telemetry reports per device | 1 every 5 min (8am–6pm weekdays = 120/day) | 1 every 5 min (8am–6pm weekdays = 120/day) | 1 every 5 min (8am–6pm weekdays = 120/day) |
 
 Each healthy customer's rates should randomly vary +/- 15% from segment baseline so they're not uniform but still cluster around the norm.
 
@@ -338,11 +351,11 @@ Each healthy customer's rates should randomly vary +/- 15% from segment baseline
 | Table | Estimated Rows | Notes |
 | --- | --- | --- |
 | customers | 25 | Fixed roster above |
-| logins | ~235,000 | Full volume — all licensed users, realistic per-user patterns |
-| calendar_events | ~35,500 | ~20% of users are meeting organizers |
-| device_telemetry | ~110,600 | 4 reports/device/day on weekdays (business hours) |
-| calls | ~40,800 | Deduplicated by avg participant count (4 enterprise, 3.5 mid-market, 3 SMB) |
-| **TOTAL** | **~422,000** | Well within BigQuery free tier |
+| logins | ~315,000 | All licensed users × segment baseline × 1.75 months, reduced by problem customer deficits (Pinnacle ~25% adoption, BrightPath declining) |
+| calendar_events | ~53,000 | ~20% of users are meeting organizers; rate is per-organizer |
+| device_telemetry | ~3,140,000 | 1 report/device every 5 min, 8am–6pm (120/day), weekdays only. 746 devices × 120 × 35 weekdays |
+| calls | ~59,000 | Per-user participation rate ÷ avg participant count (4 enterprise, 3.5 mid-market, 3 SMB) |
+| **TOTAL** | **~3,567,000** | Dominated by device telemetry. Well within BigQuery free tier (10 GB storage free) |
 
 #### Distribution Patterns
 
@@ -365,7 +378,9 @@ Each healthy customer's rates should randomly vary +/- 15% from segment baseline
 | Thursday | 0.20 | Slightly lower |
 | Friday | 0.16 | Lighter meeting load |
 
-**Time-of-day weights (for timestamped events):**
+**Time-of-day weights (for logins, calendar events, and calls — NOT telemetry):**
+
+Device telemetry is a uniform 1-every-5-minutes stream from 8:00–18:00 on weekdays. No time-of-day weighting — every 5-minute mark in the window gets exactly one reading per device.
 
 | Time Block | Weight |
 | --- | --- |
@@ -419,7 +434,7 @@ Problem customers get interaction notes that hint at their specific issue (as de
 - Use `numpy.random.default_rng(seed)` with fixed per-table seeds (not legacy `np.random.seed()`)
 - Master seed: `42`. Per-table seeds: customers=1000, logins=2000, calendar_events=3000, device_telemetry=4000, calls=5000
 - Each table gets its own seed so modifying one table's generation doesn't shift another
-- All timestamps use deterministic integer math (no `datetime.now()`)
+- All timestamps use deterministic integer math relative to the computed start date (only `date.today()` is used — once — to anchor the 7-week window; everything else is deterministic offsets from that anchor)
 - User emails: `user_{index}@{company_domain}.com` (deterministic)
 - Device IDs: `DEV-{customer_id_prefix}-{room_index:03d}`
 - Row IDs: sequential deterministic IDs (e.g., `LOGIN-{counter:07d}`)
