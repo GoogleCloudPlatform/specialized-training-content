@@ -6,7 +6,7 @@ Idempotent — re-running overwrites existing objects.
 
 Prerequisites:
   - setup.sh has been run (refs bucket exists)
-  - convert_md_to_pdf.sh has been run (PDFs exist)
+  - PDF files exist in reference_docs/pdf/ (pre-committed)
   - gcloud CLI authenticated
 
 Usage:
@@ -46,13 +46,13 @@ def main():
 
     if not pdf_dir.is_dir():
         print(f"ERROR: PDF directory not found: {pdf_dir}")
-        print("Run 'bash setup/convert_md_to_pdf.sh' first.")
+        print("Ensure PDF files exist in reference_docs/pdf/.")
         sys.exit(1)
 
     doc_files = sorted(pdf_dir.glob("*.pdf"))
     if not doc_files:
         print(f"ERROR: No .pdf files found in {pdf_dir}")
-        print("Run 'bash setup/convert_md_to_pdf.sh' first.")
+        print("Ensure PDF files exist in reference_docs/pdf/.")
         sys.exit(1)
 
     print("=" * 48)

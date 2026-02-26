@@ -7,13 +7,12 @@ Idempotent — safe to re-run (skips datastore creation if it already exists,
 re-import uses FULL reconciliation mode).
 
 Prerequisites:
-  - setup.sh has been run (APIs enabled, buckets created)
+  - setup.sh has been run (APIs enabled, buckets created, AI Applications provisioned)
   - upload_reference_docs.py has been run (docs in GCS)
-  - AI Applications ToS accepted at console.cloud.google.com/gen-app-builder
 
 Usage:
-  python setup/create_datastore.py                        # uses gcloud's current project
-  PROJECT_ID=my-project python setup/create_datastore.py  # explicit project
+  python setup/create_datastore.py                                       # defaults
+  DATASTORE_ID=my-ds PROJECT_ID=my-project python setup/create_datastore.py
 """
 
 import os
@@ -23,7 +22,7 @@ import sys
 from google.api_core.exceptions import AlreadyExists, NotFound
 from google.cloud import discoveryengine
 
-DATASTORE_ID = "cymbal-meet-docs-2"
+DATASTORE_ID = os.environ.get("DATASTORE_ID", "cymbal-meet-docs")
 DATASTORE_DISPLAY_NAME = "Cymbal Meet Reference Docs"
 LOCATION = "global"
 
