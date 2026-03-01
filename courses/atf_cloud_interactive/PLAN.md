@@ -30,8 +30,8 @@ Full spec: [PRD.md](PRD.md)
 ## Key files
 
 ### Setup & infrastructure
-- `setup/setup.sh` — full provisioning pipeline (Phases 1–7): APIs, SAs, IAM, buckets, Python venv, doc upload, datastore creation, BigQuery data gen
-- `setup/deploy_gcs_mcp.sh` — builds + deploys GCS MCP to Cloud Run
+- `setup/setup.sh` — full provisioning pipeline (Phases 1–8): APIs, SAs, IAM, buckets, Python venv + ref doc upload, Vertex AI Search datastore, BigQuery data gen, GCS MCP deployment to Cloud Run. Includes validation checks at the end
+- `setup/deploy_gcs_mcp.sh` — standalone alternative for deploying GCS MCP to Cloud Run (setup.sh Phase 8 does this too)
 - `setup/requirements.txt` — Python deps for setup scripts
 
 ### BigQuery data layer
@@ -54,11 +54,13 @@ Full spec: [PRD.md](PRD.md)
 - `agents/data_agent/__init__.py` — ADK boilerplate (`from . import agent`)
 - `agents/data_agent/agent.py` — Data Agent: BQ MCP toolset (auth_scheme/auth_credential), system prompt, `root_agent` + `AdkApp`
 - `agents/data_agent/requirements.txt` — agent-specific Python deps
+- `agents/data_agent/.env.example` — local dev env vars template (PROJECT_ID, location, Vertex AI flags)
 - `agents/requirements.txt` — shared Python deps for all agents
 
 ### Deployment
 Deployment configs are gitignored. The repo contains `.example` templates; copy and replace placeholders with your project values:
 - `agents/deploy_data_agent.example.sh` → `deploy_data_agent.sh` — deployment script (`adk deploy agent_engine`)
+- `agents/data_agent/.env.example` → `.env` — local dev env vars (project, location, Vertex AI flags)
 - `agents/data_agent/.env.deploy.example` → `.env.deploy` — runtime env vars (staging bucket, telemetry flags)
 - `agents/data_agent/.agent_engine_config.example.json` → `.agent_engine_config.json` — Agent Engine config (service account, scaling)
 

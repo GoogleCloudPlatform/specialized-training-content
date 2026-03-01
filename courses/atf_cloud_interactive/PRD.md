@@ -705,43 +705,50 @@ pip install google-cloud-aiplatform[agent_engines,adk] google-adk a2a-sdk \
 
 ### 7.2 Provisioning Order
 
-Infrastructure must be provisioned in this order due to dependencies. `setup.sh` orchestrates Phases 1–5 in a single run (everything except Cloud Run MCP deployment and agent deployment).
+Infrastructure must be provisioned in this order due to dependencies. `setup.sh` orchestrates Phases 1–8 in a single run (everything up to and including Cloud Run MCP deployment). Agent deployment is separate.
 
 **Phase 1 — APIs — `setup.sh`**
 1. Enable all APIs (section 6.2), including BigQuery MCP endpoint (`gcloud beta services mcp enable`)
 
-**Phase 2 — Service accounts + IAM — `setup.sh`**
+**Phase 2 — Service accounts — `setup.sh`**
 2. Create service accounts: agent SA (`cymbal-agent`) and GCS MCP SA (`gcs-mcp-sa`)
+
+**Phase 3 — IAM roles — `setup.sh`**
 3. Grant IAM roles to both service accounts (section 6.3)
 
-**Phase 3 — GCS buckets — `setup.sh`**
+**Phase 4 — GCS buckets — `setup.sh`**
 4. Create three GCS buckets: `gs://$PROJECT_ID-agent-staging`, `gs://$PROJECT_ID-cymbal-meet-refs`, `gs://$PROJECT_ID-cymbal-meet-interventions` (public read)
 5. Provision Discovery Engine service agent with GCS read access to refs bucket
 
-**Phase 4 — Python environment + reference docs + Vertex AI Search — `setup.sh`**
+**Phase 5 — Python environment + reference docs — `setup.sh`**
 6. Create Python venv and install dependencies (`setup/requirements.txt`)
 7. Upload pre-generated reference doc PDFs to the refs GCS bucket (`upload_reference_docs.py`)
+
+> **Note:** Reference doc PDFs are pre-generated and checked in under `reference_docs/pdf/`. To regenerate from markdown source, run `setup/convert_md_to_pdf.sh` manually (requires Node.js/npm for `md-to-pdf`).
+
+**Phase 6 — Vertex AI Search — `setup.sh`**
 8. Provision AI Applications (Discovery Engine ToS acceptance)
 9. Create Vertex AI Search datastore and import docs (`create_datastore.py`)
 10. **Wait for indexing to complete** — typically 5-10 minutes for small datasets, but can take up to 30 minutes
 
-> **Note:** Reference doc PDFs are pre-generated and checked in under `reference_docs/pdf/`. To regenerate from markdown source, run `setup/convert_md_to_pdf.sh` manually (requires Node.js/npm for `md-to-pdf`).
-
-**Phase 5 — BigQuery data layer — `setup.sh`**
+**Phase 7 — BigQuery data layer — `setup.sh`**
 11. Create BigQuery dataset `cymbal_meet` and all tables, generate and load synthetic data (`generate_data.py`)
 
 > **Note:** `create_bq_tables.py` exists as a standalone schema-only script, but `generate_data.py` also creates tables before loading data. `setup.sh` calls `generate_data.py` directly.
 
-**Phase 6 — Cloud Run MCP server — `deploy_gcs_mcp.sh` (separate script)**
+**Phase 8 — Cloud Run MCP server — `setup.sh`**
 12. Deploy GCS MCP server (custom FastMCP) to Cloud Run with `--no-allow-unauthenticated`
 13. Grant `roles/run.invoker` to the agent SA on the Cloud Run service
 14. Record the Cloud Run service URL for agent MCP configuration
+15. Run validation checks on all provisioned resources
 
-**Phase 7 — Agent deployment (separate scripts)**
-15. Deploy Data Agent to Agent Engine (`adk deploy agent_engine` via `deploy_data_agent.sh`)
-16. Deploy Intervention Agent to Agent Engine (references Cloud Run MCP URL + Vertex AI Search datastore)
-17. Deploy Orchestrator Agent to Agent Engine (references Data Agent and Intervention Agent resource IDs for A2A)
-18. Publish Orchestrator to Gemini Enterprise
+> **Note:** `deploy_gcs_mcp.sh` also exists as a standalone alternative for deploying the GCS MCP server separately.
+
+**Phase 9 — Agent deployment (separate scripts)**
+16. Deploy Data Agent to Agent Engine (`adk deploy agent_engine` via `deploy_data_agent.sh`)
+17. Deploy Intervention Agent to Agent Engine (references Cloud Run MCP URL + Vertex AI Search datastore)
+18. Deploy Orchestrator Agent to Agent Engine (references Data Agent and Intervention Agent resource IDs for A2A)
+19. Publish Orchestrator to Gemini Enterprise
 
 ### 7.3 Vertex AI Search Setup Details
 
@@ -916,6 +923,7 @@ atf_cloud_interactive/
 │   │   ├── __init__.py                     # ADK boilerplate (from . import agent)
 │   │   ├── agent.py                        # Data Agent: BQ MCP toolset, system prompt, root_agent + AdkApp
 │   │   ├── requirements.txt                # Agent-specific Python deps
+│   │   ├── .env.example                    # Template local dev env vars (project, location, Vertex AI flags)
 │   │   ├── .env.deploy.example             # Template deploy env vars (runtime)
 │   │   └── .agent_engine_config.example.json  # Template Agent Engine config (SA, scaling)
 │   ├── orchestrator/                       # (planned — not yet implemented)
