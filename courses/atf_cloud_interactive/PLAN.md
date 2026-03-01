@@ -85,15 +85,22 @@ Deployment configs are gitignored. The repo contains `.example` templates; copy 
 - [x] Data Agent (Steps 1–5) — directory structure, BQ MCP toolset (`auth_scheme`/`auth_credential`: OAuth2 clientCredentials + SERVICE_ACCOUNT with `use_default_credential=True`), system prompt (runtime schema discovery via MCP tools, UNNEST handling, read-only constraint), `root_agent` definition (`gemini-3-flash-preview` with `Gemini3` subclass for `location='global'`), environment config (`PROJECT_ID` with gcloud fallback)
 - [x] Data Agent deployment — `deploy_data_agent.sh` with `adk deploy agent_engine`, Agent Engine config (`.agent_engine_config.json`), deploy env (`.env.deploy`), `AdkApp` wrapper in `agent.py`
 
-## Tasks
+## Tasks — Data Agent A2A enablement
 
+Goal: make the Data Agent callable via A2A so the Orchestrator can delegate data questions to it (PRD 2.2). The Data Agent is already deployed to Agent Engine as an `AdkApp`; it needs the A2A server layer and agent card so it can receive A2A tasks.
 
+- [ ] Research how ADK + Agent Engine expose agents via A2A — does Agent Engine handle A2A automatically for deployed `AdkApp` agents, or do we need an explicit A2A server wrapper? Check ADK docs / `a2a-sdk` for the integration pattern
+- [ ] Add `a2a-sdk` to `agents/requirements.txt` and `agents/data_agent/requirements.txt` if not already bundled with `google-adk`
+- [ ] Define A2A agent card for the Data Agent — name, description, skills/capabilities (natural language data questions → structured results), input/output content types
+- [ ] Add A2A server wrapper to Data Agent (if needed beyond Agent Engine's built-in support) — wrap the existing `root_agent` / `AdkApp` so it handles A2A task requests
+- [ ] Test A2A connectivity — send a task to the deployed Data Agent via an A2A client and verify it receives the question, queries BigQuery via MCP, and returns structured results
+- [ ] Update deployment config and redeploy if the A2A changes require it
 
 ## Upcoming (ordered)
-- [ ] Intervention Agent — RAG retrieval via Vertex AI Search, PDF generation (Jinja2 + WeasyPrint), GCS write via MCP
+- [ ] Intervention Agent — RAG retrieval via Vertex AI Search, PDF generation (Jinja2 + WeasyPrint), GCS write via MCP, A2A-enabled
 - [ ] Orchestrator Agent — coordinates Data + Intervention agents via A2A
 - [ ] Deployment — remaining agents to Agent Engine, orchestrator published to Gemini Enterprise (Data Agent already deployed)
-- [ ] End-to-end validation — test the full flow from PRD section 9
+- [ ] End-to-end validation — test the full flow from PRD section 10
 
 ## Vague future things (don't plan yet)
 
