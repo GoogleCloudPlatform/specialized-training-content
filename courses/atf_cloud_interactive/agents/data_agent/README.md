@@ -29,8 +29,9 @@
 
 ## To deploy to cloud run
 
+- Change directories data_agent
 - Edit the `url` in the agent.json file to be `https://data-agent-<project_number>.us-central1.run.app/`
-- Edit the deploy_to_run.sh script, replacing the `project_number` placeholder
+- Edit the deploy_to_run.sh script, replacing the `project_id` placeholder
 - Run the deploy script `. ./deploy_to_run.sh`
 - Service will require auth
   - You can get ID token with gcloud auth print-identity-token
