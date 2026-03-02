@@ -15,8 +15,13 @@ https://github.com/google/adk-python/blob/main/contributing/samples/mcp_service_
 import os
 from functools import cached_property
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi.openapi.models import (OAuth2, OAuthFlowClientCredentials,
                                     OAuthFlows)
+from google.adk.a2a.utils.agent_to_a2a import to_a2a
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.auth.auth_credential import (AuthCredential,
                                              AuthCredentialTypes,
@@ -30,6 +35,7 @@ from vertexai import agent_engines
 
 # --- Environment configuration ---
 PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
+HOST = os.environ["CLOUD_RUN_HOST"]
 
 # --- BigQuery MCP toolset ---
 BIGQUERY_MCP_ENDPOINT = "https://bigquery.googleapis.com/mcp"
@@ -133,7 +139,11 @@ root_agent = LlmAgent(
     tools=[_create_bigquery_mcp_toolset()],
 )
 
-app = agent_engines.AdkApp(
-    agent=root_agent,
-    # enable_tracing=True
+# app = agent_engines.AdkApp(
+#     agent=root_agent,
+# )
+
+a2a_app = to_a2a(
+    root_agent, 
+    agent_card="agent_card.json"
 )
