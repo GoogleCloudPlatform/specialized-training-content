@@ -1,4 +1,4 @@
-export GOOGLE_CLOUD_PROJECT="<project-id>"
+export GOOGLE_CLOUD_PROJECT="jwd-atf-int"
 export GOOGLE_CLOUD_LOCATION="us-central1"
 export AGENT_SA="cymbal-agent"
 export AGENT_SERVICE_NAME="data-agent"

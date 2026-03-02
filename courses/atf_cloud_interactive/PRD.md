@@ -53,7 +53,7 @@ Students should get equal hands-on experience with:
          │ A2A                          │ A2A
 ┌────────▼────────────┐     ┌──────────▼──────────────────────┐
 │    Data Agent        │     │    Intervention Agent            │
-│ (Agent Engine / ADK) │     │ (Agent Engine / ADK)             │
+│  (Cloud Run / ADK)   │     │  (Cloud Run / ADK)               │
 │                      │     │                                  │
 │ - Accepts natural    │     │ - Reads reference docs via       │
 │   language questions │     │   Vertex AI Search (RAG)         │
@@ -73,6 +73,8 @@ Students should get equal hands-on experience with:
                             │  (PDFs + reference docs)        │
                             └────────────────────────────────┘
 ```
+
+> **Future migration note:** The Data Agent and Intervention Agent are currently deployed as Cloud Run services with A2A endpoints. The long-term goal is to migrate both to Agent Engine for unified lifecycle management, telemetry, and publishing. See section 11 for details.
 
 ### 2.2 Agent Descriptions
 
@@ -94,8 +96,8 @@ Students should get equal hands-on experience with:
 
 #### Data Agent
 - **Framework:** ADK
-- **Deployment:** Agent Engine
-- **Exposed via:** A2A (callable by Orchestrator)
+- **Deployment:** Cloud Run (A2A endpoint via `to_a2a()` + uvicorn). Future: migrate to Agent Engine (see section 11)
+- **Exposed via:** A2A (callable by Orchestrator via Cloud Run URL)
 - **Role:** Domain expert on Cymbal Meet's data. Accepts natural language questions about customer engagement, translates them into SQL, executes queries, and returns structured results. The Data Agent owns all knowledge of the BigQuery schema — no other agent needs to understand table structures or write SQL.
 - **Tools:** Google's official BigQuery MCP server
 - **Capabilities:**
@@ -120,8 +122,8 @@ Students should get equal hands-on experience with:
 
 #### Intervention Agent
 - **Framework:** ADK
-- **Deployment:** Agent Engine
-- **Exposed via:** A2A (callable by Orchestrator)
+- **Deployment:** Cloud Run (A2A endpoint via `to_a2a()` + uvicorn, same pattern as Data Agent). Future: migrate to Agent Engine (see section 11)
+- **Exposed via:** A2A (callable by Orchestrator via Cloud Run URL)
 - **Role:** Builds customized intervention documents for specific customers based on their issues and reference content.
 - **Tools:**
   - Vertex AI Search — retrieves relevant product docs, troubleshooting guides, and best practice content
@@ -538,7 +540,7 @@ Additionally, Vertex AI Search requires activating the AI Applications console a
 
 ### 6.3 Agent Runtime Identity
 
-Agents deployed to Agent Engine run using the **AI Platform Reasoning Engine Service Agent**:
+**Orchestrator Agent (Agent Engine):** Agents deployed to Agent Engine run using the **AI Platform Reasoning Engine Service Agent**:
 
 ```
 service-PROJECT_NUMBER@gcp-sa-aiplatform-re.iam.gserviceaccount.com
@@ -563,10 +565,25 @@ STAGING_BUCKET=gs://PROJECT_ID-agent-staging
 adk deploy agent_engine \
     --project=$PROJECT_ID \
     --region=us-central1 \
-    --env_file=./data_agent/.env.deploy \
-    --display_name="Data Agent" \
-    ./data_agent
+    --env_file=./orchestrator/.env.deploy \
+    --display_name="Orchestrator Agent" \
+    ./orchestrator
 ```
+
+**Data Agent and Intervention Agent (Cloud Run):** These agents run as Cloud Run services exposing A2A endpoints. Each uses `to_a2a()` from ADK to wrap the root agent as an A2A-compatible ASGI app, served by uvicorn. The custom service account (`cymbal-agent@`) is specified at deploy time via `--service-account`:
+
+```bash
+gcloud run deploy data-agent \
+    --port=8080 \
+    --source=. \
+    --no-allow-unauthenticated \
+    --region=us-central1 \
+    --project=$PROJECT_ID \
+    --service-account=cymbal-agent@$PROJECT_ID.iam.gserviceaccount.com \
+    --set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID,...
+```
+
+The Orchestrator calls these agents via their Cloud Run A2A URLs (e.g., `https://data-agent-HASH.us-central1.run.app`). The Orchestrator's service account needs `roles/run.invoker` on each Cloud Run service to authenticate.
 
 #### Agent Service Account Roles
 
@@ -592,8 +609,8 @@ A separate service account for the Cloud Run-hosted GCS MCP server:
 | Source → Destination                            | Mechanism                               | Notes                                                                                            |
 | ----------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | Student locally → GCP APIs                      | `gcloud auth application-default login` | ADC credentials stored at `~/.config/gcloud/application_default_credentials.json`                |
-| Orchestrator → Data Agent (A2A)                 | Vertex AI SDK / ADC                     | Intra-project Agent Engine calls use the caller's service account automatically                  |
-| Orchestrator → Intervention Agent (A2A)         | Vertex AI SDK / ADC                     | Same as above — no explicit token management needed                                              |
+| Orchestrator (Agent Engine) → Data Agent (Cloud Run A2A)      | OIDC identity token via ADC    | Orchestrator SA needs `roles/run.invoker` on the Data Agent Cloud Run service                    |
+| Orchestrator (Agent Engine) → Intervention Agent (Cloud Run A2A) | OIDC identity token via ADC | Orchestrator SA needs `roles/run.invoker` on the Intervention Agent Cloud Run service            |
 | Data Agent → BigQuery MCP Server                | OAuth 2.0 via ADC                       | Google-hosted MCP at `https://bigquery.googleapis.com/mcp`; agent SA authenticates automatically |
 | Intervention Agent → GCS MCP Server (Cloud Run) | OIDC identity token                     | Agent SA needs `roles/run.invoker` on the Cloud Run service; ADC generates the token             |
 | Intervention Agent → Vertex AI Search           | ADC                                     | Uses `VertexAiSearchTool` from ADK; SA needs `roles/discoveryengine.editor`                      |
@@ -745,10 +762,11 @@ Infrastructure must be provisioned in this order due to dependencies. `setup.sh`
 > **Note:** `deploy_gcs_mcp.sh` also exists as a standalone alternative for deploying the GCS MCP server separately.
 
 **Phase 9 — Agent deployment (separate scripts)**
-16. Deploy Data Agent to Agent Engine (`adk deploy agent_engine` via `deploy_data_agent.sh`)
-17. Deploy Intervention Agent to Agent Engine (references Cloud Run MCP URL + Vertex AI Search datastore)
-18. Deploy Orchestrator Agent to Agent Engine (references Data Agent and Intervention Agent resource IDs for A2A)
-19. Publish Orchestrator to Gemini Enterprise
+16. Deploy Data Agent to Cloud Run (`gcloud run deploy` via `agents/data_agent/deploy_to_run.sh`) — exposes A2A endpoint
+17. Deploy Intervention Agent to Cloud Run (same pattern as Data Agent — references Cloud Run MCP URL + Vertex AI Search datastore) — exposes A2A endpoint
+18. Grant Orchestrator SA `roles/run.invoker` on both Cloud Run agent services
+19. Deploy Orchestrator Agent to Agent Engine (`adk deploy agent_engine` — references Data Agent and Intervention Agent Cloud Run URLs for A2A)
+20. Publish Orchestrator to Gemini Enterprise
 
 ### 7.3 Vertex AI Search Setup Details
 
@@ -918,16 +936,29 @@ atf_cloud_interactive/
 │       └── *.pdf
 ├── agents/
 │   ├── requirements.txt                    # Shared Python deps for all agents
-│   ├── deploy_data_agent.example.sh        # Template deployment script (students edit)
-│   ├── data_agent/
+│   ├── data_agent/                         # Deployed to Cloud Run with A2A endpoint
 │   │   ├── __init__.py                     # ADK boilerplate (from . import agent)
-│   │   ├── agent.py                        # Data Agent: BQ MCP toolset, system prompt, root_agent + AdkApp
+│   │   ├── agent.py                        # Data Agent: BQ MCP toolset, system prompt, root_agent + to_a2a
+│   │   ├── agent_card.json                 # A2A agent capability card
+│   │   ├── Dockerfile                      # Cloud Run container definition
+│   │   ├── deploy_to_run.sh                # Cloud Run deployment script
 │   │   ├── requirements.txt                # Agent-specific Python deps
-│   │   ├── .env.example                    # Template local dev env vars (project, location, Vertex AI flags)
-│   │   ├── .env.deploy.example             # Template deploy env vars (runtime)
-│   │   └── .agent_engine_config.example.json  # Template Agent Engine config (SA, scaling)
-│   ├── orchestrator/                       # (planned — not yet implemented)
-│   └── intervention_agent/                 # (planned — not yet implemented)
+│   │   └── .env.example                    # Template local dev env vars (project, location, Vertex AI flags)
+│   ├── intervention_agent/                 # Deployed to Cloud Run with A2A endpoint (same pattern as data_agent)
+│   │   ├── __init__.py
+│   │   ├── agent.py                        # Intervention Agent: Vertex AI Search + PDF gen + GCS MCP
+│   │   ├── agent_card.json                 # A2A agent capability card
+│   │   ├── Dockerfile                      # Cloud Run container definition
+│   │   ├── deploy_to_run.sh                # Cloud Run deployment script
+│   │   ├── requirements.txt
+│   │   └── .env.example
+│   └── orchestrator/                       # Deployed to Agent Engine, published to Gemini Enterprise
+│       ├── __init__.py
+│       ├── agent.py                        # Orchestrator: A2A clients for Data + Intervention agents
+│       ├── requirements.txt
+│       ├── .env.example
+│       ├── .env.deploy.example             # Template deploy env vars (runtime)
+│       └── .agent_engine_config.example.json  # Template Agent Engine config (SA, scaling)
 ├── test/                                   # Debug/test utilities (not part of lab deliverable)
 │   ├── t1.py                               # Test deployed agent via async streaming
 │   ├── list_engines.py                     # List all Agent Engine deployments
@@ -982,3 +1013,34 @@ atf_cloud_interactive/
   for customer outreach. The intervention recommends prioritizing calendar
   integration configuration with the customer's IT team.
   ```
+
+## 11. Future: Agent Engine Migration for Data and Intervention Agents
+
+### 11.1 Current Architecture (Cloud Run + Agent Engine)
+
+The Data Agent and Intervention Agent are deployed as **Cloud Run services** exposing A2A endpoints. The Orchestrator is deployed to **Agent Engine** and calls the two Cloud Run agents via their URLs. This approach was chosen because deploying MCP-enabled and A2A-enabled agents to Agent Engine presented deployment and compatibility issues during initial development.
+
+### 11.2 Target Architecture (All Agent Engine)
+
+The long-term goal is to deploy all three agents to Agent Engine:
+- Unified lifecycle management (versioning, rollback, scaling) through Agent Engine
+- Built-in telemetry and monitoring via Agent Engine's observability stack
+- Simplified authentication (intra-project Agent Engine calls use the caller's SA automatically)
+- Potential to publish individual agents to Gemini Enterprise independently
+- Consistent deployment pattern across all agents (`adk deploy agent_engine`)
+
+### 11.3 Migration Path
+
+When revisiting Agent Engine deployment for Data and Intervention agents:
+1. Re-wrap agents with `AdkApp` instead of `to_a2a()` (Agent Engine manages its own serving layer)
+2. Replace Cloud Run `deploy_to_run.sh` scripts with `adk deploy agent_engine` scripts + `.env.deploy` + `.agent_engine_config.json`
+3. Update Orchestrator to reference Agent Engine resource IDs instead of Cloud Run URLs for A2A calls
+4. Update IAM: remove Cloud Run invoker grants, rely on intra-Agent-Engine auth
+5. Remove Dockerfiles (Agent Engine handles containerization)
+6. Validate MCP tool auth works correctly within Agent Engine's runtime (this was the original blocker)
+
+### 11.4 What to Preserve
+
+- Agent logic (`agent.py`), system prompts, and tool configurations are deployment-agnostic — they should work unchanged on either Cloud Run or Agent Engine
+- The `agent_card.json` files describe agent capabilities and are used by A2A regardless of hosting
+- The Cloud Run deployment scripts and Dockerfiles should be kept in the repo (or archived) as a reference for the Cloud Run approach
