@@ -27,15 +27,18 @@ from google.adk.auth.auth_credential import (AuthCredential,
                                              AuthCredentialTypes,
                                              ServiceAccount)
 from google.adk.models import Gemini
+from google.adk.telemetry.google_cloud import (get_gcp_exporters,
+                                               get_gcp_resource)
+from google.adk.telemetry.setup import maybe_set_otel_providers
 from google.adk.tools.mcp_tool.mcp_session_manager import \
     StreamableHTTPConnectionParams
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.genai import Client, types
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from vertexai import agent_engines
 
 # --- Environment configuration ---
 PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
-HOST = os.environ["CLOUD_RUN_HOST"]
 
 # --- BigQuery MCP toolset ---
 BIGQUERY_MCP_ENDPOINT = "https://bigquery.googleapis.com/mcp"
@@ -44,6 +47,15 @@ BIGQUERY_SCOPES = [
     "https://www.googleapis.com/auth/bigquery",
 ]
 
+_gcp_exporters = get_gcp_exporters(
+    enable_cloud_tracing=True,
+    enable_cloud_logging=True,
+)
+_gcp_resource = get_gcp_resource(project_id=PROJECT_ID)
+maybe_set_otel_providers(
+    otel_hooks_to_setup=[_gcp_exporters],
+    otel_resource=_gcp_resource,
+)
 
 def _create_bigquery_mcp_toolset() -> McpToolset:
     return McpToolset(
