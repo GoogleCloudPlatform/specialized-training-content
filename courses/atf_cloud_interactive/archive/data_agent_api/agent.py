@@ -1,24 +1,48 @@
-"""Data agent variant using McpToolset's header_provider callback.
+"""Data agent variant using ADK's built-in auth_scheme + auth_credential.
 
 Instead of baking a static OAuth token into the connection headers at module
-load time, this variant keeps a long-lived google.auth credentials object and
-passes a header_provider callback to McpToolset.  The callback is invoked on
-every tool call; it calls credentials.refresh() (a no-op when the token is
-still valid) and returns a fresh Authorization header.
+load time, this variant uses ADK's credential management pipeline:
+
+  - auth_scheme:  OAuth2 clientCredentials flow pointing at Google's token URL
+  - auth_credential:  SERVICE_ACCOUNT with use_default_credential=True (ADC)
+
+On each tool invocation the ADK CredentialManager exchanges the service-account
+credential for a fresh Bearer token via ServiceAccountCredentialExchanger.
+This follows the official mcp_service_account_agent sample:
+https://github.com/google/adk-python/blob/main/contributing/samples/mcp_service_account_agent/agent.py
 """
 
+import logging
 import os
+import warnings
 from functools import cached_property
 
-import google.auth
-import google.auth.transport.requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Suppress repetitive ADK experimental-feature warnings and noisy INFO logs
+warnings.filterwarnings("ignore", message=r"\[EXPERIMENTAL\]")
+logging.getLogger("google.adk").setLevel(logging.WARNING)
+logging.getLogger("google.genai").setLevel(logging.WARNING)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+from fastapi.openapi.models import (OAuth2, OAuthFlowClientCredentials,
+                                    OAuthFlows)
+from google.adk.a2a.utils.agent_to_a2a import to_a2a
 from google.adk.agents.llm_agent import LlmAgent
+from google.adk.auth.auth_credential import (AuthCredential,
+                                             AuthCredentialTypes,
+                                             ServiceAccount)
 from google.adk.models import Gemini
-from google.adk.tools.mcp_tool.mcp_session_manager import (
-    StreamableHTTPConnectionParams,
-)
+# from google.adk.telemetry.google_cloud import (get_gcp_exporters,
+#                                                get_gcp_resource)
+# from google.adk.telemetry.setup import maybe_set_otel_providers
+from google.adk.tools.mcp_tool.mcp_session_manager import \
+    StreamableHTTPConnectionParams
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.genai import Client, types
+# from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from vertexai import agent_engines
 
 # --- Environment configuration ---
@@ -31,23 +55,36 @@ BIGQUERY_SCOPES = [
     "https://www.googleapis.com/auth/bigquery",
 ]
 
-# Module-level credentials object.  google-auth manages token lifecycle;
-# calling .refresh() is cheap when the token is still valid.
-_credentials, _ = google.auth.default(scopes=BIGQUERY_SCOPES)
-
-
-def _bigquery_headers(_ctx):
-    """Return a fresh Authorization header, refreshing the token if needed."""
-    _credentials.refresh(google.auth.transport.requests.Request())
-    return {"Authorization": f"Bearer {_credentials.token}"}
-
+# _gcp_exporters = get_gcp_exporters(
+#     enable_cloud_tracing=True,
+#     enable_cloud_logging=True,
+# )
+# _gcp_resource = get_gcp_resource(project_id=PROJECT_ID)
+# maybe_set_otel_providers(
+#     otel_hooks_to_setup=[_gcp_exporters],
+#     otel_resource=_gcp_resource,
+# )
 
 def _create_bigquery_mcp_toolset() -> McpToolset:
     return McpToolset(
         connection_params=StreamableHTTPConnectionParams(
             url=BIGQUERY_MCP_ENDPOINT,
         ),
-        header_provider=_bigquery_headers,
+        auth_scheme=OAuth2(
+            flows=OAuthFlows(
+                clientCredentials=OAuthFlowClientCredentials(
+                    tokenUrl="https://oauth2.googleapis.com/token",
+                    scopes={s: "" for s in BIGQUERY_SCOPES},
+                ),
+            ),
+        ),
+        auth_credential=AuthCredential(
+            auth_type=AuthCredentialTypes.SERVICE_ACCOUNT,
+            service_account=ServiceAccount(
+                use_default_credential=True,
+                scopes=BIGQUERY_SCOPES,
+            ),
+        ),
     )
 
 
@@ -122,4 +159,11 @@ root_agent = LlmAgent(
     tools=[_create_bigquery_mcp_toolset()],
 )
 
-app = agent_engines.AdkApp(agent=root_agent)
+# app = agent_engines.AdkApp(
+#     agent=root_agent,
+# )
+
+# a2a_app = to_a2a(
+#     root_agent, 
+#     agent_card="agent_card.json"
+# )

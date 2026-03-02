@@ -46,8 +46,6 @@
     }
   ],
   "supportsAuthenticatedExtendedCard": false,
-  "url": "http://localhost:8080",
+  "url": "https://data-agent-2-906184221373.us-central1.run.app/a2a/data_agent_2",
   "version": "0.0.1"
 }
-
-

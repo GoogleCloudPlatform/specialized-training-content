@@ -6,7 +6,7 @@ export AGENT_SERVICE_NAME="data-agent"
 gcloud run deploy $AGENT_SERVICE_NAME \
     --port=8080 \
     --source=. \
-    --allow-unauthenticated \
+    --no-allow-unauthenticated \
     --region="us-central1" \
     --project=$GOOGLE_CLOUD_PROJECT \
     --service-account $AGENT_SA \

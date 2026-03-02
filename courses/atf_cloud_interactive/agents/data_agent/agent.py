@@ -12,7 +12,9 @@ This follows the official mcp_service_account_agent sample:
 https://github.com/google/adk-python/blob/main/contributing/samples/mcp_service_account_agent/agent.py
 """
 
+import logging
 import os
+import warnings
 from functools import cached_property
 
 from dotenv import load_dotenv
@@ -46,6 +48,12 @@ BIGQUERY_SCOPES = [
     "https://www.googleapis.com/auth/cloud-platform",
     "https://www.googleapis.com/auth/bigquery",
 ]
+
+# Suppress repetitive ADK experimental-feature warnings and noisy INFO logs
+warnings.filterwarnings("ignore", message=r"\[EXPERIMENTAL\]")
+logging.getLogger("google.adk").setLevel(logging.WARNING)
+logging.getLogger("google.genai").setLevel(logging.WARNING)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 _gcp_exporters = get_gcp_exporters(
     enable_cloud_tracing=True,
@@ -150,10 +158,6 @@ root_agent = LlmAgent(
     instruction=DATA_AGENT_INSTRUCTION,
     tools=[_create_bigquery_mcp_toolset()],
 )
-
-# app = agent_engines.AdkApp(
-#     agent=root_agent,
-# )
 
 a2a_app = to_a2a(
     root_agent, 

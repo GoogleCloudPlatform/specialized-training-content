@@ -46,6 +46,6 @@
     }
   ],
   "supportsAuthenticatedExtendedCard": false,
-  "url": "https://data-agent-906184221373.us-central1.run.app",
+  "url": "http://localhost:8080",
   "version": "0.0.1"
 }
