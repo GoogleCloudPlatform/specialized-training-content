@@ -298,6 +298,18 @@ gcloud run services add-iam-policy-binding "$SERVICE_NAME" \
 echo "    Granted."
 echo ""
 
+# Grant MCP SA permission to sign its own tokens (required for V4 signed URL generation)
+echo ">>> Granting $MCP_SA_EMAIL token creator on itself (for signed URL generation)..."
+
+gcloud iam service-accounts add-iam-policy-binding "$MCP_SA_EMAIL" \
+  --member="serviceAccount:${MCP_SA_EMAIL}" \
+  --role="roles/iam.serviceAccountTokenCreator" \
+  --project="$PROJECT_ID" \
+  --condition=None
+
+echo "    Granted."
+echo ""
+
 SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" \
   --region="$REGION" \
   --project="$PROJECT_ID" \

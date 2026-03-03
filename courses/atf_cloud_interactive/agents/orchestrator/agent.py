@@ -104,8 +104,9 @@ data_agent = RemoteA2aAgent(
 
 # --- Orchestrator system prompt ---
 ORCHESTRATOR_INSTRUCTION = """\
-You are the Cymbal Meet Customer Engagement Orchestrator. You help customer
-success teams understand and improve customer engagement with the Cymbal Meet
+You are the Cymbal Meet Engagement Intervention Agent. You help customer
+success teams identify product engagement issues, and create interventions
+to address them, aiming to improve customer engagement with the Cymbal Meet
 video conferencing platform.
 
 ## Your Role

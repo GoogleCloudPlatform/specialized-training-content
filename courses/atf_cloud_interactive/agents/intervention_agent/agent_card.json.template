@@ -1,0 +1,33 @@
+{
+  "capabilities": {},
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "description": "Cymbal Meet intervention specialist. Accepts customer engagement data, searches for relevant troubleshooting content via Vertex AI Search, and generates personalized intervention PDFs.",
+  "name": "intervention_agent",
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0",
+  "skills": [
+    {
+      "description": "Generate personalized intervention PDFs for underengaged Cymbal Meet customers",
+      "examples": [],
+      "id": "intervention_agent",
+      "name": "generate_intervention",
+      "tags": ["rag", "pdf-generation", "intervention"]
+    },
+    {
+      "description": "Search for relevant troubleshooting content via Vertex AI Search",
+      "id": "intervention_agent-vertex_ai_search",
+      "name": "search_solutions",
+      "tags": ["rag", "search"]
+    },
+    {
+      "description": "Write PDF interventions to GCS",
+      "id": "intervention_agent-gcs_write",
+      "name": "write_gcs",
+      "tags": ["gcs", "storage"]
+    }
+  ],
+  "supportsAuthenticatedExtendedCard": false,
+  "url": "http://localhost:8080",
+  "version": "0.0.1"
+}

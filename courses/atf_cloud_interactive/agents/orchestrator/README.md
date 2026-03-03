@@ -8,28 +8,23 @@
 ## Config files
 
 - You need a **.env** file for local running
-  - Rename the **.env.example** to `.env`
-  - Replace the project id and data agent URL placeholders
+  - Copy the **.env.example** to a file name `.env`
+  - Replace the placeholders in **.env**
 
 - You need a **.env.deploy** file for deploying to Agent Engine
-  - Rename the **.env.deploy.example** to `.env.deploy`
-  - Replace the project id, staging bucket, and data agent URL placeholders
+  - Copy the **.env.deploy.example** to a file name `.env.deploy`
+  - Replace the placeholders in **.env.deploy**
 
-- You need to configure your .agent_engine_config.json file for deployment
-  - Rename the **.agent_engine_config.example.json** to `.agent_engine_config.json`
+- You need an **.agent_engine_config.json** file for deployment
+  - Copy the **.agent_engine_config.json.template** to a file name `.agent_engine_config.json`
   - Replace the project id placeholder in the service account
-
-- You need a service account keyfile
-  - In the console, create a key for cymbal-agent
-  - Download the file into the orchestrator directory and name it `cymbal-agent.json`
 
 ## Running locally
 
-- Change directories to orchestrator
-- Run this command (replacing the placeholder)
+- Change directories to **agents**
+- Run this command
 
     ```bash
-    export GOOGLE_APPLICATION_CREDENTIALS="./cymbal-agent.json"
     adk web
     ```
 
@@ -38,12 +33,14 @@
 
 ## To deploy to Agent Engine
 
-- Change directories to orchestrator
-- Ensure `.env.deploy` and `.agent_engine_config.json` are configured
-- Run this command
+- Change directories to **agents**
+- Set the required environment variables and run the deploy script
 
     ```bash
-    adk deploy agent_engine
+    export GOOGLE_CLOUD_PROJECT="<your-project-id>"
+    export GOOGLE_CLOUD_LOCATION="us-central1"
+
+    . ./deploy_orch_agent_to_agent_engine.sh
     ```
 
-- The deployment will use the staging bucket and service account from your config files
+## Testing

@@ -85,6 +85,24 @@ echo "    Granted."
 echo ""
 
 # ---------------------------------------------------------------------------
+# Step 2b — Grant MCP SA permission to sign its own tokens (required for signed URLs)
+#
+# The GCS MCP server generates V4 signed URLs via the IAM signBlob API.
+# This requires the service account to have iam.serviceAccounts.signBlob on
+# itself, which is included in roles/iam.serviceAccountTokenCreator.
+# ---------------------------------------------------------------------------
+echo ">>> Granting $MCP_SA_EMAIL token creator on itself (for signed URL generation)..."
+
+gcloud iam service-accounts add-iam-policy-binding "$MCP_SA_EMAIL" \
+  --member="serviceAccount:${MCP_SA_EMAIL}" \
+  --role="roles/iam.serviceAccountTokenCreator" \
+  --project="$PROJECT_ID" \
+  --condition=None
+
+echo "    Granted."
+echo ""
+
+# ---------------------------------------------------------------------------
 # Step 3 — Retrieve and display the service URL
 # ---------------------------------------------------------------------------
 SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" \

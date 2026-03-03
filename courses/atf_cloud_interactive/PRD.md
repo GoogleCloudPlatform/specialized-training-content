@@ -128,14 +128,16 @@ Students should get equal hands-on experience with:
 - **Tools:**
   - Vertex AI Search — retrieves relevant product docs, troubleshooting guides, and best practice content
   - WeasyPrint + Jinja2 — generates styled PDF documents
-  - GCS MCP server (custom Python FastMCP server wrapping `google-cloud-storage`) — reads/writes objects in GCS via MCP. Deployed to Cloud Run as part of infrastructure setup. Provides tools: `list_objects`, `read_object`, `write_object`.
+  - GCS MCP server (custom Python FastMCP server wrapping `google-cloud-storage`) — lists objects and reads text objects; generates signed URLs for direct upload/download of binary files so content never passes through the MCP layer. Deployed to Cloud Run as part of infrastructure setup. Provides tools: `list_objects`, `read_object`, `generate_upload_signed_url`, `generate_download_signed_url`.
+  - `upload_to_signed_url` — local ADK tool on the Intervention Agent; HTTP PUTs PDF bytes directly to GCS using a signed URL from the MCP server. Keeps file content out of both MCP and LLM context.
 - **Workflow:**
   1. Receive customer context and issue description from Orchestrator
   2. Query Vertex AI Search for relevant reference content (troubleshooting, best practices, templates)
   3. Synthesize a tailored intervention document
-  4. Render as PDF using HTML template + WeasyPrint
-  5. Write PDF to GCS via the GCS MCP server at `gs://{bucket}/{customer_id}/{intervention_id}.pdf`
-  6. Return the public URL
+  4. Render as PDF using HTML template + WeasyPrint; save to local temp file (returns file path, not base64)
+  5. Call `generate_upload_signed_url` via GCS MCP → receive signed URL and public URL
+  6. Call local `upload_to_signed_url` with signed URL + file path → PDF uploaded directly to GCS
+  7. Return the public URL
 
 ## 3. BigQuery Data Model
 
@@ -638,7 +640,7 @@ The BigQuery MCP server is Google-hosted (no deployment required). Agent configu
 
 #### GCS MCP Server on Cloud Run
 
-The GCS MCP server is a custom Python FastMCP server wrapping `google-cloud-storage`. It exposes three tools (`list_objects`, `read_object`, `write_object`) over Streamable HTTP at `/mcp`. Deploy with authentication required and grant the agent SA invoker access:
+The GCS MCP server is a custom Python FastMCP server wrapping `google-cloud-storage`. It exposes four tools (`list_objects`, `read_object`, `generate_upload_signed_url`, `generate_download_signed_url`) over Streamable HTTP at `/mcp`. Binary file I/O uses signed URLs so content never passes through the MCP layer. Deploy with authentication required and grant the agent SA invoker access:
 
 ```bash
 # Deploy with dedicated service account, auth required
@@ -722,51 +724,17 @@ pip install google-cloud-aiplatform[agent_engines,adk] google-adk a2a-sdk \
 
 ### 7.2 Provisioning Order
 
-Infrastructure must be provisioned in this order due to dependencies. `setup.sh` orchestrates Phases 1–8 in a single run (everything up to and including Cloud Run MCP deployment). Agent deployment is separate.
+Infrastructure provisioning is handled by `setup/setup.sh` (Phases 1–8) followed by per-agent deployment scripts. See [setup/README.md](setup/README.md) for full provisioning instructions.
 
-**Phase 1 — APIs — `setup.sh`**
-1. Enable all APIs (section 6.2), including BigQuery MCP endpoint (`gcloud beta services mcp enable`)
-
-**Phase 2 — Service accounts — `setup.sh`**
-2. Create service accounts: agent SA (`cymbal-agent`) and GCS MCP SA (`gcs-mcp-sa`)
-
-**Phase 3 — IAM roles — `setup.sh`**
-3. Grant IAM roles to both service accounts (section 6.3)
-
-**Phase 4 — GCS buckets — `setup.sh`**
-4. Create three GCS buckets: `gs://$PROJECT_ID-agent-staging`, `gs://$PROJECT_ID-cymbal-meet-refs`, `gs://$PROJECT_ID-cymbal-meet-interventions` (public read)
-5. Provision Discovery Engine service agent with GCS read access to refs bucket
-
-**Phase 5 — Python environment + reference docs — `setup.sh`**
-6. Create Python venv and install dependencies (`setup/requirements.txt`)
-7. Upload pre-generated reference doc PDFs to the refs GCS bucket (`upload_reference_docs.py`)
-
-> **Note:** Reference doc PDFs are pre-generated and checked in under `reference_docs/pdf/`. To regenerate from markdown source, run `setup/convert_md_to_pdf.sh` manually (requires Node.js/npm for `md-to-pdf`).
-
-**Phase 6 — Vertex AI Search — `setup.sh`**
-8. Provision AI Applications (Discovery Engine ToS acceptance)
-9. Create Vertex AI Search datastore and import docs (`create_datastore.py`)
-10. **Wait for indexing to complete** — typically 5-10 minutes for small datasets, but can take up to 30 minutes
-
-**Phase 7 — BigQuery data layer — `setup.sh`**
-11. Create BigQuery dataset `cymbal_meet` and all tables, generate and load synthetic data (`generate_data.py`)
-
-> **Note:** `create_bq_tables.py` exists as a standalone schema-only script, but `generate_data.py` also creates tables before loading data. `setup.sh` calls `generate_data.py` directly.
-
-**Phase 8 — Cloud Run MCP server — `setup.sh`**
-12. Deploy GCS MCP server (custom FastMCP) to Cloud Run with `--no-allow-unauthenticated`
-13. Grant `roles/run.invoker` to the agent SA on the Cloud Run service
-14. Record the Cloud Run service URL for agent MCP configuration
-15. Run validation checks on all provisioned resources
-
-> **Note:** `deploy_gcs_mcp.sh` also exists as a standalone alternative for deploying the GCS MCP server separately.
+Dependency order (must not be parallelized):
+1. APIs → 2. Service accounts → 3. IAM roles → 4. GCS buckets → 5. Reference docs upload → 6. Vertex AI Search datastore → 7. BigQuery data layer → 8. GCS MCP server (Cloud Run) → 9. Agent deployment (Data Agent → Intervention Agent → Orchestrator)
 
 **Phase 9 — Agent deployment (separate scripts)**
-16. Deploy Data Agent to Cloud Run (`gcloud run deploy` via `agents/data_agent/deploy_to_run.sh`) — exposes A2A endpoint
-17. Deploy Intervention Agent to Cloud Run (same pattern as Data Agent — references Cloud Run MCP URL + Vertex AI Search datastore) — exposes A2A endpoint
-18. Grant Orchestrator SA `roles/run.invoker` on both Cloud Run agent services
-19. Deploy Orchestrator Agent to Agent Engine (`adk deploy agent_engine` — references Data Agent and Intervention Agent Cloud Run URLs for A2A)
-20. Publish Orchestrator to Gemini Enterprise
+- Deploy Data Agent to Cloud Run (`agents/data_agent/deploy_to_run.sh`) — exposes A2A endpoint
+- Deploy Intervention Agent to Cloud Run (same pattern — references Cloud Run MCP URL + Vertex AI Search datastore) — exposes A2A endpoint
+- Grant Orchestrator SA `roles/run.invoker` on both Cloud Run agent services
+- Deploy Orchestrator to Agent Engine (`adk deploy agent_engine` — references Data Agent and Intervention Agent Cloud Run URLs)
+- Publish Orchestrator to Gemini Enterprise
 
 ### 7.3 Vertex AI Search Setup Details
 
@@ -812,27 +780,9 @@ vertex_search_tool = VertexAiSearchTool(
 
 ### 7.4 Cloud Run MCP Server Deployment
 
-The GCS MCP server is a custom Python FastMCP server (`setup/gcs-mcp-server/server.py`) wrapping `google-cloud-storage`. It exposes three tools — `list_objects`, `read_object`, `write_object` — over Streamable HTTP at `/mcp`.
+The GCS MCP server is a custom Python FastMCP server (`setup/gcs-mcp-server/server.py`) wrapping `google-cloud-storage`. It exposes four tools — `list_objects`, `read_object`, `generate_upload_signed_url`, `generate_download_signed_url` — over Streamable HTTP at `/mcp`. Binary file content never passes through MCP; agents upload/download directly via signed URLs.
 
-**Deployment:**
-```bash
-# Build and deploy (recommended — handles all steps)
-bash setup/deploy_gcs_mcp.sh
-
-# Or manually:
-gcloud run deploy gcs-mcp-server \
-  --source ./setup/gcs-mcp-server/ \
-  --service-account=gcs-mcp-sa@$PROJECT_ID.iam.gserviceaccount.com \
-  --no-allow-unauthenticated \
-  --ingress=all \
-  --region=us-central1
-
-# Grant invoker access to the agent SA
-gcloud run services add-iam-policy-binding gcs-mcp-server \
-  --region=us-central1 \
-  --member="serviceAccount:cymbal-agent@$PROJECT_ID.iam.gserviceaccount.com" \
-  --role="roles/run.invoker"
-```
+Deployed via `setup/deploy_gcs_mcp.sh` (also run as Phase 8 of `setup.sh`). See [setup/README.md](setup/README.md) for deployment details and [setup/gcs-mcp-server/README.md](setup/gcs-mcp-server/README.md) for server details.
 
 **Transport:** Streamable HTTP (preferred). The MCP endpoint is at `/mcp`.
 

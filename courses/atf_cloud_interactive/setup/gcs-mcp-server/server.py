@@ -2,14 +2,17 @@
 
 A lightweight MCP server that exposes Google Cloud Storage operations
 as tools over Streamable HTTP. Deployed to Cloud Run, called by the
-Intervention Agent to write intervention PDFs and read/list objects.
+Intervention Agent to read/list objects and generate signed URLs for
+direct uploads and downloads (bypassing the MCP layer for file content).
 
 Endpoint: /mcp (Streamable HTTP transport)
 """
 
-import base64
+import datetime
 import os
 
+import google.auth
+import google.auth.transport.requests
 import uvicorn
 from fastmcp import FastMCP
 from google.cloud import storage
@@ -18,6 +21,17 @@ from starlette.middleware.cors import CORSMiddleware
 mcp = FastMCP("GCS Storage")
 
 client = storage.Client()
+
+# Credentials for signed URL generation (requires service account on Cloud Run).
+# The service account must have iam.serviceAccounts.signBlob on itself
+# (granted via roles/iam.serviceAccountTokenCreator on the SA resource).
+_credentials, _ = google.auth.default()
+_auth_request = google.auth.transport.requests.Request()
+
+
+def _refresh_credentials():
+    """Refresh credentials to ensure a valid access token for signing."""
+    _credentials.refresh(_auth_request)
 
 
 @mcp.tool
@@ -41,9 +55,13 @@ def list_objects(bucket_name: str, prefix: str = "") -> dict:
 def read_object(bucket_name: str, object_name: str) -> dict:
     """Read the content of a GCS object as text.
 
+    Suitable for small text files only. For binary files (PDFs, images),
+    use generate_download_signed_url instead to avoid passing content
+    through the MCP layer.
+
     Args:
         bucket_name: The GCS bucket name (without gs:// prefix).
-        object_name: Full object path within the bucket (e.g. 'customer_123/report.pdf').
+        object_name: Full object path within the bucket (e.g. 'config/settings.json').
     """
     blob = client.bucket(bucket_name).blob(object_name)
     content = blob.download_as_text()
@@ -57,39 +75,81 @@ def read_object(bucket_name: str, object_name: str) -> dict:
 
 
 @mcp.tool
-def write_object(
+def generate_upload_signed_url(
     bucket_name: str,
     object_name: str,
-    content: str,
-    content_type: str = "text/plain",
-    is_base64: bool = False,
+    content_type: str = "application/pdf",
+    expiration_minutes: int = 15,
 ) -> dict:
-    """Write content to a GCS object. Creates the object if it doesn't exist.
+    """Generate a V4 signed URL for uploading a file directly to GCS.
 
-    For binary files (PDFs, images), set is_base64=True and pass
-    base64-encoded content.
+    Use this for binary file uploads (PDFs, images) instead of passing
+    file content through the MCP layer. The caller should HTTP PUT the
+    file bytes to the returned signed_url with a matching Content-Type header.
 
     Args:
         bucket_name: The GCS bucket name (without gs:// prefix).
-        object_name: Full object path within the bucket
-                     (e.g. 'customer_123/intervention_001.pdf').
-        content: The content to write. Plain text by default,
-                 or base64-encoded string if is_base64=True.
-        content_type: MIME type (default 'text/plain').
-                      Use 'application/pdf' for PDFs.
-        is_base64: If True, decode content from base64 before uploading.
-    """
-    blob = client.bucket(bucket_name).blob(object_name)
-    data = base64.b64decode(content) if is_base64 else content
-    blob.upload_from_string(data, content_type=content_type)
+        object_name: Full object path (e.g. 'customer_123/intervention.pdf').
+        content_type: MIME type of the file to upload (default 'application/pdf').
+        expiration_minutes: URL validity in minutes (default 15, max 60 for V4).
 
-    public_url = f"https://storage.googleapis.com/{bucket_name}/{object_name}"
+    Returns:
+        dict with signed_url (PUT to this), method, content_type, gs_uri,
+        public_url, and expires_in_minutes.
+    """
+    _refresh_credentials()
+    blob = client.bucket(bucket_name).blob(object_name)
+    signed_url = blob.generate_signed_url(
+        version="v4",
+        expiration=datetime.timedelta(minutes=expiration_minutes),
+        method="PUT",
+        content_type=content_type,
+        service_account_email=_credentials.service_account_email,
+        access_token=_credentials.token,
+    )
     return {
-        "bucket": bucket_name,
-        "object": object_name,
+        "signed_url": signed_url,
+        "method": "PUT",
         "content_type": content_type,
         "gs_uri": f"gs://{bucket_name}/{object_name}",
-        "public_url": public_url,
+        "public_url": f"https://storage.googleapis.com/{bucket_name}/{object_name}",
+        "expires_in_minutes": expiration_minutes,
+    }
+
+
+@mcp.tool
+def generate_download_signed_url(
+    bucket_name: str,
+    object_name: str,
+    expiration_minutes: int = 60,
+) -> dict:
+    """Generate a V4 signed URL for downloading a GCS object directly.
+
+    Use this for binary file downloads (PDFs, images) instead of read_object,
+    to avoid passing file content through the MCP layer.
+
+    Args:
+        bucket_name: The GCS bucket name (without gs:// prefix).
+        object_name: Full object path (e.g. 'customer_123/intervention.pdf').
+        expiration_minutes: URL validity in minutes (default 60, max 10080 for V4).
+
+    Returns:
+        dict with signed_url (GET this), method, gs_uri, and expires_in_minutes.
+    """
+    _refresh_credentials()
+    blob = client.bucket(bucket_name).blob(object_name)
+    signed_url = blob.generate_signed_url(
+        version="v4",
+        expiration=datetime.timedelta(minutes=expiration_minutes),
+        method="GET",
+        service_account_email=_credentials.service_account_email,
+        access_token=_credentials.token,
+    )
+    return {
+        "signed_url": signed_url,
+        "method": "GET",
+        "gs_uri": f"gs://{bucket_name}/{object_name}",
+        "expires_in_minutes": expiration_minutes,
     }
 
 

@@ -19,8 +19,9 @@ atf_cloud_interactive/
 ├── .gitignore
 ├── agents/
 │   ├── requirements.txt           # Shared Python deps for all agents
-│   ├── deploy_data_agent.example.sh  # Deployment script template (copy → deploy_data_agent.sh)
-│   └── data_agent/
+│   ├── deploy_data_agent_to_agent_engine.sh           # Deployment script (set env vars before running)
+│   ├── deploy_orch_agent_to_agent_engine.sh           # Deployment script (set env vars before running)
+│   ├── data_agent/
 │       ├── __init__.py            # ADK boilerplate
 │       ├── agent.py               # Data Agent (BQ MCP, schema discovery)
 │       ├── requirements.txt       # Agent-specific Python deps
@@ -54,61 +55,7 @@ atf_cloud_interactive/
 
 ## Setup
 
-### Prerequisites
-
-- Google Cloud project with billing enabled
-- `gcloud` CLI authenticated and configured
-- Owner or Editor role on the project
-- Node.js / npm (for MCP Inspector testing; also needed if re-generating PDFs from markdown via `convert_md_to_pdf.sh`)
-
-### Phase 1: Infrastructure Provisioning
-
-```bash
-cd setup
-
-# Uses current gcloud project, or override:
-# export PROJECT_ID=my-project
-
-./setup.sh
-```
-
-This script runs the full provisioning pipeline (Phases 1–7):
-1. Enables required APIs (including BigQuery MCP endpoint)
-2. Creates two service accounts (`cymbal-agent@` and `gcs-mcp-sa@`)
-3. Assigns IAM roles
-4. Creates three GCS buckets (agent staging, reference docs, interventions)
-5. Creates a Python venv and installs dependencies
-6. Uploads pre-generated PDFs to the refs GCS bucket
-7. Provisions AI Applications and creates a Vertex AI Search datastore with doc import
-8. Creates BigQuery dataset, tables, and loads synthetic data (~3.6M rows)
-
-The script is idempotent — safe to re-run.
-
-> **Note:** Vertex AI Search requires ToS acceptance at the [AI Applications console](https://console.cloud.google.com/gen-app-builder) before the datastore creation step will succeed.
-
-### Phase 2: GCS MCP Server Deployment
-
-```bash
-./deploy_gcs_mcp.sh
-```
-
-Builds and deploys the GCS MCP server to Cloud Run via source-based build. On success it prints the MCP endpoint URL (e.g. `https://gcs-mcp-server-xxx.run.app/mcp`).
-
-The server exposes three tools over Streamable HTTP:
-
-| Tool           | Description                                    |
-| -------------- | ---------------------------------------------- |
-| `list_objects` | List GCS objects with metadata                 |
-| `read_object`  | Read object content as text                    |
-| `write_object` | Write objects (supports base64 for binary/PDF) |
-
-**Verify the deployment:**
-
-```bash
-npx @anthropic-ai/mcp-inspector
-```
-
-Connect to the `/mcp` endpoint and confirm the three tools are listed.
+See [setup/README.md](setup/README.md) for infrastructure provisioning (APIs, service accounts, IAM, GCS buckets, Vertex AI Search, BigQuery, and GCS MCP server).
 
 ### Running the Data Agent
 
@@ -126,12 +73,44 @@ adk web
 cd agents
 
 # Copy templates and fill in your project values
-cp deploy_data_agent.example.sh deploy_data_agent.sh
 cp data_agent/.env.deploy.example data_agent/.env.deploy
 cp data_agent/.agent_engine_config.example.json data_agent/.agent_engine_config.json
+# Edit each file to replace placeholders
 
-# Edit each file to replace placeholders, then deploy
-bash deploy_data_agent.sh
+# Set required env vars before deploying
+export GOOGLE_CLOUD_PROJECT=your-project-id
+export GOOGLE_CLOUD_LOCATION=us-central1
+
+bash deploy_data_agent_to_agent_engine.sh
+```
+
+The deploy script runs `adk deploy agent_engine`. On success it prints the Agent Engine resource name, which you can use to test the deployed agent.
+
+### Running the Orchestrator Agent
+
+#### Local dev
+
+```bash
+cd agents/orchestrator
+# edit .env with your project ID
+adk web
+```
+
+#### Deploy to Agent Engine
+
+```bash
+cd agents
+
+# Copy templates and fill in your project values
+cp orchestrator/.env.deploy.example orchestrator/.env.deploy
+cp orchestrator/.agent_engine_config.example.json orchestrator/.agent_engine_config.json
+# Edit each file to replace placeholders
+
+# Set required env vars before deploying
+export GOOGLE_CLOUD_PROJECT=your-project-id
+export GOOGLE_CLOUD_LOCATION=us-central1
+
+bash deploy_orch_agent_to_agent_engine.sh
 ```
 
 The deploy script runs `adk deploy agent_engine`. On success it prints the Agent Engine resource name, which you can use to test the deployed agent.

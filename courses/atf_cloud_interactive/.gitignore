@@ -25,9 +25,9 @@ env/
 .env
 .env.deploy
 
-# Deployment configs (students create from .example files)
-deploy_data_agent.sh
+# Deployment configs (students create from .example/.template files)
 .agent_engine_config.json
+agent_card.json
 
 # Byte-compiled / optimized
 *.pyc

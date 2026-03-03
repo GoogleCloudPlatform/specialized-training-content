@@ -21,6 +21,7 @@ Full spec: [PRD.md](PRD.md)
 - All scripts are project-agnostic — parameterized by `$PROJECT_ID` env var with `gcloud config` fallback, so they work in any lab project without edits
 - Infrastructure scripts are idempotent (safe to re-run) — important for lab environments where students may retry steps
 - GCS MCP server is a custom Python FastMCP server wrapping `google-cloud-storage` — deployed to Cloud Run with Streamable HTTP at `/mcp`. Replaces the earlier supergateway+npm approach (stdio bridge was unnecessarily complex). Google doesn't yet offer a managed GCS MCP endpoint like BigQuery's.
+- GCS MCP uses **signed URLs for file I/O**: `generate_upload_signed_url` and `generate_download_signed_url` return V4 signed URLs so the agent uploads/downloads directly to GCS without passing binary content through the MCP protocol layer. Only small metadata (bucket, object name, URL) passes through MCP. `list_objects` and `read_object` (text-only) remain unchanged. `write_object` is removed. The Intervention Agent uploads via a local `upload_to_signed_url` tool (httpx PUT), and `generate_pdf_from_template` now returns a temp file path instead of a base64 string to keep PDF bytes out of the LLM context entirely.
 - Reference docs are authored as markdown in `reference_docs/markdown/`, converted to PDF via `convert_md_to_pdf.sh`, and uploaded as PDFs to GCS for Vertex AI Search ingestion
 - Reference doc content is deliberately aligned to the 5 problem customer profiles in PRD 3.4 — each problem customer's root cause maps to specific retrievable sections across the docs, so the Intervention Agent's RAG queries will return actionable content
 - Synthetic data is hand-designed profiles + programmatic generation — the 25 customers and 5 problem profiles are hand-specified in PRD 3.4, but the ~3.6M data rows (dominated by device telemetry) are generated via seeded numpy RNG (`generate_data.py`). This gives deterministic, reproducible data with obvious outliers detectable via simple SQL GROUP BY queries
@@ -33,6 +34,8 @@ Full spec: [PRD.md](PRD.md)
 ## Key files
 
 ### Setup & infrastructure
+See [setup/README.md](setup/README.md) for full provisioning instructions and script descriptions.
+
 - `setup/setup.sh` — full provisioning pipeline (Phases 1–8): APIs, SAs, IAM, buckets, Python venv + ref doc upload, Vertex AI Search datastore, BigQuery data gen, GCS MCP deployment to Cloud Run. Includes validation checks at the end
 - `setup/deploy_gcs_mcp.sh` — standalone alternative for deploying GCS MCP to Cloud Run (setup.sh Phase 8 does this too)
 - `setup/requirements.txt` — Python deps for setup scripts
@@ -42,7 +45,7 @@ Full spec: [PRD.md](PRD.md)
 - `setup/generate_data.py` — creates tables + deterministic synthetic data gen (~3.6M rows), loads via JSONL. Supports `--dry-run`
 
 ### GCS MCP server
-- `setup/gcs-mcp-server/server.py` — FastMCP server (list/read/write)
+- `setup/gcs-mcp-server/server.py` — FastMCP server: `list_objects`, `read_object` (text), `generate_upload_signed_url`, `generate_download_signed_url`
 - `setup/gcs-mcp-server/Dockerfile` — Cloud Run container definition
 - `setup/gcs-mcp-server/requirements.txt` — server Python deps
 
@@ -99,23 +102,16 @@ Full spec: [PRD.md](PRD.md)
 - [x] BigQuery data layer — `create_bq_tables.py` (dataset + 5 tables) + `generate_data.py` (seeded numpy RNG, ~3.6M rows, 5 problem profiles with obvious outliers, `--dry-run` support)
 - [x] Data Agent — BQ MCP toolset (`auth_scheme`/`auth_credential`), system prompt (runtime schema discovery, UNNEST handling, read-only), `root_agent` (`gemini-3-flash-preview` with `Gemini3` subclass for `location='global'`)
 - [x] Data Agent A2A + Cloud Run deployment — `to_a2a()` wrapper, `agent_card.json`, Dockerfile, `deploy_to_run.sh`, Cloud Run telemetry (OpenTelemetry → Cloud Trace/Logging). Deployed and tested at `https://data-agent-HASH.us-central1.run.app`
+- [x] Orchestrator Agent (data-only, Agent Engine) — `RemoteA2aAgent` A2A client with OIDC auth to Data Agent Cloud Run URL, `LlmAgent` root with data_agent sub_agent, system prompt for data delegation. Deployed to Agent Engine and validated end-to-end (e.g., "Which customers have the lowest login rates?")
+- [x] Intervention Agent (Cloud Run + A2A) — `VertexAiSearchTool` for RAG, `McpToolset` for GCS write, Jinja2+WeasyPrint PDF generation helper, `LlmAgent` orchestrator. Directory structure, Dockerfile, `deploy_to_run.sh`, and A2A enablement complete
 
 ## Upcoming (ordered)
 
-### Orchestrator Agent — data-only (Agent Engine)
-Build the Orchestrator wired to the Data Agent only. The Orchestrator is an A2A *client* (not a server) — it calls the Data Agent's Cloud Run A2A endpoint. Deploys to Agent Engine via `adk deploy agent_engine`. The Intervention Agent will be wired in later.
-
-- [x] Directory structure — `agents/orchestrator/` with `__init__.py`, `agent.py`, `requirements.txt`, `.env.example`, `.env.deploy.example`, `.agent_engine_config.example.json`
-- [x] Agent implementation — `RemoteA2aAgent` A2A client to Data Agent Cloud Run URL with OIDC auth (`_CloudRunAuth` via httpx), `LlmAgent` orchestrator with data_agent as sub_agent, system prompt for interpreting user questions and delegating data queries. No Intervention Agent wiring yet
-- [x] Local testing — test locally with `adk web` or similar before deploying
-- [X] Agent Engine deployment — `adk deploy agent_engine` with `AdkApp` wrapper, `.env.deploy`, `.agent_engine_config.json`. Grant orchestrator SA `roles/run.invoker` on Data Agent Cloud Run service
-- [X] Validation — test Orchestrator → Data Agent A2A flow end-to-end (e.g., "Which customers have the lowest login rates?")
-
 ### Intervention Agent (Cloud Run + A2A)
-- [ ] Directory structure — `agents/intervention_agent/` with `__init__.py`, `agent.py`, `agent_card.json`, `Dockerfile`, `deploy_to_run.sh`, `requirements.txt`, `.env.example`
-- [ ] Agent implementation — Vertex AI Search RAG (`VertexAiSearchTool` with `bypass_multi_tools_limit=True`), PDF generation (Jinja2 + WeasyPrint), GCS write via MCP (`McpToolset` with auth pipeline)
-- [ ] A2A enablement — `to_a2a()` wrapper + agent_card.json (same pattern as Data Agent)
-- [ ] Cloud Run deployment — Dockerfile, `deploy_to_run.sh`, test A2A endpoint
+- [x] Directory structure — `agents/intervention_agent/` with `__init__.py`, `agent.py`, `agent_card.json`, `Dockerfile`, `deploy_to_run.sh`, `requirements.txt`, `.env.example`
+- [x] Agent implementation — Vertex AI Search RAG (`VertexAiSearchTool` with `bypass_multi_tools_limit=True`), PDF generation helper (Jinja2 + WeasyPrint), GCS write via MCP (`McpToolset` with auth pipeline)
+- [x] A2A enablement — `to_a2a()` wrapper + agent_card.json (same pattern as Data Agent)
+- [x] Cloud Run deployment — Dockerfile, `deploy_to_run.sh`, test A2A endpoint
 
 ### Orchestrator — add Intervention Agent
 - [ ] Wire Intervention Agent A2A call into Orchestrator — add second A2A client, update system prompt for full workflow (data → intervention → PDF)
@@ -159,7 +155,8 @@ Build the Orchestrator wired to the Data Agent only. The Orchestrator is an A2A 
 - The provisioning order in PRD section 7.2 has real dependency constraints — don't parallelize carelessly
 - AI Applications console (gen-app-builder) requires manual ToS acceptance — can't be fully automated
 - `gcloud projects add-iam-policy-binding` with `--condition=None` is needed to avoid interactive prompts in scripts — discovered during setup.sh build
-- `gsutil iam ch allUsers:objectViewer` for the interventions bucket may hit org policy constraints in locked-down lab environments — may need a fallback (signed URLs or proxy)
+- `gsutil iam ch allUsers:objectViewer` for the interventions bucket may hit org policy constraints in locked-down lab environments — signed download URLs from the GCS MCP server are the preferred fallback
+- GCS signed URL generation requires `iam.serviceAccounts.signBlob` on the `gcs-mcp-sa@` service account. Grant it with: `gcloud iam service-accounts add-iam-policy-binding gcs-mcp-sa@$PROJECT_ID.iam.gserviceaccount.com --member="serviceAccount:gcs-mcp-sa@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/iam.serviceAccountTokenCreator"` — this is a self-grant so the SA can sign its own URLs on Cloud Run
 - Reference docs use fictional but internally consistent product details (firmware versions, DSCP values, bandwidth thresholds, quality score scales) — these must stay consistent with the synthetic data baselines in PRD 3.4 (e.g., healthy video_quality_score mean of 4.2 matches the "Good" threshold in the troubleshooting guides)
 - `generate_data.py` uses `WRITE_TRUNCATE` disposition — re-running replaces all data rather than appending duplicates. This is the right default for idempotent lab scripts but means you can't incrementally add data
 - BrightPath (declining usage) decline curve is `[1.0, 1.0, 1.0, 0.85, 0.65, 0.45, 0.35]` across 7 weeks — applied to logins, calls, and calendar events. Week-over-week decline should be clearly visible in SQL `GROUP BY EXTRACT(WEEK FROM ...)` queries

@@ -1,7 +1,4 @@
-export GOOGLE_CLOUD_PROJECT="jwd-atf-int"
-export GOOGLE_CLOUD_LOCATION="us-central1"
-export AGENT_SA="cymbal-agent"
-export AGENT_SERVICE_NAME="data-agent"
+#!/bin/bash
 
 gcloud run deploy $AGENT_SERVICE_NAME \
     --port=8080 \
