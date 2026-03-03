@@ -1,0 +1,9 @@
+- What tables are available in the cymbal_meet dataset?
+- Describe the schema of the customers table, including any nested fields
+- How many customers are in each segment?
+- What is the average number of logins per licensed user for each customer in the last 30 days? Show the top 5 and bottom 5
+- Show me all CRM interactions for Pinnacle in the last 60 days
+- Which customers have average call quality scores below 3.5? Include their segment and the number of calls
+- Show me week-over-week login trends for BrightPath over the last 7 weeks
+- How many customers are in the Enterprise segment?
+- Show me the login activity for the customer with the lowest contract value.

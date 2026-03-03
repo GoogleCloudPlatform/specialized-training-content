@@ -63,6 +63,14 @@ Full spec: [PRD.md](PRD.md)
 - `agents/data_agent/.env.example` — local dev env vars template (PROJECT_ID, location, Vertex AI flags)
 - `agents/requirements.txt` — shared Python deps for all agents
 
+### Orchestrator Agent (Agent Engine)
+- `agents/orchestrator/__init__.py` — ADK boilerplate (`from . import agent`)
+- `agents/orchestrator/agent.py` — Orchestrator: `RemoteA2aAgent` A2A client to Data Agent (OIDC auth via `_CloudRunAuth`), `LlmAgent` `root_agent` with data_agent as sub_agent
+- `agents/orchestrator/requirements.txt` — agent-specific Python deps
+- `agents/orchestrator/.env.example` — local dev env vars template (PROJECT_ID, DATA_AGENT_URL)
+- `agents/orchestrator/.env.deploy.example` — Agent Engine runtime env vars template (staging bucket, telemetry, DATA_AGENT_URL)
+- `agents/orchestrator/.agent_engine_config.example.json` — Agent Engine config template (service account, scaling)
+
 ### Deployment
 **Cloud Run agents (Data Agent, Intervention Agent):** Each agent has a `Dockerfile`, `agent_card.json`, and `deploy_to_run.sh`. Deploy via `gcloud run deploy` with `--no-allow-unauthenticated`. The A2A endpoint is served by uvicorn at port 8080.
 
@@ -97,11 +105,11 @@ Full spec: [PRD.md](PRD.md)
 ### Orchestrator Agent — data-only (Agent Engine)
 Build the Orchestrator wired to the Data Agent only. The Orchestrator is an A2A *client* (not a server) — it calls the Data Agent's Cloud Run A2A endpoint. Deploys to Agent Engine via `adk deploy agent_engine`. The Intervention Agent will be wired in later.
 
-- [ ] Directory structure — `agents/orchestrator/` with `__init__.py`, `agent.py`, `requirements.txt`, `.env.example`, `.env.deploy.example`, `.agent_engine_config.example.json`
-- [ ] Agent implementation — A2A client call to Data Agent Cloud Run URL, system prompt for interpreting user questions about customer engagement and delegating data queries. No Intervention Agent wiring yet
-- [ ] Local testing — test locally with `adk web` or similar before deploying
-- [ ] Agent Engine deployment — `adk deploy agent_engine` with `AdkApp` wrapper, `.env.deploy`, `.agent_engine_config.json`. Grant orchestrator SA `roles/run.invoker` on Data Agent Cloud Run service
-- [ ] Validation — test Orchestrator → Data Agent A2A flow end-to-end (e.g., "Which customers have the lowest login rates?")
+- [x] Directory structure — `agents/orchestrator/` with `__init__.py`, `agent.py`, `requirements.txt`, `.env.example`, `.env.deploy.example`, `.agent_engine_config.example.json`
+- [x] Agent implementation — `RemoteA2aAgent` A2A client to Data Agent Cloud Run URL with OIDC auth (`_CloudRunAuth` via httpx), `LlmAgent` orchestrator with data_agent as sub_agent, system prompt for interpreting user questions and delegating data queries. No Intervention Agent wiring yet
+- [x] Local testing — test locally with `adk web` or similar before deploying
+- [X] Agent Engine deployment — `adk deploy agent_engine` with `AdkApp` wrapper, `.env.deploy`, `.agent_engine_config.json`. Grant orchestrator SA `roles/run.invoker` on Data Agent Cloud Run service
+- [X] Validation — test Orchestrator → Data Agent A2A flow end-to-end (e.g., "Which customers have the lowest login rates?")
 
 ### Intervention Agent (Cloud Run + A2A)
 - [ ] Directory structure — `agents/intervention_agent/` with `__init__.py`, `agent.py`, `agent_card.json`, `Dockerfile`, `deploy_to_run.sh`, `requirements.txt`, `.env.example`
