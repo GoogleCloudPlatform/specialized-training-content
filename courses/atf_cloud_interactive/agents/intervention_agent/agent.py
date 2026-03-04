@@ -17,9 +17,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import google.auth
 from fastapi.openapi.models import (OAuth2, OAuthFlowClientCredentials,
                                     OAuthFlows)
-import google.auth
 from google.adk.a2a.utils.agent_to_a2a import to_a2a
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.auth.auth_credential import (AuthCredential,
@@ -35,7 +35,6 @@ from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.adk.tools.vertex_ai_search_tool import VertexAiSearchTool
 from google.genai import Client, types
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
 from pdf import generate_pdf_from_template
 from prompt import INTERVENTION_AGENT_INSTRUCTION
 
@@ -125,7 +124,10 @@ def upload_to_signed_url(
     response = httpx.put(
         signed_url,
         content=data,
-        headers={"Content-Type": content_type},
+        headers={
+            "Content-Type": content_type,
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
     )
     response.raise_for_status()
     return {"success": True, "bytes_uploaded": len(data)}

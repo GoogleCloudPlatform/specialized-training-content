@@ -10,6 +10,9 @@ Full spec: [PRD.md](PRD.md)
 
 ## Upcoming
 
+### Test intervention agent 
+- [ ] Do end-to-end test (RAG -> Definition -> PDF generation -> GCS save)
+
 ### Improve Engagement Agent — add Intervention Agent
 - [ ] Wire Intervention Agent A2A call into Improve Engagement Agent — add second A2A client, update system prompt for full workflow (data → intervention → PDF)
 - [ ] Test with Gemini Enterprise

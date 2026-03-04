@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Theme C — Google Material</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 48px;
+            background: #e8eaed;
+            color: #202124;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(60,64,67,0.15), 0 4px 12px rgba(60,64,67,0.1);
+        }
+
+        /* Header — Google-style with colored sidebar */
+        header {
+            padding: 36px 48px 28px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+        .g-dots {
+            display: flex;
+            gap: 4px;
+        }
+        .g-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .g-dots span:nth-child(1) { background: #4285F4; }
+        .g-dots span:nth-child(2) { background: #EA4335; }
+        .g-dots span:nth-child(3) { background: #FBBC05; }
+        .g-dots span:nth-child(4) { background: #34A853; }
+        .brand-name {
+            font-size: 22px;
+            font-weight: 500;
+            color: #202124;
+        }
+        .doc-type {
+            font-size: 14px;
+            color: #5f6368;
+            font-weight: 400;
+            padding-left: 28px;
+        }
+        .header-date {
+            font-size: 13px;
+            color: #5f6368;
+            padding-top: 4px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #dadce0;
+            margin: 0 48px;
+        }
+
+        /* Body */
+        .body {
+            padding: 32px 48px 48px;
+        }
+
+        /* Customer info — Material chips */
+        .chip-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f3f4;
+            border-radius: 20px;
+            padding: 8px 18px;
+            font-size: 13px;
+            color: #3c4043;
+        }
+        .chip .chip-label {
+            font-weight: 500;
+            color: #5f6368;
+        }
+        .chip .chip-value {
+            font-weight: 500;
+            color: #202124;
+        }
+
+        /* Section headings — Google style */
+        h2 {
+            font-size: 22px;
+            font-weight: 400;
+            color: #202124;
+            margin: 36px 0 16px;
+            letter-spacing: 0;
+        }
+        h2 .section-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+        }
+        h2 .icon-blue { background: #e8f0fe; }
+        h2 .icon-green { background: #e6f4ea; }
+        h2 .icon-yellow { background: #fef7e0; }
+        h2 .icon-red { background: #fce8e6; }
+
+        /* Metrics — Material cards with elevation */
+        .metrics-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+        .m-card {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid #e8eaed;
+            transition: box-shadow 0.2s;
+        }
+        .m-card:hover {
+            box-shadow: 0 1px 6px rgba(60,64,67,0.15);
+        }
+        .m-card .num {
+            font-size: 32px;
+            font-weight: 500;
+            color: #4285F4;
+        }
+        .m-card .desc {
+            font-size: 13px;
+            color: #5f6368;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* Focus callout — Material banner */
+        .focus-banner {
+            background: #e8f0fe;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin: 16px 0;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .focus-icon-wrap {
+            width: 40px;
+            height: 40px;
+            background: #4285F4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .focus-text .focus-title {
+            font-weight: 500;
+            color: #1967d2;
+            margin-bottom: 6px;
+            font-size: 16px;
+        }
+        .focus-text p {
+            margin: 0;
+            color: #3c4043;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* Content */
+        .content {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #3c4043;
+        }
+        .content p {
+            margin: 8px 0;
+        }
+        .content ol {
+            padding-left: 24px;
+            margin: 12px 0;
+        }
+        .content ol li {
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+        .content ol li::marker {
+            color: #4285F4;
+            font-weight: 500;
+        }
+        .content li strong {
+            color: #202124;
+        }
+
+        /* Outcomes — green banner */
+        .outcomes-banner {
+            background: #e6f4ea;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin: 16px 0;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .outcomes-icon-wrap {
+            width: 40px;
+            height: 40px;
+            background: #34A853;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .outcomes-text p {
+            margin: 0;
+            color: #137333;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        /* Resources */
+        .content ul {
+            padding-left: 20px;
+            margin: 12px 0;
+            list-style-type: none;
+        }
+        .content ul li {
+            margin-bottom: 10px;
+            color: #3c4043;
+            padding-left: 20px;
+            position: relative;
+        }
+        .content ul li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #4285F4;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            padding: 24px 0 0;
+            border-top: 1px solid #dadce0;
+            font-size: 12px;
+            color: #80868b;
+            line-height: 1.7;
+        }
+        footer p {
+            margin: 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <div class="brand">
+                    <div class="g-dots">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
+                    <div class="brand-name">Cymbal Meet</div>
+                </div>
+                <div class="doc-type">Customer Success Plan</div>
+            </div>
+            <div class="header-date">March 04, 2026</div>
+        </header>
+        <div class="divider"></div>
+
+        <div class="body">
+            <div class="chip-row">
+                <div class="chip">
+                    <span class="chip-label">Customer</span>
+                    <span class="chip-value">Coastal Logistics Inc.</span>
+                </div>
+                <div class="chip">
+                    <span class="chip-label">ID</span>
+                    <span class="chip-value">C-90210</span>
+                </div>
+            </div>
+
+            <h2><span class="section-icon icon-blue"></span>Engagement Summary</h2>
+            <div class="content">
+                <p>This plan outlines tailored recommendations to help Coastal Logistics Inc. get even more value from Cymbal Meet.</p>
+            </div>
+
+            <h2><span class="section-icon icon-yellow"></span>Key Metrics</h2>
+            <div class="metrics-row">
+                <div class="m-card">
+                    <div class="num">23%</div>
+                    <div class="desc">Login Rate</div>
+                </div>
+                <div class="m-card">
+                    <div class="num">8 min</div>
+                    <div class="desc">Avg Call Duration</div>
+                </div>
+                <div class="m-card">
+                    <div class="num">Good</div>
+                    <div class="desc">Video Quality</div>
+                </div>
+            </div>
+
+            <h2><span class="section-icon icon-red"></span>Focus Area</h2>
+            <div class="focus-banner">
+                <div class="focus-icon-wrap">!</div>
+                <div class="focus-text">
+                    <div class="focus-title">Boosting User Engagement</div>
+                    <p>Based on recent usage patterns, we see a great opportunity to focus on: Boosting User Engagement. Only 23% of licensed users are logging in regularly, suggesting significant untapped potential.</p>
+                </div>
+            </div>
+
+            <h2><span class="section-icon icon-blue"></span>Recommended Actions</h2>
+            <div class="content">
+                <ol>
+                    <li><strong>Launch an Internal Awareness Campaign:</strong> Partner with your communications team to highlight Cymbal Meet features like background blur, live captions, and breakout rooms through short demo videos.</li>
+                    <li><strong>Identify and Empower Champions:</strong> Select 3-5 power users from different departments to lead adoption efforts and share best practices in team meetings.</li>
+                    <li><strong>Simplify the Onboarding Flow:</strong> Create a one-page quick-start guide and distribute it to all new hires during their first week. Consider calendar integration prompts.</li>
+                    <li><strong>Set Usage Milestones:</strong> Establish quarterly engagement targets (e.g., 50% login rate by Q3) and track progress using the admin analytics dashboard.</li>
+                </ol>
+            </div>
+
+            <h2><span class="section-icon icon-green"></span>Expected Outcomes</h2>
+            <div class="outcomes-banner">
+                <div class="outcomes-icon-wrap">✓</div>
+                <div class="outcomes-text">
+                    <p>By following these recommendations, Coastal Logistics Inc. can expect to see login rates improve to 45-55% within 90 days, stronger cross-team collaboration, and increased ROI on their Cymbal Meet investment.</p>
+                </div>
+            </div>
+
+            <h2>Relevant Resources</h2>
+            <div class="content">
+                <ul>
+                    <li>Cymbal Meet Admin Guide — Chapter 4: Driving Adoption</li>
+                    <li>Best Practices: Enterprise Rollout Playbook (2026 Edition)</li>
+                    <li>Knowledge Base Article: Measuring Engagement with Analytics Dashboard</li>
+                </ul>
+            </div>
+
+            <footer>
+                <p>This plan was prepared by your Cymbal Meet customer success team using the latest best-practice guidance.</p>
+                <p>Questions? Your dedicated account team is here to help — reach out anytime.</p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

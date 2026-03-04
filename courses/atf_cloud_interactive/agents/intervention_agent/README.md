@@ -45,16 +45,9 @@
   - Running locally, value should be `http://localhost:8080`
   - Before deploying to Cloud Run, you should change to `https://intervention-agent-<project_number>-us-centra1-run.app`
 
-## Running locally
+## Running locally - Linux
 
 - Change directories to **intervention_agent**
-- WeasyPrint requires native system libraries for PDF generation. **Only if you're on macOS**:
-
-    ```bash
-    brew install pango
-    export DYLD_LIBRARY_PATH=/opt/homebrew/lib
-    ```
-
 - Run the following to start the server:
 
     ```bash
@@ -63,6 +56,38 @@
 
 - This will create a server running on port 8080 hosting just the intervention agent
 - The path to the agent card will be `http://localhost:8080`
+
+## Running locally - Mac
+
+> [!WARNING]
+> I've had all sort of problems with weasyprint on mac
+> For that, I suggest testing locally using docker
+
+- Change directories to **intervention_agent**
+- Build and run a Docker version of your agent server
+
+```bash
+    export GOOGLE_CLOUD_PROJECT="project_id"
+    export GOOGLE_CLOUD_LOCATION="us-central1"
+    export AGENT_SA="cymbal-agent@project_id.iam.gserviceaccount.com"
+    export AGENT_SERVICE_NAME="intervention-agent"
+    export VS_DATASTORE_ID="data_store_resource-path"
+    export GCS_MCP_ENDPOINT="https://gcs-mcp-server-project_number.us-central1.run.app/mcp"
+    export INTERVENTIONS_BUCKET="gs://project_id-cymbal-meet-interventions"
+    export SA_KEY="local/path/to/sa_key.json"
+
+    docker build -t intervention-agent .
+
+    docker run -p 8080:8080 \
+    -e GOOGLE_CLOUD_PROJECT=jwd-atf-int \
+    -e VS_DATASTORE_ID="$VS_DATASTORE_ID" \
+    -e GCS_MCP_ENDPOINT="$GCS_MCP_ENDPOINT" \
+    -e GOOGLE_APPLICATION_CREDENTIALS=/app/sa-key.json \
+    -v $SA_KEY:/app/sa-key.json:ro \
+    -d \
+    --name intervention\
+    intervention-agent
+```
 
 ## To deploy to Cloud Run
 
@@ -83,7 +108,7 @@
     export AGENT_SERVICE_NAME="intervention-agent"
     export VS_DATASTORE_ID="<your-datastore-id>"
     export GCS_MCP_ENDPOINT="<your-gcs-mcp-server-url>/mcp"
-    export INTERVENTIONS_BUCKET="gs://<your-project-id>-interventions"
+    export INTERVENTIONS_BUCKET="gs://<your-project-id>-cymbal-meet-interventions"
 
     . ./deploy_to_run.sh
     ```
