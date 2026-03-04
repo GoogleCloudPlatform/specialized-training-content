@@ -1,11 +1,42 @@
-# Notes on orchestrator agent using Agent Engine
+# Notes on Improve Engagement Agent using Agent Engine
 
-## Requirements
+## Setup
 
-- Virtual environment
-- Installed dependencies
+### Infra created by setup.sh
 
-## Config files
+- Agent service account with role assignments (should be in place if you've run setup)
+
+### ADC
+
+- Service account key file
+- ADC configured to use the service account key file
+
+### Virtual Environment
+
+1. From the **agents** directory (not the **improve_engagement_agent** directory), create a virtual environment:
+
+    ```bash
+    uv venv
+    ```
+
+2. Activate the virtual environment:
+
+    ```bash
+    source .venv/bin/activate
+    ```
+
+3. Install dependencies:
+
+    ```bash
+    uv pip install -r requirements.txt
+    ```
+
+### Other agents deployed
+
+- Data Agent deployed to Cloud Run
+- Intervention Agent deployed to Cloud Run
+
+### Config files
 
 - You need a **.env** file for local running
   - Copy the **.env.example** to a file name `.env`
@@ -37,10 +68,15 @@
 - Set the required environment variables and run the deploy script
 
     ```bash
+    unset GOOGLE_APPLICATION_CREDENTIALS
     export GOOGLE_CLOUD_PROJECT="<your-project-id>"
     export GOOGLE_CLOUD_LOCATION="us-central1"
 
-    . ./deploy_orch_agent_to_agent_engine.sh
+    . ./deploy_improve_agent_to_agent_engine.sh
     ```
 
+    Note: The unset is required because...
+
 ## Testing
+
+See the [Test README](../../test/README.md) for details on testing.
