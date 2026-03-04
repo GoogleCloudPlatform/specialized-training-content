@@ -1,5 +1,7 @@
 {
-  "capabilities": {},
+  "capabilities": {
+    "streaming": true
+  },
   "defaultInputModes": ["text/plain"],
   "defaultOutputModes": ["text/plain"],
   "description": "Cymbal Meet data domain expert. Accepts natural language questions about customer engagement, translates to SQL, executes via BigQuery, returns structured results.",

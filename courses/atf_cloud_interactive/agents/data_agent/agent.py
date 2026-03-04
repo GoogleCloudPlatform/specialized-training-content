@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import google.auth
 from fastapi.openapi.models import (OAuth2, OAuthFlowClientCredentials,
                                     OAuthFlows)
 from google.adk.a2a.utils.agent_to_a2a import to_a2a
@@ -55,9 +56,13 @@ logging.getLogger("google.adk").setLevel(logging.WARNING)
 logging.getLogger("google.genai").setLevel(logging.WARNING)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
+_gcp_creds, _gcp_project = google.auth.default(
+    scopes=["https://www.googleapis.com/auth/cloud-platform"],
+)
 _gcp_exporters = get_gcp_exporters(
     enable_cloud_tracing=True,
     enable_cloud_logging=True,
+    google_auth=(_gcp_creds, _gcp_project),
 )
 _gcp_resource = get_gcp_resource(project_id=PROJECT_ID)
 maybe_set_otel_providers(
@@ -128,6 +133,15 @@ include relevant benchmarks or segment averages for context.
   in this conversation, reuse that knowledge instead of calling `get_table_info` again.
 - **Efficiency**: Avoid SELECT * on large tables. Use specific columns and
   appropriate WHERE/LIMIT clauses.
+
+
+## Progress Updates
+Before each major step, output a brief status line so the calling agent
+can relay progress to the user:
+- Before composing a query: "Composing query for [topic]..."
+- Before executing SQL: "Executing query for [topic]..."
+- Before interpreting results: "Interpreting results for [topic]..."
+- Etc.
 """
 
 

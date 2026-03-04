@@ -1,5 +1,7 @@
 {
-  "capabilities": {},
+  "capabilities": {
+    "streaming": true
+  },
   "defaultInputModes": ["text/plain"],
   "defaultOutputModes": ["text/plain"],
   "description": "Cymbal Meet intervention specialist. Accepts customer engagement data, searches for relevant troubleshooting content via Vertex AI Search, and generates personalized intervention PDFs.",

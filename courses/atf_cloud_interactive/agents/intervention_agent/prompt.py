@@ -83,6 +83,15 @@ Return a text summary (not JSON) describing:
 - Expected outcomes
 - Public URL where the document was saved (from the signed URL response)
 
+## Progress Updates
+Before each major step, output a brief status line so the calling agent
+can relay progress to the user:
+- Before searching: "Searching documentation for [topic]..."
+- Before generating PDF: "Composing intervention plan for [customer_name]..."
+- Before getting upload URL: "Preparing to upload PDF..."
+- Before uploading: "Uploading intervention document to cloud storage..."
+- After upload: "Upload complete. Generating summary..."
+
 Example output:
 ```
 Customer success plan generated for customer_id=acme-001 (ACME Corp)
