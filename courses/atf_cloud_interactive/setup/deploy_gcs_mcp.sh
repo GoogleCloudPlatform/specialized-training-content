@@ -59,7 +59,7 @@ gcloud run deploy "$SERVICE_NAME" \
   --region="$REGION" \
   --memory=512Mi \
   --cpu=1 \
-  --min-instances=0 \
+  --min-instances=1 \
   --max-instances=3 \
   --timeout=300 \
   --project="$PROJECT_ID" \

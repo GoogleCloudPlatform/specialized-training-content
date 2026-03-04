@@ -7,6 +7,7 @@ gcloud run deploy $AGENT_SERVICE_NAME \
     --region="us-central1" \
     --project=$GOOGLE_CLOUD_PROJECT \
     --service-account $AGENT_SA \
+    --min-instances=1 \
     --set-env-vars=\
 GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,\
 GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,\

@@ -6,6 +6,7 @@ gcloud run deploy $AGENT_SERVICE_NAME \
     --no-allow-unauthenticated \
     --region="$GOOGLE_CLOUD_LOCATION" \
     --project=$GOOGLE_CLOUD_PROJECT \
+    --min-instances=1 \
     --service-account $AGENT_SA \
     --set-env-vars=\
 GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,\
