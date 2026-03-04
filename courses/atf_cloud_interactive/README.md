@@ -17,54 +17,16 @@ The solution is also the basis for a hands-on lab where students learn to build 
 
 ## Architecture
 
-Three ADK agents coordinated via A2A:
+![Agent Architecture](agent_arch.png)
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Gemini Enterprise                        │
-│                  (End-user interface)                         │
-└─────────────────┬───────────────────────────────────────────┘
-                  │
-┌─────────────────▼───────────────────────────────────────────┐
-│          Improve Engagement Agent                             │
-│           (Agent Engine / ADK)                                │
-│                                                              │
-│  - Receives natural language requests from users              │
-│  - Delegates data questions to Data Agent via A2A             │
-│  - Delegates intervention creation to Intervention Agent      │
-│  - Presents results and intervention links to user            │
-└────────┬──────────────────────────────┬─────────────────────┘
-         │ A2A                          │ A2A
-┌────────▼────────────┐     ┌──────────▼──────────────────────┐
-│    Data Agent        │     │    Intervention Agent            │
-│  (Cloud Run / ADK)   │     │  (Cloud Run / ADK)               │
-│                      │     │                                  │
-│ - Accepts natural    │     │ - Reads reference docs via       │
-│   language questions │     │   Vertex AI Search (RAG)         │
-│ - Translates to SQL  │     │ - Generates intervention PDFs    │
-│ - Executes via MCP   │     │   (WeasyPrint + Jinja2)          │
-│ - Returns structured │     │ - Writes PDFs to GCS via MCP     │
-│   results            │     │ - Returns public links           │
-└────────┬────────────┘     └────────┬─────────┬──────────────┘
-         │ MCP                       │ MCP     │
-┌────────▼────────────┐     ┌────────▼───┐ ┌───▼──────────────┐
-│     BigQuery         │     │ GCS MCP    │ │  Vertex AI       │
-│  (customer data)     │     │ (Cloud Run)│ │  Search (RAG)    │
-└─────────────────────┘     └────────┬───┘ └──────────────────┘
-                                     │
-                            ┌────────▼───────────────────────┐
-                            │  GCS Buckets                    │
-                            │  (PDFs + reference docs)        │
-                            └────────────────────────────────┘
-```
 
 ### Agent Roles
 
-| Agent | Deployment | Role |
-|-------|-----------|------|
-| **Improve Engagement Agent** | Agent Engine | User-facing coordinator. Interprets requests, delegates to sub-agents, presents results. Published to Gemini Enterprise. |
-| **Data Agent** | Cloud Run (A2A) | Domain expert on customer data. Translates natural language questions into SQL and executes against BigQuery via the BigQuery MCP server. |
-| **Intervention Agent** | Cloud Run (A2A) | Builds branded PDF intervention documents using RAG content from Vertex AI Search, then uploads to GCS via the GCS MCP server. |
+| Agent                        | Deployment      | Role                                                                                                                                      |
+| ---------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Improve Engagement Agent** | Agent Engine    | User-facing coordinator. Interprets requests, delegates to sub-agents, presents results. Published to Gemini Enterprise.                  |
+| **Data Agent**               | Cloud Run (A2A) | Domain expert on customer data. Translates natural language questions into SQL and executes against BigQuery via the BigQuery MCP server. |
+| **Intervention Agent**       | Cloud Run (A2A) | Builds branded PDF intervention documents using RAG content from Vertex AI Search, then uploads to GCS via the GCS MCP server.            |
 
 ### How Agents Connect
 
@@ -72,11 +34,11 @@ Agents communicate via the **A2A (Agent-to-Agent) protocol** — an open standar
 
 ### External System Integration
 
-| System | Protocol | Agent | Purpose |
-|--------|----------|-------|---------|
-| BigQuery | MCP (Google's official BQ MCP server) | Data Agent | SQL execution, schema discovery |
-| GCS | MCP (custom FastMCP server on Cloud Run) | Intervention Agent | Signed URL generation for PDF upload/download |
-| Vertex AI Search | ADK `VertexAiSearchTool` | Intervention Agent | RAG retrieval of troubleshooting & best practice docs |
+| System           | Protocol                                 | Agent              | Purpose                                               |
+| ---------------- | ---------------------------------------- | ------------------ | ----------------------------------------------------- |
+| BigQuery         | MCP (Google's official BQ MCP server)    | Data Agent         | SQL execution, schema discovery                       |
+| GCS              | MCP (custom FastMCP server on Cloud Run) | Intervention Agent | Signed URL generation for PDF upload/download         |
+| Vertex AI Search | ADK `VertexAiSearchTool`                 | Intervention Agent | RAG retrieval of troubleshooting & best practice docs |
 
 ## Calling the A2A Agents
 
@@ -126,56 +88,13 @@ atf_cloud_interactive/
 │   ├── requirements.txt                # Shared Python deps (all agents)
 │   ├── deploy_improve_agent_to_agent_engine.sh
 │   ├── data_agent/
-│   │   ├── __init__.py
-│   │   ├── agent.py                    # Data Agent (BQ MCP, schema discovery)
-│   │   ├── agent_card.json.template    # A2A agent card (replace URL placeholder)
-│   │   ├── deploy_to_run.sh            # Cloud Run deployment script
-│   │   ├── Dockerfile
-│   │   ├── requirements.txt
-│   │   └── README.md
 │   ├── intervention_agent/
-│   │   ├── __init__.py
-│   │   ├── agent.py                    # Intervention Agent (RAG + PDF + GCS)
-│   │   ├── prompt.py                   # System prompt (factored out)
-│   │   ├── pdf.py                      # PDF generation (Jinja2 + WeasyPrint)
-│   │   ├── agent_card.json.template    # A2A agent card (replace URL placeholder)
-│   │   ├── deploy_to_run.sh            # Cloud Run deployment script
-│   │   ├── Dockerfile
-│   │   ├── requirements.txt
-│   │   └── README.md
 │   └── improve_engagement_agent/
-│       ├── __init__.py
-│       ├── agent.py                    # Improve Engagement Agent (coordinator)
-│       ├── requirements.txt
-│       └── README.md
 ├── reference_docs/
 │   ├── markdown/                       # Source docs (5 fictional Cymbal Meet docs)
 │   └── pdf/                            # Pre-generated PDFs (uploaded to GCS)
 ├── setup/
-│   ├── setup.sh                        # Full provisioning pipeline
-│   ├── deploy_gcs_mcp.sh              # GCS MCP server deployment to Cloud Run
-│   ├── create_bq_tables.py            # BigQuery dataset + tables (idempotent)
-│   ├── generate_data.py               # Synthetic data gen (~3.6M rows, --dry-run)
-│   ├── convert_md_to_pdf.sh           # Markdown → PDF conversion
-│   ├── upload_reference_docs.py       # Upload PDFs to GCS
-│   ├── create_datastore.py            # Vertex AI Search datastore + doc import
-│   ├── requirements.txt
-│   ├── README.md
-│   └── gcs-mcp-server/
-│       ├── server.py                   # FastMCP server (3 tools)
-│       ├── requirements.txt
-│       ├── Dockerfile
-│       └── README.md
 ├── test/                               # Test & debug utilities
-│   ├── README.md
-│   ├── ae-t1.py                        # Agent Engine test query
-│   ├── dl.py                           # List Vertex AI Search datastores
-│   ├── elist.py                        # List Agent Engines
-│   ├── edel.py                         # Delete Agent Engines
-│   ├── pull-logs.py                    # Pull Cloud Logging entries
-│   ├── test_upload.py                  # GCS signed URL upload test
-│   ├── da-queries.md                   # Sample Data Agent queries
-│   └── requirements.txt
 └── archive/                            # Superseded file versions (reference only)
 ```
 
