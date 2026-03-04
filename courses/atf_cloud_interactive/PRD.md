@@ -42,7 +42,7 @@ Students should get equal hands-on experience with:
 └─────────────────┬───────────────────────────────────────────┘
                   │
 ┌─────────────────▼───────────────────────────────────────────┐
-│              Orchestrator Agent                               │
+│          Improve Engagement Agent                             │
 │           (Agent Engine / ADK)                                │
 │                                                              │
 │  - Receives natural language requests from users              │
@@ -78,10 +78,12 @@ Students should get equal hands-on experience with:
 
 ### 2.2 Agent Descriptions
 
-#### Orchestrator Agent
+#### Improve Engagement Agent
 - **Framework:** ADK
 - **Deployment:** Agent Engine, published to Gemini Enterprise
-- **Role:** User-facing agent that interprets natural language requests about customer engagement, coordinates the other agents, and presents results. The Orchestrator describes *what* data it needs — it does not compose SQL or know the BigQuery schema. It delegates data questions to the Data Agent and intervention creation to the Intervention Agent.
+- **Role:** User-facing agent that interprets natural language requests about customer engagement, coordinates the other agents, and presents results. The Improve Engagement Agent describes *what* data it needs — it does not compose SQL or know the BigQuery schema. It delegates data questions to the Data Agent and intervention creation to the Intervention Agent.
+- **Model:** `gemini-3-flash-preview` via a `Gemini3(Gemini)` subclass that forces `location='global'` (same workaround as Data Agent — see note below)
+- **A2A client pattern:** Uses `RemoteA2aAgent` from ADK to wrap each sub-agent as an A2A client. Each client is backed by a custom `_CloudRunAuth` httpx Auth class that fetches OIDC identity tokens via `google.oauth2.id_token.fetch_id_token()` and attaches them as Bearer tokens. Auth is skipped for `localhost`/`127.0.0.1` to support local development. The httpx client uses a 10-minute timeout (`httpx.Timeout(timeout=600.0)`) to accommodate long-running BigQuery queries.
 - **Example prompts:**
   - "Create interventions for customers that have an engagement shortfall in scheduled meeting events"
   - "Create interventions for customers that are having low performance on conference room devices"
@@ -97,9 +99,9 @@ Students should get equal hands-on experience with:
 #### Data Agent
 - **Framework:** ADK
 - **Deployment:** Cloud Run (A2A endpoint via `to_a2a()` + uvicorn). Future: migrate to Agent Engine (see section 11)
-- **Exposed via:** A2A (callable by Orchestrator via Cloud Run URL)
+- **Exposed via:** A2A (callable by Improve Engagement Agent via Cloud Run URL)
 - **Role:** Domain expert on Cymbal Meet's data. Accepts natural language questions about customer engagement, translates them into SQL, executes queries, and returns structured results. The Data Agent owns all knowledge of the BigQuery schema — no other agent needs to understand table structures or write SQL.
-- **Tools:** Google's official BigQuery MCP server
+- **Tools:** Google's official BigQuery MCP server (`https://bigquery.googleapis.com/mcp`), authenticated via ADK's `auth_scheme`/`auth_credential` pipeline with scopes `cloud-platform` + `bigquery`. Exposes tools: `list_dataset_ids`, `get_dataset_info`, `list_table_ids`, `get_table_info`, `execute_sql`
 - **Capabilities:**
   - Interpret natural language data questions (e.g., "Which customers have low login rates relative to licensed users?")
   - Translate questions into appropriate SQL queries against the Cymbal Meet schema
@@ -123,21 +125,28 @@ Students should get equal hands-on experience with:
 #### Intervention Agent
 - **Framework:** ADK
 - **Deployment:** Cloud Run (A2A endpoint via `to_a2a()` + uvicorn, same pattern as Data Agent). Future: migrate to Agent Engine (see section 11)
-- **Exposed via:** A2A (callable by Orchestrator via Cloud Run URL)
+- **Exposed via:** A2A (callable by Improve Engagement Agent via Cloud Run URL)
+- **Model:** `gemini-3-flash-preview` via the same `Gemini3(Gemini)` subclass as the other agents
 - **Role:** Builds customized intervention documents for specific customers based on their issues and reference content.
+- **Code structure:** The system prompt is factored into `prompt.py` and PDF generation into `pdf.py` (separate from `agent.py`)
 - **Tools:**
-  - Vertex AI Search — retrieves relevant product docs, troubleshooting guides, and best practice content
-  - WeasyPrint + Jinja2 — generates styled PDF documents
-  - GCS MCP server (custom Python FastMCP server wrapping `google-cloud-storage`) — lists objects and reads text objects; generates signed URLs for direct upload/download of binary files so content never passes through the MCP layer. Deployed to Cloud Run as part of infrastructure setup. Provides tools: `list_objects`, `read_object`, `generate_upload_signed_url`, `generate_download_signed_url`.
-  - `upload_to_signed_url` — local ADK tool on the Intervention Agent; HTTP PUTs PDF bytes directly to GCS using a signed URL from the MCP server. Keeps file content out of both MCP and LLM context.
+  - `VertexAiSearchTool` (ADK built-in, `bypass_multi_tools_limit=True`) — retrieves relevant product docs, troubleshooting guides, and best practice content from the Vertex AI Search datastore
+  - `generate_pdf_from_template` — local ADK FunctionTool; accepts customer_id, customer_name, problem_profile, engagement_metrics, and rag_content; renders a branded HTML template (Jinja2, embedded in `pdf.py`) via WeasyPrint; saves to a temp file and returns `{"file_path": str, "size_bytes": int}`. PDF bytes never enter LLM context
+  - GCS MCP server (custom Python FastMCP server wrapping `google-cloud-storage`) — authenticated via ADK's `auth_scheme`/`auth_credential` pipeline with scopes `cloud-platform` + `devstorage.read_write`. Provides tools: `list_objects`, `read_object`, `generate_upload_signed_url`, `generate_download_signed_url`. Binary file content never passes through the MCP layer
+  - `upload_to_signed_url` — local ADK FunctionTool; HTTP PUTs PDF bytes directly to GCS using a signed URL from the MCP server. Takes `signed_url`, `file_path`, and `content_type`; returns `{"success": bool, "bytes_uploaded": int}`
+- **RAG query mapping:** The system prompt maps problem profiles to search terms for Vertex AI Search:
+  - "Declining Usage" → "engagement", "declining usage", "retention", "usage trends"
+  - "Low Adoption" → "adoption", "training", "onboarding", "getting started"
+  - "Poor Video Quality" → "video quality", "bandwidth", "codec", "network", "quality issues"
+  - "High Latency" → "latency", "network optimization", "jitter", "performance"
+  - "Audio Issues" → "audio", "microphone", "echo", "noise", "audio troubleshooting"
 - **Workflow:**
-  1. Receive customer context and issue description from Orchestrator
-  2. Query Vertex AI Search for relevant reference content (troubleshooting, best practices, templates)
-  3. Synthesize a tailored intervention document
-  4. Render as PDF using HTML template + WeasyPrint; save to local temp file (returns file path, not base64)
-  5. Call `generate_upload_signed_url` via GCS MCP → receive signed URL and public URL
-  6. Call local `upload_to_signed_url` with signed URL + file path → PDF uploaded directly to GCS
-  7. Return the public URL
+  1. Receive customer context and issue description from Improve Engagement Agent (customer_id, customer_name, problem_profile, engagement_metrics)
+  2. Query Vertex AI Search for relevant reference content using problem-profile-specific search terms
+  3. Call `generate_pdf_from_template` with customer data + RAG content → returns `{"file_path": ..., "size_bytes": ...}`
+  4. Call `generate_upload_signed_url` via GCS MCP with bucket name (strip `gs://` prefix), object name `interventions/<customer_id>_intervention.pdf`, content type `application/pdf` → receive signed URL and public URL
+  5. Call local `upload_to_signed_url` with signed URL + file path → PDF uploaded directly to GCS
+  6. Return text summary with customer details, recommendations, and the public URL
 
 ## 3. BigQuery Data Model
 
@@ -481,9 +490,9 @@ Create a small set of fictional Cymbal Meet documents that the Intervention Agen
 
 ### 5.1 Approach
 
-- **Templating:** Jinja2 HTML templates with CSS styling
-- **Rendering:** WeasyPrint converts styled HTML to PDF
-- **Storage:** Write to GCS via the GCS MCP server (custom FastMCP server on Cloud Run). The bucket should be configured with public read access so intervention PDFs are accessible via URL.
+- **Templating:** Jinja2 HTML template embedded in `agents/intervention_agent/pdf.py` with CSS styling (Cymbal Meet branding, blue #4285F4 accent). The template is pre-baked in code, not a separate file
+- **Rendering:** WeasyPrint converts styled HTML to PDF. **System dependencies:** requires `libpango`, `libpangoft2`, `libharfbuzz`, `libfontconfig` — installed via apt in the Dockerfile (`python:3.13-slim` base). On macOS local dev, requires `brew install pango` + `export DYLD_LIBRARY_PATH=/opt/homebrew/lib`
+- **Storage:** Write to GCS via the GCS MCP server (custom FastMCP server on Cloud Run). The bucket should be configured with public read access so intervention PDFs are accessible via URL
 
 ### 5.2 PDF Content Structure
 
@@ -497,11 +506,15 @@ Each intervention PDF should include:
 
 ### 5.3 GCS Organization
 
+Current implementation uses a flat path under the bucket:
+
 ```
-gs://{project-id}-cymbal-meet-interventions/
-  └── {customer_id}/
-      └── {YYYY-MM-DD}_{intervention_type}_{intervention_id}.pdf
+gs://{project-id}-interventions/
+  └── interventions/
+      └── {customer_id}_intervention.pdf
 ```
+
+> **Note:** A richer naming scheme (e.g., `{customer_id}/{YYYY-MM-DD}_{intervention_type}_{intervention_id}.pdf`) may be adopted when the Intervention Agent is fully integrated with the Improve Engagement Agent, allowing multiple interventions per customer over time.
 
 ## 6. GCP Infrastructure and Authentication
 
@@ -542,7 +555,7 @@ Additionally, Vertex AI Search requires activating the AI Applications console a
 
 ### 6.3 Agent Runtime Identity
 
-**Orchestrator Agent (Agent Engine):** Agents deployed to Agent Engine run using the **AI Platform Reasoning Engine Service Agent**:
+**Improve Engagement Agent (Agent Engine):** Agents deployed to Agent Engine run using the **AI Platform Reasoning Engine Service Agent**:
 
 ```
 service-PROJECT_NUMBER@gcp-sa-aiplatform-re.iam.gserviceaccount.com
@@ -563,13 +576,13 @@ GOOGLE_GENAI_USE_VERTEXAI=True
 GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY=True
 STAGING_BUCKET=gs://PROJECT_ID-agent-staging
 
-# Deploy via CLI
+# Deploy via wrapper script (agents/deploy_improve_agent_to_agent_engine.sh)
 adk deploy agent_engine \
     --project=$PROJECT_ID \
     --region=us-central1 \
-    --env_file=./orchestrator/.env.deploy \
-    --display_name="Orchestrator Agent" \
-    ./orchestrator
+    --env_file=./improve_engagement_agent/.env.deploy \
+    --display_name="Improve Engagement Agent" \
+    ./improve_engagement_agent
 ```
 
 **Data Agent and Intervention Agent (Cloud Run):** These agents run as Cloud Run services exposing A2A endpoints. Each uses `to_a2a()` from ADK to wrap the root agent as an A2A-compatible ASGI app, served by uvicorn. The custom service account (`cymbal-agent@`) is specified at deploy time via `--service-account`:
@@ -579,13 +592,16 @@ gcloud run deploy data-agent \
     --port=8080 \
     --source=. \
     --no-allow-unauthenticated \
+    --min-instances=1 \
     --region=us-central1 \
     --project=$PROJECT_ID \
     --service-account=cymbal-agent@$PROJECT_ID.iam.gserviceaccount.com \
     --set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID,...
 ```
 
-The Orchestrator calls these agents via their Cloud Run A2A URLs (e.g., `https://data-agent-HASH.us-central1.run.app`). The Orchestrator's service account needs `roles/run.invoker` on each Cloud Run service to authenticate.
+Cloud Run agents use `--min-instances=1` to avoid cold starts in the lab environment.
+
+The Improve Engagement Agent calls these agents via their Cloud Run A2A URLs (e.g., `https://data-agent-HASH.us-central1.run.app`). Its service account needs `roles/run.invoker` on each Cloud Run service to authenticate.
 
 #### Agent Service Account Roles
 
@@ -611,13 +627,13 @@ A separate service account for the Cloud Run-hosted GCS MCP server:
 | Source → Destination                            | Mechanism                               | Notes                                                                                            |
 | ----------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | Student locally → GCP APIs                      | `gcloud auth application-default login` | ADC credentials stored at `~/.config/gcloud/application_default_credentials.json`                |
-| Orchestrator (Agent Engine) → Data Agent (Cloud Run A2A)      | OIDC identity token via ADC    | Orchestrator SA needs `roles/run.invoker` on the Data Agent Cloud Run service                    |
-| Orchestrator (Agent Engine) → Intervention Agent (Cloud Run A2A) | OIDC identity token via ADC | Orchestrator SA needs `roles/run.invoker` on the Intervention Agent Cloud Run service            |
-| Data Agent → BigQuery MCP Server                | OAuth 2.0 via ADC                       | Google-hosted MCP at `https://bigquery.googleapis.com/mcp`; agent SA authenticates automatically |
-| Intervention Agent → GCS MCP Server (Cloud Run) | OIDC identity token                     | Agent SA needs `roles/run.invoker` on the Cloud Run service; ADC generates the token             |
+| Improve Engagement Agent → Data Agent (Cloud Run A2A)      | OIDC identity token via custom `_CloudRunAuth` httpx Auth    | Fetches token via `google.oauth2.id_token.fetch_id_token()`, attaches as Bearer header. Skips auth for localhost. Agent SA needs `roles/run.invoker` on the Data Agent Cloud Run service                    |
+| Improve Engagement Agent → Intervention Agent (Cloud Run A2A) | OIDC identity token via custom `_CloudRunAuth` httpx Auth | Same pattern. Agent SA needs `roles/run.invoker` on the Intervention Agent Cloud Run service            |
+| Data Agent → BigQuery MCP Server                | ADK `auth_scheme`/`auth_credential` pipeline (OAuth2 clientCredentials + SERVICE_ACCOUNT)                       | Google-hosted MCP at `https://bigquery.googleapis.com/mcp`. Scopes: `cloud-platform` + `bigquery`. Automatic token refresh via ADK CredentialManager |
+| Intervention Agent → GCS MCP Server (Cloud Run) | ADK `auth_scheme`/`auth_credential` pipeline (OAuth2 clientCredentials + SERVICE_ACCOUNT)                     | Same pipeline as Data Agent → BQ MCP. Scopes: `cloud-platform` + `devstorage.read_write`. Agent SA needs `roles/run.invoker` on the Cloud Run service             |
 | Intervention Agent → Vertex AI Search           | ADC                                     | Uses `VertexAiSearchTool` from ADK; SA needs `roles/discoveryengine.editor`                      |
 | GCS MCP Server → Cloud Storage                  | ADC (automatic on Cloud Run)            | Cloud Run service account authenticates to GCS automatically                                     |
-| Gemini Enterprise → Orchestrator                | Google-managed                          | No student configuration needed                                                                  |
+| Gemini Enterprise → Improve Engagement Agent                | Google-managed                          | No student configuration needed                                                                  |
 
 #### BigQuery MCP Server Configuration
 
@@ -727,14 +743,14 @@ pip install google-cloud-aiplatform[agent_engines,adk] google-adk a2a-sdk \
 Infrastructure provisioning is handled by `setup/setup.sh` (Phases 1–8) followed by per-agent deployment scripts. See [setup/README.md](setup/README.md) for full provisioning instructions.
 
 Dependency order (must not be parallelized):
-1. APIs → 2. Service accounts → 3. IAM roles → 4. GCS buckets → 5. Reference docs upload → 6. Vertex AI Search datastore → 7. BigQuery data layer → 8. GCS MCP server (Cloud Run) → 9. Agent deployment (Data Agent → Intervention Agent → Orchestrator)
+1. APIs → 2. Service accounts → 3. IAM roles → 4. GCS buckets → 5. Reference docs upload → 6. Vertex AI Search datastore → 7. BigQuery data layer → 8. GCS MCP server (Cloud Run) → 9. Agent deployment (Data Agent → Intervention Agent → Improve Engagement Agent)
 
 **Phase 9 — Agent deployment (separate scripts)**
-- Deploy Data Agent to Cloud Run (`agents/data_agent/deploy_to_run.sh`) — exposes A2A endpoint
-- Deploy Intervention Agent to Cloud Run (same pattern — references Cloud Run MCP URL + Vertex AI Search datastore) — exposes A2A endpoint
-- Grant Orchestrator SA `roles/run.invoker` on both Cloud Run agent services
-- Deploy Orchestrator to Agent Engine (`adk deploy agent_engine` — references Data Agent and Intervention Agent Cloud Run URLs)
-- Publish Orchestrator to Gemini Enterprise
+- Deploy Data Agent to Cloud Run (`agents/data_agent/deploy_to_run.sh`) — exposes A2A endpoint, `--min-instances=1`
+- Deploy Intervention Agent to Cloud Run (`agents/intervention_agent/deploy_to_run.sh` — same pattern, references Cloud Run MCP URL + Vertex AI Search datastore) — exposes A2A endpoint, `--min-instances=1`
+- Grant Improve Engagement Agent SA `roles/run.invoker` on both Cloud Run agent services
+- Deploy Improve Engagement Agent to Agent Engine (`agents/deploy_improve_agent_to_agent_engine.sh` — references Data Agent and Intervention Agent Cloud Run URLs)
+- Publish Improve Engagement Agent to Gemini Enterprise
 
 ### 7.3 Vertex AI Search Setup Details
 
@@ -816,7 +832,24 @@ gcs_mcp_tools = McpToolset(
 )
 ```
 
-### 7.5 Networking
+### 7.5 A2A Protocol Details
+
+Cloud Run agents (Data Agent, Intervention Agent) expose A2A endpoints via ADK's `to_a2a()` wrapper + uvicorn. Each agent serves an **agent card** at `/.well-known/agent.json` describing its capabilities.
+
+**Agent card configuration:**
+- **Protocol version:** 0.3.0
+- **Transport:** JSONRPC
+- **Input/output modes:** `text/plain`
+- **URL:** Set in `agent_card.json` — copy from `agent_card.json.template` and replace the placeholder URL with either `http://localhost:8080` (local dev) or the Cloud Run service URL (deployed)
+
+**Local development:**
+- Data Agent and Intervention Agent: `uvicorn agent:a2a_app --host 0.0.0.0 --port 8080`
+- Improve Engagement Agent: `adk web` from the `agents/` directory (launches the ADK dev UI)
+
+**Deployed:**
+- The Improve Engagement Agent (Agent Engine) calls Cloud Run agents via `RemoteA2aAgent`, which reads the agent card at `{CLOUD_RUN_URL}/.well-known/agent.json` and sends JSONRPC requests to the A2A endpoint
+
+### 7.6 Networking
 
 For the **standard Agent Engine deployment** (used in this lab):
 - Agent Engine runs in Google-managed infrastructure with public internet egress
@@ -846,7 +879,7 @@ After setup, verify each component before proceeding to agent deployment:
 | Inter-agent protocol | A2A (Google)                                                                                          | Latest stable |
 | BigQuery integration | Google's official BigQuery MCP server                                                                 | Latest stable |
 | GCS integration      | Custom FastMCP server wrapping `google-cloud-storage` on Cloud Run (`setup/gcs-mcp-server/server.py`) | Latest stable |
-| Language             | Python                                                                                                | 3.11+         |
+| Language             | Python                                                                                                | 3.13 (Dockerfiles use `python:3.13-slim`; 3.11+ supported locally) |
 | PDF templating       | Jinja2                                                                                                | Latest stable |
 | PDF rendering        | WeasyPrint                                                                                            | Latest stable |
 | RAG retrieval        | Vertex AI Search                                                                                      | Latest        |
@@ -860,10 +893,11 @@ After setup, verify each component before proceeding to agent deployment:
 atf_cloud_interactive/
 ├── PRD.md                                  # This file
 ├── PLAN.md                                 # Build plan and progress tracking
-├── README.md                               # Setup and usage instructions
+├── README.md                               # Solution overview and pointers to agent READMEs
 ├── .gitignore
 ├── setup/
-│   ├── setup.sh                            # Full provisioning pipeline (Phases 1–7)
+│   ├── README.md                           # Provisioning instructions and script descriptions
+│   ├── setup.sh                            # Full provisioning pipeline (Phases 1–8)
 │   ├── deploy_gcs_mcp.sh                   # Deploys GCS MCP server to Cloud Run
 │   ├── create_bq_tables.py                 # Creates BigQuery dataset + tables (schema only)
 │   ├── generate_data.py                    # Creates tables + generates/loads synthetic data (~3.6M rows)
@@ -872,7 +906,8 @@ atf_cloud_interactive/
 │   ├── create_datastore.py                 # Creates Vertex AI Search datastore + imports docs
 │   ├── requirements.txt                    # Python deps for setup scripts
 │   └── gcs-mcp-server/
-│       ├── server.py                       # FastMCP server (list/read/write GCS objects)
+│       ├── README.md                       # Server details, tools, local dev instructions
+│       ├── server.py                       # FastMCP server (list/read objects, signed URL generation)
 │       ├── requirements.txt
 │       └── Dockerfile
 ├── reference_docs/
@@ -886,35 +921,47 @@ atf_cloud_interactive/
 │       └── *.pdf
 ├── agents/
 │   ├── requirements.txt                    # Shared Python deps for all agents
+│   ├── deploy_improve_agent_to_agent_engine.sh  # Agent Engine deployment script
 │   ├── data_agent/                         # Deployed to Cloud Run with A2A endpoint
+│   │   ├── README.md                       # Local dev, Cloud Run deployment, testing instructions
 │   │   ├── __init__.py                     # ADK boilerplate (from . import agent)
 │   │   ├── agent.py                        # Data Agent: BQ MCP toolset, system prompt, root_agent + to_a2a
-│   │   ├── agent_card.json                 # A2A agent capability card
-│   │   ├── Dockerfile                      # Cloud Run container definition
+│   │   ├── agent_card.json.template        # A2A agent card template (placeholder URL)
+│   │   ├── agent_card.json                 # A2A agent card (gitignored, copy from template)
+│   │   ├── Dockerfile                      # Cloud Run container (python:3.13-slim + uvicorn)
+│   │   ├── .dockerignore
 │   │   ├── deploy_to_run.sh                # Cloud Run deployment script
 │   │   ├── requirements.txt                # Agent-specific Python deps
-│   │   └── .env.example                    # Template local dev env vars (project, location, Vertex AI flags)
-│   ├── intervention_agent/                 # Deployed to Cloud Run with A2A endpoint (same pattern as data_agent)
+│   │   └── .env.example                    # Template local dev env vars
+│   ├── intervention_agent/                 # Deployed to Cloud Run with A2A endpoint
+│   │   ├── README.md                       # Setup, local dev, Cloud Run deployment, testing
 │   │   ├── __init__.py
-│   │   ├── agent.py                        # Intervention Agent: Vertex AI Search + PDF gen + GCS MCP
-│   │   ├── agent_card.json                 # A2A agent capability card
-│   │   ├── Dockerfile                      # Cloud Run container definition
+│   │   ├── agent.py                        # Intervention Agent: tools + root_agent + to_a2a
+│   │   ├── prompt.py                       # System prompt (factored out of agent.py)
+│   │   ├── pdf.py                          # PDF generation helper (Jinja2 template + WeasyPrint)
+│   │   ├── agent_card.json.template        # A2A agent card template (placeholder URL)
+│   │   ├── agent_card.json                 # A2A agent card (gitignored, copy from template)
+│   │   ├── Dockerfile                      # Cloud Run container (python:3.13-slim + pango + uvicorn)
 │   │   ├── deploy_to_run.sh                # Cloud Run deployment script
 │   │   ├── requirements.txt
 │   │   └── .env.example
-│   └── orchestrator/                       # Deployed to Agent Engine, published to Gemini Enterprise
+│   └── improve_engagement_agent/           # Deployed to Agent Engine, published to Gemini Enterprise
+│       ├── README.md                       # Setup, local dev, Agent Engine deployment, testing
 │       ├── __init__.py
-│       ├── agent.py                        # Orchestrator: A2A clients for Data + Intervention agents
+│       ├── agent.py                        # Improve Engagement Agent: RemoteA2aAgent clients + root_agent
 │       ├── requirements.txt
-│       ├── .env.example
-│       ├── .env.deploy.example             # Template deploy env vars (runtime)
-│       └── .agent_engine_config.example.json  # Template Agent Engine config (SA, scaling)
+│       ├── .env.example                    # Template local dev env vars
+│       ├── .env.deploy.example             # Template Agent Engine runtime env vars
+│       └── .agent_engine_config.json.template  # Template Agent Engine config (SA, scaling)
 ├── test/                                   # Debug/test utilities (not part of lab deliverable)
-│   ├── t1.py                               # Test deployed agent via async streaming
-│   ├── list_engines.py                     # List all Agent Engine deployments
-│   ├── del_engines.py                      # Delete Agent Engine deployments
-│   ├── inter-test.sh                       # Cloud Run deployment test
-│   ├── pull.py                             # Pull Cloud Logging entries to JSON
+│   ├── README.md                           # Test setup and A2A Inspector usage
+│   ├── ae-t1.py                            # Test deployed Agent Engine agent via async streaming
+│   ├── elist.py                            # List all Agent Engine deployments
+│   ├── edel.py                             # Delete Agent Engine deployments
+│   ├── pull-logs.py                        # Pull Cloud Logging entries to JSON
+│   ├── dl.py                               # List Vertex AI Search datastores
+│   ├── test_upload.py                      # Test GCS signed URL upload
+│   ├── da-queries.md                       # Example BigQuery queries for Data Agent testing
 │   └── requirements.txt
 └── archive/                                # Superseded file versions (reference only)
 ```
@@ -924,8 +971,8 @@ atf_cloud_interactive/
 **User prompt in Gemini Enterprise:**
 > "Create interventions for customers that have an engagement shortfall in scheduled meeting events"
 
-**Step 1 — Orchestrator delegates data question:**
-- Orchestrator interprets the user's request and formulates a natural language data question
+**Step 1 — Improve Engagement Agent delegates data question:**
+- Improve Engagement Agent interprets the user's request and formulates a natural language data question
 - Sends to Data Agent via A2A: "Which customers have significantly fewer calendar events per licensed user than their segment average over the past 30 days?"
 
 **Step 2 — Data Agent translates and executes:**
@@ -934,7 +981,7 @@ atf_cloud_interactive/
 - Executes query against BigQuery via MCP
 - Returns structured results: list of customers with low meeting engagement, their metrics, and context
 
-**Step 3 — Orchestrator processes results:**
+**Step 3 — Improve Engagement Agent processes results:**
 - Identifies Verdant Health Systems as the customer with meeting underutilization
 - Prepares a context payload (customer info, specific metrics, issue type)
 - Sends to Intervention Agent via A2A
@@ -947,7 +994,7 @@ atf_cloud_interactive/
   - Writes PDF to GCS via the GCS MCP server (Cloud Run) at `gs://{bucket}/{customer_id}/...`
   - Returns the public URL
 
-**Step 5 — Orchestrator presents results:**
+**Step 5 — Improve Engagement Agent presents results:**
 - Collects all intervention links
 - Presents to the user:
   ```
@@ -968,7 +1015,7 @@ atf_cloud_interactive/
 
 ### 11.1 Current Architecture (Cloud Run + Agent Engine)
 
-The Data Agent and Intervention Agent are deployed as **Cloud Run services** exposing A2A endpoints. The Orchestrator is deployed to **Agent Engine** and calls the two Cloud Run agents via their URLs. This approach was chosen because deploying MCP-enabled and A2A-enabled agents to Agent Engine presented deployment and compatibility issues during initial development.
+The Data Agent and Intervention Agent are deployed as **Cloud Run services** exposing A2A endpoints. The Improve Engagement Agent is deployed to **Agent Engine** and calls the two Cloud Run agents via their URLs. This approach was chosen because deploying MCP-enabled and A2A-enabled agents to Agent Engine presented deployment and compatibility issues during initial development.
 
 ### 11.2 Target Architecture (All Agent Engine)
 
@@ -984,7 +1031,7 @@ The long-term goal is to deploy all three agents to Agent Engine:
 When revisiting Agent Engine deployment for Data and Intervention agents:
 1. Re-wrap agents with `AdkApp` instead of `to_a2a()` (Agent Engine manages its own serving layer)
 2. Replace Cloud Run `deploy_to_run.sh` scripts with `adk deploy agent_engine` scripts + `.env.deploy` + `.agent_engine_config.json`
-3. Update Orchestrator to reference Agent Engine resource IDs instead of Cloud Run URLs for A2A calls
+3. Update Improve Engagement Agent to reference Agent Engine resource IDs instead of Cloud Run URLs for A2A calls
 4. Update IAM: remove Cloud Run invoker grants, rely on intra-Agent-Engine auth
 5. Remove Dockerfiles (Agent Engine handles containerization)
 6. Validate MCP tool auth works correctly within Agent Engine's runtime (this was the original blocker)
