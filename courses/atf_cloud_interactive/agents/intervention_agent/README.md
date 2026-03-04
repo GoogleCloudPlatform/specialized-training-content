@@ -1,14 +1,40 @@
 # Notes on intervention agent using and cloud run (no api_server)
 
-## Requirements
+## Setup
 
-- Virtual environment
-- Installed dependencies
+### Infra created by setup.sh
+
+- Agent service account with role assignments (should be in place if you've run setup)
 - A Vertex AI Search datastore with troubleshooting/engagement content
 - A GCS bucket for storing generated intervention PDFs
 - A deployed GCS MCP server endpoint
 
-## Config files
+### ADC
+
+- Service account key file
+- ADC configured to use the service accoutn key file
+
+### Virtual Environment
+
+1. From the **intervention_agent** directory, create a virtual environment:
+
+    ```bash
+    uv venv
+    ```
+
+2. Activate the virtual environment:
+
+    ```bash
+    source .venv/bin/activate
+    ```
+
+3. Install dependencies:
+
+    ```bash
+    uv pip install -r requirements.txt
+    ```
+
+### Config files
 
 - You need a **.env** file for local running
   - Copy the **.env.example** to a file name `.env`
@@ -22,7 +48,7 @@
 ## Running locally
 
 - Change directories to **intervention_agent**
-- WeasyPrint requires native system libraries for PDF generation. On macOS:
+- WeasyPrint requires native system libraries for PDF generation. **Only if you're on macOS**:
 
     ```bash
     brew install pango
@@ -42,6 +68,12 @@
 
 - Change directories **intervention_agent**
 - Edit the **url** in the **agent_card.json** file to be `https://intervention-agent-<project_number>.us-central1.run.app/`
+  - You can get the number by running this command:
+
+  ```bash
+  gcloud projects describe $(gcloud config get-value project) --format="value(projectNumber)"
+  ```
+
 - Set the required environment variables and run the deploy script
 
     ```bash
@@ -50,7 +82,7 @@
     export AGENT_SA="<your-service-account>"
     export AGENT_SERVICE_NAME="intervention-agent"
     export VS_DATASTORE_ID="<your-datastore-id>"
-    export GCS_MCP_ENDPOINT="<your-gcs-mcp-server-url>"
+    export GCS_MCP_ENDPOINT="<your-gcs-mcp-server-url>/mcp"
     export INTERVENTIONS_BUCKET="gs://<your-project-id>-interventions"
 
     . ./deploy_to_run.sh

@@ -1,17 +1,5 @@
 #!/bin/bash
 
-export GOOGLE_CLOUD_PROJECT="${GOOGLE_CLOUD_PROJECT:-$(gcloud config get-value project)}"
-export GOOGLE_CLOUD_LOCATION="${GOOGLE_CLOUD_LOCATION:-us-central1}"
-export AGENT_SA="${AGENT_SA:-cymbal-agent}"
-export AGENT_SERVICE_NAME="intervention-agent"
-
-# Ensure VS_DATASTORE_ID is set
-if [ -z "$VS_DATASTORE_ID" ]; then
-    echo "ERROR: VS_DATASTORE_ID must be set as an environment variable"
-    echo "Example: export VS_DATASTORE_ID='your-datastore-id-here'"
-    exit 1
-fi
-
 gcloud run deploy $AGENT_SERVICE_NAME \
     --port=8080 \
     --source=. \

@@ -1,10 +1,31 @@
-# Notes on data agent using and cloud run (no api_server)
+# Notes on data agent using and Cloud Run (no api_server)
 
 ## Requirements
 
-- Virtual environment
-- Installed dependencies
-  
+- Agent service account with role assignments (should be in place if you've run setup)
+- Service account key file
+- ADC configured to use the service account key file
+
+## Virtual Environment Setup
+
+1. From the **data_agent** directory, create a virtual environment:
+
+    ```bash
+    uv venv
+    ```
+
+2. Activate the virtual environment:
+
+    ```bash
+    source .venv/bin/activate
+    ```
+
+3. Install dependencies:
+
+    ```bash
+    uv pip install -r requirements.txt
+    ```
+
 ## Config files
 
 - You need a **.env** file for local running
@@ -31,7 +52,11 @@
 ## To deploy to Cloud Run
 
 - Change directories **data_agent**
-- Edit the **url** in the **agent_card.json** file to be `https://data-agent-<project_number>.us-central1.run.app/`
+- Edit the **url** in the **agent_card.json** file to be `https://data-agent-<project_number>.us-central1.run.app/`. You can get the project number by running this command:
+  ```bash
+  gcloud projects describe $(gcloud config get-value project) --format="value(projectNumber)"
+  ```
+
 - Set the required environment variables and run the deploy script
 
     ```bash
@@ -42,9 +67,7 @@
 
     . ./deploy_to_run.sh
     ```
-- Service will require auth
-- Agent card can be acquired at `https://data-agent-<project_number>.us-central1.run.app/`
 
 ## Testing
 
-See the [test README](../../test/README.md) for instructions on testing with the A2A Inspector.
+See the [Test README](../../test/README.md) for instructions on testing with the A2A Inspector.

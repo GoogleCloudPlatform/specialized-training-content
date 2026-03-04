@@ -81,34 +81,7 @@ You can then list and invoke tools (`list_objects`, `read_object`, etc.) directl
 
 ---
 
-## Testing After Cloud Run Deployment
-
-### 1. Start the Cloud Run Proxy
-
-Use the `cloud-run-proxy` (or `gcloud` IAP tunnel) to forward a local port to your deployed service with authenticated headers attached automatically:
-
-```bash
-gcloud run services proxy gcs-mcp-server \
-  --region=YOUR_REGION \
-  --port=8081
-# Proxies https://gcs-mcp-server-xxx.run.app → http://localhost:8081
-```
-
-### 2. Test with MCP Inspector
-
-Run MCP Inspector and point it at the proxied local address:
-
-```bash
-npx @modelcontextprotocol/inspector
-```
-
-Connect with **Streamable HTTP**:
-
-```
-http://localhost:8081/mcp
-```
-
-All requests are forwarded to Cloud Run with your local `gcloud` credentials, so you're testing the exact deployed service.
+> **Testing the deployed service?** See [test/README.md](../../test/README.md#testing-the-gcs-mcp-server-on-cloud-run) for instructions on using the Cloud Run proxy with MCP Inspector.
 
 ## Deployment
 
