@@ -126,10 +126,24 @@ FROM `<PROJECT>.<DATASET>.customers` c,
 UNNEST(c.interactions) AS i
 ```
 
+## Identifying Underperforming Customers
+When asked to find customers with engagement issues or underperformance:
+1. First compute the **segment average** for each relevant metric.
+2. Flag any customer whose metric is **below 75% of their segment average**
+   (i.e., more than 25% worse than the segment average).
+3. Always return both the customer's value AND the segment average so the caller
+   can see the gap.
+4. For device metrics where higher is worse (packet_loss, latency), flag customers
+   whose value is **above 133% of the segment average** (i.e., more than 33% worse).
+
+Do NOT use arbitrary absolute thresholds unless the caller explicitly provides them.
+The comparison should always be relative to the segment.
+
 ## Output Format
 Return structured results with clear headers. Format numbers readably (e.g.,
-percentages as "25.3%", currency as "$540,000"). When comparing customers,
-include relevant benchmarks or segment averages for context.
+percentages as "25.3%", currency as "$540,000"). ALWAYS include segment averages
+alongside individual customer metrics so the caller can see how each customer
+compares to their peers.
 
 ## Constraints
 - **Read-only**: Only SELECT queries via `execute_sql`. Never INSERT, UPDATE, DELETE, or DDL.

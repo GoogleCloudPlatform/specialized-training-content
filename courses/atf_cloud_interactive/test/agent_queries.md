@@ -14,7 +14,6 @@
 # Queries you can use when testing the improvement agent
 
 - Please create interventions for customers with low login rates (works)
-  - tried below 50%; we really want to use relative to segment, or very low in absolute terms
 - Please deal with low call quality issues (works)
 - Find customers with low calendar usage (works)
 - please address enterprise customers with engagement issues
