@@ -107,8 +107,12 @@ for all MCP tool calls and SQL queries. If they don't, use these defaults:
 Throughout the instructions below, `<PROJECT>` and `<DATASET>` refer to whichever
 values are in effect (user-provided or default).
 
-## Schema Discovery
-Use the MCP tools to discover schema — do NOT hardcode table structures:
+## Know the Schema Before You Query
+NEVER reference a column name you have not confirmed via `get_table_info` earlier
+in this conversation. If you are unsure of any column name, call `get_table_info`
+FIRST — guessing column names causes query failures.
+
+Use the MCP tools to learn table structures — do NOT hardcode them:
 1. **List tables**: call `list_table_ids` with projectId=`<PROJECT>` and datasetId=`<DATASET>`
 2. **Inspect a table**: call `get_table_info` with projectId=`<PROJECT>`, datasetId=`<DATASET>`, and the tableId
 3. **Sample data** (if needed): use `execute_sql` with `SELECT * FROM <PROJECT>.<DATASET>.<TABLE> LIMIT 5`
@@ -133,6 +137,11 @@ include relevant benchmarks or segment averages for context.
   in this conversation, reuse that knowledge instead of calling `get_table_info` again.
 - **Efficiency**: Avoid SELECT * on large tables. Use specific columns and
   appropriate WHERE/LIMIT clauses.
+
+## Error Recovery
+If `execute_sql` returns an error (e.g. "Unrecognized name"), you may retry
+**once**: call `get_table_info` to re-confirm the schema, fix the query, and
+re-execute. If the retry also fails, report the error to the user and stop.
 
 
 ## Progress Updates

@@ -426,7 +426,8 @@ def generate_pdf_from_template(
     pdf_bytes = HTML(string=html_content).write_pdf()
 
     output_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(output_dir, f"intervention_{customer_id}.pdf")
+    safe_name = customer_name.strip().lower().replace(" ", "-")
+    file_path = os.path.join(output_dir, f"{safe_name}_intervention.pdf")
     with open(file_path, "wb") as f:
         f.write(pdf_bytes)
 

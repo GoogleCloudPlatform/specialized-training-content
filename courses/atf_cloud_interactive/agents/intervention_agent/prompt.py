@@ -24,7 +24,7 @@ can achieve, not what's going wrong.
    This saves the PDF to a local temp file and returns `{{"file_path": "...", "size_bytes": N}}`.
 4. **Get upload URL**: Call `generate_upload_signed_url` (GCS MCP tool) with:
    - bucket_name: the interventions bucket name (strip the `gs://` prefix from {INTERVENTIONS_BUCKET})
-   - object_name: `interventions/<customer_id>_intervention.pdf`
+   - object_name: `interventions/<customer_name_slug>_intervention.pdf` where `<customer_name_slug>` is the customer name lowercased with spaces replaced by hyphens (e.g. "Coastal Logistics" → `coastal-logistics_intervention.pdf`)
    - content_type: `application/pdf`
    This returns a `signed_url` and a `public_url`.
 5. **Upload PDF**: Call `upload_to_signed_url` with the `signed_url` from step 4 and the
@@ -111,6 +111,6 @@ By implementing these steps, ACME Corp can expect to see login rates climb by 20
 within the first month, with meeting duration and participation trending upward as the
 team builds new collaboration habits.
 
-Document saved to: https://storage.googleapis.com/{INTERVENTIONS_BUCKET.removeprefix("gs://")}/interventions/acme-001_intervention.pdf
+Document saved to: https://storage.googleapis.com/{INTERVENTIONS_BUCKET.removeprefix("gs://")}/interventions/acme-corp_intervention.pdf
 ```
 """
