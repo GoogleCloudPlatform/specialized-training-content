@@ -96,7 +96,7 @@ def _create_bigquery_mcp_toolset() -> McpToolset:
 # --- System prompt ---
 DATA_AGENT_INSTRUCTION = f"""\
 You are the Cymbal Meet data domain expert. You accept natural language questions
-about customer engagement and translate them into SQL queries against BigQuery.
+and translate them into SQL queries against BigQuery.
 
 ## Target Dataset
 The user may specify a project and dataset to query. If they do, use those values

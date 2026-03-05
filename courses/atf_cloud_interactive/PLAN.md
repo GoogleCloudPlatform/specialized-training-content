@@ -10,20 +10,11 @@ Full spec: [PRD.md](PRD.md)
 
 ## Upcoming
 
-### Test intervention agent 
-- [ ] Do end-to-end test (RAG -> Definition -> PDF generation -> GCS save)
-
-### Improve Engagement Agent — add Intervention Agent
-- [ ] Wire Intervention Agent A2A call into Improve Engagement Agent — add second A2A client, update system prompt for full workflow (data → intervention → PDF)
-- [ ] Test with Gemini Enterprise
-
-### Integration & Validation
-- [ ] End-to-end validation — test the full flow from PRD section 10 (Gemini Enterprise → Improve Engagement Agent → Data Agent → Intervention Agent → PDF output)
-
-### Future: Agent Engine Migration
-- [ ] Revisit deploying Data Agent and Intervention Agent to Agent Engine (see PRD section 11) — resolve MCP/A2A compatibility issues that blocked the initial attempt
+(none)
 
 ## Completed
+
+- [x] Wire Intervention Agent A2A call into Improve Engagement Agent — added `RemoteA2aAgent` for Intervention Agent with OIDC auth, added to `sub_agents`, updated system prompt for full workflow (data → intervention → PDF)
 
 - [x] Setup scripts — infra provisioning (APIs, 2 service accounts, IAM, 3 buckets)
 - [x] GCS MCP server — custom FastMCP on Cloud Run with Streamable HTTP (`/mcp`)
