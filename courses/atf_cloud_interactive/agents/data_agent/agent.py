@@ -32,13 +32,14 @@ from google.adk.auth.auth_credential import (AuthCredential,
 from google.adk.models import Gemini
 from google.adk.telemetry.google_cloud import (get_gcp_exporters,
                                                get_gcp_resource)
+from google.adk.runners import InMemoryRunner
+
 from google.adk.telemetry.setup import maybe_set_otel_providers
 from google.adk.tools.mcp_tool.mcp_session_manager import \
     StreamableHTTPConnectionParams
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.genai import Client, types
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from vertexai import agent_engines
+from model_armor_plugin import ModelArmorSafetyFilterPlugin
 
 # --- Environment configuration ---
 PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
@@ -196,7 +197,14 @@ root_agent = LlmAgent(
     tools=[_create_bigquery_mcp_toolset()],
 )
 
+runner = InMemoryRunner(
+    agent=root_agent,
+    app_name="data_agent",
+    plugins=[ModelArmorSafetyFilterPlugin()],
+)
+
 a2a_app = to_a2a(
     root_agent, 
-    agent_card="agent_card.json"
+    agent_card="agent_card.json",
+    runner=runner,
 )

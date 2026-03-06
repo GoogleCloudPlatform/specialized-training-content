@@ -62,6 +62,7 @@
     ```bash
     export GOOGLE_CLOUD_PROJECT="<your-project-id>"
     export GOOGLE_CLOUD_LOCATION="us-central1"
+    export MODEL_ARMOR_LOCATION="us"
     export AGENT_SA="<your-service-account>"
     export AGENT_SERVICE_NAME="data-agent"
 

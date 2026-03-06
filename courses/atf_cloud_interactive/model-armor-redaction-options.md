@@ -36,14 +36,31 @@ call the sanitize API yourself.
 
 ### Where to integrate
 
-The most natural place is the **Improve Engagement Agent's Gemini model
-configuration** — the `Gemini3` subclass in `agent.py`. If ADK's `Gemini`
-class supports passing `model_armor_config` through to `generateContent`, you
-can set the response template there so that every response from the root agent
-is automatically sanitized before reaching the user.
+ADK's `LlmAgent` accepts a `generate_content_config` parameter, and the
+`google.genai` SDK's `GenerateContentConfig` already includes a
+`model_armor_config` field with `prompt_template_name` and
+`response_template_name`. This means you can wire it up directly on the
+`root_agent` in [agent.py](agents/improve_engagement_agent/agent.py) — no
+subclassing of `Gemini3` required:
 
-If ADK doesn't expose `model_armor_config` directly, you may need to extend the
-`Gemini3` class to inject it into the underlying `generate_content` call.
+```python
+from google.genai import types
+
+root_agent = LlmAgent(
+    model=Gemini3(model="gemini-3-flash-preview"),
+    name="improve_engagement_agent",
+    ...
+    generate_content_config=types.GenerateContentConfig(
+        model_armor_config=types.ModelArmorConfig(
+            response_template_name="projects/PROJECT_ID/locations/LOCATION/templates/TEMPLATE_ID",
+        ),
+    ),
+)
+```
+
+Note: `ModelArmorConfig` docs state *"If supplied, safety_settings must not be
+supplied"* — so you cannot combine this with explicit `safety_settings` in the
+same config.
 
 ### Pros
 
@@ -53,13 +70,43 @@ If ADK doesn't expose `model_armor_config` directly, you may need to extend the
 
 ### Cons
 
-- Depends on ADK exposing the `model_armor_config` parameter (may require a
-  custom `Gemini` subclass override)
-- The Vertex AI integration docs note that "Sensitive Data Protection redaction
-  for de-identify template is not supported" in some contexts — would need to
-  verify this works for response-side de-identification
-- Redaction happens at the Gemini API boundary, so intermediate agent-to-agent
-  messages (Data Agent → Improve Engagement Agent) still contain raw emails
+1. **SDP de-identification is explicitly not supported in the Vertex AI
+   integration.**
+   The [Model Armor + Vertex AI integration docs](https://docs.cloud.google.com/model-armor/model-armor-vertex-integration)
+   state: *"Sensitive Data Protection redaction for de-identify template is not
+   supported."* This means the integration can only **detect and block**
+   responses containing emails — it cannot **redact** them (i.e., replace
+   `jeff@example.com` with `[REDACTED]`). The response would either pass
+   through unmodified or be blocked entirely. Blocking is a blunt instrument:
+   any response that mentions an email would be suppressed wholesale, losing all
+   the useful data alongside it. This is the most critical limitation — without
+   de-identification support, Option A cannot achieve the partial-redaction
+   behavior we need.
+
+2. **Streaming behavior is unconfirmed.**
+   The Vertex AI integration docs explicitly cover only the `generateContent`
+   method. ADK uses streaming (`generate_content` with `stream=True`) for
+   real-time token delivery. The docs do not confirm that `model_armor_config`
+   works with streamed responses. A
+   [GitHub discussion](https://github.com/google/adk-python/discussions/4251)
+   in the ADK repo raises this exact gap — noting that Model Armor "does not
+   provide built-in support for aggregating streamed chunks before performing a
+   consolidated evaluation." In practice this means sanitization may not fire
+   during streamed responses, or may require the Vertex AI backend to buffer the
+   full response first (defeating the purpose of streaming and adding latency).
+
+3. **Redaction only happens at the Gemini API boundary, not the data boundary.**
+   `model_armor_config` attaches to the **root agent's** Gemini calls. The Data
+   Agent returns results via A2A over HTTP (see
+   [agent.py:79-89](agents/improve_engagement_agent/agent.py)), and those
+   results — including full email addresses — enter the Improve Engagement
+   Agent's context as tool output. The LLM sees raw emails when reasoning about
+   which customers need interventions. Sanitization would only apply to the
+   final user-facing response, meaning emails still exist in:
+   - The agent's context window (visible to the model across turns)
+   - OpenTelemetry logs (`OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=True`
+     captures full message content to Cloud Logging)
+   - Any intermediate state or session history
 
 ---
 

@@ -16,8 +16,5 @@
 - Please create interventions for customers with low login rates (works)
 - Please deal with low call quality issues (works)
 - Find customers with low calendar usage (works)
-- please address enterprise customers with engagement issues
-  - not finding call quality for quantum
+- Please address enterprise customers with engagement issues
 - please find and address engagement issues of all kinds across all customers
-  - only finds two
-  - 
