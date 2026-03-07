@@ -28,7 +28,6 @@ Full spec: [PRD.md](PRD.md)
 
 ## Vague future things (don't plan yet)
 
-- Lab instructions / student guide (how to deconstruct and rebuild)
 - Scaffolding for early lab sections vs. open-ended final section
 - README.md for the repo
 
