@@ -5,8 +5,6 @@
 1. Review architecture diagram
 2. Take notes with questions, challenges, recommendations
 
-<hr>
-
 ## 1.2 Explore pre-configured infrastructure
 
 1. Verify the services enabled
