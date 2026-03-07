@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Theme B — Executive Dark</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 48px;
+            background: #0f172a;
+            color: #e2e8f0;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            background: #1e293b;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+        }
+
+        /* Header */
+        header {
+            padding: 44px 48px 36px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+            border-bottom: 1px solid #334155;
+        }
+        .brand-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .brand-dot {
+            width: 12px;
+            height: 12px;
+            background: #60a5fa;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(96,165,250,0.4);
+        }
+        .brand-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+        .doc-badge {
+            background: rgba(96,165,250,0.15);
+            color: #93c5fd;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(96,165,250,0.25);
+        }
+
+        /* Body */
+        .body {
+            padding: 36px 48px 48px;
+        }
+
+        /* Customer info — dark cards */
+        .info-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+        .info-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px 20px;
+            flex: 1;
+        }
+        .info-card .label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .info-card .value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        /* Section headings */
+        h2 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #60a5fa;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 36px 0 16px;
+        }
+
+        /* Metrics — glowing cards */
+        .metrics-grid {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+        .metric-card {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+        }
+        .metric-card .num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 30px;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+        .metric-card .desc {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* Focus area */
+        .focus-callout {
+            background: linear-gradient(135deg, rgba(96,165,250,0.1) 0%, rgba(167,139,250,0.08) 100%);
+            border: 1px solid rgba(96,165,250,0.25);
+            border-radius: 14px;
+            padding: 24px 28px;
+            margin: 16px 0;
+        }
+        .focus-callout .focus-title {
+            font-weight: 700;
+            color: #93c5fd;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        .focus-callout p {
+            margin: 0;
+            color: #cbd5e1;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        /* Content */
+        .content {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #cbd5e1;
+        }
+        .content p {
+            margin: 8px 0;
+        }
+        .content ol {
+            padding-left: 20px;
+            margin: 12px 0;
+            list-style: none;
+            counter-reset: steps;
+        }
+        .content ol li {
+            counter-increment: steps;
+            margin-bottom: 16px;
+            padding-left: 8px;
+            position: relative;
+        }
+        .content ol li::before {
+            content: counter(steps);
+            position: absolute;
+            left: -28px;
+            top: 1px;
+            width: 22px;
+            height: 22px;
+            background: rgba(96,165,250,0.15);
+            color: #60a5fa;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .content li strong {
+            color: #f1f5f9;
+        }
+
+        /* Outcomes */
+        .outcomes-box {
+            background: rgba(52,211,153,0.08);
+            border: 1px solid rgba(52,211,153,0.2);
+            border-radius: 14px;
+            padding: 24px 28px;
+            margin: 16px 0;
+        }
+        .outcomes-box p {
+            margin: 0;
+            color: #6ee7b7;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        /* Resources */
+        .content ul {
+            padding-left: 20px;
+            margin: 12px 0;
+        }
+        .content ul li {
+            margin-bottom: 8px;
+            color: #94a3b8;
+        }
+        .content ul li::marker {
+            color: #475569;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #334155;
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="brand-row">
+                <div class="brand">
+                    <div class="brand-dot"></div>
+                    <div class="brand-name">Cymbal Meet</div>
+                </div>
+                <div class="doc-badge">Success Plan</div>
+            </div>
+        </header>
+
+        <div class="body">
+            <div class="info-row">
+                <div class="info-card">
+                    <div class="label">Customer</div>
+                    <div class="value">Coastal Logistics Inc.</div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Customer ID</div>
+                    <div class="value">C-90210</div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Report Date</div>
+                    <div class="value">March 04, 2026</div>
+                </div>
+            </div>
+
+            <h2>Engagement Summary</h2>
+            <div class="content">
+                <p>This plan outlines tailored recommendations to help Coastal Logistics Inc. get even more value from Cymbal Meet.</p>
+            </div>
+
+            <h2>Key Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="num">23%</div>
+                    <div class="desc">Login Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="num">8 min</div>
+                    <div class="desc">Avg Call Duration</div>
+                </div>
+                <div class="metric-card">
+                    <div class="num">Good</div>
+                    <div class="desc">Video Quality</div>
+                </div>
+            </div>
+
+            <h2>Focus Area</h2>
+            <div class="focus-callout">
+                <div class="focus-title">Boosting User Engagement</div>
+                <p>Based on recent usage patterns, we see a great opportunity to focus on: Boosting User Engagement. Only 23% of licensed users are logging in regularly, suggesting significant untapped potential.</p>
+            </div>
+
+            <h2>Recommended Actions</h2>
+            <div class="content">
+                <ol>
+                    <li><strong>Launch an Internal Awareness Campaign:</strong> Partner with your communications team to highlight Cymbal Meet features like background blur, live captions, and breakout rooms through short demo videos.</li>
+                    <li><strong>Identify and Empower Champions:</strong> Select 3-5 power users from different departments to lead adoption efforts and share best practices in team meetings.</li>
+                    <li><strong>Simplify the Onboarding Flow:</strong> Create a one-page quick-start guide and distribute it to all new hires during their first week. Consider calendar integration prompts.</li>
+                    <li><strong>Set Usage Milestones:</strong> Establish quarterly engagement targets (e.g., 50% login rate by Q3) and track progress using the admin analytics dashboard.</li>
+                </ol>
+            </div>
+
+            <h2>Expected Outcomes</h2>
+            <div class="outcomes-box">
+                <p>By following these recommendations, Coastal Logistics Inc. can expect to see login rates improve to 45-55% within 90 days, stronger cross-team collaboration, and increased ROI on their Cymbal Meet investment.</p>
+            </div>
+
+            <h2>Relevant Resources</h2>
+            <div class="content">
+                <ul>
+                    <li>Cymbal Meet Admin Guide — Chapter 4: Driving Adoption</li>
+                    <li>Best Practices: Enterprise Rollout Playbook (2026 Edition)</li>
+                    <li>Knowledge Base Article: Measuring Engagement with Analytics Dashboard</li>
+                </ul>
+            </div>
+
+            <footer>
+                <p>This plan was prepared by your Cymbal Meet customer success team using the latest best-practice guidance.</p>
+                <p>Questions? Your dedicated account team is here to help — reach out anytime.</p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

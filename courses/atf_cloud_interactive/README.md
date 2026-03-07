@@ -80,12 +80,15 @@ For interactive testing, use the **A2A Inspector** — see [test/README.md](test
 
 ```
 atf_cloud_interactive/
-├── PLAN.md                             # Technical roadmap
-├── PRD.md                              # Product requirements
-├── DOC_UPDATE_PLAN.md                  # Documentation update checklist
 ├── .gitignore
-├── agents/
+├── agents/                             # Starter templates — students build here
 │   ├── requirements.txt                # Shared Python deps (all agents)
+│   ├── deploy_improve_agent_to_agent_engine.sh
+│   ├── data_agent/
+│   ├── intervention_agent/
+│   └── improve_engagement_agent/
+├── agents_solution/                    # Complete working solution (reference only)
+│   ├── requirements.txt
 │   ├── deploy_improve_agent_to_agent_engine.sh
 │   ├── data_agent/
 │   ├── intervention_agent/
@@ -98,6 +101,11 @@ atf_cloud_interactive/
 └── archive/                            # Superseded file versions (reference only)
 ```
 
+### `agents/` vs `agents_solution/`
+
+- **`agents/`** — starter templates with key sections left for students to complete. This is the working directory for the lab.
+- **`agents_solution/`** — the complete, working implementation. Use as a reference if you get stuck, or to compare your work against the finished version.
+
 ## Detailed Documentation
 
 ### Agent-specific READMEs
@@ -107,6 +115,12 @@ Each agent has its own README with setup, local development, deployment, and tes
 - [Data Agent README](agents/data_agent/README.md) — Cloud Run deployment, A2A testing
 - [Intervention Agent README](agents/intervention_agent/README.md) — WeasyPrint setup, Cloud Run deployment, A2A testing
 - [Improve Engagement Agent README](agents/improve_engagement_agent/README.md) — Agent Engine deployment, `adk web` local dev
+
+Complete solution versions are also available under `agents_solution/` for reference:
+
+- [Data Agent Solution](agents_solution/data_agent/README.md)
+- [Intervention Agent Solution](agents_solution/intervention_agent/README.md)
+- [Improve Engagement Agent Solution](agents_solution/improve_engagement_agent/README.md)
 
 ### Infrastructure & Testing
 

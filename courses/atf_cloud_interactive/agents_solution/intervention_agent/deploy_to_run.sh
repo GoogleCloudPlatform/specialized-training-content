@@ -1,0 +1,25 @@
+#!/bin/bash
+
+gcloud run deploy $AGENT_SERVICE_NAME \
+    --port=8080 \
+    --source=. \
+    --no-allow-unauthenticated \
+    --region="$GOOGLE_CLOUD_LOCATION" \
+    --project=$GOOGLE_CLOUD_PROJECT \
+    --min-instances=1 \
+    --service-account $AGENT_SA \
+    --set-env-vars=\
+GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,\
+GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,\
+VS_DATASTORE_ID=$VS_DATASTORE_ID,\
+GCS_MCP_ENDPOINT=$GCS_MCP_ENDPOINT,\
+INTERVENTIONS_BUCKET=$INTERVENTIONS_BUCKET,\
+GOOGLE_GENAI_USE_VERTEXAI=true,\
+OTEL_SERVICE_NAME=$AGENT_SERVICE_NAME,\
+OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true,\
+ADK_CAPTURE_MESSAGE_CONTENT_IN_SPANS=false,\
+OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=true
+
+echo "Deployment complete!"
+echo "Service URL:"
+gcloud run services describe $AGENT_SERVICE_NAME --region=$GOOGLE_CLOUD_LOCATION --project=$GOOGLE_CLOUD_PROJECT --format='value(status.url)'
