@@ -39,17 +39,10 @@ from google.adk.tools.mcp_tool.mcp_session_manager import \
     StreamableHTTPConnectionParams
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.genai import Client, types
-from model_armor_plugin import ModelArmorSafetyFilterPlugin
+# TODO MODELARMOR IMPORT: Import ModelArmorSafetyFilterPlugin from model_armor_plugin.
 
 # --- Environment configuration ---
 PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
-
-# --- BigQuery MCP toolset ---
-BIGQUERY_MCP_ENDPOINT = "https://bigquery.googleapis.com/mcp"
-BIGQUERY_SCOPES = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/bigquery",
-]
 
 # Suppress repetitive ADK experimental-feature warnings and noisy INFO logs
 warnings.filterwarnings("ignore", message=r"\[EXPERIMENTAL\]")
@@ -57,41 +50,26 @@ logging.getLogger("google.adk").setLevel(logging.WARNING)
 logging.getLogger("google.genai").setLevel(logging.WARNING)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
-_gcp_creds, _gcp_project = google.auth.default(
-    scopes=["https://www.googleapis.com/auth/cloud-platform"],
-)
-_gcp_exporters = get_gcp_exporters(
-    enable_cloud_tracing=True,
-    enable_cloud_logging=True,
-    google_auth=(_gcp_creds, _gcp_project),
-)
-_gcp_resource = get_gcp_resource(project_id=PROJECT_ID)
-maybe_set_otel_providers(
-    otel_hooks_to_setup=[_gcp_exporters],
-    otel_resource=_gcp_resource,
-)
+
+# TODO TELEMETRY: Export OpenTelemetry Logging and Traces to Google Cloud.
+# Steps:
+#   1. Obtain default GCP credentials (scoped to cloud-platform).
+#   2. Create GCP exporters with Cloud Tracing and Cloud Logging enabled.
+#   3. Wire everything together with maybe_set_otel_providers().
+
+
+# TODO MCP SCOPES: Define the BigQuery MCP toolset configuration.
+# Steps:
+#   1. Set BIGQUERY_MCP_ENDPOINT to the BigQuery MCP URL.
+#   2. Define BIGQUERY_SCOPES with cloud-platform and bigquery scopes.
 
 def _create_bigquery_mcp_toolset() -> McpToolset:
-    return McpToolset(
-        connection_params=StreamableHTTPConnectionParams(
-            url=BIGQUERY_MCP_ENDPOINT,
-        ),
-        auth_scheme=OAuth2(
-            flows=OAuthFlows(
-                clientCredentials=OAuthFlowClientCredentials(
-                    tokenUrl="https://oauth2.googleapis.com/token",
-                    scopes={s: "" for s in BIGQUERY_SCOPES},
-                ),
-            ),
-        ),
-        auth_credential=AuthCredential(
-            auth_type=AuthCredentialTypes.SERVICE_ACCOUNT,
-            service_account=ServiceAccount(
-                use_default_credential=True,
-                scopes=BIGQUERY_SCOPES,
-            ),
-        ),
-    )
+    # TODO MCP TOOLSET: Create and return an McpToolset for BigQuery.
+    # Steps:
+    #   1. Set connection_params using StreamableHTTPConnectionParams with the MCP endpoint URL.
+    #   2. Set auth_scheme to OAuth2 with a clientCredentials flow pointing at Google's token URL.
+    #   3. Set auth_credential to a SERVICE_ACCOUNT type using ADC (use_default_credential=True).
+    pass
 
 
 # --- System prompt ---
@@ -194,17 +172,16 @@ root_agent = LlmAgent(
         "returns structured results."
     ),
     instruction=DATA_AGENT_INSTRUCTION,
-    tools=[_create_bigquery_mcp_toolset()],
+    tools=[
+        # TODO MCP TOOL: Call _create_bigquery_mcp_toolset() here.
+    ],
 )
 
-runner = InMemoryRunner(
-    agent=root_agent,
-    app_name="data_agent",
-    plugins=[ModelArmorSafetyFilterPlugin()],
-)
+# TODO MODELARMOR RUNNER: Create an InMemoryRunner with the ModelArmorSafetyFilterPlugin.
+# Steps:
+#   1. Create an InMemoryRunner with agent=root_agent and app_name="data_agent".
+#   2. Pass plugins=[ModelArmorSafetyFilterPlugin()] to enable Model Armor safety filtering.
 
-a2a_app = to_a2a(
-    root_agent, 
-    agent_card="agent_card.json",
-    runner=runner,
-)
+# TODO A2A APP: Create the A2A application using to_a2a().
+# Steps:
+#   1. Call to_a2a() with root_agent, agent_card="agent_card.json", and runner=runner.
