@@ -145,6 +145,7 @@ AGENT_ROLES=(
   "roles/logging.logWriter"
   "roles/monitoring.metricWriter"
   "roles/serviceusage.serviceUsageAdmin"
+  "roles/modelarmor.user"
 )
 
 for role in "${AGENT_ROLES[@]}"; do
