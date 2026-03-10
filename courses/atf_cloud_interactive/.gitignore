@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.deploy
+
+# Deployment configs (students create from .example/.template files)
+.agent_engine_config.json
+agent_card.json
+
+# Byte-compiled / optimized
+*.pyc
+*.pyo
+
+# Distribution / packaging
+*.tar.gz
+*.zip
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ADK
+.adk/
+
+# macOS
+.DS_Store

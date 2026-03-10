@@ -1,0 +1,20 @@
+#!/bin/bash
+
+gcloud run deploy $AGENT_SERVICE_NAME \
+    --port=8080 \
+    --source=. \
+    --no-allow-unauthenticated \
+    --region="us-central1" \
+    --project=$GOOGLE_CLOUD_PROJECT \
+    --service-account $AGENT_SA \
+    --min-instances=1 \
+    --set-env-vars=\
+GOOGLE_CLOUD_PROJECT=$GOOGLE_CLOUD_PROJECT,\
+GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION,\
+GOOGLE_GENAI_USE_VERTEXAI=true,\
+OTEL_SERVICE_NAME=$AGENT_SERVICE_NAME,\
+OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true,\
+ADK_CAPTURE_MESSAGE_CONTENT_IN_SPANS=false,\
+OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=true,\
+MODEL_ARMOR_LOCATION=$MODEL_ARMOR_LOCATION,\
+MODEL_ARMOR_TEMPLATE=projects/$GOOGLE_CLOUD_PROJECT/locations/$MODEL_ARMOR_LOCATION/templates/mask_emails

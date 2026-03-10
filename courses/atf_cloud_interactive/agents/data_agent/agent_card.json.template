@@ -1,0 +1,53 @@
+{
+  "capabilities": {
+    "streaming": true
+  },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "description": "Cymbal Meet data domain expert. Accepts natural language questions about customer engagement, translates to SQL, executes via BigQuery, returns structured results.",
+  "name": "data_agent",
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0",
+  "skills": [
+    {
+      "description": "Answers natural language questions about Cymbal Meet customer engagement data by querying BigQuery.",
+      "examples": [],
+      "id": "data_agent",
+      "name": "data_analysis",
+      "tags": ["bigquery", "sql", "data-analysis"]
+    },
+    {
+      "description": "List BigQuery dataset IDs in a Google Cloud project.",
+      "id": "data_agent-list_dataset_ids",
+      "name": "list_dataset_ids",
+      "tags": ["tools"]
+    },
+    {
+      "description": "Get metadata information about a BigQuery dataset.",
+      "id": "data_agent-get_dataset_info",
+      "name": "get_dataset_info",
+      "tags": ["tools"]
+    },
+    {
+      "description": "List table ids in a BigQuery dataset.",
+      "id": "data_agent-list_table_ids",
+      "name": "list_table_ids",
+      "tags": ["tools"]
+    },
+    {
+      "description": "Get metadata information about a BigQuery table.",
+      "id": "data_agent-get_table_info",
+      "name": "get_table_info",
+      "tags": ["tools"]
+    },
+    {
+      "description": "Run a read-only SQL query against BigQuery and return the results.",
+      "id": "data_agent-execute_sql",
+      "name": "execute_sql",
+      "tags": ["tools"]
+    }
+  ],
+  "supportsAuthenticatedExtendedCard": false,
+  "url": "http://localhost:8080",
+  "version": "0.0.1"
+}

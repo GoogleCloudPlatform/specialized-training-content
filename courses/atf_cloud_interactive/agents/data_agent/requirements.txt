@@ -1,0 +1,9 @@
+google-cloud-aiplatform==1.139.0
+google-adk[a2a]==1.26.0
+google-auth==2.48.0
+google-genai==1.65.0
+python-dotenv==1.2.1
+google-cloud-modelarmor==0.4.0
+opentelemetry-exporter-gcp-trace==1.11.0
+opentelemetry-sdk==1.37.0
+opentelemetry-exporter-gcp-logging==1.11.0a0

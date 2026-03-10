@@ -1,0 +1,5 @@
+{
+  "service_account": "cymbal-agent@<YOUR_PROJECT_ID>.iam.gserviceaccount.com",
+  "min_instances": 1,
+  "container_concurrency": 20
+}

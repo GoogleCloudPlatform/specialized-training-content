@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Theme A — Modern Minimal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 48px;
+            background: #f8f9fa;
+            color: #1a1a2e;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        }
+
+        /* Header — gradient accent bar */
+        .header-bar {
+            height: 6px;
+            background: linear-gradient(90deg, #4285F4, #34A853, #FBBC05, #EA4335);
+        }
+        header {
+            padding: 40px 48px 32px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: #4285F4;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .brand-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        .doc-type {
+            font-size: 13px;
+            font-weight: 500;
+            color: #6b7280;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            padding-left: 48px;
+        }
+
+        /* Body content */
+        .body {
+            padding: 0 48px 48px;
+        }
+
+        /* Customer info — pill cards */
+        .info-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+        .info-pill {
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 14px 20px;
+            flex: 1;
+        }
+        .info-pill .label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+        }
+        .info-pill .value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Section headings */
+        h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 32px 0 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        /* Metrics — big number cards */
+        .metrics-grid {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+        .metric-card {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .metric-card .num {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4285F4;
+        }
+        .metric-card .desc {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Focus area callout */
+        .focus-callout {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 16px 0;
+        }
+        .focus-callout .focus-title {
+            font-weight: 700;
+            color: #1d4ed8;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+        .focus-callout p {
+            margin: 0;
+            color: #334155;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* Content blocks */
+        .content {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #374151;
+        }
+        .content ol {
+            padding-left: 20px;
+            margin: 12px 0;
+        }
+        .content li {
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+        .content li strong {
+            color: #1e293b;
+        }
+
+        /* Outcomes */
+        .outcomes-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 16px 0;
+        }
+        .outcomes-box p {
+            margin: 0;
+            color: #166534;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* Resources */
+        .content ul {
+            padding-left: 20px;
+            margin: 12px 0;
+        }
+        .content ul li {
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar"></div>
+        <header>
+            <div class="brand">
+                <div class="brand-icon">C</div>
+                <div class="brand-name">Cymbal Meet</div>
+            </div>
+            <div class="doc-type">Customer Success Plan</div>
+        </header>
+
+        <div class="body">
+            <div class="info-row">
+                <div class="info-pill">
+                    <div class="label">Customer</div>
+                    <div class="value">Coastal Logistics Inc.</div>
+                </div>
+                <div class="info-pill">
+                    <div class="label">Customer ID</div>
+                    <div class="value">C-90210</div>
+                </div>
+                <div class="info-pill">
+                    <div class="label">Report Date</div>
+                    <div class="value">March 04, 2026</div>
+                </div>
+            </div>
+
+            <h2>Engagement Summary</h2>
+            <div class="content">
+                <p>This plan outlines tailored recommendations to help Coastal Logistics Inc. get even more value from Cymbal Meet.</p>
+            </div>
+
+            <h2>Key Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="num">23%</div>
+                    <div class="desc">Login Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="num">8 min</div>
+                    <div class="desc">Avg Call Duration</div>
+                </div>
+                <div class="metric-card">
+                    <div class="num">Good</div>
+                    <div class="desc">Video Quality</div>
+                </div>
+            </div>
+
+            <h2>Focus Area</h2>
+            <div class="focus-callout">
+                <div class="focus-title">Boosting User Engagement</div>
+                <p>Based on recent usage patterns, we see a great opportunity to focus on: Boosting User Engagement. Only 23% of licensed users are logging in regularly, suggesting significant untapped potential.</p>
+            </div>
+
+            <h2>Recommended Actions</h2>
+            <div class="content">
+                <ol>
+                    <li><strong>Launch an Internal Awareness Campaign:</strong> Partner with your communications team to highlight Cymbal Meet features like background blur, live captions, and breakout rooms through short demo videos.</li>
+                    <li><strong>Identify and Empower Champions:</strong> Select 3-5 power users from different departments to lead adoption efforts and share best practices in team meetings.</li>
+                    <li><strong>Simplify the Onboarding Flow:</strong> Create a one-page quick-start guide and distribute it to all new hires during their first week. Consider calendar integration prompts.</li>
+                    <li><strong>Set Usage Milestones:</strong> Establish quarterly engagement targets (e.g., 50% login rate by Q3) and track progress using the admin analytics dashboard.</li>
+                </ol>
+            </div>
+
+            <h2>Expected Outcomes</h2>
+            <div class="outcomes-box">
+                <p>By following these recommendations, Coastal Logistics Inc. can expect to see login rates improve to 45-55% within 90 days, stronger cross-team collaboration, and increased ROI on their Cymbal Meet investment.</p>
+            </div>
+
+            <h2>Relevant Resources</h2>
+            <div class="content">
+                <ul>
+                    <li>Cymbal Meet Admin Guide — Chapter 4: Driving Adoption</li>
+                    <li>Best Practices: Enterprise Rollout Playbook (2026 Edition)</li>
+                    <li>Knowledge Base Article: Measuring Engagement with Analytics Dashboard</li>
+                </ul>
+            </div>
+
+            <footer>
+                <p>This plan was prepared by your Cymbal Meet customer success team using the latest best-practice guidance.</p>
+                <p>Questions? Your dedicated account team is here to help — reach out anytime.</p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
