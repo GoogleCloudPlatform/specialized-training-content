@@ -73,6 +73,9 @@ maybe_set_otel_providers(
 
 
 def _create_gcs_mcp_toolset() -> McpToolset:
+    """Create GCS MCP toolset with OAuth2 service account auth."""
+    print("Creating GCS MCP toolset with endpoint:", GCS_MCP_ENDPOINT)
+    print('------------------------------------------')
     # TODO MCP TOOLSET: Create and return an McpToolset for GCS.
     # Steps:
     #   1. Set connection_params using StreamableHTTPConnectionParams with the GCS MCP endpoint URL.
