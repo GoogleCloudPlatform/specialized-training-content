@@ -47,11 +47,9 @@ GCS_MCP_ENDPOINT = os.environ.get(
 VS_DATASTORE_ID = os.environ.get("VS_DATASTORE_ID", "")
 INTERVENTIONS_BUCKET = os.environ.get("INTERVENTIONS_BUCKET", f"gs://{PROJECT_ID}-interventions")
 
-# --- GCS MCP toolset ---
-GCS_MCP_SCOPES = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/devstorage.read_write",
-]
+# TODO GCS MCP SCOPES: Define the GCS MCP toolset scopes.
+# Steps:
+#   1. Create a GCS_MCP_SCOPES list with cloud-platform and devstorage.read_write scopes.
 
 # Suppress repetitive ADK experimental-feature warnings and noisy INFO logs
 warnings.filterwarnings("ignore", message=r"\[EXPERIMENTAL\]")
@@ -75,30 +73,13 @@ maybe_set_otel_providers(
 
 
 def _create_gcs_mcp_toolset() -> McpToolset:
-    """Create GCS MCP toolset with OAuth2 service account auth."""
-    print("Creating GCS MCP toolset with endpoint:", GCS_MCP_ENDPOINT)
-    print('------------------------------------------')
-    return McpToolset(
-        connection_params=StreamableHTTPConnectionParams(
-            url=GCS_MCP_ENDPOINT,
-        ),
-        auth_scheme=OAuth2(
-            flows=OAuthFlows(
-                clientCredentials=OAuthFlowClientCredentials(
-                    tokenUrl="https://oauth2.googleapis.com/token"
-                ),
-            ),
-        ),
-        auth_credential=AuthCredential(
-            auth_type=AuthCredentialTypes.SERVICE_ACCOUNT,
-            service_account=ServiceAccount(
-                use_default_credential=True,
-                scopes=GCS_MCP_SCOPES,
-                use_id_token=True,
-                audience=GCS_MCP_ENDPOINT,
-            ),
-        ),
-    )
+    # TODO MCP TOOLSET: Create and return an McpToolset for GCS.
+    # Steps:
+    #   1. Set connection_params using StreamableHTTPConnectionParams with the GCS MCP endpoint URL.
+    #   2. Set auth_scheme to OAuth2 with a clientCredentials flow pointing at Google's token URL.
+    #   3. Set auth_credential to a SERVICE_ACCOUNT type using ADC (use_default_credential=True),
+    #      with GCS_MCP_SCOPES, use_id_token=True, and audience set to the GCS MCP endpoint.
+    pass
 
 
 def upload_to_signed_url(
@@ -163,13 +144,11 @@ root_agent = LlmAgent(
             data_store_id=VS_DATASTORE_ID,
             bypass_multi_tools_limit=True,
         ),
-        generate_pdf_from_template,
-        upload_to_signed_url,
-        _create_gcs_mcp_toolset(),
+        # TODO REGISTER_TOOLS: Add generate_pdf_from_template, upload_to_signed_url,
+        #   and _create_gcs_mcp_toolset() here.
     ],
 )
 
-a2a_app = to_a2a(
-    root_agent,
-    agent_card="agent_card.json"
-)
+# TODO A2A APP: Create the A2A application using to_a2a().
+# Steps:
+#   1. Call to_a2a() with root_agent and agent_card="agent_card.json".
