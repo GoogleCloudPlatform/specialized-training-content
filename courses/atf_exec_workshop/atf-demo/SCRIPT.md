@@ -29,46 +29,48 @@ Step-by-step guide for delivering the demo scenario.
 So let's look at the top three business problems the executive team decided to tackle:
 
 1. Improving net retention (kind of the holy grail for recurring revenue businesses)
-1. Accelerating product development (get features to market faster)
-1. Optimize the entire approach to long-term, strategic customer contracts
+   1. **Ask**: Why is this so important? Supplement answer as necessary
+2. Accelerating product development (get features to market faster)
+3. Optimize the entire approach to long-term, strategic customer contracts
 
 ### Drill down into problem 1
 
 1. Let's expand the problem 1 card and drill down.
-1. The problem is basically that there are customers who fall short of desired engagement levels, and they end up failing to upsell, or even worse, they churn.
-1. Cymbal Meet is failing to address the majority of these shortfalls actively and with high-quality interventions.
-1. Leadership estimates that if they can improve interventions, and as a result improve engagement, they can drive up gross and net retention.
-1. You can see their goals are to move from good to world-class gross/net retention rates.
-1. And the estimate is that in the first year, this could drive \$65M in additional revenue; and over 5 years drive $450M.
-1. Now, notice that at this point we're not talking about agents, or even AI, at all. This is important. Building valuable solutions starts by looking at the business, not the technology.
-1. We'll come back and talk about whether agents makes sense in a minute.
+2. The problem is that there are customers who fall short of desired engagement levels, and they end up failing to upsell, or even worse, they churn.
+3. Cymbal Meet is failing to address the majority of these shortfalls actively and with high-quality interventions.
+4. Leadership estimates that if they can improve interventions, and as a result improve engagement, they can drive up gross and net retention.
+5. You can see their goals are to move from good to world-class gross/net retention rates.
+6. And the estimate is that in the first year, this could drive \$65M in additional revenue; and over 5 years drive $450M.
+7. Now, notice that at this point we're not talking about agents, or even AI, at all. This is important. Building valuable solutions starts by looking at the business, not the technology.
+8. We'll come back and talk about whether agents makes sense in a minute.
 
 ### The other problems
 
-1. Let's expand the problem 2 card.
-   1. You can see a similar analysis, and similar goal setting has taken place here. We won't dig too deep on this one.
-1. But I do want to dig into problem 3 (expand card). 
+1. For contrast, let's look at the third problem (expand card). 
    1. Notice this problem is about increasing retention and increasing contract length with the top 50 customers.
    2. You can see in the description of the business problem that this requires a lot of relationship management and very complex contract negotiations.
    
 ### Agentic innovation fit
 
-1. The executive team brought in a consulting team to help evaluate these strategic initiatives to determine which are most likely to be good candidates for agentic innovation.
+1. The executive team brought in a consulting team to help evaluate these initiatives to determine which are most likely to be good candidates for agentic innovation.
 2. Let's look at problem 1.
    1. Agents are good at looking at structured and unstructured data and identifying patterns, even when not given explicit instructions on what to look for. Since finding undesirable engagement patterns is key to this problem, that seems a good fit.
    2. Agents are good at reading, understanding, reasoning about, and creating content. This means agents can look at CRM data, documentation, professional services engagement summaries, and other sources to identify good ways to respond to engagement shortfalls, and they can craft personalized interventions for each customer.
    3. And obviously agents, being software, are good at doing these things at scale.
    4. Given these characteristics, this problem seems promising, so the leadership team is going to task the internal innovation team to explore how agentic AI can be applied.
 3. Problem 3 is another story.
-   1. It's heavily reliant on personal relationships and EQ.
+   1. It's heavily reliant on cultivating personal relationships.
    2. It requires creation and vetting of complex legal documents that are often unique.
    3. And it's a problem that doesn't affect thousands of instances; there's really only 50 customers, and typically you negotiate annually or every few years.
-   4. This is not a great candidate, and so while the company will tackle this problem, it's not one that the internal innovation team is going to prioritize for agentic intervention.
+   4. This is not a great candidate, and so while the company will tackle this problem, it's not one that the internal innovation team is going to prioritize for agentic intervention. I heard an executive recently say "This problem will be addressible by agents when the agent can take the customer CEO out to play golf."
+      1. Now - that's not to say that there' no place that an agent might be able to contribute in this area
+      2. However, given that large parts of the problem might be difficult to address, and given that you only negotiate a dozen of these contracts a year, it's less obviously a win, and wouldn't be the top priority.
 
 > [!TIP] 
-> Ask for their reaction.
-> - Does that make sense? 
-> - Any thoughts/questions?
+> Solicit their input/participation
+> - Can anyone name a big problem that they've identified as a good candidate for agentic innovation? What made it attractive? 
+> - Can anyone point to a problem that they explicitly deprioritized?
+> - In your organization, who would help do the suitability evaluation? (internal team, external consultants?
 
 ## Analyzing the current processes
 
@@ -81,7 +83,7 @@ So let's look at the top three business problems the executive team decided to t
 ### Processes
 
 1. So for our example, we're going to focus on one of the discovered processes.
-2. This is a process for identifying when SMB and mid-market customers are falling short of expected engagement, and the creating and executing intervention campaigns at scale.
+2. This is a process for identifying when SMB and mid-market customers are falling short of expected engagement, and the creating and executing intervention campaigns at scale (we're talking 1000s of accounts).
 
 ### The scaled product engagement intervention process
 
@@ -89,6 +91,7 @@ So let's look at the top three business problems the executive team decided to t
 2. The process is comprised of stages, and stages are comprised of tasks.
    1. In real, complex processes, stages might have sub-stages and tasks might have steps.
    2. We've simplified a bit for this discussion.
+   3. This might not look like a typical process map to you, and that's fair. We simplified the presentation so that it was easy to produce/maintain for this class, and easy to understand
 3. The detection phase is where:
    1. Customer Success managers collect usage data.
    2. They compare data against targets.
@@ -142,9 +145,9 @@ So let's look at the top three business problems the executive team decided to t
    3. And the agentic system will create an audit trail showing all intervention activity.
 
 > [!TIP] 
-> Ask for their reaction.
-> - Do the different types of touchpoints make sense? 
-> - Any thoughts/questions?
+> Ask for their input.
+> - Which kinds of touchpoints do you predict will be the most common as you tackle your processes?
+> - How do you see augmentation touchpoints, where human talent is actively directing, revising, and approving working?
 
 ## Agentic solution design
 
@@ -170,6 +173,7 @@ So let's look at the top three business problems the executive team decided to t
 
 1. Ok, so that's all great—but what will an agentic solution really look like?
 2. Well, we've put together a demo that illustrates the types of things you can expect.
+3. The goal here is to give you a clear sense of how agents might manifest in your workflows, and the types of things they can do.
 
 ### CRM
 
@@ -202,12 +206,13 @@ So let's look at the top three business problems the executive team decided to t
 > [!NOTE] 
 > Return to CSM Dashboard listing.
 
-1. Cymbal Meet has built an agentic system that kicks in weekly to find and address these engagement issues. 
-2. I'm going to invoke the system as though it was early Monday morning (click button).
-3. Don't worry about reading the status report; this is just showing that the agentic system is doing it's thing.
-4. We can see that the unattended system scans all the customers and finds those with engagement issues.
-5. For each issue, it searches internal docs, the CRM system, and other sources of data, then composes an appropriate, customized response.
-6. Some interventions are tailored emails; some are configurations of the backend system to trigger in-product guidance for users, etc.
+1. OK, so that's the context. Let's see what the agentic solution offers
+2. Cymbal Meet has built an agentic system that kicks in weekly to find and address these engagement issues. 
+3. I'm going to invoke the system as though it was early Monday morning (click button).
+4. Don't worry about reading the status report; this is just showing that the agentic system is doing it's thing.
+5. We can see that the unattended system scans all the customers and finds those with engagement issues.
+6. For each issue, it searches internal docs, the CRM system, and other sources of data, then composes an appropriate, customized response.
+7. Some interventions are tailored emails; some are configurations of the backend system to trigger in-product guidance for users, etc.
 
 ### The results
 
@@ -222,7 +227,16 @@ So let's look at the top three business problems the executive team decided to t
       2. We'll approve, and the agentic system will then do the activation.
    2. You can also see that this customer had a second intervention, which is a custom email outreach to the administrator.
    3. Let's actually look at each of these to see what was done, and why agents are helpful.
-3. Here is the customer success manager's email. You can see:
+
+> [!TIP] 
+> Ask for their input.
+> - What's your perspective on whether any actions should be entirely autonomous?
+> - If some are good, and others not - how would you decide?
+> - What are the risks?
+> - One of the activities in Google's framework is an explicit, structure approach to evaluating and mitigating risks
+
+3. OK - let's quickly review the actual agent actions
+4. Here is the customer success manager's email. You can see:
    1. The agent has sent emails of various types to primary technical contacts at the customers who have engagement issues.
    2. If we look at the email to Nexus Tech, you can see it calls out: 
       1. Things that are good, including positive themes received from users of the product. These themes will differ across customers, and LLM-backed agents are particularly good at reading, classifying, and measuring the sentiment of text input.
@@ -231,10 +245,10 @@ So let's look at the top three business problems the executive team decided to t
          1. You'll notice each action says why it was selected, and in this case, the first one is based on CRM notes. The scanning of the CRM notes, the decision on what to suggest, and the phrasing of the email and explanation is all done by the agents.
    3. If we look at Greenleaf, you can see the format is similar but the recommendations and reasoning are different.
    4. If we look at the third email, you can see this is more of a direct intervention, telling the customer what's wrong and what to do about it. Again, the agent can decide what performance details to share, how to format, and what directions to pull from troubleshooting guides and present neatly in the email.
-4. If we check out the VC system backend we can see:
+5. If we check out the VC system backend we can see:
    1. The intervention the CSM approved has been enabled.
    2. The other similar interventions are pending CSM approval.
-5. And what exactly is being approved/enabled?
+6. Optional - And what exactly is being approved/enabled?
    1. Well, when a user logs into the VC client, they see a UI like this.
    2. But if it's a Nexus Tech employee where the calendar outreach interventions have been built and enabled, it looks like this:
       1. The agent has composed the text presented.
@@ -244,7 +258,7 @@ So let's look at the top three business problems the executive team decided to t
 
 > [!TIP] 
 > Ask for their reaction.
-> - Does that give you a sense for the types of things an agent can do, and the benefits it might achieve? 
+> - Does anyone have any questions about agentic solution capabilities/benefits/risks triggered by this demo?
 
 ## Takeaways
 
