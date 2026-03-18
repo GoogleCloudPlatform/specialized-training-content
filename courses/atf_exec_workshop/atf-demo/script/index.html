@@ -153,6 +153,7 @@
       margin-bottom: 4px;
       font-size: 1rem;
       transition: border-left-color 0.15s, background 0.15s;
+      cursor: pointer;
     }
 
     .point.selected {
@@ -173,6 +174,7 @@
       color: #555;
       font-size: 0.95rem;
       transition: border-left-color 0.15s, background 0.15s;
+      cursor: pointer;
     }
 
     .sub-point.selected {
@@ -193,6 +195,7 @@
       color: #666;
       font-size: 0.9rem;
       transition: border-left-color 0.15s, background 0.15s;
+      cursor: pointer;
     }
 
     .sub-sub-point.selected {
@@ -213,6 +216,7 @@
       color: #777;
       font-size: 0.85rem;
       transition: border-left-color 0.15s, background 0.15s;
+      cursor: pointer;
     }
 
     .sub-sub-sub-point.selected {
@@ -701,6 +705,13 @@
       document.querySelectorAll('.point, .sub-point, .sub-sub-point, .sub-sub-sub-point')
     );
     var currentIndex = -1;
+
+    // Click to select a talking point
+    allLines.forEach(function(line, index) {
+      line.addEventListener('click', function() {
+        selectLine(index);
+      });
+    });
 
     function selectLine(index) {
       // Clear previous
