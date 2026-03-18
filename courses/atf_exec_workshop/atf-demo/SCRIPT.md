@@ -13,7 +13,7 @@ Step-by-step guide for delivering the demo scenario.
 
 ### The business
 
-1. Let's look at Cymbal Meet, a videoconferencing company that sells hardware for conference rooms and SaaS subscriptions for rooms and end-users.
+1. Let's look at Cymbal Meet, a videoconferencing company that sells hardware for conference rooms and SaaS subscriptions for rooms and end users.
 1. They do $500M a year in revenue, sell globally, and serve SMB, mid-market, and enterprise customers.
 
 ### 2026 planning
@@ -29,7 +29,7 @@ Step-by-step guide for delivering the demo scenario.
 So let's look at the top three business problems the executive team decided to tackle:
 
 1. Improving net retention (kind of the holy grail for recurring revenue businesses)
-   1. **Ask**: Why is this so important? Supplement answer as necessary
+   1. **Ask**: Why is this so important? Supplement answer as necessary.
 2. Accelerating product development (get features to market faster)
 3. Optimize the entire approach to long-term, strategic customer contracts
 
@@ -40,7 +40,7 @@ So let's look at the top three business problems the executive team decided to t
 3. Cymbal Meet is failing to address the majority of these shortfalls actively and with high-quality interventions.
 4. Leadership estimates that if they can improve interventions, and as a result improve engagement, they can drive up gross and net retention.
 5. You can see their goals are to move from good to world-class gross/net retention rates.
-6. And the estimate is that in the first year, this could drive \$65M in additional revenue; and over 5 years drive $450M.
+6. And the estimate is that in the first year, this could drive \$65M in additional revenue; and over 5 years, drive $450M.
 7. Now, notice that at this point we're not talking about agents, or even AI, at all. This is important. Building valuable solutions starts by looking at the business, not the technology.
 8. We'll come back and talk about whether agents makes sense in a minute.
 
@@ -62,15 +62,15 @@ So let's look at the top three business problems the executive team decided to t
    1. It's heavily reliant on cultivating personal relationships.
    2. It requires creation and vetting of complex legal documents that are often unique.
    3. And it's a problem that doesn't affect thousands of instances; there's really only 50 customers, and typically you negotiate annually or every few years.
-   4. This is not a great candidate, and so while the company will tackle this problem, it's not one that the internal innovation team is going to prioritize for agentic intervention. I heard an executive recently say "This problem will be addressible by agents when the agent can take the customer CEO out to play golf."
-      1. Now - that's not to say that there' no place that an agent might be able to contribute in this area
+   4. This is not a great candidate, and so while the company will tackle this problem, it's not one that the internal innovation team is going to prioritize for agentic intervention. I heard an executive recently say "This problem will be addressable by agents when the agent can take the customer CEO out to play golf."
+      1. Now, that's not to say that there's no place that an agent might be able to contribute in this area.
       2. However, given that large parts of the problem might be difficult to address, and given that you only negotiate a dozen of these contracts a year, it's less obviously a win, and wouldn't be the top priority.
 
 > [!TIP] 
 > Solicit their input/participation
 > - Can anyone name a big problem that they've identified as a good candidate for agentic innovation? What made it attractive? 
 > - Can anyone point to a problem that they explicitly deprioritized?
-> - In your organization, who would help do the suitability evaluation? (internal team, external consultants?
+> - In your organization, who would help do the suitability evaluation? (internal team, external consultants)
 
 ## Analyzing the current processes
 
@@ -91,12 +91,12 @@ So let's look at the top three business problems the executive team decided to t
 2. The process is comprised of stages, and stages are comprised of tasks.
    1. In real, complex processes, stages might have sub-stages and tasks might have steps.
    2. We've simplified a bit for this discussion.
-   3. This might not look like a typical process map to you, and that's fair. We simplified the presentation so that it was easy to produce/maintain for this class, and easy to understand
+   3. This might not look like a typical process map to you, and that's fair. We simplified the presentation so that it was easy to produce/maintain for this class, and easy to understand.
 3. The detection phase is where:
    1. Customer Success managers collect usage data.
    2. They compare data against targets.
    3. They identify and characterize different types of engagement shortfalls.
-   4. And they do sort a fuzzy-logic scan to identify undesirable patterns that aren't as simple as falling 20% below target on a specific metric.
+   4. And they do a fuzzy-logic scan to identify undesirable patterns that aren't as simple as falling 20% below target on a specific metric.
 4. The design phase is where:
    1. The CSM looks at templates for interventions.
    2. They look at CRM system details, internal knowledgebases, etc.
@@ -104,7 +104,7 @@ So let's look at the top three business problems the executive team decided to t
 5. The execution phase is where:
    1. The CSM sends emails.
    2. They configure backend systems to do in-product notifications.
-6. And the sync a report phase is where:
+6. And the sync and report phase is where:
    1. The CRM gets updated with information about outreach.
    2. Systems are configured to collect and report intervention results.
    3. Etc.
@@ -187,7 +187,7 @@ So let's look at the top three business problems the executive team decided to t
 ### CSM Dashboard
 
 > [!NOTE] 
-> Click Cymbal Meet Logo in center panel to return to home page.
+> Click Cymbal Meet logo in center panel to return to home page.
 > Click the button in CSM Dashboard card.
 
 1. This is a dashboard that Customer Success Managers use to track:
@@ -206,7 +206,7 @@ So let's look at the top three business problems the executive team decided to t
 > [!NOTE] 
 > Return to CSM Dashboard listing.
 
-1. OK, so that's the context. Let's see what the agentic solution offers
+1. Ok, so that's the context. Let's see what the agentic solution offers
 2. Cymbal Meet has built an agentic system that kicks in weekly to find and address these engagement issues. 
 3. I'm going to invoke the system as though it was early Monday morning (click button).
 4. Don't worry about reading the status report; this is just showing that the agentic system is doing it's thing.
@@ -222,7 +222,7 @@ So let's look at the top three business problems the executive team decided to t
 1. You'll notice that the dashboard has been updated, and shows interventions that are underway and pending approval. 
    1. This is a clue that some things the agent can do entirely on its own; others, you want a human-in-the-loop making approvals and/or tweaks.
 2. If we look at Nexus Tech, we can see:
-   1. There's a messaging campaign recommended which would touch end-users directly. 
+   1. There's a messaging campaign recommended which would touch end users directly. 
       1. This is something that requires CSM approval before it is executed. 
       2. We'll approve, and the agentic system will then do the activation.
    2. You can also see that this customer had a second intervention, which is a custom email outreach to the administrator.
@@ -231,11 +231,11 @@ So let's look at the top three business problems the executive team decided to t
 > [!TIP] 
 > Ask for their input.
 > - What's your perspective on whether any actions should be entirely autonomous?
-> - If some are good, and others not - how would you decide?
+> - If some are good, and others not, how would you decide?
 > - What are the risks?
 > - One of the activities in Google's framework is an explicit, structure approach to evaluating and mitigating risks
 
-3. OK - let's quickly review the actual agent actions
+3. Ok, let's quickly review the actual agent actions.
 4. Here is the customer success manager's email. You can see:
    1. The agent has sent emails of various types to primary technical contacts at the customers who have engagement issues.
    2. If we look at the email to Nexus Tech, you can see it calls out: 
@@ -262,7 +262,7 @@ So let's look at the top three business problems the executive team decided to t
 
 ## Takeaways
 
-1. Okay, that was quite the involved demo scenario.
+1. Ok, that was quite the involved demo scenario.
 2. But hopefully it did a good job driving home these takeaways:
    1. Success with agentic innovation starts with a focus on the business, not the cool technology.
    2. Agents aren't always the answer; some things are best handled by people with important skills that agents don't have.
