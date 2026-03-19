@@ -38,16 +38,16 @@ The home page (`/`) loads a shell with a **sidebar nav on the left** and a **con
 
 Sidebar sections:
 
-| Nav item | What it loads |
-|----------|--------------|
-| Intro to Cymbal Meet | Company overview |
-| Big Business Problems | The three problems driving this initiative |
-| As-Is Process | Current-state workflow |
-| Reimagined Process | Agentic target-state workflow |
-| Agentic Solution Design | How the agent is designed |
-| Build Agents | Implementation approach |
-| **Launch Demo** | Opens the demo app (CSM Dashboard, CRM, Inbox, Client, Admin) |
-| Takeaways | Summary and next steps |
+| Nav item                | What it loads                                                 |
+| ----------------------- | ------------------------------------------------------------- |
+| Intro to Cymbal Meet    | Company overview                                              |
+| Big Business Problems   | The three problems driving this initiative                    |
+| As-Is Process           | Current-state workflow                                        |
+| Reimagined Process      | Agentic target-state workflow                                 |
+| Agentic Solution Design | How the agent is designed                                     |
+| Build Agents            | Implementation approach                                       |
+| **Launch Demo**         | Opens the demo app (CSM Dashboard, CRM, Inbox, Client, Admin) |
+| Takeaways               | Summary and next steps                                        |
 
 ## Presenting
 
@@ -63,16 +63,16 @@ The contents present here are drawn from [SCRIPT.md](SCRIPT.md). In short:
 
 ## Key endpoints
 
-| URL | Purpose |
-|-----|---------|
-| `/` | Home page — sidebar nav + content pane |
-| `/demo/` | Demo landing page (app module cards) |
+| URL                    | Purpose                                                |
+| ---------------------- | ------------------------------------------------------ |
+| `/`                    | Home page — sidebar nav + content pane                 |
+| `/demo/`               | Demo landing page (app module cards)                   |
 | `/demo/csm-dashboard/` | CSM Dashboard with engagement charts and interventions |
-| `/demo/crm/` | CRM system (contacts, activity history) |
-| `/demo/inbox/` | Agent-generated emails |
-| `/demo/client/` | End-user client simulation |
-| `/demo/backend-admin/` | Demo reset and admin controls |
-| `/script` | Live presenter script (mirrors SCRIPT.md content) |
+| `/demo/crm/`           | CRM system (contacts, activity history)                |
+| `/demo/inbox/`         | Agent-generated emails                                 |
+| `/demo/client/`        | End-user client simulation                             |
+| `/demo/backend-admin/` | Demo reset and admin controls                          |
+| `/script`              | Live presenter script (mirrors SCRIPT.md content)      |
 
 ## Disclaimer
 
