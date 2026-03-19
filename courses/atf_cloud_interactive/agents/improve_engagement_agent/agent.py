@@ -25,6 +25,8 @@ from google.adk.models import Gemini
 from google.adk.tools.agent_tool import AgentTool
 from google.genai import Client, types
 
+from .prompt_task3 import IMPROVE_ENGAGEMENT_INSTRUCTION
+
 # --- Environment configuration ---
 PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
 DATA_AGENT_URL = os.environ["DATA_AGENT_URL"]  # Cloud Run base URL
@@ -86,7 +88,6 @@ class Gemini3(Gemini):
 # --- Improve Engagement agent system prompt ---
 # For Task 3 (data agent only), import from prompt_task3.
 # For Task 4 (data + intervention agents), swap to prompt_task4.
-from prompt_task3 import IMPROVE_ENGAGEMENT_INSTRUCTION
 
 
 # --- Improve Engagement agent agent ---
