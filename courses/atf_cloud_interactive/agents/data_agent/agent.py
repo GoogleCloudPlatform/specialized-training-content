@@ -30,15 +30,15 @@ from google.adk.auth.auth_credential import (AuthCredential,
                                              AuthCredentialTypes,
                                              ServiceAccount)
 from google.adk.models import Gemini
+from google.adk.runners import InMemoryRunner
 from google.adk.telemetry.google_cloud import (get_gcp_exporters,
                                                get_gcp_resource)
-from google.adk.runners import InMemoryRunner
-
 from google.adk.telemetry.setup import maybe_set_otel_providers
 from google.adk.tools.mcp_tool.mcp_session_manager import \
     StreamableHTTPConnectionParams
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.genai import Client, types
+
 # TODO MODELARMOR IMPORT: Import ModelArmorSafetyFilterPlugin from model_armor_plugin.
 
 # --- Environment configuration ---
@@ -157,7 +157,11 @@ class Gemini3(Gemini):
             location="global",
             http_options=types.HttpOptions(
                 headers=self._tracking_headers(),
-                retry_options=self.retry_options,
+                retry_options=types.HttpRetryOptions(
+                    max_delay=7,
+                    exp_base=1.5,
+                    jitter=.5,
+                )
             ),
         )
 

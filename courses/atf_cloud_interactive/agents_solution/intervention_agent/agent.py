@@ -143,7 +143,11 @@ class Gemini3(Gemini):
             location="global",
             http_options=types.HttpOptions(
                 headers=self._tracking_headers(),
-                retry_options=self.retry_options,
+                retry_options=types.HttpRetryOptions(
+                    max_delay=7,
+                    exp_base=1.5,
+                    jitter=.5,
+                )
             ),
         )
 
