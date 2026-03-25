@@ -102,8 +102,13 @@ def create_engine(project_id):
     url = f"{base_url()}/{parent(project_id)}/engines?engineId={engine_id}"
     body = {
         "displayName": ENGINE_DISPLAY_NAME,
-        "solutionType": "SOLUTION_TYPE_CHAT",
+        "solutionType": "SOLUTION_TYPE_SEARCH",
         "industryVertical": "GENERIC",
+        "appType": "APP_TYPE_INTRANET",
+        "searchEngineConfig": {
+            "searchTier": "SEARCH_TIER_ENTERPRISE",
+            "searchAddOns": ["SEARCH_ADD_ON_LLM"],
+        },
     }
     resp = requests.post(url, json=body, headers=get_auth_headers(project_id))
     if not resp.ok:
