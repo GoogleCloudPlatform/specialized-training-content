@@ -47,12 +47,6 @@ GCS_MCP_ENDPOINT = os.environ.get(
 VS_DATASTORE_ID = os.environ.get("VS_DATASTORE_ID", "")
 INTERVENTIONS_BUCKET = os.environ.get("INTERVENTIONS_BUCKET", f"gs://{PROJECT_ID}-interventions")
 
-# --- GCS MCP toolset ---
-GCS_MCP_SCOPES = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/devstorage.read_write",
-]
-
 # Suppress repetitive ADK experimental-feature warnings and noisy INFO logs
 warnings.filterwarnings("ignore", message=r"\[EXPERIMENTAL\]")
 logging.getLogger("google.adk").setLevel(logging.WARNING)
@@ -73,6 +67,12 @@ maybe_set_otel_providers(
     otel_resource=_gcp_resource,
 )
 
+
+# --- GCS MCP toolset ---
+GCS_MCP_SCOPES = [
+    "https://www.googleapis.com/auth/cloud-platform",
+    "https://www.googleapis.com/auth/devstorage.read_write",
+]
 
 def _create_gcs_mcp_toolset() -> McpToolset:
     """Create GCS MCP toolset with OAuth2 service account auth."""

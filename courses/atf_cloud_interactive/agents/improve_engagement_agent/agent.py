@@ -89,10 +89,6 @@ class Gemini3(Gemini):
 #   1. Create data_tool by wrapping data_agent with AgentTool.
 #   2. Create intervention_tool by wrapping intervention_agent with AgentTool.
 
-# --- Improve Engagement agent system prompt ---
-# For Task 3 (data agent only), import from prompt_task3.
-# For Task 4 (data + intervention agents), swap to prompt_task4.
-
 
 # --- Improve Engagement agent agent ---
 root_agent = LlmAgent(
