@@ -180,9 +180,22 @@ def configure_permissions(project_id, engine_id):
     print()
     print("Step 11: Configuring user permissions (allUsers) ...")
     engine_resource = f"{parent(project_id)}/engines/{engine_id}"
-    url = f"{base_url()}/{engine_resource}:setIamPolicy"
+
+    # Get current policy to obtain the required etag
+    get_url = f"{base_url()}/{engine_resource}:getIamPolicy"
+    get_resp = requests.post(get_url, json={}, headers=get_auth_headers(project_id))
+    if not get_resp.ok:
+        raise RuntimeError(
+            f"Get IAM policy failed: {get_resp.status_code} {get_resp.text}"
+        )
+    current_policy = get_resp.json()
+    etag = current_policy.get("etag", "")
+
+    # Set updated policy with the etag
+    set_url = f"{base_url()}/{engine_resource}:setIamPolicy"
     body = {
         "policy": {
+            "etag": etag,
             "bindings": [
                 {
                     "role": "roles/discoveryengine.user",
@@ -191,7 +204,7 @@ def configure_permissions(project_id, engine_id):
             ],
         },
     }
-    resp = requests.post(url, json=body, headers=get_auth_headers(project_id))
+    resp = requests.post(set_url, json=body, headers=get_auth_headers(project_id))
     if not resp.ok:
         raise RuntimeError(
             f"Set IAM policy failed: {resp.status_code} {resp.text}"
