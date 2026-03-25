@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindFlow v1.1 (Portable)</title>
+    <!-- Core Libraries -->
+    <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/konva@9.3.18/konva.min.js"></script>
+    <script src="https://unpkg.com/react-konva@18.2.10/react-konva.min.js"></script>
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; background-color: #f9fafb; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .konvajs-content { cursor: grab; }
+        .konvajs-content:active { cursor: grabbing; }
+        .status-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; color: #71717a; font-size: 14px; gap: 10px; text-align: center; padding: 20px; }
+        .error-text { color: #ef4444; font-weight: 600; margin-top: 10px; }
+        .retry-btn { margin-top: 20px; padding: 10px 20px; background: #18181b; color: white; border-radius: 8px; font-size: 13px; cursor: pointer; border: none; }
+        .retry-btn:hover { background: #3f3f46; }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="status-screen">
+            <div id="status-msg" class="font-medium">Initializing MindFlow...</div>
+            <div id="error-details" class="error-text text-xs opacity-80"></div>
+            <button id="retry-btn" class="retry-btn" style="display:none" onclick="window.location.reload()">Retry Loading</button>
+            <div class="mt-8 text-xs text-zinc-400 max-w-xs">
+                Note: This app requires an internet connection to load libraries. 
+                If it fails, try opening it in a different browser or checking your firewall.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check for libraries with a more robust retry logic
+        let checkCount = 0;
+        const maxChecks = 20; // Wait up to 10 seconds
+
+        function checkLibraries() {
+            const missing = [];
+            if (!window.React) missing.push("React");
+            if (!window.ReactDOM) missing.push("ReactDOM");
+            if (!window.Konva) missing.push("Konva");
+            if (!window.ReactKonva) missing.push("ReactKonva");
+
+            if (missing.length === 0) {
+                startApp();
+            } else {
+                checkCount++;
+                if (checkCount < maxChecks) {
+                    document.getElementById('status-msg').innerText = `Connecting to libraries... (${Math.round((checkCount/maxChecks)*100)}%)`;
+                    setTimeout(checkLibraries, 500);
+                } else {
+                    document.getElementById('status-msg').innerText = "Connection Failed";
+                    document.getElementById('error-details').innerText = "Could not reach: " + missing.join(", ");
+                    document.getElementById('retry-btn').style.display = "block";
+                    console.error("MindFlow Load Error: Missing libraries", missing);
+                }
+            }
+        }
+
+        function startApp() {
+            const { useState, useEffect, useRef } = React;
+            const { Stage, Layer, Rect, Text, Line, Group } = ReactKonva;
+
+            // Icons as SVG components
+            const Icon = ({ name, size = 18 }) => {
+                const paths = {
+                    plus: "M12 5v14M5 12h14",
+                    trash: "M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2",
+                    download: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4M7 10l5 5 5-5M12 15V3",
+                    upload: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12",
+                    focus: "M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0 M12 3v3 M12 18v3 M3 12h3 M18 12h3",
+                    link: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71 M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71",
+                    chevronDown: "m6 9 6 6 6-6",
+                    chevronRight: "m9 18 6-6-6-6"
+                };
+                return React.createElement('svg', {
+                    width: size,
+                    height: size,
+                    viewBox: "0 0 24 24",
+                    fill: "none",
+                    stroke: "currentColor",
+                    strokeWidth: "2",
+                    strokeLinecap: "round",
+                    strokeLinejoin: "round"
+                }, React.createElement('path', { d: paths[name] }));
+            };
+
+            const MindMap = () => {
+                const [nodes, setNodes] = useState([{ id: 'root', text: 'Main Idea', x: 0, y: 0, parentId: null }]);
+                const [selectedId, setSelectedId] = useState('root');
+                const [editingId, setEditingId] = useState(null);
+                const [editText, setEditText] = useState('');
+                const [isToolbarVisible, setIsToolbarVisible] = useState(true);
+                const [showControls, setShowControls] = useState(true);
+                const [currentMapName, setCurrentMapName] = useState('Untitled Map');
+                const [stagePos, setStagePos] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+                const [stageScale, setStageScale] = useState(1);
+                const [stageSize, setStageSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+
+                const fileInputRef = useRef(null);
+
+                useEffect(() => {
+                    const handleResize = () => setStageSize({ width: window.innerWidth, height: window.innerHeight });
+                    window.addEventListener('resize', handleResize);
+                    return () => window.removeEventListener('resize', handleResize);
+                }, []);
+
+                const centerView = () => { setStagePos({ x: window.innerWidth / 2, y: window.innerHeight / 2 }); setStageScale(1); };
+
+                const addChild = (parentId) => {
+                    const parent = nodes.find(n => n.id === parentId);
+                    if (!parent) return;
+                    const newId = Math.random().toString(36).substr(2, 9);
+                    setNodes([...nodes, { id: newId, text: 'New Topic', x: parent.x + 200, y: parent.y + (Math.random() * 100 - 50), parentId }]);
+                    setSelectedId(newId);
+                    setEditingId(newId);
+                    setEditText('New Topic');
+                };
+
+                const deleteNode = (id) => {
+                    if (id === 'root') return;
+                    const idsToDelete = new Set([id]);
+                    const findChildren = (pId) => nodes.forEach(n => { if (n.parentId === pId) { idsToDelete.add(n.id); findChildren(n.id); } });
+                    findChildren(id);
+                    setNodes(nodes.filter(n => !idsToDelete.has(n.id)));
+                    setSelectedId(null);
+                };
+
+                const downloadMap = () => {
+                    const data = JSON.stringify({ name: currentMapName, nodes }, null, 2);
+                    const blob = new Blob([data], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `${currentMapName.replace(/\s+/g, '_')}.json`;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                };
+
+                const handleFileUpload = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            if (data.nodes) { setNodes(data.nodes); setCurrentMapName(data.name || 'Imported Map'); centerView(); }
+                        } catch (err) { alert('Invalid file format'); }
+                    };
+                    reader.readAsText(file);
+                };
+
+                const loadFromUrl = async () => {
+                    const url = window.prompt('Enter the URL of a MindFlow JSON file:');
+                    if (!url) return;
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        const data = await response.json();
+                        if (data.nodes) {
+                            setNodes(data.nodes);
+                            setCurrentMapName(data.name || 'Remote Map');
+                            centerView();
+                        } else {
+                            alert('Invalid mind map format');
+                        }
+                    } catch (err) {
+                        alert('Failed to load from URL. This might be due to CORS restrictions or an invalid URL.\n\nError: ' + err.message);
+                    }
+                };
+
+                const handleWheel = (e) => {
+                    e.evt.preventDefault();
+                    const scaleBy = 1.1;
+                    const stage = e.target.getStage();
+                    const oldScale = stage.scaleX();
+                    const pointer = stage.getPointerPosition();
+                    const mousePointTo = { x: (pointer.x - stage.x()) / oldScale, y: (pointer.y - stage.y()) / oldScale };
+                    const newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+                    setStageScale(newScale);
+                    setStagePos({ x: pointer.x - mousePointTo.x * newScale, y: pointer.y - mousePointTo.y * newScale });
+                };
+
+                return React.createElement('div', { className: "relative w-full h-screen bg-zinc-50 overflow-hidden" },
+                    isToolbarVisible ? React.createElement('div', { className: "absolute top-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 p-2 bg-white/90 backdrop-blur-md border border-zinc-200 rounded-2xl shadow-xl" },
+                        React.createElement('div', { className: "px-4 py-1 border-r border-zinc-200 mr-2" },
+                            React.createElement('input', { type: "text", value: currentMapName, onChange: (e) => setCurrentMapName(e.target.value), className: "text-sm font-semibold text-zinc-800 bg-transparent border-none focus:outline-none w-32" })
+                        ),
+                        React.createElement('div', { className: "flex items-center gap-1 pr-2 border-r border-zinc-200" },
+                            React.createElement('button', { onClick: downloadMap, className: "p-1.5 text-zinc-600 hover:bg-zinc-100 rounded-lg", title: "Download" }, React.createElement(Icon, { name: "download" })),
+                            React.createElement('button', { onClick: () => fileInputRef.current.click(), className: "p-1.5 text-zinc-600 hover:bg-zinc-100 rounded-lg", title: "Upload" }, React.createElement(Icon, { name: "upload" })),
+                            React.createElement('button', { onClick: loadFromUrl, className: "p-1.5 text-zinc-600 hover:bg-zinc-100 rounded-lg", title: "Load from URL" }, React.createElement(Icon, { name: "link" })),
+                            React.createElement('input', { type: "file", ref: fileInputRef, onChange: handleFileUpload, accept: ".json", className: "hidden" })
+                        ),
+                        selectedId ? React.createElement('div', { className: "flex items-center gap-1" },
+                            React.createElement('button', { onClick: () => addChild(selectedId), className: "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-100 rounded-lg" }, React.createElement(Icon, { name: "plus", size: 14 }), " Child"),
+                            selectedId !== 'root' && React.createElement('button', { onClick: () => deleteNode(selectedId), className: "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg" }, React.createElement(Icon, { name: "trash", size: 14 }), " Delete")
+                        ) : React.createElement('div', { className: "px-4 py-1.5 text-xs text-zinc-500 font-medium" }, "Select a node"),
+                        React.createElement('div', { className: "w-px h-4 bg-zinc-200 mx-1" }),
+                        React.createElement('button', { onClick: () => setIsToolbarVisible(false), className: "p-1.5 text-zinc-500 hover:bg-zinc-100 rounded-lg" }, React.createElement(Icon, { name: "chevronDown" }))
+                    ) : React.createElement('button', { onClick: () => setIsToolbarVisible(true), className: "absolute top-6 left-1/2 -translate-x-1/2 z-10 p-2 bg-white/90 backdrop-blur-md border border-zinc-200 rounded-full shadow-lg text-zinc-500" }, React.createElement(Icon, { name: "chevronDown" })),
+
+                    React.createElement(Stage, {
+                        width: stageSize.width, height: stageSize.height, draggable: true, x: stagePos.x, y: stagePos.y, scaleX: stageScale, scaleY: stageScale, onWheel: handleWheel,
+                        onDragEnd: (e) => setStagePos({ x: e.target.x(), y: e.target.y() }),
+                        onClick: (e) => { if (e.target === e.target.getStage()) setSelectedId(null); }
+                    },
+                        React.createElement(Layer, null,
+                            nodes.map(node => {
+                                if (!node.parentId) return null;
+                                const parent = nodes.find(n => n.id === node.parentId);
+                                if (!parent) return null;
+                                return React.createElement(Line, { key: `l-${node.id}`, points: [parent.x, parent.y, node.x, node.y], stroke: "#e4e4e7", strokeWidth: 2, tension: 0.5 });
+                            }),
+                            nodes.map(node => React.createElement(Group, {
+                                key: node.id, x: node.x, y: node.y, draggable: true,
+                                onDragEnd: (e) => setNodes(nodes.map(n => n.id === node.id ? { ...n, x: e.target.x(), y: e.target.y() } : n)),
+                                onClick: (e) => { e.cancelBubble = true; setSelectedId(node.id); },
+                                onDblClick: () => { setEditingId(node.id); setEditText(node.text); }
+                            },
+                                React.createElement(Rect, { width: 140, height: 50, offsetX: 70, offsetY: 25, fill: "white", stroke: selectedId === node.id ? '#18181b' : '#e4e4e7', strokeWidth: selectedId === node.id ? 2 : 1, cornerRadius: 12, shadowBlur: 10, shadowColor: "rgba(0,0,0,0.05)" }),
+                                React.createElement(Text, { text: node.text, width: 120, offsetX: 60, offsetY: 8, align: "center", fontSize: 13, fontStyle: "500", fill: "#18181b" })
+                            ))
+                        )
+                    ),
+
+                    editingId && React.createElement('div', { className: "absolute inset-0 z-50 flex items-center justify-center bg-zinc-900/20 backdrop-blur-sm" },
+                        React.createElement('div', { className: "bg-white p-6 rounded-2xl shadow-2xl border border-zinc-200 w-full max-w-sm" },
+                            React.createElement('h3', { className: "text-sm font-semibold text-zinc-900 mb-4" }, "Edit Topic"),
+                            React.createElement('input', { autoFocus: true, type: "text", value: editText, onChange: (e) => setEditText(e.target.value), onKeyDown: (e) => { if (e.key === 'Enter') { setNodes(nodes.map(n => n.id === editingId ? { ...n, text: editText } : n)); setEditingId(null); } }, className: "w-full px-4 py-2 bg-zinc-50 border border-zinc-200 rounded-xl text-sm mb-4" }),
+                            React.createElement('div', { className: "flex justify-end gap-2" },
+                                React.createElement('button', { onClick: () => setEditingId(null), className: "px-4 py-2 text-xs font-medium text-zinc-600 hover:bg-zinc-100 rounded-lg" }, "Cancel"),
+                                React.createElement('button', { onClick: () => { setNodes(nodes.map(n => n.id === editingId ? { ...n, text: editText } : n)); setEditingId(null); }, className: "px-4 py-2 text-xs font-medium bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg" }, "Save")
+                            )
+                        )
+                    ),
+
+                    React.createElement('div', { className: "absolute bottom-6 right-6 flex flex-col items-end gap-2" },
+                        React.createElement('div', { className: "flex gap-2" },
+                            React.createElement('button', { onClick: centerView, className: "p-2 bg-white/90 backdrop-blur-md border border-zinc-200 rounded-full shadow-lg text-zinc-500" }, React.createElement(Icon, { name: "focus" })),
+                            React.createElement('button', { onClick: () => setShowControls(!showControls), className: "p-2 bg-white/90 backdrop-blur-md border border-zinc-200 rounded-full shadow-lg text-zinc-500" }, React.createElement(Icon, { name: showControls ? "chevronDown" : "chevronRight" }))
+                        ),
+                        showControls && React.createElement('div', { className: "p-4 bg-white/90 backdrop-blur-md border border-zinc-200 rounded-xl shadow-lg text-[11px] text-zinc-500 space-y-1" },
+                            React.createElement('p', null, "• ", React.createElement('b', null, "Double-click"), " to edit"),
+                            React.createElement('p', null, "• ", React.createElement('b', null, "Drag"), " nodes to move"),
+                            React.createElement('p', null, "• ", React.createElement('b', null, "Scroll"), " to zoom")
+                        )
+                    )
+                );
+            };
+
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(React.createElement(MindMap));
+        }
+
+        // Start checking
+        checkLibraries();
+    </script>
+</body>
+</html>
