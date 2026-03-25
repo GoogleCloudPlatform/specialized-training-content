@@ -8,7 +8,7 @@ Operations:
   5. Grant all users the agent user role
 
 Usage:
-  python setup_gemini_enterprise.py <PROJECT_ID> <PROJECT_NUMBER> <REASONING_ENGINE_NAME>
+  python setup_gemini_enterprise.py <PROJECT_ID> <REASONING_ENGINE_NAME>
 
   REASONING_ENGINE_NAME is the full resource name, e.g.:
     projects/PROJECT_ID/locations/us-central1/reasoningEngines/1234567890
@@ -83,13 +83,12 @@ def delete_existing_engines(project_id):
             f"{base_url()}/{name}", headers=get_auth_headers(project_id)
         )
         if del_resp.ok:
-            op_name = del_resp.json().get("name")
-            if op_name:
-                wait_for_operation(op_name, project_id, f"delete {display}")
-            else:
-                print(f"    Deleted {display}.")
+            print(f"    Delete initiated for {display}.")
         else:
             print(f"    WARNING: Delete returned {del_resp.status_code}: {del_resp.text}")
+
+    print("    Waiting for deletes to complete ...")
+    time.sleep(30)
     print("    Done.")
 
 
@@ -117,11 +116,18 @@ def create_engine(project_id):
     op = resp.json()
     op_name = op.get("name")
     if op_name and not op.get("done"):
-        wait_for_operation(op_name, project_id, "create engine")
+        result = wait_for_operation(op_name, project_id, "create engine")
     else:
+        result = op
         print("    Engine created.")
 
-    return engine_id
+    # Return the full engine resource name (uses project number)
+    engine_name = result.get("name", "")
+    if not engine_name:
+        # Fall back to constructing from engine_id
+        engine_name = f"{parent(project_id)}/engines/{engine_id}"
+    print(f"    Engine: {engine_name}")
+    return engine_name
 
 
 # ---- Step 3: Configure identity provider ------------------------------------
@@ -147,11 +153,11 @@ def configure_identity_provider(project_id):
 
 # ---- Step 4: Add agent ------------------------------------------------------
 
-def add_agent(project_id, engine_id, reasoning_engine_name):
+def add_agent(project_id, engine_name, reasoning_engine_name):
     print()
     print("Step 10: Adding agent to Gemini Enterprise application ...")
     url = (
-        f"{base_url()}/{parent(project_id)}/engines/{engine_id}"
+        f"{base_url()}/{engine_name}"
         f"/assistants/default_assistant/agents"
     )
     body = {
@@ -176,13 +182,12 @@ def add_agent(project_id, engine_id, reasoning_engine_name):
 
 # ---- Step 5: Configure user permissions --------------------------------------
 
-def configure_permissions(project_id, engine_id):
+def configure_permissions(project_id, engine_name):
     print()
     print("Step 11: Configuring user permissions (allUsers) ...")
-    engine_resource = f"{parent(project_id)}/engines/{engine_id}"
 
     # Get current policy to obtain the required etag
-    get_url = f"{base_url()}/{engine_resource}:getIamPolicy"
+    get_url = f"{base_url()}/{engine_name}:getIamPolicy"
     get_resp = requests.post(get_url, json={}, headers=get_auth_headers(project_id))
     if not get_resp.ok:
         raise RuntimeError(
@@ -192,7 +197,7 @@ def configure_permissions(project_id, engine_id):
     etag = current_policy.get("etag", "")
 
     # Set updated policy with the etag
-    set_url = f"{base_url()}/{engine_resource}:setIamPolicy"
+    set_url = f"{base_url()}/{engine_name}:setIamPolicy"
     body = {
         "policy": {
             "etag": etag,
@@ -215,23 +220,22 @@ def configure_permissions(project_id, engine_id):
 # ---- Main --------------------------------------------------------------------
 
 def main():
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 3:
         print(__doc__)
         sys.exit(1)
 
     project_id = sys.argv[1]
-    project_number = sys.argv[2]
-    reasoning_engine_name = sys.argv[3]
+    reasoning_engine_name = sys.argv[2]
 
     print()
     print(f"  Reasoning Engine: {reasoning_engine_name}")
     print()
 
     delete_existing_engines(project_id)
-    engine_id = create_engine(project_id)
+    engine_name = create_engine(project_id)
     configure_identity_provider(project_id)
-    add_agent(project_id, engine_id, reasoning_engine_name)
-    configure_permissions(project_id, engine_id)
+    add_agent(project_id, engine_name, reasoning_engine_name)
+    configure_permissions(project_id, engine_name)
 
     print()
     print("Gemini Enterprise setup complete!")

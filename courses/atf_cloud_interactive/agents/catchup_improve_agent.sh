@@ -147,7 +147,6 @@ echo "  Found: ${REASONING_ENGINE_NAME}"
 cd "${SCRIPT_DIR}"
 python3 setup_gemini_enterprise.py \
   "${GOOGLE_CLOUD_PROJECT}" \
-  "${PROJECT_NUMBER}" \
   "${REASONING_ENGINE_NAME}"
 
 echo ""
