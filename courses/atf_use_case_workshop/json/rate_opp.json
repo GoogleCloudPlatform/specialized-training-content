@@ -1,0 +1,235 @@
+{
+  "version": "1.0",
+  "name": "Identify Rate Opportunities",
+  "nodes": [
+    {
+      "id": "80K7aXc8HprF2C_s8g6o7",
+      "text": "Identify rate opportunities",
+      "x": -54.73300409884399,
+      "y": 214.15188948022129,
+      "width": 143.98636636617175,
+      "height": 62.85725070172471,
+      "color": "#22c55e",
+      "isCollapsed": false
+    },
+    {
+      "id": "aO8QHsSHv2rT9lZ5ALRQr",
+      "text": "Find lower rate opportunities",
+      "x": 118.25331873829683,
+      "y": 177.21045895553297,
+      "width": 140,
+      "height": 50,
+      "parentId": "80K7aXc8HprF2C_s8g6o7",
+      "color": "#f97316",
+      "isCollapsed": false,
+      "parentIds": [
+        "80K7aXc8HprF2C_s8g6o7"
+      ]
+    },
+    {
+      "id": "wNl0FtNc3kOXgbvn-2mCf",
+      "text": "Identify rate variances for similar services across suppliers",
+      "x": 280.47849526877604,
+      "y": 106.74163723383799,
+      "width": 171.54935548379075,
+      "height": 64.501546231652,
+      "parentId": "aO8QHsSHv2rT9lZ5ALRQr",
+      "color": "#a855f7",
+      "isCollapsed": true,
+      "parentIds": [
+        "aO8QHsSHv2rT9lZ5ALRQr"
+      ]
+    },
+    {
+      "id": "t28BPCNsZ_P3g9lck7qIX",
+      "text": "Search for roles by service in VendorFlow",
+      "x": 495.24611560329004,
+      "y": 24.529630922039516,
+      "width": 170.56343812492238,
+      "height": 55.22173091510558,
+      "parentId": "wNl0FtNc3kOXgbvn-2mCf",
+      "color": "#3b82f6",
+      "isCollapsed": true,
+      "parentIds": [
+        "wNl0FtNc3kOXgbvn-2mCf"
+      ]
+    },
+    {
+      "id": "5vJ4Dwe7XmntEm9diCUQc",
+      "text": "Search for roles by service in VendorFlow",
+      "x": 497.40104925910225,
+      "y": 94.32623604400351,
+      "width": 192.25362002002782,
+      "height": 51.301228448992845,
+      "parentId": "wNl0FtNc3kOXgbvn-2mCf",
+      "color": "#3b82f6",
+      "isCollapsed": true,
+      "parentIds": [
+        "wNl0FtNc3kOXgbvn-2mCf"
+      ]
+    },
+    {
+      "id": "iYq4OqE9sDc0-oUy21XUI",
+      "text": "Download data to Sheet",
+      "x": 497.02780911610233,
+      "y": 160.68839117928545,
+      "width": 140,
+      "height": 50,
+      "parentId": "wNl0FtNc3kOXgbvn-2mCf",
+      "color": "#3b82f6",
+      "isCollapsed": true,
+      "parentIds": [
+        "wNl0FtNc3kOXgbvn-2mCf"
+      ]
+    },
+    {
+      "id": "E4R7Y_G6EvNX0_2BPI5S5",
+      "text": "Manually sort the Sheet",
+      "x": 496.02780722353583,
+      "y": 226.7324023411889,
+      "width": 139.99999999999994,
+      "height": 59.14408764406718,
+      "parentId": "wNl0FtNc3kOXgbvn-2mCf",
+      "color": "#3b82f6",
+      "isCollapsed": true,
+      "parentIds": [
+        "wNl0FtNc3kOXgbvn-2mCf"
+      ]
+    },
+    {
+      "id": "J1nETAA0ToDemdOhVw0mJ",
+      "text": "Normalize role description",
+      "x": 494.267238625368,
+      "y": 299.34784410594216,
+      "width": 174.0176459747639,
+      "height": 49.999999999999964,
+      "parentId": "wNl0FtNc3kOXgbvn-2mCf",
+      "color": "#3b82f6",
+      "isCollapsed": true,
+      "parentIds": [
+        "wNl0FtNc3kOXgbvn-2mCf"
+      ]
+    },
+    {
+      "id": "4N6rjgNG0RL9ae5c_ZQ-O",
+      "text": "Manually compare rates by suppliers",
+      "x": 492.2953982232673,
+      "y": 361.21933461034035,
+      "width": 177.4648596370005,
+      "height": 53.72658743177002,
+      "parentId": "wNl0FtNc3kOXgbvn-2mCf",
+      "color": "#3b82f6",
+      "isCollapsed": true,
+      "parentIds": [
+        "wNl0FtNc3kOXgbvn-2mCf"
+      ]
+    },
+    {
+      "id": "h4Dp6oH01wXdDh9-fEVDU",
+      "text": "Manually highlight cells where the rate exceeds the Preferred Supplier Program (PSP) rate",
+      "x": 491.76373168619284,
+      "y": 425.0692093382892,
+      "width": 243.0283649347071,
+      "height": 72.1154889602027,
+      "parentId": "wNl0FtNc3kOXgbvn-2mCf",
+      "color": "#3b82f6",
+      "isCollapsed": true,
+      "parentIds": [
+        "wNl0FtNc3kOXgbvn-2mCf"
+      ]
+    },
+    {
+      "id": "3devhp3EXnnKjeFK9tSBK",
+      "text": "AI replaces \n- Search for roles by service in VendorFlow\n- Search for services in AccordPro  by retrieving roles by service",
+      "x": 768.051807171888,
+      "y": -18.89209716232663,
+      "width": 292.0641435603383,
+      "height": 95.58128234867658,
+      "parentIds": [
+        "5vJ4Dwe7XmntEm9diCUQc",
+        "t28BPCNsZ_P3g9lck7qIX"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "u3qXVFoCiif8avD4yVbx9",
+      "text": "AI integrates with Sheets to import data to Sheets",
+      "x": 766.5225177671533,
+      "y": 113.47145124030453,
+      "width": 213.45921114706988,
+      "height": 76.2354325525249,
+      "parentIds": [
+        "iYq4OqE9sDc0-oUy21XUI"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "Ofg6mVms5pjFnZ693Kqwx",
+      "text": "Out of scope",
+      "x": 770.3678072235359,
+      "y": 205.29229375114198,
+      "width": 140,
+      "height": 50,
+      "parentIds": [
+        "E4R7Y_G6EvNX0_2BPI5S5"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "WkzNAHpo-T1aRHWQBTEoC",
+      "text": "AI augments \n- Normalize role descriptions \nby automatically retrieving and grouping similar roles",
+      "x": 766.7563078403194,
+      "y": 271.1174465420583,
+      "width": 245.70966573141118,
+      "height": 86.35566978822065,
+      "parentIds": [
+        "J1nETAA0ToDemdOhVw0mJ"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "yXEvSUtIp_g29Pz3mYpb-",
+      "text": "AI Replaces \n- Manually compare rates by suppliers \t\n- Highlight rates above the PSP rate for supplier \nby calculating rates above the PSP threshold and flagging them to the manager",
+      "x": 771.4957037298489,
+      "y": 377.91923896617277,
+      "width": 329.0026608203825,
+      "height": 107.43512920170824,
+      "parentIds": [
+        "h4Dp6oH01wXdDh9-fEVDU",
+        "4N6rjgNG0RL9ae5c_ZQ-O"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "8e8ajHofrcJgIwca8iTt-",
+      "text": "New Capability",
+      "x": 493.0278507525668,
+      "y": 510.7688165330578,
+      "width": 140,
+      "height": 50,
+      "parentIds": [
+        "wNl0FtNc3kOXgbvn-2mCf"
+      ],
+      "color": "#3b82f6",
+      "isCollapsed": true
+    },
+    {
+      "id": "vioKS8ceX01WJP9MGLYAx",
+      "text": "AI Adds \n- Continuous Long-Tail Monitoring \nby auditing 100% of supplier contracts nightly, which was previously impossible",
+      "x": 771.7654839258906,
+      "y": 504.626096792206,
+      "width": 271.5356990793865,
+      "height": 78.24984721721177,
+      "parentIds": [
+        "8e8ajHofrcJgIwca8iTt-"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    }
+  ]
+}

@@ -1,0 +1,299 @@
+{
+  "version": "1.0",
+  "name": "Code Documentation and Modernization",
+  "nodes": [
+    {
+      "id": "hjN_i7H5Af22amFpQwFhf",
+      "text": "Code Documentation and Modernization",
+      "x": 67.01745236612867,
+      "y": 197.59255312039386,
+      "width": 171.95703507539153,
+      "height": 67.71403021175887,
+      "parentIds": [],
+      "color": "#22c55e",
+      "isCollapsed": false
+    },
+    {
+      "id": "h9TR8hgHTcUjwc19gDpyW",
+      "text": "Fully document legacy codebase",
+      "x": 302.87540218661377,
+      "y": 122.61567912081341,
+      "width": 175.76488863971886,
+      "height": 61.773291004052545,
+      "parentIds": [
+        "hjN_i7H5Af22amFpQwFhf"
+      ],
+      "color": "#f97316",
+      "isCollapsed": false
+    },
+    {
+      "id": "jRRdao5E0oeXpIksGa7pV",
+      "text": "Extract business logic from code",
+      "x": 523.1582860338133,
+      "y": 23.340525811028783,
+      "width": 161.90707133950968,
+      "height": 56.9029042766925,
+      "parentIds": [
+        "h9TR8hgHTcUjwc19gDpyW"
+      ],
+      "color": "#a855f7",
+      "isCollapsed": false
+    },
+    {
+      "id": "5w9rjwbET5XhVPEV-zaIw",
+      "text": "Draft function-level documentation",
+      "x": 529.7532881925073,
+      "y": 364.76996926976415,
+      "width": 156.23421420121946,
+      "height": 58.27165046459959,
+      "parentIds": [
+        "h9TR8hgHTcUjwc19gDpyW"
+      ],
+      "color": "#a855f7",
+      "isCollapsed": false
+    },
+    {
+      "id": "EA2e275tyEuE7CEPVZAO1",
+      "text": "Generate unit tests",
+      "x": 500.90628785657907,
+      "y": 450.99377892074324,
+      "width": 140,
+      "height": 50,
+      "parentIds": [
+        "h9TR8hgHTcUjwc19gDpyW"
+      ],
+      "color": "#a855f7"
+    },
+    {
+      "id": "ytbdopTngwaux8NsjvkAM",
+      "text": "Open the code in IDE or version control system",
+      "x": 731.9832121846284,
+      "y": 10.645433711353633,
+      "width": 162.2152404858802,
+      "height": 60.89480465341729,
+      "parentIds": [
+        "jRRdao5E0oeXpIksGa7pV"
+      ],
+      "color": "#3b82f6",
+      "isCollapsed": false
+    },
+    {
+      "id": "c3N9nrAWH-1nLxcd_sclg",
+      "text": "Locate undocumented file or function",
+      "x": 732.3682844069972,
+      "y": 96.08698479729168,
+      "width": 191.1297381770361,
+      "height": 67.17333039216791,
+      "parentIds": [
+        "jRRdao5E0oeXpIksGa7pV"
+      ],
+      "color": "#3b82f6",
+      "isCollapsed": false
+    },
+    {
+      "id": "PGDoYAVEj8Guy9C-xGUVM",
+      "text": "Read the code line-by-line to trace the execution path and data transformations",
+      "x": 725.8505760862113,
+      "y": 180.52290318793075,
+      "width": 215.64794183257186,
+      "height": 74.8538429040788,
+      "parentIds": [
+        "jRRdao5E0oeXpIksGa7pV"
+      ],
+      "color": "#3b82f6",
+      "isCollapsed": false
+    },
+    {
+      "id": "1SuQPaU8hMLdDIX979gU-",
+      "text": "Cross reference legacy variable names with database schema to understand context",
+      "x": 707.4376473486006,
+      "y": 264.26466283871844,
+      "width": 226.3576986145063,
+      "height": 79.55434157377965,
+      "parentIds": [
+        "jRRdao5E0oeXpIksGa7pV"
+      ],
+      "color": "#3b82f6",
+      "isCollapsed": false
+    },
+    {
+      "id": "cUgdddYM1nVspa2vy89p-",
+      "text": "Document an explanation of function's logic",
+      "x": 722.7427785190653,
+      "y": 367.7493086283131,
+      "width": 211.51413883753287,
+      "height": 73.48960008082928,
+      "parentIds": [
+        "5w9rjwbET5XhVPEV-zaIw"
+      ],
+      "color": "#3b82f6",
+      "isCollapsed": false
+    },
+    {
+      "id": "tQJUcuIk-Aa5ZLGqqYCuW",
+      "text": "Identify high-risk security patterns in legacy codebase",
+      "x": 277.00928104258657,
+      "y": 209.4848203630442,
+      "width": 187.06647533852134,
+      "height": 65.74528000228577,
+      "parentIds": [
+        "hjN_i7H5Af22amFpQwFhf"
+      ],
+      "color": "#f97316",
+      "isCollapsed": false
+    },
+    {
+      "id": "jQ5RYsQj54zabVduB6uzs",
+      "text": "Identify deprecated library calls in legacy codebase",
+      "x": 277.0543707080102,
+      "y": 302.1042145124035,
+      "width": 198.00968758055424,
+      "height": 68.64447052297139,
+      "parentIds": [
+        "hjN_i7H5Af22amFpQwFhf"
+      ],
+      "color": "#f97316"
+    },
+    {
+      "id": "ysLBdL4MQblOToAfkZICD",
+      "text": "Agentic touchpoint rubric:\n\nRemoves \nReplaces\nAugments\nAdds to\nIntegrates with\n",
+      "x": 229.38211575301625,
+      "y": -79.69247402284215,
+      "width": 223.1584909568171,
+      "height": 118.26449555122605,
+      "parentIds": [],
+      "type": "note",
+      "color": "#fef08a"
+    },
+    {
+      "id": "htF1DGchCLnTKcUKJXJ9a",
+      "text": "AI replaces \nlocating relevant code \nby scanning the repository and retrieving functions related to a business capability",
+      "x": 1005.5472371074391,
+      "y": 35.80409661459808,
+      "width": 315.2783709089335,
+      "height": 79.1990736103625,
+      "parentIds": [
+        "c3N9nrAWH-1nLxcd_sclg"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "FlA3ng6cdWMvF7cixecFv",
+      "text": "AI replaces manual code tracingby generating execution flow and data transformations",
+      "x": 1001.2950078263345,
+      "y": 119.10172401291635,
+      "width": 301.61390654518965,
+      "height": 72.74514462486647,
+      "parentIds": [
+        "PGDoYAVEj8Guy9C-xGUVM"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "k54nh8C4VJFfqTvc46L61",
+      "text": "AI integrates with IDE + version control system\nby retrieving code context, commit history, and dependencies automatically",
+      "x": 1011.9524409286712,
+      "y": -42.75902261932451,
+      "width": 315.0097332910404,
+      "height": 71.48886841181478,
+      "parentIds": [
+        "ytbdopTngwaux8NsjvkAM"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "Z1QnBgjsYd47hC4hrS1tW",
+      "text": "AI integrates with database schema tools\nby resolving variable mappings and schema relationships in real time",
+      "x": 998.2971109219682,
+      "y": 273.5573350834155,
+      "width": 288.7028558037614,
+      "height": 65.66656454945169,
+      "parentIds": [
+        "1SuQPaU8hMLdDIX979gU-"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "NrT0rhyEUWrUZkLDeyUNg",
+      "text": "AI replaces \nmanual documentation writing \nby generating structured function-level documentation automatically",
+      "x": 1014.2182884515876,
+      "y": 490.59939546009144,
+      "width": 268.89927099287274,
+      "height": 76.38402171616092,
+      "parentIds": [
+        "cUgdddYM1nVspa2vy89p-"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "9D235kkNK3Nnm3fgMpMx-",
+      "text": "AI augments understanding of business logic\nby summarizing complex logic into human-readable explanations",
+      "x": 999.9358129126528,
+      "y": 204.69486633293033,
+      "width": 307.9111040407297,
+      "height": 62.7012314259539,
+      "parentIds": [
+        "PGDoYAVEj8Guy9C-xGUVM"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "LLaRYrfJ0c86AtKJVhTs-",
+      "text": "AI augments explanation quality\nby generating layered summaries (high-level + detailed)",
+      "x": 998.0498285355665,
+      "y": 417.23493691641005,
+      "width": 286.0539565787401,
+      "height": 72.94541479918041,
+      "parentIds": [
+        "cUgdddYM1nVspa2vy89p-"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "lXeQf_Q0fNUPcjCg-S00A",
+      "text": "AI augments context building\nby mapping code behavior to upstream and downstream system dependencies",
+      "x": 995.3432784031827,
+      "y": 343.6931448262591,
+      "width": 305.83190300584033,
+      "height": 70.70444909364141,
+      "parentIds": [
+        "1SuQPaU8hMLdDIX979gU-"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    },
+    {
+      "id": "BcfrfSUWGbERVW8pRtnP2",
+      "text": "New capability\n(Previously imposssible)",
+      "x": 714.0327236409541,
+      "y": 541.1236960793914,
+      "width": 190.55996962481285,
+      "height": 62.98220162746743,
+      "parentIds": [
+        "5w9rjwbET5XhVPEV-zaIw"
+      ],
+      "color": "#3b82f6",
+      "isCollapsed": false
+    },
+    {
+      "id": "bQPMmGMhRli_D_h2a4b_4",
+      "text": "AI adds continuous codebase intelligence\nby automatically updating documentation as code changes",
+      "x": 1012.9666204514663,
+      "y": 586.2471602133776,
+      "width": 260.3393338210411,
+      "height": 74.60233909855516,
+      "parentIds": [
+        "BcfrfSUWGbERVW8pRtnP2"
+      ],
+      "color": "#db2777",
+      "isCollapsed": false
+    }
+  ]
+}
