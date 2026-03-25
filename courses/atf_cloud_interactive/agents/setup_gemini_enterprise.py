@@ -8,7 +8,7 @@ Operations:
   5. Grant all users the agent user role
 
 Usage:
-  python setup_gemini_enterprise.py <PROJECT_ID> <REASONING_ENGINE_NAME>
+  python setup_gemini_enterprise.py <PROJECT_ID> <PROJECT_NUMBER> <REASONING_ENGINE_NAME>
 
   REASONING_ENGINE_NAME is the full resource name, e.g.:
     projects/PROJECT_ID/locations/us-central1/reasoningEngines/1234567890
@@ -22,6 +22,7 @@ import google.auth.transport.requests
 import requests
 
 LOCATION = "global"
+ENGINE_ID = "cymbal-meet-gemini-enterprise"
 ENGINE_DISPLAY_NAME = "Cymbal Meet - Gemini Enterprise"
 AGENT_DISPLAY_NAME = "Improve Engagement Agent"
 
@@ -43,23 +44,6 @@ def base_url():
 def parent(project_id):
     return f"projects/{project_id}/locations/{LOCATION}/collections/default_collection"
 
-
-def wait_for_operation(op_name, project_id, label, timeout=300):
-    """Poll a long-running operation until it completes."""
-    url = f"{base_url()}/{op_name}"
-    start = time.time()
-    while time.time() - start < timeout:
-        resp = requests.get(url, headers=get_auth_headers(project_id))
-        resp.raise_for_status()
-        op = resp.json()
-        if op.get("done"):
-            if "error" in op:
-                raise RuntimeError(f"{label} failed: {op['error']}")
-            print(f"    {label} completed.")
-            return op.get("response", {})
-        print(f"    Waiting for {label} ...")
-        time.sleep(10)
-    raise TimeoutError(f"{label} timed out after {timeout}s")
 
 
 # ---- Step 1: Delete existing engines ----------------------------------------
@@ -94,11 +78,10 @@ def delete_existing_engines(project_id):
 
 # ---- Step 2: Create engine --------------------------------------------------
 
-def create_engine(project_id):
+def create_engine(project_id, project_number):
     print()
     print("Step 8: Creating Gemini Enterprise application ...")
-    engine_id = "cymbal-meet-gemini-enterprise"
-    url = f"{base_url()}/{parent(project_id)}/engines?engineId={engine_id}"
+    url = f"{base_url()}/{parent(project_id)}/engines?engineId={ENGINE_ID}"
     body = {
         "displayName": ENGINE_DISPLAY_NAME,
         "solutionType": "SOLUTION_TYPE_SEARCH",
@@ -113,19 +96,10 @@ def create_engine(project_id):
     if not resp.ok:
         raise RuntimeError(f"Create engine failed: {resp.status_code} {resp.text}")
 
-    op = resp.json()
-    op_name = op.get("name")
-    if op_name and not op.get("done"):
-        result = wait_for_operation(op_name, project_id, "create engine")
-    else:
-        result = op
-        print("    Engine created.")
-
-    # Return the full engine resource name (uses project number)
-    engine_name = result.get("name", "")
-    if not engine_name:
-        # Fall back to constructing from engine_id
-        engine_name = f"{parent(project_id)}/engines/{engine_id}"
+    # Engine name uses project number, not project ID
+    engine_name = f"projects/{project_number}/locations/{LOCATION}/collections/default_collection/engines/{ENGINE_ID}"
+    print(f"    Create initiated. Waiting for engine to be ready ...")
+    time.sleep(30)
     print(f"    Engine: {engine_name}")
     return engine_name
 
@@ -220,19 +194,20 @@ def configure_permissions(project_id, engine_name):
 # ---- Main --------------------------------------------------------------------
 
 def main():
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print(__doc__)
         sys.exit(1)
 
     project_id = sys.argv[1]
-    reasoning_engine_name = sys.argv[2]
+    project_number = sys.argv[2]
+    reasoning_engine_name = sys.argv[3]
 
     print()
     print(f"  Reasoning Engine: {reasoning_engine_name}")
     print()
 
     delete_existing_engines(project_id)
-    engine_name = create_engine(project_id)
+    engine_name = create_engine(project_id, project_number)
     configure_identity_provider(project_id)
     add_agent(project_id, engine_name, reasoning_engine_name)
     configure_permissions(project_id, engine_name)
