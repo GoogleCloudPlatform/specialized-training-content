@@ -40,26 +40,26 @@ This is a minimal web client for interacting with an ADK (Agent Development Kit)
 
 #### 2.1 Set up virtual environment
 
-    ```bash
-    cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/lab_app
-    uv venv
-    source .venv/bin/activate
-    uv pip install -r requirements.txt
-    ```
+```bash
+cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/lab_app
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+```
 
 #### 2.2 Create .env file
 
-    ```bash
-    cp .env.example .env
-    ```
+```bash
+cp .env.example .env
+```
 
     Edit `.env` and set `PROJECT_ID` to your GCP project ID.
 
 #### 2.3 Run the Backend API Server
 
-    ```bash
-    python sessions_server.py
-    ```
+```bash
+python sessions_server.py
+```
 
     The backend API will start on `http://localhost:8000`.
 
@@ -67,18 +67,19 @@ This is a minimal web client for interacting with an ADK (Agent Development Kit)
 
     In a **new terminal window**, start the static file server:
 
-    ```bash
-    cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/clients/simple_es
+```bash
+cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/clients/simple_es
 
-    python -m http.server 8080
-    ```
+python -m http.server 8080
+```
 
 #### 2.5 Access the Application
 
     Open your browser and navigate to:
-    ```
-    http://localhost:8080/client_simple_es.html
-    ```
+    
+```
+http://localhost:8080/client_simple_es.html
+```
 
 ## 3. Demo Walkthrough
 
