@@ -18,7 +18,7 @@ A FastAPI-based echo service demonstrating Google OAuth 2.0 authentication using
 
 Before running this application, you need to set up Google OAuth 2.0 credentials:
 
-### 1. Create OAuth 2.0 Client ID
+#### Create OAuth 2.0 Client ID
 
 1. Go to [Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials)
 2. Click **"+ CREATE CREDENTIALS"** → **"OAuth client ID"**
@@ -32,15 +32,15 @@ Before running this application, you need to set up Google OAuth 2.0 credentials
 6. Click **"CREATE"**
 7. Copy the **Client ID** (format: `xxxxx-xxxxx.apps.googleusercontent.com`)
 
-### 2. Configure Environment Variables
+#### Configure Environment Variables
 
-Copy the example environment file and add your Client ID:
+1. Copy the example environment file and add your Client ID:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and set your Client ID:
+2. Edit `.env` and set your Client ID:
 
 ```
 GOOGLE_OAUTH_CLIENT_ID=xxxxx-xxxxx.apps.googleusercontent.com
@@ -51,20 +51,20 @@ Both the backend and frontend servers read from this shared `.env` file.
 
 ## Run/Demo Locally
 
-### 1. Create and Activate a Virtual Environment
+#### Create and Activate a Virtual Environment
 
 ```bash
 uv venv
 source .venv/bin/activate
 ```
 
-### 2. Install Dependencies
+#### Install Dependencies
 
 ```bash
 uv pip install -r requirements.txt
 ```
 
-### 3. Start Servers
+#### Start Servers
 
 **Terminal 1 - Backend Server (port 8000):**
 ```bash
@@ -78,7 +78,7 @@ python frontend_server.py
 
 Then open http://localhost:8080 in your browser.
 
-### Show app functionality
+#### Show app functionality
 
 1. Show that client requires user to log in with Google account prior to exposing functionality.
 2. Click **Sign in** and show the login process
@@ -133,7 +133,7 @@ sequenceDiagram
 
 The client (browser) handles authentication in several steps:
 
-#### 1. Loading Google Sign-In
+#### Loading Google Sign-In
 
 ```html
 <!-- Google's authentication library -->
@@ -146,7 +146,7 @@ The client (browser) handles authentication in several steps:
 </div>
 ```
 
-#### 2. Handling the Sign-In Response
+#### Handling the Sign-In Response
 
 When the user signs in, Google calls the `handleCredentialResponse` function with an ID token:
 
@@ -169,7 +169,7 @@ The ID token is a JWT containing:
 - `exp`: Token expiration timestamp
 - `aud`: Client ID (ensures token is for your app)
 
-#### 3. Sending Authenticated Requests
+#### Sending Authenticated Requests
 
 Every API request includes the ID token in the Authorization header:
 
@@ -193,7 +193,7 @@ const response = await fetch(API_URL, {
 
 The FastAPI server validates authentication using middleware:
 
-#### 1. Middleware Intercepts Requests
+#### Middleware Intercepts Requests
 
 ```python
 @app.middleware("http")
@@ -215,7 +215,7 @@ async def authentication_middleware(request: Request, call_next):
     return await call_next(request)
 ```
 
-#### 2. Token Validation Process
+#### Token Validation Process
 
 ```python
 async def validate_token(authorization: str) -> dict:
@@ -236,7 +236,7 @@ async def validate_token(authorization: str) -> dict:
     return id_info  # Contains email, sub, etc.
 ```
 
-#### 3. Route Handlers Access User Info
+#### Route Handlers Access User Info
 
 ```python
 @app.post("/")
@@ -250,7 +250,7 @@ async def echo_service(request: Request, echo_request: EchoRequest):
 
 ## Architecture Diagrams
 
-### Component Architecture
+#### Component Architecture
 
 ```mermaid
 graph TB
@@ -282,7 +282,7 @@ graph TB
     ROUTE -->|Response| JS
 ```
 
-### Authentication State Flow
+#### Authentication State Flow
 
 ```mermaid
 stateDiagram-v2
@@ -296,7 +296,7 @@ stateDiagram-v2
     Authenticated --> NotAuthenticated: Token Expires
 ```
 
-### Request/Response Flow
+#### Request/Response Flow
 
 ```mermaid
 flowchart LR
@@ -313,7 +313,7 @@ flowchart LR
 
 ## Implementation Details
 
-### Middleware vs Per-Route Authentication
+#### Middleware vs Per-Route Authentication
 
 This implementation uses **middleware** for authentication, which means:
 
@@ -335,7 +335,7 @@ async def echo_service(request: Request):
     # ... rest of logic
 ```
 
-### Security Considerations
+#### Security Considerations
 
 1. **Token Validation**: Server verifies token signature using Google's public keys
 2. **Audience Check**: Ensures token was issued for this specific CLIENT_ID
@@ -343,17 +343,10 @@ async def echo_service(request: Request):
 4. **HTTPS Only**: ID tokens should only be sent over HTTPS in production
 5. **CORS Configuration**: Set specific origins in production, not `"*"`
 
-### Differences from Flask Version
+#### Differences from Flask Version
 
 - **Middleware Pattern**: Uses FastAPI middleware instead of per-route decorators
 - **Type Safety**: Pydantic models ensure type-safe requests/responses
 - **Async Support**: Fully async for better performance
 - **Auto Documentation**: OpenAPI docs at `/docs` and `/redoc`
 - **Modern Framework**: FastAPI is built on Starlette and Pydantic
-
-## API Documentation
-
-Once the server is running locally, visit:
-- http://localhost:8000/docs - Interactive Swagger UI
-- http://localhost:8000/redoc - ReDoc documentation
-- http://localhost:8000 - Health check endpoint
