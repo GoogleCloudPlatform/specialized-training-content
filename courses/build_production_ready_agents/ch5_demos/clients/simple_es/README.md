@@ -6,11 +6,6 @@
   - [Table of Contents](#table-of-contents)
   - [1. Overview](#1-overview)
   - [2. Run Locally](#2-run-locally)
-      - [2.1 Set up virtual environment](#21-set-up-virtual-environment)
-      - [2.2 Create .env file](#22-create-env-file)
-      - [2.3 Run the Backend API Server](#23-run-the-backend-api-server)
-      - [2.4 Start the Client Server](#24-start-the-client-server)
-      - [2.5 Access the Application](#25-access-the-application)
   - [3. Demo Walkthrough](#3-demo-walkthrough)
   - [4. Architecture](#4-architecture)
   - [5. Application Flow](#5-application-flow)
@@ -38,48 +33,42 @@ This is a minimal web client for interacting with an ADK (Agent Development Kit)
 
 ## 2. Run Locally
 
-#### 2.1 Set up virtual environment
+1. Run the following commands to set up your virtual environment
+    ```bash
+    cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/lab_app
+    uv venv
+    source .venv/bin/activate
+    uv pip install -r requirements.txt
+    ```
 
-```bash
-cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/lab_app
-uv venv
-source .venv/bin/activate
-uv pip install -r requirements.txt
-```
+2. Create a **.env** file
 
-#### 2.2 Create .env file
+    ```bash
+    cp .env.example .env
+    ```
 
-```bash
-cp .env.example .env
-```
+3. Edit `.env` and set `PROJECT_ID` to your GCP project ID.
 
-Edit `.env` and set `PROJECT_ID` to your GCP project ID.
+4. Launch the backend server
 
-#### 2.3 Run the Backend API Server
+    ```bash
+    python sessions_server.py
+    ```
 
-```bash
-python sessions_server.py
-```
+    The backend API will start on `http://localhost:8000`.
 
-The backend API will start on `http://localhost:8000`.
+5. In a **new terminal window**, start the static file server:
 
-#### 2.4 Start the Client Server
+    ```bash
+    cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/clients/simple_es
 
-In a **new terminal window**, start the static file server:
+    python -m http.server 8080
+    ```
+6. Open your browser and navigate to:
 
-```bash
-cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/clients/simple_es
-
-python -m http.server 8080
-```
-
-#### 2.5 Access the Application
-
-Open your browser and navigate to:
-
-```
-http://localhost:8080/client_simple_es.html
-```
+    ```
+    http://localhost:8080/client_simple_es.html
+    ```
 
 ## 3. Demo Walkthrough
 
