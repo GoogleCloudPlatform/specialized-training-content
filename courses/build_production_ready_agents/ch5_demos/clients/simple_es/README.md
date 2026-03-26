@@ -1,10 +1,91 @@
 # Simple ADK Agent Client - EventSource Edition - Technical Documentation
 
-## Overview
+## Table of Contents
+
+- [1. Overview](#1-overview)
+- [2. Run Locally](#2-run-locally)
+  - [2.1 Install the Backend API Server](#21-install-the-backend-api-server)
+  - [2.2 Configure Environment Variables](#22-configure-environment-variables)
+  - [2.3 Run the Backend API Server](#23-run-the-backend-api-server)
+  - [2.4 Start the Client Server](#24-start-the-client-server)
+  - [2.5 Access the Application](#25-access-the-application)
+- [3. Demo Walkthrough](#3-demo-walkthrough)
+- [4. Architecture](#4-architecture)
+- [5. Application Flow](#5-application-flow)
+  - [5.1 Initialization Flow](#51-initialization-flow)
+  - [5.2 Message Send Flow](#52-message-send-flow)
+  - [5.3 Key Functions](#53-key-functions)
+- [6. Data Structures](#6-data-structures)
+- [7. Streaming Implementation Details](#7-streaming-implementation-details)
+  - [7.1 SSE Protocol](#71-sse-protocol)
+  - [7.2 Why @microsoft/fetch-event-source?](#72-why-microsoftfetch-event-source)
+  - [7.3 Library Features](#73-library-features)
+- [8. Dependencies](#8-dependencies)
+- [9. Error Handling](#9-error-handling)
+
+## 1. Overview
 
 This is a minimal web client for interacting with an ADK (Agent Development Kit) agent via a streaming chat interface. It uses **@microsoft/fetch-event-source** for clean, robust SSE (Server-Sent Events) handling with POST request support.
 
-## Architecture
+## 2. Run Locally
+
+#### 2.1 Install the Backend API Server
+
+```bash
+cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/lab_app
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+```
+
+#### 2.2 Configure Environment Variables
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and set `PROJECT_ID` to your GCP project ID.
+
+#### 2.3 Run the Backend API Server
+
+```bash
+python sessions_server.py
+```
+
+The backend API will start on `http://localhost:8000`.
+
+#### 2.4 Start the Client Server
+
+In a **new terminal window**, start the static file server:
+
+```bash
+cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/clients/simple_es
+
+python -m http.server 8080
+```
+
+#### 2.5 Access the Application
+
+Open your browser and navigate to:
+```
+http://localhost:8080/client_simple_es.html
+```
+
+## 3. Demo Walkthrough
+
+When presenting this client to students, highlight the following:
+
+1. **Session creation on page load** (`client_simple_es.js:10-12`) — the `DOMContentLoaded` listener calls `createSession()`, which POSTs to `/sessions` and stores the returned `session_id` for all subsequent requests. See also the [5.1 Initialization Flow](#51-initialization-flow) diagram.
+
+2. **SSE streaming via `fetchEventSource`** (`client_simple_es.js:48-73`) — this is the core of the client. Walk through how it sends a POST to `/chat` and processes the SSE stream via `onmessage`. Contrast with the native `EventSource` API, which only supports GET requests. The [7.2 Why @microsoft/fetch-event-source?](#72-why-microsoftfetch-event-source) section provides talking points for this comparison.
+
+3. **Chunk accumulation pattern** (`client_simple_es.js:58-66`) — show how `response_chunk` events are accumulated into `streamingText` and rendered incrementally, while `is_final` signals the end of the stream. The [7.1 SSE Protocol](#71-sse-protocol) section shows the raw wire format, and the [5.2 Message Send Flow](#52-message-send-flow) diagram visualizes the full sequence.
+
+4. **No authentication** — point out that this client has no login flow or token management. Compare with the `fastapi_app_auth` demo to show what changes when auth is added.
+
+5. **Live demo** — send a message and have students watch the response stream in token by token. Open the browser DevTools Network tab to show the SSE event stream in real time.
+
+## 4. Architecture
 
 ```mermaid
 graph TB
@@ -17,16 +98,16 @@ graph TB
     F --> H[chat endpoint]
 ```
 
-## Application Flow
+## 5. Application Flow
 
-### 1. Initialization Flow
+### 5.1 Initialization Flow
 
 ```mermaid
 sequenceDiagram
     participant Browser
     participant JS as client_simple_es.js
     participant API as Backend API
-    
+
     Browser->>JS: DOMContentLoaded event
     JS->>API: POST /sessions
     Note over JS,API: {user_id, initial_state}
@@ -42,14 +123,14 @@ When the page loads:
 3. The returned `session_id` is stored globally
 4. The chat UI is rendered (initially showing "No messages yet")
 
-### 2. Message Send Flow
+### 5.2 Message Send Flow
 
 ```mermaid
 sequenceDiagram
     participant Client
     participant FES as fetchEventSource
     participant API as Backend API
-    
+
     Client->>FES: fetchEventSource('/chat', config)
     FES->>API: POST /chat {user_id, session_id, message}
     API-->>FES: Stream SSE data chunks
@@ -65,9 +146,9 @@ sequenceDiagram
     FES-->>Client: Promise resolves
 ```
 
-### 3. Key Functions
+### 5.3 Key Functions
 
-#### `createSession()`
+#### 5.3.1 `createSession()`
 
 ```mermaid
 flowchart TD
@@ -89,21 +170,21 @@ flowchart TD
 - Stores returned `session_id` for subsequent API calls
 - Uses `credentials: 'include'` for cookie-based auth
 
-#### `sendMessage()`
+#### 5.3.2 `sendMessage()`
 
 ```mermaid
 sequenceDiagram
     participant Client
     participant FES as fetchEventSource
     participant API as Backend API
-    
+
     Client->>API: fetchEventSource POST /chat
     API-->>FES: SSE Stream
-    
+
     loop For each SSE message
         FES->>Client: onmessage(event)
         Client->>Client: Parse event.data
-        
+
         alt response_chunk
             Client->>Client: Accumulate streamingText
             Client->>Client: updateStreamingMessage()
@@ -112,7 +193,7 @@ sequenceDiagram
             Client->>Client: Add to chatHistory
         end
     end
-    
+
     FES-->>Client: Stream complete
 ```
 
@@ -145,9 +226,9 @@ sequenceDiagram
    - Throws error to stop reconnection attempts
    - Library provides automatic retry logic (prevented by throw)
 
-## Data Structures
+## 6. Data Structures
 
-### Global State
+#### 6.1 Global State
 
 ```javascript
 const API_BASE_URL = 'http://localhost:8000';  // Backend endpoint
@@ -157,7 +238,7 @@ let currentSessionId = null;                    // Session UUID from backend
 let chatHistory = [];                           // Array of {role, content}
 ```
 
-### Chat History Format
+#### 6.2 Chat History Format
 
 ```javascript
 chatHistory = [
@@ -167,7 +248,7 @@ chatHistory = [
 ]
 ```
 
-### SSE Message Format
+#### 6.3 SSE Message Format
 
 ```javascript
 // Chunk during streaming
@@ -184,9 +265,9 @@ chatHistory = [
 }
 ```
 
-## Streaming Implementation Details
+## 7. Streaming Implementation Details
 
-### SSE Protocol
+### 7.1 SSE Protocol
 
 The backend sends Server-Sent Events in this format:
 
@@ -199,7 +280,7 @@ data: {"is_final": true}
 
 ```
 
-### Why @microsoft/fetch-event-source?
+### 7.2 Why @microsoft/fetch-event-source?
 
 **Key advantages:**
 
@@ -210,7 +291,7 @@ data: {"is_final": true}
 5. **Cleaner API** - Declarative callbacks for event handling
 6. **Edge case handling** - Manages UTF-8 boundary splits, malformed messages
 
-### Library Features
+### 7.3 Library Features
 
 - **Automatic reconnection** with exponential backoff
 - **Custom headers** and credentials support
@@ -218,88 +299,26 @@ data: {"is_final": true}
 - **Proper connection closing** via error throwing
 - **TypeScript support** with full type definitions
 
-## Usage
+## 8. Dependencies
 
-### 1. Start the Backend API Server
-
-First, you need to start the lab application server:
-
-```bash
-# Change to the lab_app directory (adjust path to your ch5_demos location)
-cd <path-to-ch5_demos>/lab_app
-
-# Create environment file from example
-cp .env.example .env
-
-# Edit .env and populate the PROJECT_ID value
-# (Use your editor to set PROJECT_ID to your GCP project ID)
-
-# Create a virtual environment
-python -m venv .venv
-
-# Activate the virtual environment
-# On macOS/Linux:
-source .venv/bin/activate
-# On Windows:
-# .venv\Scripts\activate
-
-# Install requirements
-pip install -r requirements.txt
-
-# Run the sessions server
-python sessions_server.py
-```
-
-The backend API will start on `http://localhost:8000`.
-
-### 2. Start the Client Server
-
-In a **new terminal window**, start the static file server:
-
-```bash
-# Change to the simple_es client directory (adjust path to your ch5_demos location)
-cd <path-to-ch5_demos>/clients/simple_es
-
-# Serve static files
-python -m http.server 8080
-```
-
-### 3. Access the Application
-
-Open your browser and navigate to:
-```
-http://localhost:8080/client_simple_es.html
-```
-
-### Configuration
-
-Update constants in `client_simple_es.js`:
-
-```javascript
-const API_BASE_URL = 'http://localhost:8000';  // Your backend URL
-const USER_ID = 'web_user_001';                // Unique user identifier
-```
-
-## Dependencies
-
-### Runtime Dependencies
+#### 8.1 Runtime Dependencies
 
 - **@microsoft/fetch-event-source**: SSE client library with POST support
   - Loaded from CDN: `https://cdn.jsdelivr.net/npm/@microsoft/fetch-event-source@2.0.1/+esm`
   - Used in `sendMessage()` for streaming chat responses
-  
+
 - **marked.js**: Markdown parser for rendering agent responses
   - Loaded from CDN: `https://cdn.jsdelivr.net/npm/marked/marked.min.js`
   - Used in `renderChat()`, `updateStreamingMessage()`, and `finalizeMessage()`
 
-### Module System
+#### 8.2 Module System
 
 This client uses **ES modules** (`type="module"`):
 - Enables `import` statements in the browser
 - Provides proper scoping and dependency management
 - Functions must be explicitly exposed via `window` object for HTML event handlers
 
-## Error Handling
+## 9. Error Handling
 
 Enhanced error handling via `fetchEventSource`:
 
@@ -309,45 +328,3 @@ onerror(err) {
     throw err; // Stops reconnection attempts
 }
 ```
-
-**Automatic features:**
-- Connection timeout detection
-- Network failure recovery
-- HTTP error status handling
-- Malformed SSE detection
-
-**Production enhancements to add:**
-- User-facing error messages
-- Session expiry handling
-- Graceful degradation for unsupported browsers
-- Retry limits and backoff configuration
-
-## Future Enhancements
-
-1. **Custom retry logic** using `fetchEventSource` options
-2. **Typing indicators** from backend
-3. **Message editing/deletion**
-4. **File upload support**
-5. **Session persistence** and recovery
-6. **Progressive enhancement** fallback for older browsers
-7. **Request cancellation** using AbortController
-
-## Performance Considerations
-
-- **Memory efficiency**: No manual buffer accumulation
-- **CPU efficiency**: Library-optimized parsing
-- **Network efficiency**: Built-in connection pooling
-- **Bundle size**: ~5KB for fetch-event-source (minified)
-
-## Browser Compatibility
-
-Requires modern browser with:
-- ES6 modules support
-- Fetch API
-- TextDecoder API
-
-Tested on:
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
