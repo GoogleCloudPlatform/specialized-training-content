@@ -2,26 +2,35 @@
 
 ## Table of Contents
 
-- [1. Overview](#1-overview)
-- [2. Run Locally](#2-run-locally)
-  - [2.1 Install the Backend API Server](#21-install-the-backend-api-server)
-  - [2.2 Configure Environment Variables](#22-configure-environment-variables)
-  - [2.3 Run the Backend API Server](#23-run-the-backend-api-server)
-  - [2.4 Start the Client Server](#24-start-the-client-server)
-  - [2.5 Access the Application](#25-access-the-application)
-- [3. Demo Walkthrough](#3-demo-walkthrough)
-- [4. Architecture](#4-architecture)
-- [5. Application Flow](#5-application-flow)
-  - [5.1 Initialization Flow](#51-initialization-flow)
-  - [5.2 Message Send Flow](#52-message-send-flow)
-  - [5.3 Key Functions](#53-key-functions)
-- [6. Data Structures](#6-data-structures)
-- [7. Streaming Implementation Details](#7-streaming-implementation-details)
-  - [7.1 SSE Protocol](#71-sse-protocol)
-  - [7.2 Why @microsoft/fetch-event-source?](#72-why-microsoftfetch-event-source)
-  - [7.3 Library Features](#73-library-features)
-- [8. Dependencies](#8-dependencies)
-- [9. Error Handling](#9-error-handling)
+- [Simple ADK Agent Client - EventSource Edition - Technical Documentation](#simple-adk-agent-client---eventsource-edition---technical-documentation)
+  - [Table of Contents](#table-of-contents)
+  - [1. Overview](#1-overview)
+  - [2. Run Locally](#2-run-locally)
+      - [2.1 Set up virtual environment](#21-set-up-virtual-environment)
+      - [2.2 Create .env file](#22-create-env-file)
+      - [2.3 Run the Backend API Server](#23-run-the-backend-api-server)
+      - [2.4 Start the Client Server](#24-start-the-client-server)
+      - [2.5 Access the Application](#25-access-the-application)
+  - [3. Demo Walkthrough](#3-demo-walkthrough)
+  - [4. Architecture](#4-architecture)
+  - [5. Application Flow](#5-application-flow)
+    - [5.1 Initialization Flow](#51-initialization-flow)
+    - [5.2 Message Send Flow](#52-message-send-flow)
+    - [5.3 Key Functions](#53-key-functions)
+      - [5.3.1 `createSession()`](#531-createsession)
+      - [5.3.2 `sendMessage()`](#532-sendmessage)
+  - [6. Data Structures](#6-data-structures)
+      - [6.1 Global State](#61-global-state)
+      - [6.2 Chat History Format](#62-chat-history-format)
+      - [6.3 SSE Message Format](#63-sse-message-format)
+  - [7. Streaming Implementation Details](#7-streaming-implementation-details)
+    - [7.1 SSE Protocol](#71-sse-protocol)
+    - [7.2 Why @microsoft/fetch-event-source?](#72-why-microsoftfetch-event-source)
+    - [7.3 Library Features](#73-library-features)
+  - [8. Dependencies](#8-dependencies)
+      - [8.1 Runtime Dependencies](#81-runtime-dependencies)
+      - [8.2 Module System](#82-module-system)
+  - [9. Error Handling](#9-error-handling)
 
 ## 1. Overview
 
@@ -29,47 +38,47 @@ This is a minimal web client for interacting with an ADK (Agent Development Kit)
 
 ## 2. Run Locally
 
-#### 2.1 Install the Backend API Server
+#### 2.1 Set up virtual environment
 
-```bash
-cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/lab_app
-uv venv
-source .venv/bin/activate
-uv pip install -r requirements.txt
-```
+    ```bash
+    cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/lab_app
+    uv venv
+    source .venv/bin/activate
+    uv pip install -r requirements.txt
+    ```
 
-#### 2.2 Configure Environment Variables
+#### 2.2 Create .env file
 
-```bash
-cp .env.example .env
-```
+    ```bash
+    cp .env.example .env
+    ```
 
-Edit `.env` and set `PROJECT_ID` to your GCP project ID.
+    Edit `.env` and set `PROJECT_ID` to your GCP project ID.
 
 #### 2.3 Run the Backend API Server
 
-```bash
-python sessions_server.py
-```
+    ```bash
+    python sessions_server.py
+    ```
 
-The backend API will start on `http://localhost:8000`.
+    The backend API will start on `http://localhost:8000`.
 
 #### 2.4 Start the Client Server
 
-In a **new terminal window**, start the static file server:
+    In a **new terminal window**, start the static file server:
 
-```bash
-cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/clients/simple_es
+    ```bash
+    cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/clients/simple_es
 
-python -m http.server 8080
-```
+    python -m http.server 8080
+    ```
 
 #### 2.5 Access the Application
 
-Open your browser and navigate to:
-```
-http://localhost:8080/client_simple_es.html
-```
+    Open your browser and navigate to:
+    ```
+    http://localhost:8080/client_simple_es.html
+    ```
 
 ## 3. Demo Walkthrough
 
