@@ -1,19 +1,48 @@
-# Flask Cloud Run Service with Identity-Aware Proxy (IAP) Authentication
+# Flask Echo Service with Identity-Aware Proxy (IAP) Authentication
 
 A Flask-based echo service demonstrating **Google Cloud Identity-Aware Proxy (IAP)** authentication. Unlike OAuth-based authentication where the application validates tokens, IAP handles all authentication at the infrastructure level before requests reach your application.
 
 ## Table of Contents
 
-- [Key Features](#key-features)
-- [Authentication Flow Overview](#authentication-flow-overview)
-- [How IAP Authentication Works](#how-iap-authentication-works)
-  - [Infrastructure-Level Authentication](#infrastructure-level-authentication)
-  - [Client-Side Process](#client-side-process)
-  - [Server-Side Process](#server-side-process)
-- [Architecture Diagrams](#architecture-diagrams)
-- [Deployment](#deployment)
+- [1. Run/Demo on Cloud Run](#1-rundemo-on-cloud-run)
+- [2. Key Features](#2-key-features)
+- [3. Authentication Flow Overview](#3-authentication-flow-overview)
+- [4. How IAP Authentication Works](#4-how-iap-authentication-works)
+  - [4.1 Infrastructure-Level Authentication](#41-infrastructure-level-authentication)
+  - [4.2 Client-Side Process](#42-client-side-process)
+  - [4.3 Server-Side Process](#43-server-side-process)
+- [5. Architecture Diagrams](#5-architecture-diagrams)
+- [6. Additional Resources](#6-additional-resources)
 
-## Key Features
+## 1. Run/Demo on Cloud Run
+
+#### 1.1 Deploy to Cloud Run
+
+```bash
+gcloud run deploy iap-echo-service \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated
+```
+
+**Note:** We use `--allow-unauthenticated` initially so Cloud Run allows traffic. IAP will handle authentication.
+
+#### 1.2 Enable IAP
+
+1. Go to the Cloud Run page for your newly deployed service
+2. Go to security page, disable IAM, enable IAP
+3. Edit policy and add your user and save
+
+#### 1.3 Test
+
+It will take 1-2 minutes for IAP to settle. Once it has...
+1. Visit your Cloud Run URL in an incognito mode window.
+2. When prompted sign in (note that you are forced to)
+3. After signing in, see the application
+4. User email should appear automatically, and echo should work
+5. Repeat the process with an account that hasn't been granted access and note results.
+
+## 2. Key Features
 
 - **Identity-Aware Proxy (IAP)**: Google Cloud handles all authentication
 - **No Token Management**: Application doesn't validate tokens or manage sessions
@@ -21,7 +50,7 @@ A Flask-based echo service demonstrating **Google Cloud Identity-Aware Proxy (IA
 - **Simple Flask App**: Minimal code - just read headers
 - **Zero Auth Code**: No OAuth libraries, no token validation, no middleware
 
-## Authentication Flow Overview
+## 3. Authentication Flow Overview
 
 IAP is fundamentally different from OAuth-based authentication:
 
@@ -41,7 +70,7 @@ sequenceDiagram
     participant Browser
     participant IAP as IAP (Google Cloud)
     participant CloudRun
-    
+
     User->>Browser: Opens Cloud Run URL
     Browser->>IAP: Request to Cloud Run endpoint
     IAP->>IAP: Check if user authenticated
@@ -53,7 +82,7 @@ sequenceDiagram
         IAP->>IAP: Create session cookie
         IAP->>Browser: Set IAP cookie
     end
-    
+
     IAP->>IAP: Validate IAP session cookie
     IAP->>IAP: Inject user headers
     IAP->>CloudRun: Forward request + user headers
@@ -64,9 +93,9 @@ sequenceDiagram
     Browser->>User: Display response
 ```
 
-## How IAP Authentication Works
+## 4. How IAP Authentication Works
 
-### Infrastructure-Level Authentication
+### 4.1 Infrastructure-Level Authentication
 
 IAP sits **in front** of your application as a reverse proxy:
 
@@ -85,11 +114,11 @@ User → IAP (Authentication) → Your Application
 1. Read the `X-Goog-Authenticated-User-Email` header
 2. That's it!
 
-### Client-Side Process
+### 4.2 Client-Side Process
 
 The client side is **extremely simple** because IAP handles everything:
 
-#### 1. No Authentication Code Needed
+#### 4.2.1 No Authentication Code Needed
 
 ```html
 <!-- No Google Sign-In button -->
@@ -98,7 +127,7 @@ The client side is **extremely simple** because IAP handles everything:
 <!-- Just regular HTML and JavaScript -->
 ```
 
-#### 2. Regular API Calls
+#### 4.2.2 Regular API Calls
 
 ```javascript
 // No Authorization header needed
@@ -115,7 +144,7 @@ async function sendEcho() {
 }
 ```
 
-#### 3. Getting User Information
+#### 4.2.3 Getting User Information
 
 ```javascript
 // IAP has already authenticated the user
@@ -131,11 +160,11 @@ fetch('/me').then(r => r.json()).then(data => {
 - User is authenticated before reaching your app
 - If session expires, IAP handles re-authentication automatically
 
-### Server-Side Process
+### 4.3 Server-Side Process
 
 The server code is remarkably simple:
 
-#### 1. Read User Headers
+#### 4.3.1 Read User Headers
 
 IAP injects these headers into every request:
 
@@ -144,10 +173,10 @@ IAP injects these headers into every request:
 def whoami():
     # IAP adds this header automatically after authentication
     email = request.headers.get('X-Goog-Authenticated-User-Email', 'Unknown')
-    
+
     # Header format: "accounts.google.com:user@example.com"
     clean_email = email.split(':')[-1] if ':' in email else email
-    
+
     return jsonify({"email": clean_email})
 ```
 
@@ -156,7 +185,7 @@ def whoami():
 - `X-Goog-Authenticated-User-Id`: User's unique Google ID
 - `X-Goog-IAP-JWT-Assertion`: JWT token (for advanced validation)
 
-#### 2. Handle Requests Normally
+#### 4.3.2 Handle Requests Normally
 
 ```python
 @app.route('/echo', methods=['POST'])
@@ -167,7 +196,7 @@ def echo():
     return jsonify({"reply": f"Echo: {data.get('message')}"})
 ```
 
-#### 3. Optional: Advanced Validation
+#### 4.3.3 Optional: Advanced Validation
 
 For extra security, you can validate the IAP JWT:
 
@@ -193,9 +222,9 @@ def validate_iap_jwt(iap_jwt, expected_audience):
 
 **Note:** This is optional because IAP has already validated the request. You only need this for defense-in-depth or if you're paranoid about header spoofing (which shouldn't be possible with proper IAP configuration).
 
-## Architecture Diagrams
+## 5. Architecture Diagrams
 
-### Component Architecture
+#### 5.1 Component Architecture
 
 ```mermaid
 graph TB
@@ -203,20 +232,20 @@ graph TB
         Browser[Web Browser]
         Cookie[IAP Session Cookie]
     end
-    
+
     subgraph "Google Cloud Platform"
         subgraph "IAP Layer"
             IAP[Identity-Aware Proxy]
             Auth[Google Authentication]
             Session[Session Manager]
         end
-        
+
         subgraph "Cloud Run"
             Flask[Flask Application]
             Routes[Route Handlers]
         end
     end
-    
+
     Browser --> Cookie
     Browser -->|1. HTTPS Request| IAP
     IAP -->|2. Check Session| Session
@@ -229,7 +258,7 @@ graph TB
     IAP -->|8. Response| Browser
 ```
 
-### Authentication State Flow
+#### 5.2 Authentication State Flow
 
 ```mermaid
 stateDiagram-v2
@@ -244,7 +273,7 @@ stateDiagram-v2
     SessionExpired --> RedirectedToLogin: Auto Re-auth
 ```
 
-### Request Flow Comparison
+#### 5.3 Request Flow Comparison
 
 ```mermaid
 flowchart TB
@@ -257,7 +286,7 @@ flowchart TB
         F1 --> G1[Read Headers]
         G1 --> H1[Process Request]
     end
-    
+
     subgraph "OAuth-Based Authentication (fastapi_app_auth)"
         A2[Client Request] --> B2[Application]
         B2 --> C2[Middleware]
@@ -269,7 +298,7 @@ flowchart TB
     end
 ```
 
-### Network Flow
+#### 5.4 Network Flow
 
 ```mermaid
 sequenceDiagram
@@ -277,7 +306,7 @@ sequenceDiagram
     participant B as Browser
     participant I as IAP
     participant C as Cloud Run
-    
+
     Note over U,C: First Visit (Not Authenticated)
     U->>B: Visit app URL
     B->>I: GET /
@@ -293,7 +322,7 @@ sequenceDiagram
     I->>C: GET / + X-Goog headers
     C->>I: HTML response
     I->>B: HTML response
-    
+
     Note over U,C: Subsequent Requests (Authenticated)
     U->>B: Click "Send"
     B->>I: POST /echo (cookie auto-sent)
@@ -305,38 +334,7 @@ sequenceDiagram
     B->>U: Display response
 ```
 
-## Deployment
-
-### Step 1: Deploy to Cloud Run
-
-```bash
-# Deploy the service
-gcloud run deploy iap-echo-service \
-  --source . \
-  --region us-central1 \
-  --allow-unauthenticated
-```
-
-**Note:** We use `--allow-unauthenticated` initially so Cloud Run allows traffic. IAP will handle authentication.
-
-### Step 2: Enable IAP
-
-1. Go to the Cloud Run page for your newly deployed service
-
-2. Go to security page, disable IAM, enable IAP
-
-3. Edit policy and add your user and save
-
-### Step 3: Test
-
-It will take 1-2 minutes for IAP to settle. Once it has...
-1. Visit your Cloud Run URL in an incognito mode window.
-2. When prompted sign in (note that you are forced to)
-3. After signing in, see the application
-4. User email should appear automatically, and echo should work
-5. Repeat the process with an account that hasn't been granted access and note results.
-
-## Additional Resources
+## 6. Additional Resources
 
 - [IAP Documentation](https://cloud.google.com/iap/docs)
 - [Securing Cloud Run with IAP](https://cloud.google.com/iap/docs/enabling-cloud-run)
