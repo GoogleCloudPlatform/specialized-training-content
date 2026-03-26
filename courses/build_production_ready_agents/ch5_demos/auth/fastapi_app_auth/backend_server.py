@@ -1,6 +1,7 @@
 import os
 from typing import Optional
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -8,7 +9,9 @@ from google.auth.transport import requests
 from google.oauth2 import id_token
 from pydantic import BaseModel
 
-app = FastAPI(title="Cloud Run Echo Service")
+load_dotenv()
+
+app = FastAPI(title="Echo Service")
 
 # Enable CORS to allow the frontend to talk to this backend
 app.add_middleware(
@@ -19,8 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Replace with your actual OAuth Client ID from Google Cloud Console
-CLIENT_ID = "YOUR-CLIENT-ID.apps.googleusercontent.com"
+CLIENT_ID = os.environ["GOOGLE_OAUTH_CLIENT_ID"]
 
 
 class EchoRequest(BaseModel):
@@ -88,7 +90,7 @@ async def authentication_middleware(request: Request, call_next):
 @app.get("/")
 async def health_check():
     """Health check endpoint"""
-    return {"status": "ok", "service": "Cloud Run Echo Service"}
+    return {"status": "ok", "service": "Echo Service"}
 
 
 @app.post("/", response_model=EchoResponse)
@@ -102,7 +104,7 @@ async def echo_service(request: Request, echo_request: EchoRequest):
     user_email = user_info.get('email')
     
     # Echo Logic
-    response_message = f"Cloud Run received: '{echo_request.message}' from {user_email}"
+    response_message = f"Received: '{echo_request.message}' from {user_email}"
     
     return EchoResponse(echo=response_message)
 
@@ -111,6 +113,6 @@ if __name__ == "__main__":
     import uvicorn
 
     # Use port 8000 for local development (client runs on 8080)
-    # Cloud Run will override this with PORT environment variable
+    # PORT can be overridden via environment variable
     port = int(os.environ.get('PORT', 8000))
     uvicorn.run(app, host='0.0.0.0', port=port)

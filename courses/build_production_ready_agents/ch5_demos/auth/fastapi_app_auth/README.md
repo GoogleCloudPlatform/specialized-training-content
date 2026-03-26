@@ -1,9 +1,11 @@
-# FastAPI Cloud Run Echo Service with Middleware Auth
+# FastAPI Echo Service with Middleware Auth
 
 A FastAPI-based echo service demonstrating Google OAuth 2.0 authentication using ID tokens. This implementation uses middleware for centralized authentication, making it easy to protect all API endpoints.
 
 ## Table of Contents
 
+- [Setup](#setup)
+- [Run/Demo Locally](#rundemo-locally)
 - [Key Features](#key-features)
 - [Authentication Flow Overview](#authentication-flow-overview)
 - [How Authentication Works](#how-authentication-works)
@@ -11,8 +13,78 @@ A FastAPI-based echo service demonstrating Google OAuth 2.0 authentication using
   - [Server-Side Process](#server-side-process)
 - [Architecture Diagrams](#architecture-diagrams)
 - [Implementation Details](#implementation-details)
-- [Deployment](#deployment)
-- [Local Development](#local-development)
+
+## Setup
+
+Before running this application, you need to set up Google OAuth 2.0 credentials:
+
+### 1. Create OAuth 2.0 Client ID
+
+1. Go to [Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials)
+2. Click **"+ CREATE CREDENTIALS"** → **"OAuth client ID"**
+3. If prompted, configure the OAuth consent screen first:
+   - Choose **External** (or Internal if using Google Workspace)
+   - Fill in application name and support email
+   - Add your email to test users if using External
+4. For Application type, select **"Web application"**
+5. Add **Authorized JavaScript origins**:
+   - `http://localhost:8080` (for local development)
+6. Click **"CREATE"**
+7. Copy the **Client ID** (format: `xxxxx-xxxxx.apps.googleusercontent.com`)
+
+### 2. Configure Environment Variables
+
+Copy the example environment file and add your Client ID:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and set your Client ID:
+
+```
+GOOGLE_OAUTH_CLIENT_ID=xxxxx-xxxxx.apps.googleusercontent.com
+API_URL=http://localhost:8000
+```
+
+Both the backend and frontend servers read from this shared `.env` file.
+
+## Run/Demo Locally
+
+### 1. Create and Activate a Virtual Environment
+
+```bash
+uv venv
+source .venv/bin/activate
+```
+
+### 2. Install Dependencies
+
+```bash
+uv pip install -r requirements.txt
+```
+
+### 3. Start Servers
+
+**Terminal 1 - Backend Server (port 8000):**
+```bash
+python backend_server.py
+```
+
+**Terminal 2 - Frontend Server (port 8080):**
+```bash
+python frontend_server.py
+```
+
+Then open http://localhost:8080 in your browser.
+
+### Show app functionality
+
+1. Show that client requires user to log in with Google account prior to exposing functionality.
+2. Click **Sign in** and show the login process
+3. Show that the app know who the user is
+4. Enter a message to echo; show that the app know who sent the message
+5. Show the FastAPI middleware logic in the **backend-server** app 
 
 ## Key Features
 
@@ -36,7 +108,7 @@ sequenceDiagram
     participant User
     participant Browser
     participant Google
-    participant CloudRun
+    participant Server
     
     User->>Browser: Opens application
     Browser->>Google: Loads Google Sign-In button
@@ -46,12 +118,12 @@ sequenceDiagram
     Google->>Browser: Returns ID Token (JWT)
     Browser->>Browser: Stores ID token in memory
     User->>Browser: Types message & clicks Send
-    Browser->>CloudRun: POST /echo + Bearer token
-    CloudRun->>CloudRun: Middleware validates token
-    CloudRun->>Google: Verifies token signature
-    Google->>CloudRun: Token valid confirmation
-    CloudRun->>CloudRun: Extracts user email from token
-    CloudRun->>Browser: Returns echo response
+    Browser->>Server: POST /echo + Bearer token
+    Server->>Server: Middleware validates token
+    Server->>Google: Verifies token signature
+    Google->>Server: Token valid confirmation
+    Server->>Server: Extracts user email from token
+    Server->>Browser: Returns echo response
     Browser->>User: Displays response
 ```
 
@@ -102,7 +174,7 @@ The ID token is a JWT containing:
 Every API request includes the ID token in the Authorization header:
 
 ```javascript
-const response = await fetch(CLOUD_RUN_URL, {
+const response = await fetch(API_URL, {
     method: "POST",
     headers: {
         "Content-Type": "application/json",
@@ -193,7 +265,7 @@ graph TB
         Keys[Public Keys API]
     end
     
-    subgraph "Cloud Run FastAPI"
+    subgraph "Backend Server (FastAPI)"
         MW[Authentication Middleware]
         VAL[Token Validator]
         ROUTE[Echo Endpoint]
@@ -278,112 +350,6 @@ async def echo_service(request: Request):
 - **Async Support**: Fully async for better performance
 - **Auto Documentation**: OpenAPI docs at `/docs` and `/redoc`
 - **Modern Framework**: FastAPI is built on Starlette and Pydantic
-
-## Prerequisites
-
-Before running this application, you need to set up Google OAuth 2.0 credentials:
-
-### 1. Create OAuth 2.0 Client ID
-
-1. Go to [Google Cloud Console → APIs & Services → Credentials](https://console.cloud.google.com/apis/credentials)
-2. Click **"+ CREATE CREDENTIALS"** → **"OAuth client ID"**
-3. If prompted, configure the OAuth consent screen first:
-   - Choose **External** (or Internal if using Google Workspace)
-   - Fill in application name and support email
-   - Add your email to test users if using External
-4. For Application type, select **"Web application"**
-5. Add **Authorized JavaScript origins**:
-   - `http://localhost:8080` (for local development)
-   - Your Cloud Run URL (if deploying the client to Cloud Run)
-6. Click **"CREATE"**
-7. Copy the **Client ID** (format: `xxxxx-xxxxx.apps.googleusercontent.com`)
-
-### 2. Update Configuration
-
-Replace `CLIENT_ID` in both files with your Client ID:
-
-**In `server.py`:**
-```python
-CLIENT_ID = "YOUR-CLIENT-ID.apps.googleusercontent.com"
-```
-
-**In `index.html`:**
-```html
-<div id="g_id_onload" 
-     data-client_id="YOUR-CLIENT-ID.apps.googleusercontent.com"
-     ...
-</div>
-```
-
-## Deployment
-
-Deploy to Cloud Run:
-
-```bash
-gcloud run deploy fastapi-echo-service \
-  --source . \
-  --region us-central1 \
-  --allow-unauthenticated
-```
-
-**Important:** Use `--allow-unauthenticated` because:
-- We're handling authentication at the **application level** (OAuth tokens)
-- Cloud Run's IAM authentication is different (service-to-service)
-- The client needs to reach the endpoint to send the OAuth token
-
-**After deployment:**
-1. Note the service URL from the deployment output (e.g., `https://fastapi-echo-service-xyz.run.app`)
-2. Update `API_URL` in `index.html` with your service URL:
-   ```javascript
-   const API_URL = "https://your-service-name-123456.us-central1.run.app";
-   ```
-
-## Local Development
-
-### Setup
-
-```bash
-pip install -r requirements.txt
-```
-
-### Testing Scenarios
-
-#### Option 1: Full Local Testing (Client + Server)
-
-Test both client and server locally:
-
-**Terminal 1 - Run Server (port 8000):**
-```bash
-python server.py
-# or with auto-reload:
-uvicorn server:app --reload --port 8000
-```
-
-**Terminal 2 - Run Client (port 8080):**
-```bash
-python -m http.server 8080
-```
-
-Then open http://localhost:8080 in your browser.
-
-**Configuration:** No changes needed - `index.html` is already configured for `http://localhost:8000`
-
-#### Option 2: Test Local Client Against Cloud Run
-
-Test your local client against a deployed server:
-
-1. **Deploy server to Cloud Run** (see Deployment section above)
-2. **Update `API_URL` in `index.html`:**
-   ```javascript
-   const API_URL = "https://your-service-name-123456.us-central1.run.app";
-   ```
-3. **Run client locally:**
-   ```bash
-   python -m http.server 8080
-   ```
-4. Open http://localhost:8080 in your browser
-
-**Note:** Remember to change `API_URL` back to `http://localhost:8000` when switching back to full local testing.
 
 ## API Documentation
 
