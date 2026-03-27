@@ -2,18 +2,98 @@
 
 A production-ready chat client for Google ADK (Agent Development Kit) agents, built with [CopilotKit](https://www.copilotkit.ai/) and [@ag-ui/client](https://www.npmjs.com/package/@ag-ui/client). This implementation demonstrates seamless integration between ADK agents and CopilotKit's rich UI components through the AG-UI adapter.
 
-## Features
+## Table of Contents
 
-- 🎯 **CopilotKit Integration** - Full-featured chat interface with built-in UI components
-- 🔌 **AG-UI Adapter** - Bridges ADK agents with CopilotKit runtime
-- 📡 **Native Streaming** - Real-time streaming responses from ADK agents
-- 🔄 **Session Management** - Automatic session handling via AG-UI adapter
-- 🎨 **Rich UI Components** - CopilotKit's pre-built chat components
-- 🚀 **Next.js 16** - Modern React framework with App Router
-- ⚛️ **React 19** - Latest React features and optimizations
-- 🔧 **FastAPI Backend** - Python server with ADK agent integration
+- [1. Run Locally](#1-run-locally)
+- [2. Demo Walkthrough](#2-demo-walkthrough)
+- [3. Features](#3-features)
+- [4. Architecture Overview](#4-architecture-overview)
+- [5. Key Components](#5-key-components)
+  - [5.1 Backend: FastAPI Server](#51-backend-fastapi-server)
+  - [5.2 Backend: ADK Agent Definition](#52-backend-adk-agent-definition)
+  - [5.3 Frontend: CopilotKit UI](#53-frontend-copilotkit-ui)
+  - [5.4 Frontend: Runtime Bridge](#54-frontend-runtime-bridge)
+- [6. Project Structure](#6-project-structure)
+- [7. Dependencies](#7-dependencies)
+  - [7.1 Backend](#71-backend)
+  - [7.2 Frontend](#72-frontend)
 
-## Architecture Overview
+## 1. Run Locally
+
+### Prerequisites
+
+- Python 3.11+
+- Node.js 18+
+- Google Cloud Project with Vertex AI API enabled
+- Google Cloud credentials configured
+
+### Setup
+
+1. Set up the backend virtual environment:
+
+    ```bash
+    cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/clients/agui-copilotkit
+    uv venv
+    source .venv/bin/activate
+    uv pip install -r requirements.txt
+    ```
+
+2. Create a **.env** file:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+3. Edit `.env` and configure your settings (e.g. `GOOGLE_GENAI_USE_VERTEXAI=TRUE`).
+
+4. Launch the backend server:
+
+    ```bash
+    python main.py
+    ```
+
+    The FastAPI server will start on `http://localhost:8000`.
+
+5. In a **new terminal window**, install and start the frontend:
+
+    ```bash
+    cd ~/specialized-training-content/courses/build_production_ready_agents/ch5_demos/clients/agui-copilotkit/my-copilot-app
+    npm install
+    npm run dev
+    ```
+
+    The Next.js app will start on `http://localhost:3000`.
+
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 2. Demo Walkthrough
+
+When presenting this client to students, highlight the following:
+
+1. **Two-server architecture** — unlike the other clients which talk to a shared `sessions_server.py` backend, this demo runs its own FastAPI server with the ADK agent embedded directly. The AG-UI adapter (`add_adk_fastapi_endpoint`) exposes the agent as an endpoint that CopilotKit can consume. See the [4. Architecture Overview](#4-architecture-overview) diagram.
+
+2. **AG-UI as the bridge** — show the runtime bridge in `route.ts` ([5.4 Frontend: Runtime Bridge](#54-frontend-runtime-bridge)). It's just a few lines: `AgentRuntime` points at the Python backend, and `CopilotRuntime` streams responses to the frontend. This is the glue that makes CopilotKit work with any AG-UI-compatible agent.
+
+3. **CopilotKit UI components** (`page.tsx`) — the chat interface uses `<CopilotKit>` and `<CopilotSidebar>` components. Compare with the assistant-ui client which uses `<Thread />` — both give you a polished UI from a single component, but CopilotKit's sidebar pattern is designed for copilot-style experiences embedded alongside app content. See [5.3 Frontend: CopilotKit UI](#53-frontend-copilotkit-ui).
+
+4. **Backend simplicity** (`main.py`) — walk through [5.1 Backend: FastAPI Server](#51-backend-fastapi-server). The entire server is ~15 lines: wrap the ADK agent with `ADKAgent`, expose it with `add_adk_fastapi_endpoint`, done. No manual SSE parsing, no session management code — the AG-UI adapter handles all of it.
+
+5. **Contrast with other clients** — this is the only client that bundles its own agent rather than connecting to the shared lab backend. Discuss when you'd use this pattern (self-contained deployable unit) vs. the shared backend pattern (multiple clients, one agent).
+
+6. **Live demo** — send a message and show the streaming response in the CopilotKit sidebar. Show how the sidebar can coexist with other app content on the page.
+
+## 3. Features
+
+- **CopilotKit Integration** - Full-featured chat interface with built-in UI components
+- **AG-UI Adapter** - Bridges ADK agents with CopilotKit runtime
+- **Native Streaming** - Real-time streaming responses from ADK agents
+- **Session Management** - Automatic session handling via AG-UI adapter
+- **Rich UI Components** - CopilotKit's pre-built chat components
+- **Next.js 16** - Modern React framework with App Router
+- **React 19** - Latest React features and optimizations
+- **FastAPI Backend** - Python server with ADK agent integration
+
+## 4. Architecture Overview
 
 This implementation uses a unique two-server architecture where a Python FastAPI server hosts the ADK agent with AG-UI endpoints, and a Next.js frontend provides the CopilotKit UI.
 
@@ -54,126 +134,11 @@ graph TB
     style Vertex fill:#f3e5f5
 ```
 
-## Quick Start
+## 5. Key Components
 
-### Prerequisites
+### 5.1 Backend: FastAPI Server
 
-- Python 3.11+
-- Node.js 18+
-- Google Cloud Project with Vertex AI API enabled
-- Google Cloud credentials configured
-
-### Setup
-
-This project requires two separate setup processes: one for the Python backend server and one for the Next.js frontend.
-
-#### 1. Backend Server Setup (Python FastAPI)
-
-Navigate to the `agui-copilotkit` directory:
-
-```bash
-cd agui-copilotkit
-```
-
-**Create and activate a virtual environment:**
-
-```bash
-# Create virtual environment
-python -m venv .venv
-
-# Activate virtual environment
-# On macOS/Linux:
-source .venv/bin/activate
-
-# On Windows:
-.venv\Scripts\activate
-```
-
-**Install Python dependencies:**
-
-```bash
-pip install -r requirements.txt
-```
-
-**Configure environment variables:**
-
-Create a `.env` file in the `agui-copilotkit` directory:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and configure your settings:
-
-```bash
-GOOGLE_GENAI_USE_VERTEXAI=TRUE
-# Add any additional environment variables needed for your agent
-```
-
-**Start the backend server:**
-
-```bash
-python main.py
-```
-
-The FastAPI server will start on `http://localhost:8000`.
-
-#### 2. Frontend Client Setup (Next.js)
-
-Open a **new terminal** and navigate to the Next.js app directory:
-
-```bash
-cd agui-copilotkit/my-copilot-app
-```
-
-**Install Node.js dependencies:**
-
-```bash
-npm install
-```
-
-**Start the development server:**
-
-```bash
-npm run dev
-```
-
-The Next.js app will start on `http://localhost:3000`.
-
-### Access the Application
-
-Open your browser and navigate to:
-
-```
-http://localhost:3000
-```
-
-You should see the CopilotKit chat interface ready to interact with your ADK agent.
-
-## Project Structure
-
-```
-agui-copilotkit/
-├── .env                    # Environment configuration
-├── .env.example            # Environment template
-├── requirements.txt        # Python dependencies
-├── main.py                # FastAPI server entry point
-├── agent.py               # ADK agent definition
-└── my-copilot-app/        # Next.js frontend
-    ├── app/
-    │   ├── page.tsx       # Main chat UI component
-    │   └── api/
-    │       └── copilotkit/
-    │           └── route.ts  # CopilotKit runtime API
-    ├── package.json       # Node.js dependencies
-    └── ...
-```
-
-## Key Components
-
-### Backend Components
-
-#### `main.py` - FastAPI Server
+`main.py` — the entry point for the Python backend:
 
 ```python
 from ag_ui_adk import ADKAgent, add_adk_fastapi_endpoint
@@ -205,15 +170,13 @@ if __name__ == "__main__":
 - Manages sessions with configurable timeout
 - In-memory session storage for development
 
-#### `agent.py` - ADK Agent Definition
+### 5.2 Backend: ADK Agent Definition
 
-Define your ADK agent here. The agent will be accessible through the AG-UI adapter.
+`agent.py` — define your ADK agent here. The agent will be accessible through the AG-UI adapter.
 
-### Frontend Components
+### 5.3 Frontend: CopilotKit UI
 
-#### `app/page.tsx` - CopilotKit UI
-
-The main chat interface using CopilotKit components:
+`app/page.tsx` — the main chat interface using CopilotKit components:
 
 ```typescript
 import { CopilotKit } from "@copilotkit/react-core";
@@ -230,9 +193,9 @@ export default function Home() {
 }
 ```
 
-#### `app/api/copilotkit/route.ts` - Runtime Bridge
+### 5.4 Frontend: Runtime Bridge
 
-Connects CopilotKit to the AG-UI backend:
+`app/api/copilotkit/route.ts` — connects CopilotKit to the AG-UI backend:
 
 ```typescript
 import { CopilotRuntime } from "@copilotkit/runtime";
@@ -248,38 +211,28 @@ export const POST = async (req: Request) => {
 };
 ```
 
-## Development Workflow
+## 6. Project Structure
 
-### Running Both Servers
-
-You'll need **two terminal windows**:
-
-**Terminal 1 - Backend:**
-```bash
-cd agui-copilotkit
-source .venv/bin/activate  # or .venv\Scripts\activate on Windows
-python main.py
+```
+agui-copilotkit/
+├── .env                    # Environment configuration
+├── .env.example            # Environment template
+├── requirements.txt        # Python dependencies
+├── main.py                # FastAPI server entry point
+├── agent.py               # ADK agent definition
+└── my-copilot-app/        # Next.js frontend
+    ├── app/
+    │   ├── page.tsx       # Main chat UI component
+    │   └── api/
+    │       └── copilotkit/
+    │           └── route.ts  # CopilotKit runtime API
+    ├── package.json       # Node.js dependencies
+    └── ...
 ```
 
-**Terminal 2 - Frontend:**
-```bash
-cd agui-copilotkit/my-copilot-app
-npm run dev
-```
+## 7. Dependencies
 
-### Making Changes
-
-**Backend changes:**
-1. Edit `agent.py` or related files
-2. Restart the FastAPI server (Ctrl+C, then `python main.py`)
-
-**Frontend changes:**
-1. Edit files in `my-copilot-app/app/`
-2. Next.js will hot-reload automatically
-
-## Dependencies
-
-### Backend (`requirements.txt`)
+### 7.1 Backend
 
 ```
 ag_ui_adk          # AG-UI adapter for ADK agents
@@ -289,7 +242,7 @@ fastapi           # Web framework
 dotenv            # Environment variable management
 ```
 
-### Frontend (`package.json`)
+### 7.2 Frontend
 
 ```json
 {
