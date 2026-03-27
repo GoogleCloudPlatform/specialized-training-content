@@ -4,19 +4,23 @@ A production-ready chat client for Google ADK (Agent Development Kit) agents, bu
 
 ## Table of Contents
 
-- [1. Run Locally](#1-run-locally)
-- [2. Demo Walkthrough](#2-demo-walkthrough)
-- [3. Features](#3-features)
-- [4. Architecture Overview](#4-architecture-overview)
-- [5. Key Components](#5-key-components)
-  - [5.1 Backend: FastAPI Server](#51-backend-fastapi-server)
-  - [5.2 Backend: ADK Agent Definition](#52-backend-adk-agent-definition)
-  - [5.3 Frontend: CopilotKit UI](#53-frontend-copilotkit-ui)
-  - [5.4 Frontend: Runtime Bridge](#54-frontend-runtime-bridge)
-- [6. Project Structure](#6-project-structure)
-- [7. Dependencies](#7-dependencies)
-  - [7.1 Backend](#71-backend)
-  - [7.2 Frontend](#72-frontend)
+- [ADK Agent Client - CopilotKit with AG-UI Integration](#adk-agent-client---copilotkit-with-ag-ui-integration)
+  - [Table of Contents](#table-of-contents)
+  - [1. Run Locally](#1-run-locally)
+    - [Prerequisites](#prerequisites)
+    - [Setup](#setup)
+  - [2. Demo Walkthrough](#2-demo-walkthrough)
+  - [3. Features](#3-features)
+  - [4. Architecture Overview](#4-architecture-overview)
+  - [5. Key Components](#5-key-components)
+    - [5.1 Backend: FastAPI Server](#51-backend-fastapi-server)
+    - [5.2 Backend: ADK Agent Definition](#52-backend-adk-agent-definition)
+    - [5.3 Frontend: CopilotKit UI](#53-frontend-copilotkit-ui)
+    - [5.4 Frontend: Runtime Bridge](#54-frontend-runtime-bridge)
+  - [6. Project Structure](#6-project-structure)
+  - [7. Dependencies](#7-dependencies)
+    - [7.1 Backend](#71-backend)
+    - [7.2 Frontend](#72-frontend)
 
 ## 1. Run Locally
 
@@ -68,19 +72,19 @@ A production-ready chat client for Google ADK (Agent Development Kit) agents, bu
 
 ## 2. Demo Walkthrough
 
-When presenting this client to students, highlight the following:
+Start with the live demo, then walk through the code.
 
-1. **Two-server architecture** — unlike the other clients which talk to a shared `sessions_server.py` backend, this demo runs its own FastAPI server with the ADK agent embedded directly. The AG-UI adapter (`add_adk_fastapi_endpoint`) exposes the agent as an endpoint that CopilotKit can consume. See the [4. Architecture Overview](#4-architecture-overview) diagram.
+1. **Live demo** — open [http://localhost:3000](http://localhost:3000) and orient students to the layout. The main page is a mock "Google Cloud CoE (Center of Excellence) Portal" dashboard with metrics cards (Active Projects, Monthly Spend, Team Members, Uptime SLA), quick access links, and active GCP service tiles with usage bars. The CopilotKit sidebar sits on the right edge of the screen — this is the key visual: the AI assistant lives *alongside* the application, not in a separate page. The agent introduces itself as a Google Cloud technology tutor. Type a message (e.g. "tell me about GKE") and show the streaming response appearing in the sidebar while the dashboard remains fully visible and interactive behind it. Point out that this is the "copilot" UX pattern — the assistant augments the app rather than replacing it.
 
-2. **AG-UI as the bridge** — show the runtime bridge in `route.ts` ([5.4 Frontend: Runtime Bridge](#54-frontend-runtime-bridge)). It's just a few lines: `AgentRuntime` points at the Python backend, and `CopilotRuntime` streams responses to the frontend. This is the glue that makes CopilotKit work with any AG-UI-compatible agent.
+2. **Two-server architecture** — unlike the other clients which talk to a shared `sessions_server.py` backend, this demo runs its own FastAPI server with the ADK agent embedded directly. The AG-UI adapter (`add_adk_fastapi_endpoint`) exposes the agent as an endpoint that CopilotKit can consume. See the [4. Architecture Overview](#4-architecture-overview) diagram.
 
-3. **CopilotKit UI components** (`page.tsx`) — the chat interface uses `<CopilotKit>` and `<CopilotSidebar>` components. Compare with the assistant-ui client which uses `<Thread />` — both give you a polished UI from a single component, but CopilotKit's sidebar pattern is designed for copilot-style experiences embedded alongside app content. See [5.3 Frontend: CopilotKit UI](#53-frontend-copilotkit-ui).
+3. **AG-UI as the bridge** — show the runtime bridge in `route.ts` ([5.4 Frontend: Runtime Bridge](#54-frontend-runtime-bridge)). It's just a few lines: `AgentRuntime` points at the Python backend, and `CopilotRuntime` streams responses to the frontend. This is the glue that makes CopilotKit work with any AG-UI-compatible agent.
 
-4. **Backend simplicity** (`main.py`) — walk through [5.1 Backend: FastAPI Server](#51-backend-fastapi-server). The entire server is ~15 lines: wrap the ADK agent with `ADKAgent`, expose it with `add_adk_fastapi_endpoint`, done. No manual SSE parsing, no session management code — the AG-UI adapter handles all of it.
+4. **CopilotKit UI components** (`page.tsx`) — the chat interface uses `<CopilotKit>` and `<CopilotSidebar>` components. Compare with the assistant-ui client which uses `<Thread />` — both give you a polished UI from a single component, but CopilotKit's sidebar pattern is designed for copilot-style experiences embedded alongside app content (as the dashboard demo illustrates). See [5.3 Frontend: CopilotKit UI](#53-frontend-copilotkit-ui).
 
-5. **Contrast with other clients** — this is the only client that bundles its own agent rather than connecting to the shared lab backend. Discuss when you'd use this pattern (self-contained deployable unit) vs. the shared backend pattern (multiple clients, one agent).
+5. **Backend simplicity** (`main.py`) — walk through [5.1 Backend: FastAPI Server](#51-backend-fastapi-server). The entire server is ~15 lines: wrap the ADK agent with `ADKAgent`, expose it with `add_adk_fastapi_endpoint`, done. No manual SSE parsing, no session management code — the AG-UI adapter handles all of it.
 
-6. **Live demo** — send a message and show the streaming response in the CopilotKit sidebar. Show how the sidebar can coexist with other app content on the page.
+6. **Contrast with other clients** — this is the only client that bundles its own agent rather than connecting to the shared lab backend. Discuss when you'd use this pattern (self-contained deployable unit) vs. the shared backend pattern (multiple clients, one agent).
 
 ## 3. Features
 
