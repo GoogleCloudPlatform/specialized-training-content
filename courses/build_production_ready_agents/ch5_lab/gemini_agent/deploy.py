@@ -21,5 +21,8 @@ remote_agent = agent_engines.create(
     agent_engine=app,
     display_name="GCP Tutorial Agent",
     requirements=["google-cloud-aiplatform[agent_engines,adk]"],
-    # staging_bucket parameter may not be needed or use gcs_dir_name instead
+    env_vars={
+        "GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY": "true",
+        "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT": "true",
+    },
 )

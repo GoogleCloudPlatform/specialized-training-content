@@ -82,23 +82,19 @@ function App() {
 
             // Extract text from the event
             let textContent = '';
-            
-            // Handle chunked text (from server-side chunking)
-            if (data.type === 'text_chunk' && data.text) {
-              textContent = data.text;
-            }
+
             // Check for content.parts[0].text (Gemini response structure)
-            else if (data.content?.parts && Array.isArray(data.content.parts) && data.content.parts.length > 0) {
+            if (data.content?.parts && Array.isArray(data.content.parts) && data.content.parts.length > 0) {
               const part = data.content.parts[0];
               textContent = part.text || part;
-            } 
+            }
             // Fallback to other possible text fields
             else if (data.text) {
               textContent = data.text;
             } else if (data.message) {
               textContent = data.message;
             }
-            
+
             // Add text to accumulated content
             if (textContent) {
               accumulatedText += textContent;
@@ -109,23 +105,26 @@ function App() {
           }
         },
 
-        onerror(err) {
-          console.error('SSE error:', err);
-          setIsStreaming(false);
-          throw err;
-        },
-
         onclose() {
-          // Finalize the message when stream closes
+          // Stream finished — move accumulated text to chat history
           if (accumulatedText) {
             setChatHistory(prev => [...prev, { role: 'agent', content: accumulatedText }]);
           }
           setIsStreaming(false);
           setStreamingText('');
+        },
+
+        onerror(err) {
+          console.error('SSE error:', err);
+          setIsStreaming(false);
+          throw err;
         }
       });
     } catch (error) {
       console.error('Failed to send message:', error);
+      if (accumulatedText) {
+        setChatHistory(prev => [...prev, { role: 'agent', content: accumulatedText }]);
+      }
       setIsStreaming(false);
       setStreamingText('');
     }

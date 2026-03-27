@@ -51,7 +51,7 @@ app = agent_engines.AdkApp(agent=root_agent)
 async def main():
     async for event in app.async_stream_query(
         user_id="USER_ID",
-        message="Hi there",
+        message="Tell me about GKE",
     ):
         print(event)
 

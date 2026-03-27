@@ -28,10 +28,14 @@ app.add_middleware(
 load_dotenv()
 
 # Initialize Vertex AI
-GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "jwd-gcp-demos")
+GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "")
 GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
-GOOGLE_CLOUD_STAGING_BUCKET = os.getenv("GOOGLE_CLOUD_STAGING_BUCKET", "gs://jwd-gcp-demos-ai")
+GOOGLE_CLOUD_STAGING_BUCKET = os.getenv("GOOGLE_CLOUD_STAGING_BUCKET", "")
 AGENT_RESOURCE_NAME = os.getenv("AGENT_RESOURCE_NAME", "")
+if not GOOGLE_CLOUD_PROJECT:
+    raise ValueError("GOOGLE_CLOUD_PROJECT environment variable is not set.")
+if not GOOGLE_CLOUD_STAGING_BUCKET:
+    raise ValueError("GOOGLE_CLOUD_STAGING_BUCKET environment variable is not set.")
 if not AGENT_RESOURCE_NAME:
     raise ValueError("AGENT_RESOURCE_NAME environment variable is not set.")
                      
@@ -108,23 +112,6 @@ async def query_agent(request: QueryRequest):
                     event_data['text'] = event.text
                 elif hasattr(event, 'content'):
                     event_data['content'] = event.content
-                
-                # For large responses, chunk the content for smoother streaming
-                if isinstance(event, dict) and event.get('content', {}).get('parts'):
-                    parts = event['content']['parts']
-                    if parts and isinstance(parts[0], dict) and 'text' in parts[0]:
-                        text = parts[0]['text']
-                        # Send in chunks of ~50 characters for smooth streaming
-                        chunk_size = 50
-                        for i in range(0, len(text), chunk_size):
-                            chunk_data = {
-                                "type": "text_chunk",
-                                "text": text[i:i+chunk_size],
-                                "is_final": i + chunk_size >= len(text)
-                            }
-                            yield f"data: {json.dumps(chunk_data)}\n\n"
-                            await asyncio.sleep(0.01)  # Small delay for smoother streaming
-                        continue  # Skip the full event yield
                 
                 yield f"data: {json.dumps(event_data, default=str)}\n\n"
             
