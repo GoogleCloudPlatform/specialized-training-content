@@ -104,10 +104,10 @@ The proxy is stateless—all session state is managed by Vertex AI Agent Engine,
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `PROJECT_ID` | Google Cloud Project ID | Yes |
-| `LOCATION` | Vertex AI location | Yes |
-| `STAGING_BUCKET` | GCS bucket for staging | Yes |
-| `AGENT_RESOURCE_NAME` | Full resource name of the agent | Yes |
+| `GOOGLE_CLOUD_PROJECT` | Google Cloud Project ID | Yes |
+| `GOOGLE_CLOUD_LOCATION` | Vertex AI location (e.g., `us-central1`) | Yes |
+| `GOOGLE_CLOUD_STAGING_BUCKET` | GCS bucket for staging | Yes |
+| `AGENT_RESOURCE_NAME` | Full resource name of the agent (e.g., `projects/<PROJECT_NUMBER>/locations/<LOCATION>/reasoningEngines/<ENGINE_ID>`) | Yes |
 | `PORT` | Server port | No (default: 8080) |
 
 ## Deployment
@@ -121,10 +121,11 @@ The proxy is stateless—all session state is managed by Vertex AI Agent Engine,
 ### Deploy to Cloud Run
 
 ```bash
-gcloud run deploy vertex-ai-proxy \
-  --source . \
-  --region us-central1 \
-  --set-env-vars "PROJECT_ID=YOUR_PROJECT_ID,LOCATION=us-central1,STAGING_BUCKET=gs://YOUR_BUCKET,AGENT_RESOURCE_NAME=YOUR_AGENT_RESOURCE_NAME"
+gcloud run deploy cloudrun-proxy \
+    --source . \
+    --region us-central1 \
+    --allow-unauthenticated \
+    --set-env-vars GOOGLE_CLOUD_PROJECT=<YOUR_PROJECT_ID>,GOOGLE_CLOUD_LOCATION=<YOUR_LOCATION>,GOOGLE_CLOUD_STAGING_BUCKET=<YOUR_PROJECT_ID>,AGENT_RESOURCE_NAME=projects/<YOUR_PROJECT_NUMBER>/locations/<YOUR_LOCATION>/reasoningEngines/<YOUR_ENGINE_ID>
 ```
 
 ### Configure Identity-Aware Proxy (IAP)

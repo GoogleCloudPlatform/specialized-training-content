@@ -67,6 +67,7 @@ function App() {
     try {
       await fetchEventSource(`${API_BASE_URL}/query`, {
         method: 'POST',
+        openWhenHidden: true,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: USER_ID,
@@ -100,18 +101,16 @@ function App() {
               accumulatedText += textContent;
               setStreamingText(accumulatedText);
             }
+
+            // Finalize when server signals last event
+            if (data.is_final && accumulatedText) {
+              setChatHistory(prev => [...prev, { role: 'agent', content: accumulatedText }]);
+              setIsStreaming(false);
+              setStreamingText('');
+            }
           } catch (err) {
             console.error('Error parsing event:', err);
           }
-        },
-
-        onclose() {
-          // Stream finished — move accumulated text to chat history
-          if (accumulatedText) {
-            setChatHistory(prev => [...prev, { role: 'agent', content: accumulatedText }]);
-          }
-          setIsStreaming(false);
-          setStreamingText('');
         },
 
         onerror(err) {

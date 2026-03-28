@@ -114,7 +114,8 @@ async def query_agent(request: QueryRequest):
                     event_data['content'] = event.content
                 
                 yield f"data: {json.dumps(event_data, default=str)}\n\n"
-            
+
+            yield f"data: {json.dumps({'is_final': True})}\n\n"
             print(f"Total events received: {event_count}")
         except Exception as e:
             error_data = {
