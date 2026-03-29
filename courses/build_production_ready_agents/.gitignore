@@ -208,6 +208,8 @@ __marimo__/
 
 */.DS_Store
 
+.adk/
+
 node_modules/
 .next/
 out/
