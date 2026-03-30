@@ -49,7 +49,11 @@ class Gemini3(Gemini):
             location="global",
             http_options=types.HttpOptions(
                 headers=self._tracking_headers(),
-                retry_options=self.retry_options,
+                retry_options=types.HttpRetryOptions(
+                    max_delay=7,
+                    exp_base=1.5,
+                    jitter=.5,
+                )
             ),
         )
 
@@ -84,10 +88,6 @@ class Gemini3(Gemini):
 # Steps:
 #   1. Create data_tool by wrapping data_agent with AgentTool.
 #   2. Create intervention_tool by wrapping intervention_agent with AgentTool.
-
-# --- Improve Engagement agent system prompt ---
-# For Task 3 (data agent only), import from prompt_task3.
-# For Task 4 (data + intervention agents), swap to prompt_task4.
 
 
 # --- Improve Engagement agent agent ---

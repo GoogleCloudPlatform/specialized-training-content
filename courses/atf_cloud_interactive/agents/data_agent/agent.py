@@ -30,16 +30,16 @@ from google.adk.auth.auth_credential import (AuthCredential,
                                              AuthCredentialTypes,
                                              ServiceAccount)
 from google.adk.models import Gemini
+from google.adk.runners import InMemoryRunner
 from google.adk.telemetry.google_cloud import (get_gcp_exporters,
                                                get_gcp_resource)
-from google.adk.runners import InMemoryRunner
-
 from google.adk.telemetry.setup import maybe_set_otel_providers
 from google.adk.tools.mcp_tool.mcp_session_manager import \
     StreamableHTTPConnectionParams
 from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.genai import Client, types
-# TODO MODELARMOR IMPORT: Import ModelArmorSafetyFilterPlugin from model_armor_plugin.
+from model_armor_plugin import \
+    ModelArmorSafetyFilterPlugin  # Import plugin from model_armor_plugin.
 
 # --- Environment configuration ---
 PROJECT_ID = os.environ["GOOGLE_CLOUD_PROJECT"]
@@ -50,18 +50,27 @@ logging.getLogger("google.adk").setLevel(logging.WARNING)
 logging.getLogger("google.genai").setLevel(logging.WARNING)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
+# --- Telemetry configuration for Cloud Run ---
+_gcp_creds, _gcp_project = google.auth.default(
+    scopes=["https://www.googleapis.com/auth/cloud-platform"],
+)
+_gcp_exporters = get_gcp_exporters(
+    enable_cloud_tracing=True,
+    enable_cloud_logging=True,
+    google_auth=(_gcp_creds, _gcp_project),
+)
+_gcp_resource = get_gcp_resource(project_id=PROJECT_ID)
+maybe_set_otel_providers(
+    otel_hooks_to_setup=[_gcp_exporters],
+    otel_resource=_gcp_resource,
+)
 
-# TODO TELEMETRY: Export OpenTelemetry Logging and Traces to Google Cloud.
-# Steps:
-#   1. Obtain default GCP credentials (scoped to cloud-platform).
-#   2. Create GCP exporters with Cloud Tracing and Cloud Logging enabled.
-#   3. Wire everything together with maybe_set_otel_providers().
-
-
-# TODO MCP SCOPES: Define the BigQuery MCP toolset configuration.
-# Steps:
-#   1. Set BIGQUERY_MCP_ENDPOINT to the BigQuery MCP URL.
-#   2. Define BIGQUERY_SCOPES with cloud-platform and bigquery scopes.
+# --- BigQuery MCP toolset ---
+BIGQUERY_MCP_ENDPOINT = "https://bigquery.googleapis.com/mcp"
+BIGQUERY_SCOPES = [
+    "https://www.googleapis.com/auth/cloud-platform",
+    "https://www.googleapis.com/auth/bigquery",
+]
 
 def _create_bigquery_mcp_toolset() -> McpToolset:
     # TODO MCP TOOLSET: Create and return an McpToolset for BigQuery.
@@ -146,7 +155,6 @@ can relay progress to the user:
 - Etc.
 """
 
-
 class Gemini3(Gemini):
     """Gemini subclass that forces location='global' for Gemini 3 models."""
 
@@ -157,7 +165,11 @@ class Gemini3(Gemini):
             location="global",
             http_options=types.HttpOptions(
                 headers=self._tracking_headers(),
-                retry_options=self.retry_options,
+                retry_options=types.HttpRetryOptions(
+                    max_delay=7,
+                    exp_base=1.5,
+                    jitter=.5,
+                )
             ),
         )
 
