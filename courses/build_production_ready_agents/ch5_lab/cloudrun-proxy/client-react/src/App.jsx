@@ -67,6 +67,7 @@ function App() {
     try {
       await fetchEventSource(`${API_BASE_URL}/query`, {
         method: 'POST',
+        openWhenHidden: true,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: USER_ID,
@@ -82,27 +83,30 @@ function App() {
 
             // Extract text from the event
             let textContent = '';
-            
-            // Handle chunked text (from server-side chunking)
-            if (data.type === 'text_chunk' && data.text) {
-              textContent = data.text;
-            }
+
             // Check for content.parts[0].text (Gemini response structure)
-            else if (data.content?.parts && Array.isArray(data.content.parts) && data.content.parts.length > 0) {
+            if (data.content?.parts && Array.isArray(data.content.parts) && data.content.parts.length > 0) {
               const part = data.content.parts[0];
               textContent = part.text || part;
-            } 
+            }
             // Fallback to other possible text fields
             else if (data.text) {
               textContent = data.text;
             } else if (data.message) {
               textContent = data.message;
             }
-            
+
             // Add text to accumulated content
             if (textContent) {
               accumulatedText += textContent;
               setStreamingText(accumulatedText);
+            }
+
+            // Finalize when server signals last event
+            if (data.is_final && accumulatedText) {
+              setChatHistory(prev => [...prev, { role: 'agent', content: accumulatedText }]);
+              setIsStreaming(false);
+              setStreamingText('');
             }
           } catch (err) {
             console.error('Error parsing event:', err);
@@ -113,19 +117,13 @@ function App() {
           console.error('SSE error:', err);
           setIsStreaming(false);
           throw err;
-        },
-
-        onclose() {
-          // Finalize the message when stream closes
-          if (accumulatedText) {
-            setChatHistory(prev => [...prev, { role: 'agent', content: accumulatedText }]);
-          }
-          setIsStreaming(false);
-          setStreamingText('');
         }
       });
     } catch (error) {
       console.error('Failed to send message:', error);
+      if (accumulatedText) {
+        setChatHistory(prev => [...prev, { role: 'agent', content: accumulatedText }]);
+      }
       setIsStreaming(false);
       setStreamingText('');
     }

@@ -152,7 +152,7 @@
 
         <div id="auth-section">
             <p>Please sign in with Google to use the echo service</p>
-            <div id="g_id_onload" data-client_id="YOUR-CLIENT-ID.apps.googleusercontent.com"
+            <div id="g_id_onload" data-client_id="{{ client_id }}"
                 data-callback="handleCredentialResponse" data-auto_prompt="false">
             </div>
             <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="signin_with" data-shape="rectangular" data-logo_alignment="left"></div>
@@ -174,10 +174,7 @@
     <script>
         let USER_ID_TOKEN = null;
 
-        // For local development, uses localhost:8000
-        // To test against Cloud Run: Replace with your deployed Cloud Run URL
-        // Example: "https://your-service-name-123456.us-central1.run.app"
-        const API_URL = "http://localhost:8000";
+        const API_URL = "{{ api_url }}";
 
         // Callback function triggered after successful Google Login
         function handleCredentialResponse(response) {

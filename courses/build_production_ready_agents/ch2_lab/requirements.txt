@@ -1,6 +1,6 @@
-google-cloud-aiplatform
-google-adk
-fastapi
-uvicorn
+google-cloud-aiplatform==1.139.0
+google-adk==1.26.0
+fastapi==0.124.1
+uvicorn==0.34.0
 httpx
 asyncpg
