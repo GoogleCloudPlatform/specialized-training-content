@@ -153,44 +153,6 @@ def add_agent(project_id, engine_name, reasoning_engine_name):
     print(f"    Agent added: {agent.get('name')}")
     return agent
 
-
-# ---- Step 5: Configure user permissions --------------------------------------
-
-def configure_permissions(project_id, engine_name):
-    print()
-    print("Step 11: Configuring user permissions (allUsers) ...")
-
-    # Get current policy to obtain the required etag
-    get_url = f"{base_url()}/{engine_name}:getIamPolicy"
-    get_resp = requests.post(get_url, json={}, headers=get_auth_headers(project_id))
-    if not get_resp.ok:
-        raise RuntimeError(
-            f"Get IAM policy failed: {get_resp.status_code} {get_resp.text}"
-        )
-    current_policy = get_resp.json()
-    etag = current_policy.get("etag", "")
-
-    # Set updated policy with the etag
-    set_url = f"{base_url()}/{engine_name}:setIamPolicy"
-    body = {
-        "policy": {
-            "etag": etag,
-            "bindings": [
-                {
-                    "role": "roles/discoveryengine.user",
-                    "members": ["allUsers"],
-                },
-            ],
-        },
-    }
-    resp = requests.post(set_url, json=body, headers=get_auth_headers(project_id))
-    if not resp.ok:
-        raise RuntimeError(
-            f"Set IAM policy failed: {resp.status_code} {resp.text}"
-        )
-    print("    Done.")
-
-
 # ---- Main --------------------------------------------------------------------
 
 def main():
@@ -210,7 +172,6 @@ def main():
     engine_name = create_engine(project_id, project_number)
     configure_identity_provider(project_id)
     add_agent(project_id, engine_name, reasoning_engine_name)
-    configure_permissions(project_id, engine_name)
 
     print()
     print("Gemini Enterprise setup complete!")
