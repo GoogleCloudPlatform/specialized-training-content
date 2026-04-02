@@ -56,7 +56,7 @@
     },
     {
       "id": "5vJ4Dwe7XmntEm9diCUQc",
-      "text": "Search for roles by service in VendorFlow",
+      "text": "Search for services in AccordPro",
       "x": 497.40104925910225,
       "y": 94.32623604400351,
       "width": 192.25362002002782,
@@ -221,10 +221,10 @@
     {
       "id": "vioKS8ceX01WJP9MGLYAx",
       "text": "AI Adds \n- Continuous Long-Tail Monitoring \nby auditing 100% of supplier contracts nightly, which was previously impossible",
-      "x": 771.7654839258906,
-      "y": 504.626096792206,
-      "width": 271.5356990793865,
-      "height": 78.24984721721177,
+      "x": 771.9772573944865,
+      "y": 504.82555973845626,
+      "width": 332.0490719327866,
+      "height": 94.66464031784814,
       "parentIds": [
         "8e8ajHofrcJgIwca8iTt-"
       ],
