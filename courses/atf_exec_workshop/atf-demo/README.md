@@ -9,6 +9,10 @@ Together they tell a complete story: from "we have a business problem" to "here'
 
 ## Running locally (setting up the server to run on your personal machine)
 
+1. Clone this repo to your local machine
+2. Change directories into `specialized-training-content/tree/main/courses/atf_exec_workshop/atf-demo`
+3. Create the virtual environment and run the app
+   
 ```bash
 # Create and activate virtual environment
 python3 -m venv .venv
@@ -21,16 +25,23 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open `http://localhost:5001` — this loads the home page with the sidebar and presentation content.
+4. Open `http://localhost:5001` in your browser — this loads the home page with the sidebar and presentation content.
 
 ## Deploying to Google Cloud Run
 
+1. Clone this repo to your local machine
+2. Change directories into `specialized-training-content/tree/main/courses/atf_exec_workshop/atf-demo`
+3. Run the following command, replacing the PROJECT_ID placeholder appropriately
+    
 ```bash
 gcloud run deploy cymbal-meet-demo \
   --source . \
   --region us-central1 \
-  --allow-unauthenticated
+  --allow-unauthenticated \
+  --project PROJECT_ID
 ```
+
+4. Use the Cloud Run service URL returned to load the demo site.
 
 ## How it works
 
