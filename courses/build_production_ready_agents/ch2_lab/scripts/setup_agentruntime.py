@@ -3,25 +3,29 @@ import os
 
 import vertexai
 from google.adk.sessions import VertexAiSessionService
+from dotenv import load_dotenv
+
+load_dotenv()
 
 GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "my-gcp-project")
-GOOGLE_CLOUD_LOCATION = "us-central1"
+GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+AGENT_RUNTIME_LOCATION = os.getenv("AGENT_RUNTIME_LOCATION", "us-central1")
 
 def setup_agent_engine():
   client = vertexai.Client(
     project=GOOGLE_CLOUD_PROJECT,
-    location=GOOGLE_CLOUD_LOCATION
-  )
+    location=AGENT_RUNTIME_LOCATION
+  ) # type: ignore
 
-  # If you don't have an Agent Engine instance already, create an instance.
+  # If you don't have an Agent Runtime deployment already, create one
   agent_engine = client.agent_engines.create()
   return agent_engine
 
-  # Print the agent engine ID, you will need it in the later steps to initialize
+  # Print the Agent Runtime deployment (AgentEngine) ID, you will need it in the later steps to initialize
   # the ADK `VertexAiSessionService`.
 
 async def prime_session_service(agent_engine):
-    session_service = VertexAiSessionService(project=GOOGLE_CLOUD_PROJECT, location=GOOGLE_CLOUD_LOCATION)
+    session_service = VertexAiSessionService(project=GOOGLE_CLOUD_PROJECT, location=AGENT_RUNTIME_LOCATION)
 
     # Create a dummy session to prime the service
     session = await session_service.create_session(
