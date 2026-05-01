@@ -18,15 +18,13 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, StreamingResponse
-from google.adk.agents import Agent
 from google.adk.agents.run_config import RunConfig, StreamingMode
-from google.adk.runners import InMemoryRunner, Runner
+from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
-from utilities import (clean_json_response, configure_logging,
+from utilities import (configure_logging,
                        create_event_summary, generate_home_page_html,
-                       get_client_url, log_event, log_session,
-                       make_session_warmup_lifespan)
+                       get_client_url, make_session_warmup_lifespan)
 
 load_dotenv()
 
@@ -60,9 +58,6 @@ if SESSION_SERVICE_PROVIDER == "in_memory":
 elif SESSION_SERVICE_PROVIDER == "vertex":
     # STUDENT TASK: Add VertexSessionService implementation
     logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
-    from google.adk.sessions import VertexAiSessionService
-    session_service = VertexAiSessionService(project=GOOGLE_CLOUD_PROJECT, location=AGENT_RUNTIME_LOCATION)
-    APP_NAME = os.getenv("REASONING_ENGINE_APP_NAME", "reasoning_engine_app")  
 elif SESSION_SERVICE_PROVIDER == "db":
     # STUDENT TASK: Add DatabaseSessionService implementation
     logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
@@ -258,7 +253,6 @@ async def chat(request: dict):
             yield f"data: {json.dumps(final_session_card)}\n\n"
 
             # Prepare session summary
-            # updated_session = session
             session_summary = build_session_summary(updated_session)
 
             # If no text was accumulated, send an error
