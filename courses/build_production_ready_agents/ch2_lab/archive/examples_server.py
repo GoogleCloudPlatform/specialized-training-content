@@ -4,8 +4,10 @@ ADK Agent API Server with Example Store Integration
 A FastAPI server that retrieves relevant examples from Example Store,
 constructs dynamic prompts, and returns agent responses with streaming support.
 """
+import warnings
+import authlib.deprecate as _authlib_deprecate
+warnings.filterwarnings("ignore", category=_authlib_deprecate.AuthlibDeprecationWarning)
 
-import asyncio
 import json
 import logging
 import os
@@ -17,14 +19,13 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, StreamingResponse
-from google.adk.agents import Agent
 from google.adk.agents.run_config import RunConfig, StreamingMode
-from google.adk.runners import InMemoryRunner, Runner
+from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
-from utilities import (clean_json_response, configure_logging,
+from utilities import (configure_logging,
                        create_event_summary, generate_home_page_html,
-                       get_client_url, log_event, log_session)
+                       get_client_url)
 from vertexai.preview import example_stores
 
 load_dotenv()
@@ -64,7 +65,7 @@ logger.info(f"Using SESSION_SERVICE_PROVIDER: in_memory (for examples demo)")
 # Initialize Vertex AI
 vertexai.init(
     project=GOOGLE_CLOUD_PROJECT,
-    location=AGENT_ENGINE_LOCATION
+    location=AGENT_RUNTIME_LOCATION
 )
 
 # Connect to the Example Store
@@ -452,5 +453,5 @@ if __name__ == "__main__":
         "examples_server:app",
         host="0.0.0.0",
         port=8000,
-        reload=True
+        # reload=True
     )
