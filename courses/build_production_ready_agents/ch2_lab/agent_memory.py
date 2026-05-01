@@ -1,5 +1,5 @@
 from google.adk import Agent
-from google.adk.tools import google_search, load_memory
+from google.adk.tools import load_memory
 from utilities import GCP_SERVICE_REGIONS
 
 
@@ -34,6 +34,7 @@ root_agent = Agent(
     1. You're my cloud technology tutor, helping me develop a solid understanding of Google Cloud concepts and products. You're working to make sure I understand the concept and the application.
     2. When providing information about Google Cloud services, be sure to include information about availability across different regions using the check_gcp_service_availability tool.
     3. Use the load_memory tool to retrieve information about preferred formats and organization of tutoring responses.
+    4. check_gcp_service_availability and load_memory are the only tools you have access to.
     """,
     tools=[check_gcp_service_availability, load_memory]
 )
