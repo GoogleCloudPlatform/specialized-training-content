@@ -90,7 +90,18 @@ runner = Runner(
 
 # === BEGIN SESSION DIAGNOSTICS BLOCK (remove this block + session_diagnostics.py to disable) ===
 # Set SESSIONS_DIAGNOSTICS=1 to log per-phase timings for Vertex AI Sessions cold start.
+import time
 from contextlib import asynccontextmanager
+
+
+async def _warmup_session_service():
+    t = time.perf_counter()
+    logger.info("[warmup] Vertex AI Sessions warm-up starting in background...")
+    try:
+        await session_service.list_sessions(app_name=APP_NAME, user_id="_warmup")
+        logger.info(f"[warmup] Vertex AI Sessions warm-up complete in {(time.perf_counter() - t) * 1000:.0f}ms")
+    except Exception as e:
+        logger.warning(f"[warmup] failed after {(time.perf_counter() - t) * 1000:.0f}ms: {e}")
 
 
 @asynccontextmanager
@@ -102,6 +113,8 @@ async def _lifespan(app: FastAPI):
             location=AGENT_RUNTIME_LOCATION,
             app_name=APP_NAME,
         )
+    elif SESSION_SERVICE_PROVIDER == "vertex":
+        app.state.warmup_task = asyncio.create_task(_warmup_session_service())
     yield
 
 

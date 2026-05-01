@@ -4,8 +4,10 @@ Simple ADK Agent API Server - STREAMING VERSION
 A FastAPI server exposing ADK agent functionality via HTTP endpoints with streaming responses.
 Uses in-memory services for simplicity. Client applications make HTTP requests to interact.
 """
+import warnings
+import authlib.deprecate as _authlib_deprecate
+warnings.filterwarnings("ignore", category=_authlib_deprecate.AuthlibDeprecationWarning)
 
-import asyncio
 import json
 import logging
 import os
@@ -23,7 +25,8 @@ from google.adk.sessions import InMemorySessionService
 from google.genai import types
 from utilities import (clean_json_response, configure_logging,
                        create_event_summary, generate_home_page_html,
-                       get_client_url, log_event, log_session)
+                       get_client_url, log_event, log_session,
+                       make_session_warmup_lifespan)
 
 load_dotenv()
 
@@ -57,6 +60,9 @@ if SESSION_SERVICE_PROVIDER == "in_memory":
 elif SESSION_SERVICE_PROVIDER == "vertex":
     # STUDENT TASK: Add VertexSessionService implementation
     logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
+    from google.adk.sessions import VertexAiSessionService
+    session_service = VertexAiSessionService(project=GOOGLE_CLOUD_PROJECT, location=AGENT_RUNTIME_LOCATION)
+    APP_NAME = os.getenv("REASONING_ENGINE_APP_NAME", "reasoning_engine_app")  
 elif SESSION_SERVICE_PROVIDER == "db":
     # STUDENT TASK: Add DatabaseSessionService implementation
     logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
@@ -81,7 +87,11 @@ runner = Runner(
 # FastAPI Setup
 # ============================================================================
 
-app = FastAPI(title="ADK Agent Server - Streaming", version="1.0.0")
+app = FastAPI(
+    title="ADK Agent Server - Streaming",
+    version="1.0.0",
+    lifespan=make_session_warmup_lifespan(session_service, APP_NAME, SESSION_SERVICE_PROVIDER),
+)
 
 # Add CORS middleware to allow requests from any origin for development/testing
 app.add_middleware(
@@ -311,5 +321,5 @@ if __name__ == "__main__":
         "sessions_server:app",  # Import string format for reload to work
         host="0.0.0.0",
         port=8000,  # Different port to run alongside the original
-        reload=True
+        # reload=True
     )
