@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from vertexai import agent_engines
 
 # Initialize FastAPI app
-app = FastAPI(title="Vertex AI Agent Proxy")
+app = FastAPI(title="Agent Runtime Agent Proxy")
 
 # Add CORS middleware
 app.add_middleware(
@@ -27,7 +27,7 @@ app.add_middleware(
 # Load environment variables from .env file if present
 load_dotenv()
 
-# Initialize Vertex AI
+# Initialize Vertex AI SDK
 GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "")
 GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
 GOOGLE_CLOUD_STAGING_BUCKET = os.getenv("GOOGLE_CLOUD_STAGING_BUCKET", "")
@@ -137,7 +137,7 @@ async def query_agent(request: QueryRequest):
 @app.get("/api/health")
 async def health_check():
     """Health check endpoint for Cloud Run."""
-    return {"status": "healthy", "service": "vertex-ai-proxy"}
+    return {"status": "healthy", "service": "cloudrun-proxy"}
 
 
 # Serve the index.html at root
