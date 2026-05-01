@@ -41,7 +41,6 @@ logger = logging.getLogger(__name__)
 
 APP_NAME = os.getenv("APP_NAME", "adk_agent_app")
 GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "my-gcp-project")
-MODEL_LOCATION = os.getenv("MODEL_LOCATION", "us-central1")
 AGENT_RUNTIME_LOCATION = os.getenv("AGENT_RUNTIME_LOCATION", "us-central1")
 SESSION_SERVICE_PROVIDER = os.getenv("SESSION_SERVICE_PROVIDER", "in_memory")
 REASONING_ENGINE_APP_NAME = os.getenv("REASONING_ENGINE_APP_NAME", "reasoning_engine_app")
