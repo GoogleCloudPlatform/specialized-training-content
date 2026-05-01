@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "my-gcp-project")
-GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
 AGENT_RUNTIME_LOCATION = os.getenv("AGENT_RUNTIME_LOCATION", "us-central1")
 
 def setup_agent_engine():
@@ -18,7 +17,9 @@ def setup_agent_engine():
   ) # type: ignore
 
   # If you don't have an Agent Runtime deployment already, create one
-  agent_engine = client.agent_engines.create()
+  agent_engine = client.agent_engines.create(
+    config={"display_name": "Gemini Cloud Tutor Runtime Deployment"}
+  )
   return agent_engine
 
   # Print the Agent Runtime deployment (AgentEngine) ID, you will need it in the later steps to initialize
@@ -38,5 +39,5 @@ async def prime_session_service(agent_engine):
 
 if __name__ == "__main__":
     agent_engine = setup_agent_engine()
-    print(f"Your agent engine ID is: {agent_engine.api_resource.name}")
+    print(f"Your Agent Runtime deployment ID is: {agent_engine.api_resource.name}")
     asyncio.run(prime_session_service(agent_engine))
