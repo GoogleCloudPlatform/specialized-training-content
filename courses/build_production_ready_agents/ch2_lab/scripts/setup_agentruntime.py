@@ -40,4 +40,4 @@ async def prime_session_service(agent_engine):
 if __name__ == "__main__":
     agent_engine = setup_agent_engine()
     print(f"Your Agent Runtime deployment ID is: {agent_engine.api_resource.name}")
-    asyncio.run(prime_session_service(agent_engine))
+    # asyncio.run(prime_session_service(agent_engine))

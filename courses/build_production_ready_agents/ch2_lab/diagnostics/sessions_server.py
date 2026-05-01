@@ -11,6 +11,10 @@ import logging
 import os
 import sys
 
+# Diagnostics copy lives one level below ch2_lab; make the parent dir importable
+# so `agent_sessions` and `utilities` resolve to the originals.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from agent_sessions import root_agent
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
@@ -327,10 +331,12 @@ async def home(request: Request):
 if __name__ == "__main__":
     import uvicorn
 
-    # Run the FastAPI application using Uvicorn
+    # Pass the app object directly (not an import string) so uvicorn doesn't
+    # try to re-resolve "sessions_server" — that would shadow this diagnostics
+    # copy with the root ch2_lab/sessions_server.py. Reload is disabled for
+    # the same reason: the spawned subprocess loses our sys.path shim.
     uvicorn.run(
-        "sessions_server:app",  # Import string format for reload to work
+        app,
         host="0.0.0.0",
-        port=8000,  # Different port to run alongside the original
-        reload=True
+        port=8000,
     )
