@@ -3,12 +3,12 @@
 # students who need to skip Task 3.
 #
 # This script:
-#   1. Deletes any existing Agent Engine engines (avoids conflicts from failed deploys)
+#   1. Deletes any existing Agent Runtime agent deployments (avoids conflicts from failed deploys)
 #   2. Copies the completed agent.py from agents_solution/improve_engagement_agent/
 #   3. Creates a virtual environment and installs dependencies
 #   4. Generates .env.deploy from .env.deploy.example with correct values
 #   5. Generates .agent_engine_config.json from template with correct service account
-#   6. Deploys the improve engagement agent to Agent Engine
+#   6. Deploys the improve engagement agent to Agent Runtime
 #   7-11. Sets up Gemini Enterprise application with the deployed agent
 #
 # Prerequisites:
@@ -46,9 +46,9 @@ echo "Project Number:  ${PROJECT_NUMBER}"
 echo "Region:          ${GOOGLE_CLOUD_LOCATION}"
 echo "============================================"
 
-# --- Step 1: Delete existing Agent Engine engines ---
+# --- Step 1: Delete existing Agent Runtime deployments ---
 echo ""
-echo "Step 1: Checking for existing Agent Engine engines ..."
+echo "Step 1: Checking for existing Agent Runtime deployments ..."
 
 ACCESS_TOKEN="$(gcloud auth print-access-token 2>/dev/null)"
 BASE_URL="https://${GOOGLE_CLOUD_LOCATION}-aiplatform.googleapis.com/v1"
@@ -65,9 +65,9 @@ for e in data.get('reasoningEngines', []):
 " 2>/dev/null || true)"
 
 if [[ -z "${ENGINE_NAMES}" ]]; then
-  echo "  No existing engines found."
+  echo "  No existing Runtime deployments found."
 else
-  echo "  Found existing engines. Deleting ..."
+  echo "  Found existing Runtime deployments. Deleting ..."
   while IFS= read -r engine_name; do
     echo "    Deleting ${engine_name} ..."
     del_resp="$(curl -s -o /dev/null -w "%{http_code}" -X DELETE \
@@ -112,16 +112,16 @@ sed "s|<YOUR_PROJECT_ID>|${GOOGLE_CLOUD_PROJECT}|g" \
   "${AGENT_DIR}/.agent_engine_config.json.template" > "${AGENT_DIR}/.agent_engine_config.json"
 echo "  Done."
 
-# --- Step 6: Deploy to Agent Engine ---
+# --- Step 6: Deploy to Agent Runtime ---
 echo ""
-echo "Step 6: Deploying improve engagement agent to Agent Engine ..."
+echo "Step 6: Deploying improve engagement agent to Agent Runtime ..."
 unset GOOGLE_APPLICATION_CREDENTIALS 2>/dev/null || true
 cd "${SCRIPT_DIR}"
-bash deploy_improve_agent_to_agent_engine.sh
+bash deploy_improve_agent_to_agent_runtime.sh
 
-# --- Find the deployed reasoning engine ---
+# --- Find the deployed agent ---
 echo ""
-echo "Finding deployed reasoning engine ..."
+echo "Finding deployed agent ..."
 
 ACCESS_TOKEN="$(gcloud auth print-access-token 2>/dev/null)"
 BASE_URL="https://${GOOGLE_CLOUD_LOCATION}-aiplatform.googleapis.com/v1"
@@ -138,7 +138,7 @@ for e in data.get('reasoningEngines', []):
 " 2>/dev/null)"
 
 if [[ -z "${REASONING_ENGINE_NAME}" ]]; then
-  echo "ERROR: Could not find reasoning engine with display name 'Improve Engagement Agent'."
+  echo "ERROR: Could not find deployed agent with display name 'Improve Engagement Agent'."
   exit 1
 fi
 echo "  Found: ${REASONING_ENGINE_NAME}"
