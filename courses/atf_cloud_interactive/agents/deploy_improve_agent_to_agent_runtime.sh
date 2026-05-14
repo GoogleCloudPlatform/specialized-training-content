@@ -8,4 +8,4 @@ adk deploy agent_engine \
     ./improve_engagement_agent
 
 # to update an existing deployment, add:
-#     --agent_engine_id=projects/<YOUR_PROJECT_NUMBER>/locations/us-central1/reasoningEngines/<YOUR_ENGINE_ID> \
+#     --agent_engine_id=YOUR_RUNTIME_DEPLOYMENT_ID \

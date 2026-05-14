@@ -1,5 +1,4 @@
 from google.adk import Agent
-from google.adk.tools import google_search
 from utilities import GCP_SERVICE_REGIONS
 
 # Create the agent with minimal base instruction

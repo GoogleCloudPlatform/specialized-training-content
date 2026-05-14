@@ -1,6 +1,6 @@
-# Vertex AI Agent Proxy - Cloud Run Service
+# Agent Proxy - Cloud Run Service
 
-A production-ready solution for deploying Vertex AI agents with a React frontend, FastAPI proxy, and Identity-Aware Proxy (IAP) authentication.
+A production-ready solution for deploying Gemini Enterprise Agent Platform agents with a React frontend, FastAPI proxy, and Identity-Aware Proxy (IAP) authentication.
 
 ## Architecture
 
@@ -20,8 +20,8 @@ graph TB
             FastAPI[FastAPI Proxy<br/>main.py<br/>• /api/sessions<br/>• /api/query<br/>• /api/health]
         end
         
-        subgraph VertexAI["Vertex AI"]
-            Agent[Agent Engine<br/>Reasoning Engine<br/>• NLU<br/>• Tool Execution<br/>• Context Management]
+        subgraph AgentRuntime["Agent Runtime"]
+            Agent[Agent Server<br/>• Agent serving<br/>• Tool Execution<br/>• Context Management]
         end
     end
     
@@ -46,12 +46,12 @@ graph TB
 1. **React Client (Browser)**: User interface running in the browser on the user's machine, handles chat interactions and displays streaming responses
 2. **Identity-Aware Proxy (IAP)**: Google Cloud's authentication layer that validates users before allowing access to the Cloud Run service
 3. **Cloud Run Service (Single Service)**: Hosts both the static React files and the FastAPI proxy endpoints in one deployment
-4. **Vertex AI Agent Engine**: Managed service hosting the agent (reasoning engine) with tools and capabilities
-5. **Session Management**: Maintained by Vertex AI Agent Engine across multiple interactions
+4. **Gemini Enterprise Agent Platform Agent Runtime**: Managed service hosting the agent (reasoning engine) with tools and capabilities
+5. **Session Management**: Maintained by Gemini Enterprise Agent Platform Agent Runtime across multiple interactions
 
 ## How the Client Works
 
-The React client provides a simple chat interface for interacting with the Vertex AI agent:
+The React client provides a simple chat interface for interacting with the Agent Runtime agent:
 
 1. **Initialization**: When the page loads, the client is served from the Cloud Run proxy's `/` endpoint (static files from `dist/`)
 
@@ -78,7 +78,7 @@ The React client provides a simple chat interface for interacting with the Verte
 
 ## How the Proxy Works
 
-The FastAPI proxy serves as the secure bridge between the client and Vertex AI Agent Engine:
+The FastAPI proxy serves as the secure bridge between the client and Gemini Enterprise Agent Platform Agent Runtime:
 
 1. **Static File Serving**: Serves the built React application from the `dist/` directory at the root path (`/`)
 
@@ -94,18 +94,18 @@ The FastAPI proxy serves as the secure bridge between the client and Vertex AI A
    - Streams events back to client in real-time
    - Each event includes type information and relevant data (text chunks, tool calls, etc.)
 
-4. **Error Handling**: Wraps Vertex AI SDK calls with try/except blocks and returns appropriate HTTP error codes
+4. **Error Handling**: Wraps SDK calls with try/except blocks and returns appropriate HTTP error codes
 
 5. **CORS Configuration**: Allows cross-origin requests (configured for development; restrict in production)
 
-The proxy is stateless—all session state is managed by Vertex AI Agent Engine, making it easy to scale horizontally on Cloud Run.
+The proxy is stateless—all session state is managed by Gemini Enterprise Agent Platform Agent Runtime, making it easy to scale horizontally on Cloud Run.
 
 ## Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|----------|
 | `GOOGLE_CLOUD_PROJECT` | Google Cloud Project ID | Yes |
-| `GOOGLE_CLOUD_LOCATION` | Vertex AI location (e.g., `us-central1`) | Yes |
+| `GOOGLE_CLOUD_LOCATION` | Agent Platform endpoint location (e.g., `us-central1`) | Yes |
 | `GOOGLE_CLOUD_STAGING_BUCKET` | GCS bucket for staging | Yes |
 | `AGENT_RESOURCE_NAME` | Full resource name of the agent (e.g., `projects/<PROJECT_NUMBER>/locations/<LOCATION>/reasoningEngines/<ENGINE_ID>`) | Yes |
 | `PORT` | Server port | No (default: 8080) |
@@ -114,9 +114,9 @@ The proxy is stateless—all session state is managed by Vertex AI Agent Engine,
 
 ### Prerequisites
 
-1. A Vertex AI agent deployed to Agent Engine
-2. Google Cloud project with Cloud Run and Vertex AI APIs enabled
-3. Service account with permissions to access Vertex AI
+1. An ADK agent deployed to Agent Runtime
+2. Google Cloud project with Cloud Run and Agent Platform APIs enabled
+3. Service account with permissions to access Agent Platform
 
 ### Deploy to Cloud Run
 
@@ -135,7 +135,7 @@ gcloud run deploy cloudrun-proxy \
 3. **Add authorized users** who can access the application
 4. **Update Cloud Run** to require authentication:
    ```bash
-   gcloud run services update vertex-ai-proxy \
+   gcloud run services update cloudrun-proxy \
      --region us-central1 \
      --no-allow-unauthenticated
    ```
@@ -163,6 +163,6 @@ The server will start on `http://localhost:8080`
 ## Security
 
 - **IAP Authentication**: Only authorized users can access the application
-- **No API Keys in Client**: All Vertex AI communication happens server-side
+- **No API Keys in Client**: All Agent Runtime communication happens server-side
 - **Stateless Proxy**: No sensitive data stored in the proxy service
 - **CORS**: Configure `allow_origins` in production to restrict access

@@ -4,8 +4,10 @@ Simple ADK Agent API Server - STREAMING VERSION
 A FastAPI server exposing ADK agent functionality via HTTP endpoints with streaming responses.
 Uses in-memory services for simplicity. Client applications make HTTP requests to interact.
 """
+import warnings
+import authlib.deprecate as _authlib_deprecate
+warnings.filterwarnings("ignore", category=_authlib_deprecate.AuthlibDeprecationWarning)
 
-import asyncio
 import json
 import logging
 import os
@@ -16,15 +18,14 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, StreamingResponse
-from google.adk.agents import Agent
 from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.memory import InMemoryMemoryService
-from google.adk.runners import InMemoryRunner, Runner
+from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
-from utilities import (clean_json_response, configure_logging,
+from utilities import (configure_logging,
                        create_event_summary, generate_home_page_html,
-                       get_client_url, log_event, log_session)
+                       get_client_url, make_session_warmup_lifespan)
 
 load_dotenv()
 
@@ -42,8 +43,7 @@ logger = logging.getLogger(__name__)
 
 APP_NAME = os.getenv("APP_NAME", "adk_agent_app")
 GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "my-gcp-project")
-MODEL_LOCATION = os.getenv("MODEL_LOCATION", "us-central1")
-AGENT_ENGINE_LOCATION = os.getenv("AGENT_ENGINE_LOCATION", "us-central1")
+AGENT_RUNTIME_LOCATION = os.getenv("AGENT_RUNTIME_LOCATION", "us-central1")
 SESSION_SERVICE_PROVIDER = os.getenv("SESSION_SERVICE_PROVIDER", "in_memory")
 MEMORY_SERVICE_PROVIDER = os.getenv("MEMORY_SERVICE_PROVIDER", "in_memory")
 REASONING_ENGINE_APP_NAME = os.getenv("REASONING_ENGINE_APP_NAME", "reasoning_engine_app")
@@ -58,7 +58,7 @@ if SESSION_SERVICE_PROVIDER == "in_memory":
     session_service = InMemorySessionService()
     logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
 elif SESSION_SERVICE_PROVIDER == "vertex":
-    # STUDENT TASK: Implement VertexSessionService 
+    # STUDENT TASK: Add VertexSessionService implementation
     logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
 else:
     logger.error(f"Unsupported SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
@@ -71,10 +71,10 @@ else:
 # Create the memory service
 if MEMORY_SERVICE_PROVIDER == "in_memory":
     memory_service = InMemoryMemoryService()
-    logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
+    logger.info(f"Using MEMORY_SERVICE_PROVIDER: {MEMORY_SERVICE_PROVIDER}")
 elif MEMORY_SERVICE_PROVIDER == "vertex":
-    # STUDENT TASK: Implement VertexAiMemoryBankService
-    logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
+    # STUDENT TASK: Add VertexAiMemoryBankService implementation
+    logger.info(f"Using MEMORY_SERVICE_PROVIDER: {MEMORY_SERVICE_PROVIDER}")
 
 
 # ============================================================================
@@ -94,7 +94,11 @@ runner = Runner(
 # FastAPI Setup
 # ============================================================================
 
-app = FastAPI(title="ADK Agent Server - Streaming", version="1.0.0")
+app = FastAPI(
+    title="ADK Agent Server - Streaming",
+    version="1.0.0",
+    lifespan=make_session_warmup_lifespan(session_service, APP_NAME, SESSION_SERVICE_PROVIDER),
+)
 
 # Add CORS middleware to allow requests from any origin for development/testing
 app.add_middleware(
@@ -262,7 +266,6 @@ async def chat(request: dict):
             yield f"data: {json.dumps(final_session_card)}\n\n"
 
             # Prepare session summary
-            # updated_session = session
             session_summary = build_session_summary(updated_session)
 
             # If no text was accumulated, send an error
@@ -330,5 +333,5 @@ if __name__ == "__main__":
         "memory_server:app",  # Import string format for reload to work
         host="0.0.0.0",
         port=8000,  # Different port to run alongside the original
-        reload=True
+        # reload=True
     )

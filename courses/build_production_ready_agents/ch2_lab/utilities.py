@@ -1,10 +1,14 @@
 """Utility functions for the ADK agent server."""
 
+import asyncio
 import json
 import logging
 import re
+import time
 import warnings
+from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
 from starlette import responses
 
 logger = logging.getLogger(__name__)
@@ -481,4 +485,31 @@ def generate_home_page_html(client_url: str) -> str:
     </body>
     </html>
     """
+
+
+# ============================================================================
+# Session Service Warm-up
+# ============================================================================
+
+
+def make_session_warmup_lifespan(session_service, app_name: str, provider: str):
+    """Return a FastAPI lifespan that warms the Vertex AI session service in
+    the background when provider == 'vertex'. No-op for other providers."""
+
+    async def _warmup():
+        t = time.perf_counter()
+        logger.info("[warmup] Vertex AI Sessions warm-up starting in background...")
+        try:
+            await session_service.list_sessions(app_name=app_name, user_id="_warmup")
+            logger.info(f"[warmup] Vertex AI Sessions warm-up complete in {(time.perf_counter() - t) * 1000:.0f}ms")
+        except Exception as e:
+            logger.warning(f"[warmup] failed after {(time.perf_counter() - t) * 1000:.0f}ms: {e}")
+
+    @asynccontextmanager
+    async def _lifespan(app: FastAPI):
+        if provider == "vertex":
+            app.state.warmup_task = asyncio.create_task(_warmup())
+        yield
+
+    return _lifespan
 
