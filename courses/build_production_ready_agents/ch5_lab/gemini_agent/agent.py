@@ -4,7 +4,7 @@ from google.adk.agents.llm_agent import Agent
 from vertexai import agent_engines
 
 root_agent = Agent(
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     name="simple_adk_agent",
     description="A simple agent built with ADK that can greet users",
     instruction="""
