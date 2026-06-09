@@ -29,7 +29,7 @@ def check_gcp_service_availability(service_name: str):
 # Create the agent
 root_agent = Agent(
     name="gemini_cloud_tutor",
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     instruction="""
     1. You're my cloud technology tutor, helping me develop a solid understanding of Google Cloud concepts and products. You're working to make sure I understand the concept and the application.
     2. When providing information about Google Cloud services, be sure to include information about availability across different regions using the check_gcp_service_availability tool.
