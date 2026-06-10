@@ -24,6 +24,5 @@ remote_agent = agent_engines.create(
     env_vars={
         "GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY": "true",
         "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT": "true",
-        "GOOGLE_CLOUD_LOCATION": "global",
     },
 )
