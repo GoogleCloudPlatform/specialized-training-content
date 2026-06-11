@@ -20,7 +20,11 @@ vertexai.init(
 remote_agent = agent_engines.create(
     agent_engine=app,
     display_name="GCP Tutorial Agent",
-    requirements=["google-cloud-aiplatform[agent_engines,adk]"],
+    requirements=[
+        "google-adk==1.26.0",
+        "google-cloud-aiplatform[agent_engines]==1.139.0",
+    ],
+    extra_packages=["agent.py"],
     env_vars={
         "GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY": "true",
         "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT": "true",
