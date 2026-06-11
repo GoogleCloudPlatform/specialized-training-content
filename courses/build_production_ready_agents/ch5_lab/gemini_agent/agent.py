@@ -1,10 +1,40 @@
 import asyncio
+import os
+from functools import cached_property
 
 from google.adk.agents.llm_agent import Agent
+from google.adk.models import Gemini
+from google.genai import Client, types
 from vertexai import agent_engines
 
+
+class Gemini3(Gemini):
+    """Gemini subclass that forces location='global' for Gemini 3 models.
+
+    gemini-3.5-flash is only served on the global endpoint, but we must NOT set
+    GOOGLE_CLOUD_LOCATION=global, because that also moves the Agent Engine
+    session service to 'global', whose validator rejects the slash-containing
+    session_id that Gemini Enterprise passes in. Overriding api_client pins ONLY
+    the model to global, leaving the runtime location (sessions) at us-central1.
+    """
+
+    @cached_property
+    def api_client(self) -> Client:
+        return Client(
+            location="global",
+            http_options=types.HttpOptions(
+                headers=self._tracking_headers(),
+                retry_options=types.HttpRetryOptions(
+                    max_delay=7,
+                    exp_base=1.5,
+                    jitter=.5,
+                )
+            ),
+        )
+
+
 root_agent = Agent(
-    model="gemini-2.5-flash",
+    model=Gemini3(model="gemini-3.5-flash"),
     name="simple_adk_agent",
     description="A simple agent built with ADK that can greet users",
     instruction="""
