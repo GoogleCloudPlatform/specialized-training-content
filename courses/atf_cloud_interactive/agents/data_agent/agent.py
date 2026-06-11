@@ -176,7 +176,7 @@ class Gemini3(Gemini):
 
 # --- Agent definition ---
 root_agent = LlmAgent(
-    model=Gemini3(model="gemini-3-flash-preview"),
+    model=Gemini3(model="gemini-3.5-flash"),
     name="data_agent",
     description=(
         "Cymbal Meet data domain expert. Accepts natural language questions "

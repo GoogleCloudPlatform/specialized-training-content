@@ -92,7 +92,7 @@ class Gemini3(Gemini):
 
 # --- Improve Engagement agent agent ---
 root_agent = LlmAgent(
-    model=Gemini3(model="gemini-3-flash-preview"),
+    model=Gemini3(model="gemini-3.5-flash"),
     name="improve_engagement_agent",
     description=(
         "Cymbal Meet Customer Engagement Improve Engagement agent. Interprets user "

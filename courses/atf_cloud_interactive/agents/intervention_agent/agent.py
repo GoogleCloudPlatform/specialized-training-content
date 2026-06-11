@@ -141,7 +141,7 @@ class Gemini3(Gemini):
 
 # --- Agent definition ---
 root_agent = LlmAgent(
-    model=Gemini3(model="gemini-3-flash-preview"),
+    model=Gemini3(model="gemini-3.5-flash"),
     name="intervention_agent",
     description=(
         "Cymbal Meet intervention specialist. Accepts customer engagement data, "
