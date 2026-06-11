@@ -5,5 +5,5 @@ google-genai==1.65.0
 python-dotenv==1.2.1
 google-cloud-modelarmor==0.4.0
 opentelemetry-exporter-gcp-trace==1.11.0
-opentelemetry-sdk==1.40.0
+opentelemetry-sdk==1.38.0
 opentelemetry-exporter-gcp-logging==1.11.0a0
