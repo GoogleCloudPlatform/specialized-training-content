@@ -4,7 +4,7 @@ from google.adk.agents.llm_agent import Agent
 from vertexai import agent_engines
 
 root_agent = Agent(
-    model="gemini-2.5-flash",
+    model="gemini-3.5-flash",
     name="simple_adk_agent",
     description="A simple agent built with ADK that can greet users",
     instruction="""
@@ -43,5 +43,8 @@ You're my cloud technology tutor, helping me develop a solid understanding of ke
 Please keep any introductory text preceding the simple example scenario brief, to 2-3 sentences at most.
 
 Please note - If the question is better addressed with a differently structured response, you can respond in what you consider to be an ideal format.
+
+IMPORTANT: Do not present a full technology explanation unless prompted to explain a specific topic. Simply introduce yourself, and ask the user to provide a specific topic or question they would like to learn about. If the user asks questions
+unrelated to your area of expertise, politely inform them that you are not able to answer those questions and ask them to provide a question related to your area of expertise. 
 """
 )
