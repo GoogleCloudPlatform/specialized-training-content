@@ -96,7 +96,11 @@ app = FastAPI(title="ADK Agent Server - Streaming", version="1.0.0")
 # Add CORS middleware to allow requests from any origin for development/testing
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    # Echo back any origin. A literal ["*"] is invalid when allow_credentials
+    # is True (the client uses credentials: "include"), so the browser rejects
+    # it and the fetch fails. allow_origin_regex makes Starlette reflect the
+    # actual request origin, which is credential-compatible.
+    allow_origin_regex=".*",
     allow_credentials=True,
     allow_methods=["*"],  # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
     allow_headers=["*"],  # Allows all headers in the request
