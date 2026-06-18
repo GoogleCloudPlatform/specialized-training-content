@@ -255,17 +255,28 @@ A single `/chat` endpoint handles **both legs** of the handshake, because both a
 
 **Leg 1 — request (diagram steps 1-8).** As events stream, the moment `is_auth_request_event`
 matches, the server extracts the call id and `auth_uri`, sends an `auth_required` SSE
-message, and `break`s — the run is paused, so there is nothing more to stream until
-credentials arrive ([server.py:345-364](server.py#L345-L364)):
+message, and stops emitting — the run is paused, so there is nothing more to stream until
+credentials arrive ([server.py:345-371](server.py#L345-L371)):
 
 ```python
+if auth_pending:
+    continue            # already relayed the request; emit nothing more
+
 if is_auth_request_event(event):
     function_call_id = get_function_call_id(event)
     auth_config = get_auth_config(event)
     auth_uri = auth_config.exchanged_auth_credential.oauth2.auth_uri
     yield f"data: {json.dumps({'type': 'auth_required', ...})}\n\n"
-    break   # paused; wait for the client to return credentials
+    auth_pending = True
+    continue            # drain the generator; do NOT break out of it
 ```
+
+> **Why `continue`, not `break`.** Breaking out of `runner.run_async(...)` abandons ADK's
+> async generator mid-iteration, leaving its MCP session and context scopes open. Their later
+> teardown injects `GeneratorExit` at the wrong suspension point and raises cancel-scope /
+> context errors on current ADK. Letting the loop drain to completion lets ADK close those
+> scopes in the task that opened them; the `auth_pending` flag preserves the intent — emit
+> nothing once the run is suspended waiting on the human.
 
 **Leg 2 — response (diagram steps 9-18).** After the user authorizes, the client POSTs back
 to `/chat`, but this time the message is a **`FunctionResponse`** carrying the same call id

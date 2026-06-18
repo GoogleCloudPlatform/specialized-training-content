@@ -329,6 +329,16 @@ async def chat(request: Request):
             streamed_text = ""
             has_streamed_content = False
 
+            # Set once an auth request has been seen and relayed to the client.
+            # We must NOT `break` out of `runner.run_async(...)` here: abandoning
+            # the async generator mid-iteration leaves ADK's MCP session / context
+            # scopes open, and their later teardown injects GeneratorExit at the
+            # wrong suspension point - which raises cancel-scope / context errors on
+            # current ADK. Instead we let the generator run to natural completion and
+            # simply stop emitting once auth is pending, so ADK closes its own scopes
+            # in the task that opened them.
+            auth_pending = False
+
             debug(f"\n[DEBUG] Starting agent run - is_auth_response: {is_auth_response}")
             if is_auth_response:
                 debug(f"[DEBUG] Auth response content: {content}")
@@ -340,6 +350,11 @@ async def chat(request: Request):
                 new_message=content
             ):
                 debug(f"[DEBUG] Event received - partial: {event.partial}, final: {event.is_final_response()}, has_content: {bool(event.content)}")
+
+                # Once auth is pending the run is logically suspended waiting on the
+                # human; drain any remaining events without emitting anything more.
+                if auth_pending:
+                    continue
 
                 # Check if this is an auth request event
                 if is_auth_request_event(event):
@@ -360,8 +375,10 @@ async def chat(request: Request):
                     }
                     yield f"data: {json.dumps(auth_request_data)}\n\n"
 
-                    # Don't process more events - wait for auth response
-                    break
+                    # Don't emit further events - drain the generator to completion
+                    # so ADK can tear down its MCP/context scopes cleanly.
+                    auth_pending = True
+                    continue
 
                 # Extract any text on this event (parts may also be tool calls /
                 # tool responses, which carry no text and are skipped).
