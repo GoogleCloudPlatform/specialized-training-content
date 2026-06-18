@@ -1,0 +1,72 @@
+# The single, locked-down CI identity for the build platform, plus its scoped
+# roles: push images to Artifact Registry, manage build artifacts in storage,
+# and publish build events to Pub/Sub.
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMServiceAccount
+metadata:
+  name: ci-runner
+  namespace: cymbal-buildplatform
+  labels:
+    cymbal.dev/template: build-and-artifact
+    cymbal.dev/tenant: buildplatform
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  displayName: "CI build runner"
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: ci-runner-artifactregistry-writer
+  namespace: cymbal-buildplatform
+  labels:
+    cymbal.dev/template: build-and-artifact
+    cymbal.dev/tenant: buildplatform
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  memberFrom:
+    serviceAccountRef:
+      name: ci-runner
+  role: roles/artifactregistry.writer
+  resourceRef:
+    kind: Project
+    external: projects/jwd-cc-s3
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: ci-runner-storage-admin
+  namespace: cymbal-buildplatform
+  labels:
+    cymbal.dev/template: build-and-artifact
+    cymbal.dev/tenant: buildplatform
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  memberFrom:
+    serviceAccountRef:
+      name: ci-runner
+  role: roles/storage.admin
+  resourceRef:
+    kind: Project
+    external: projects/jwd-cc-s3
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: ci-runner-pubsub-publisher
+  namespace: cymbal-buildplatform
+  labels:
+    cymbal.dev/template: build-and-artifact
+    cymbal.dev/tenant: buildplatform
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  memberFrom:
+    serviceAccountRef:
+      name: ci-runner
+  role: roles/pubsub.publisher
+  resourceRef:
+    kind: Project
+    external: projects/jwd-cc-s3

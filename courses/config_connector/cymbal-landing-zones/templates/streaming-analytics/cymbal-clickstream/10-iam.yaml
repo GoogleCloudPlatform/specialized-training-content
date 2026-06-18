@@ -1,0 +1,92 @@
+# Workload identity for the clickstream ingest pipeline, plus its scoped roles.
+# The member is referenced FROM the IAMServiceAccount object (memberFrom.
+# serviceAccountRef) so no project ID leaks into a hardcoded member string.
+# All bindings are project-scoped for lab simplicity.
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMServiceAccount
+metadata:
+  name: clickstream-ingest
+  namespace: cymbal-clickstream
+  labels:
+    cymbal.dev/template: streaming-analytics
+    cymbal.dev/tenant: clickstream
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  displayName: "Clickstream ingest pipeline"
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: clickstream-ingest-pubsub-publisher
+  namespace: cymbal-clickstream
+  labels:
+    cymbal.dev/template: streaming-analytics
+    cymbal.dev/tenant: clickstream
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  memberFrom:
+    serviceAccountRef:
+      name: clickstream-ingest
+  role: roles/pubsub.publisher
+  resourceRef:
+    kind: Project
+    external: projects/${CLICKSTREAM_PROJECT_ID}
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: clickstream-ingest-bigquery-dataeditor
+  namespace: cymbal-clickstream
+  labels:
+    cymbal.dev/template: streaming-analytics
+    cymbal.dev/tenant: clickstream
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  memberFrom:
+    serviceAccountRef:
+      name: clickstream-ingest
+  role: roles/bigquery.dataEditor
+  resourceRef:
+    kind: Project
+    external: projects/${CLICKSTREAM_PROJECT_ID}
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: clickstream-ingest-bigquery-jobuser
+  namespace: cymbal-clickstream
+  labels:
+    cymbal.dev/template: streaming-analytics
+    cymbal.dev/tenant: clickstream
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  memberFrom:
+    serviceAccountRef:
+      name: clickstream-ingest
+  role: roles/bigquery.jobUser
+  resourceRef:
+    kind: Project
+    external: projects/${CLICKSTREAM_PROJECT_ID}
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: clickstream-ingest-storage-objectadmin
+  namespace: cymbal-clickstream
+  labels:
+    cymbal.dev/template: streaming-analytics
+    cymbal.dev/tenant: clickstream
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  memberFrom:
+    serviceAccountRef:
+      name: clickstream-ingest
+  role: roles/storage.objectAdmin
+  resourceRef:
+    kind: Project
+    external: projects/${CLICKSTREAM_PROJECT_ID}

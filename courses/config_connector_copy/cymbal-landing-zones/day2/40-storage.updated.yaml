@@ -1,0 +1,27 @@
+# DAY-2 UPDATE — full applyable replacement for
+#   templates/streaming-analytics/cymbal-clickstream/40-storage.yaml
+#
+# Change vs. the original: the lifecycle rule's condition.age goes from 30 to 60
+# days (raw events are kept a month longer for a seasonal analysis). This is an
+# in-place patch — the SAME bucket is reconfigured, not recreated.
+# Apply with `kubectl apply -f day2/` (see day2/README.md).
+apiVersion: storage.cnrm.cloud.google.com/v1beta1
+kind: StorageBucket
+metadata:
+  name: clickstream-raw
+  namespace: cymbal-clickstream
+  labels:
+    cymbal.dev/template: streaming-analytics
+    cymbal.dev/tenant: clickstream
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  resourceID: "jwd-cc-s1-clickstream-raw"
+  location: "us-central1"
+  uniformBucketLevelAccess: true
+  publicAccessPrevention: "enforced"
+  lifecycleRule:
+    - action:
+        type: "Delete"
+      condition:
+        age: 60

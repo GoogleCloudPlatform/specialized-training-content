@@ -1,0 +1,19 @@
+# User-uploaded content for the portal (avatars, attachments, etc.).
+# Versioned so an overwritten or deleted object can be recovered.
+apiVersion: storage.cnrm.cloud.google.com/v1beta1
+kind: StorageBucket
+metadata:
+  name: portal-uploads
+  namespace: cymbal-portal
+  labels:
+    cymbal.dev/template: web-service-with-database
+    cymbal.dev/tenant: portal
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  resourceID: "${PORTAL_PROJECT_ID}-portal-uploads"
+  location: "${REGION}"
+  uniformBucketLevelAccess: true
+  publicAccessPrevention: "enforced"
+  versioning:
+    enabled: true
