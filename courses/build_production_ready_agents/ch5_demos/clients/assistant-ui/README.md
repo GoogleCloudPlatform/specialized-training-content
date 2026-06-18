@@ -64,17 +64,20 @@ When presenting this client to students, highlight the following:
 
 2. **Runtime adapter pattern** (`MyRuntimeProvider.tsx`) — show how the `ChatModelAdapter` bridges assistant-ui's runtime with the ADK backend. The `async *run()` generator function is the key: it yields chunks as they arrive from the SSE stream, and assistant-ui automatically re-renders on each yield. See [5.2 Custom Model Adapter](#52-custom-model-adapter) for details.
 
-3. **One-line UI** (`page.tsx`) — the entire chat interface is a single `<Thread />` component. Walk through what that gives you for free: message list, auto-scrolling, input field, loading states, markdown rendering, and accessibility. See [5.3 UI Layer](#53-ui-layer).
+3. **One-line UI** (`page.tsx`) — the entire chat interface is a single `<Thread />` component. Walk through what that gives you for free: message list, auto-scrolling, input field, loading states, and accessibility. Note that markdown rendering is *not* on by default — assistant-ui renders assistant text as plain text unless you supply a markdown component (see point 6). See [5.3 UI Layer](#53-ui-layer).
 
 4. **Session management via sessionStorage** — point out that the adapter stores the `session_id` in `sessionStorage`, so refreshing the page doesn't lose the session. Contrast with the simple_es client which creates a new session on every page load.
 
-5. **Live demo** — send a message and show the streaming response. Open DevTools Network tab to show the SSE stream, then compare the developer experience with the simple_es client side by side.
+5. **Markdown rendering** (`MarkdownText.tsx`) — show that formatted responses (headings, bold, lists, code blocks, tables) require explicitly wiring a markdown component into the `Thread`. This is a good teaching moment: assistant-ui keeps rendering pluggable rather than assuming every backend returns markdown. See [5.3 UI Layer](#53-ui-layer).
+
+6. **Live demo** — send a message and show the streaming response. Open DevTools Network tab to show the SSE stream, then compare the developer experience with the simple_es client side by side.
 
 ## 3. Features
 
 - **Native assistant-ui Design** - Polished, accessible UI using assistant-ui's built-in `Thread` component and styling
 - **Custom Runtime Adapter** - `useLocalRuntime` with a `ChatModelAdapter` that connects directly to the ADK backend
 - **Streaming Responses** - Real-time message streaming with progressive rendering
+- **Markdown Rendering** - Assistant responses render as formatted markdown (headings, lists, code, tables) via `@assistant-ui/react-markdown`
 - **Session Management** - Automatic session creation and persistence via sessionStorage
 - **React State Management** - assistant-ui handles all chat state, message history, and UI updates
 - **TypeScript-First** - Full type safety with assistant-ui's strongly-typed APIs
@@ -152,19 +155,41 @@ The `ChatModelAdapter` implements the contract between assistant-ui and the ADK 
 
 ### 5.3 UI Layer
 
-The application (`page.tsx`) uses assistant-ui's pre-built `Thread` component:
+The application (`page.tsx`) uses assistant-ui's pre-built `Thread` component, with a custom markdown renderer plugged in for assistant messages:
 
 ```typescript
-<Thread />
+<Thread assistantMessage={{ components: { Text: MarkdownText } }} />
 ```
 
-This single component provides:
+The `Thread` component provides out of the box:
 - Message list with auto-scrolling
 - User/assistant message rendering
 - Input field with send button
 - Loading states and typing indicators
-- Markdown rendering
 - Accessibility features (ARIA labels, keyboard navigation)
+
+**Markdown rendering is opt-in.** By default, assistant-ui renders assistant
+text as plain text, so a response containing `**bold**` or `### Heading`
+shows the raw characters. To render it as formatted markdown, we provide a
+`Text` component via `assistantMessage.components`. `MarkdownText.tsx` builds
+that component with the `@assistant-ui/react-markdown` package:
+
+```typescript
+// MarkdownText.tsx
+import { makeMarkdownText } from "@assistant-ui/react-markdown";
+import remarkGfm from "remark-gfm";
+
+export const MarkdownText = makeMarkdownText({
+  remarkPlugins: [remarkGfm], // GitHub-flavored markdown (tables, etc.)
+});
+```
+
+Styling for the rendered markdown comes from the package's Tailwind plugin,
+registered in `tailwind.config.js`:
+
+```javascript
+plugins: [require("@assistant-ui/react-markdown/tailwindcss")],
+```
 
 ## 6. Configuration
 
@@ -182,6 +207,7 @@ const USER_ID = "web_user_001";
 The application uses:
 - **assistant-ui styles**: Imported from `@assistant-ui/react/styles/index.css`
 - **Tailwind CSS**: For layout and utility classes
+- **Markdown plugin**: `@assistant-ui/react-markdown/tailwindcss`, registered in `tailwind.config.js`, styles the rendered markdown (headings, lists, code blocks)
 - **CSS Variables**: Custom theme in `globals.css` for colors
 
 Customize the theme by modifying CSS variables in `src/app/globals.css`:
@@ -205,7 +231,9 @@ assistant-ui-client/
 │   │   ├── page.tsx            # Main page with Thread component
 │   │   └── globals.css         # Global styles and theme
 │   └── components/
-│       └── MyRuntimeProvider.tsx  # Custom runtime with adapter
+│       ├── MyRuntimeProvider.tsx  # Custom runtime with adapter
+│       └── MarkdownText.tsx       # Markdown renderer for assistant messages
+├── tailwind.config.js          # Tailwind config (incl. markdown plugin)
 ├── package.json
 ├── tsconfig.json
 └── next.config.ts
