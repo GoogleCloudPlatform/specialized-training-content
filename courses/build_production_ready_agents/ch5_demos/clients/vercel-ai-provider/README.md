@@ -65,15 +65,15 @@ When presenting this client to students, highlight the following:
 
 1. **Custom provider pattern** (`backend-provider.ts`) — this is the core innovation. Show how `createBackendProvider()` returns a `LanguageModelV1` object with a `doStream()` method that bridges the ADK SSE stream to typed AI SDK stream parts. See [5.2 Custom Provider](#52-custom-provider) for the full breakdown.
 
-2. **Contrast with the simple Vercel AI client** (`vercel-ai-simple`) — both use `useChat` on the frontend, but the simple version does manual stream transformation in the API route. This version encapsulates all backend logic in a reusable provider, making the API route minimal. The [5.3 API Route](#53-api-route) section shows just how clean it becomes.
+2. **Custom provider vs. inline transformation** — instead of doing manual stream transformation inside the API route, this version encapsulates all backend logic in a reusable provider, making the API route minimal. The [5.3 API Route](#53-api-route) section shows just how clean it becomes.
 
-3. **The `useChat` hook** (`page.tsx`) — identical to the simple implementation. Point out that the frontend code doesn't change at all when switching from a simple proxy to a custom provider. This demonstrates the power of the AI SDK's abstraction layers.
+3. **The `useChat` hook** (`page.tsx`) — the frontend code doesn't change at all when switching from a simple proxy to a custom provider. This demonstrates the power of the AI SDK's abstraction layers.
 
 4. **Stream transformation pipeline** — walk through the [5.4 How Streaming Works](#54-how-streaming-works) flow end to end: SSE events from ADK become typed `LanguageModelV1StreamPart` objects, which `streamText()` processes through the AI SDK pipeline, which `useChat` renders automatically.
 
 5. **Advanced capabilities** — show the [6. Advanced Features Enabled](#6-advanced-features-enabled) section to explain what the provider pattern unlocks: tool calling, structured output, token tracking. These aren't available with the simple proxy approach.
 
-6. **Live demo** — send a message and show the streaming response. Compare the DevTools Network tab output with the simple_es client to show how the AI SDK formats the stream differently.
+6. **Live demo** — send a message and show the streaming response. Open the DevTools Network tab to show how the AI SDK formats the stream.
 
 ## 3. Features
 
@@ -157,8 +157,7 @@ const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat(
 - `isLoading`: Boolean indicating streaming state
 
 **Frontend benefits:**
-- Zero changes required to switch between simple and provider implementations
-- Identical developer experience
+- Identical developer experience regardless of backend implementation
 - Same React patterns and UI code
 
 ### 5.2 Custom Provider
@@ -379,7 +378,7 @@ Choose this **custom provider approach** when:
 - You plan to **swap backends** in the future
 - Team values **standard patterns** and **best practices**
 
-Use the simpler proxy approach (`vercel-ai-simple`) for:
+Use a simpler inline proxy approach for:
 - Quick prototypes or MVPs
 - Learning the basics
 - Simple proxy requirements without advanced features
@@ -396,7 +395,7 @@ Use the simpler proxy approach (`vercel-ai-simple`) for:
 }
 ```
 
-**vs. simple implementation:**
-- Uses AI SDK v6 (vs v4)
+**Key choices:**
+- Uses AI SDK v6
 - Includes `@ai-sdk/react` modular package
 - Enables full provider ecosystem

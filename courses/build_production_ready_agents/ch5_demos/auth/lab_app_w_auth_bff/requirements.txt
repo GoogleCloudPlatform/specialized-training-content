@@ -3,5 +3,5 @@ google-adk==1.26.0
 fastapi==0.124.1
 uvicorn==0.34.0
 python-dotenv==1.2.2
-httpx
-asyncpg
+httpx==0.28.1
+asyncpg  # unused by the demo as shipped; staged for the DatabaseSessionService student task
