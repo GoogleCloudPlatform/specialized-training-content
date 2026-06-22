@@ -164,36 +164,7 @@ over, re-clone or run `git checkout -- templates/ day2/` to restore the tokens.
 > kubectl apply --dry-run=server -f templates/streaming-analytics/cymbal-clickstream/
 > ```
 
-### Step 3 — Apply template 1: streaming-analytics
-
-```bash
-kubectl apply -f templates/streaming-analytics/cymbal-clickstream/
-```
-
-**Review** — wait for everything to reconcile, then confirm in the cloud:
-
-```bash
-# Watch the Config Connector objects reach Ready
-kubectl get gcp -n cymbal-clickstream
-kubectl wait --for=condition=Ready --timeout=300s -n cymbal-clickstream \
-  iamserviceaccount/clickstream-ingest \
-  pubsubtopic/clickstream-events \
-  bigquerydataset/clickstream \
-  bigquerytable/events \
-  storagebucket/clickstream-raw
-
-# Confirm the real resources exist in the clickstream project
-gcloud pubsub topics list             --project "$CLICKSTREAM_PROJECT_ID"
-gcloud pubsub subscriptions list      --project "$CLICKSTREAM_PROJECT_ID"
-bq ls --project_id "$CLICKSTREAM_PROJECT_ID" clickstream
-bq show --schema "$CLICKSTREAM_PROJECT_ID:clickstream.events"
-gcloud storage buckets list --project "$CLICKSTREAM_PROJECT_ID"
-```
-
-> If an object isn't `Ready`, `kubectl describe <kind>/<name> -n cymbal-clickstream`
-> shows the reconcile status and any error message in the events/conditions.
-
-### Step 4 — Apply template 2: web-service-with-database
+### Step 3 — Apply template 1: web-service-with-database
 
 ```bash
 kubectl apply -f templates/web-service-with-database/cymbal-portal/
@@ -201,17 +172,26 @@ kubectl apply -f templates/web-service-with-database/cymbal-portal/
 
 > **The SQL instance takes ~5–10 minutes to go `Ready`.** This is an honest
 > illustration of eventual consistency — Config Connector keeps reconciling until
-> Cloud SQL finishes provisioning. Kick off **Step 5** while you wait, then come
-> back.
+> Cloud SQL finishes provisioning. Kick off **Steps 4 and 5** while you wait —
+> their resources provision in seconds — then come back to confirm the database.
 
 **Review:**
 
 ```bash
-kubectl get gcp -n cymbal-portal
+# Block until every object reports Ready (or time out). The SQL instance is the
+# slow one — Config Connector keeps reconciling until Cloud SQL finishes.
 kubectl wait --for=condition=Ready --timeout=900s -n cymbal-portal \
   sqlinstance/portal-db sqldatabase/portal sqluser/portal-app \
   storagebucket/portal-uploads
 
+# List the objects and their status. We name the specific kinds this template
+# creates rather than the broad `gcp` category — resolving `gcp` expands across
+# all ~200 Config Connector CRDs (one List call per kind) and can take 40+ seconds.
+kubectl get \
+  iamserviceaccount,iampolicymember,sqlinstance,sqldatabase,sqluser,storagebucket \
+  -n cymbal-portal
+
+# Confirm the real resources exist in the portal project
 gcloud sql instances list      --project "$PORTAL_PROJECT_ID"
 gcloud sql databases list      --instance portal-db --project "$PORTAL_PROJECT_ID"
 gcloud sql users list          --instance portal-db --project "$PORTAL_PROJECT_ID"
@@ -224,6 +204,41 @@ gcloud storage buckets list    --project "$PORTAL_PROJECT_ID"
 > ever generated, stored, or committed.** This is the modern pattern: workload
 > identity instead of a shared secret.
 
+### Step 4 — Apply template 2: streaming-analytics
+
+```bash
+kubectl apply -f templates/streaming-analytics/cymbal-clickstream/
+```
+
+**Review** — wait for everything to reconcile, then confirm in the cloud:
+
+```bash
+# Block until every object reports Ready (or time out)
+kubectl wait --for=condition=Ready --timeout=300s -n cymbal-clickstream \
+  iamserviceaccount/clickstream-ingest \
+  pubsubtopic/clickstream-events \
+  bigquerydataset/clickstream \
+  bigquerytable/events \
+  storagebucket/clickstream-raw
+
+# List the objects and their status. We name the specific kinds this template
+# creates rather than the broad `gcp` category — resolving `gcp` expands across
+# all ~200 Config Connector CRDs (one List call per kind) and can take 40+ seconds.
+kubectl get \
+  iamserviceaccount,iampolicymember,pubsubtopic,pubsubsubscription,bigquerydataset,bigquerytable,storagebucket \
+  -n cymbal-clickstream
+
+# Confirm the real resources exist in the clickstream project
+gcloud pubsub topics list             --project "$CLICKSTREAM_PROJECT_ID"
+gcloud pubsub subscriptions list      --project "$CLICKSTREAM_PROJECT_ID"
+bq ls --project_id "$CLICKSTREAM_PROJECT_ID" clickstream
+bq show --schema "$CLICKSTREAM_PROJECT_ID:clickstream.events"
+gcloud storage buckets list --project "$CLICKSTREAM_PROJECT_ID"
+```
+
+> If an object isn't `Ready`, `kubectl describe <kind>/<name> -n cymbal-clickstream`
+> shows the reconcile status and any error message in the events/conditions.
+
 ### Step 5 — Apply template 3: build-and-artifact
 
 ```bash
@@ -233,12 +248,20 @@ kubectl apply -f templates/build-and-artifact/cymbal-buildplatform/
 **Review:**
 
 ```bash
-kubectl get gcp -n cymbal-buildplatform
+# Block until every object reports Ready (or time out)
 kubectl wait --for=condition=Ready --timeout=300s -n cymbal-buildplatform \
   artifactregistryrepository/cymbal-images \
   pubsubtopic/build-events \
   storagebucket/build-artifacts
 
+# List the objects and their status. We name the specific kinds this template
+# creates rather than the broad `gcp` category — resolving `gcp` expands across
+# all ~200 Config Connector CRDs (one List call per kind) and can take 40+ seconds.
+kubectl get \
+  iamserviceaccount,iampolicymember,artifactregistryrepository,pubsubtopic,storagebucket \
+  -n cymbal-buildplatform
+
+# Confirm the real resources exist in the build project
 gcloud artifacts repositories list --project "$BUILD_PROJECT_ID"
 gcloud pubsub topics list          --project "$BUILD_PROJECT_ID"
 gcloud storage buckets list        --project "$BUILD_PROJECT_ID"
@@ -347,7 +370,7 @@ cymbal-landing-zones/
 The only script in the lab. It runs once, after cloning, and substitutes the
 project-ID / region tokens in place — that's its entire job. No password is ever
 generated by the lab; the portal database uses IAM database authentication (§
-Step 4).
+Step 3).
 
 ### 7.2 API enablement
 The required APIs are assumed already enabled by lab provisioning — you don't

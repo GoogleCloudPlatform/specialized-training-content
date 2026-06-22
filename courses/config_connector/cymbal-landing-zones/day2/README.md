@@ -123,8 +123,13 @@ bq show --schema --format=prettyjson "$CLICKSTREAM_PROJECT_ID:clickstream.events
 
 ```bash
 gcloud storage buckets describe "gs://${CLICKSTREAM_PROJECT_ID}-clickstream-raw" \
-  --format="value(lifecycle.rule)"
+  --format="value(lifecycle_config.rule[].action.type, lifecycle_config.rule[].condition.age)"
 ```
+
+> The field is `lifecycle_config` (not `lifecycle`), and `rule[]` iterates every
+> rule in the policy, so this prints each rule's action type and age — e.g.
+> `Delete    60`. To see the full nested policy instead, use
+> `--format="yaml(lifecycle_config)"`.
 
 **4. (The key check) Neither resource was recreated.** The Config Connector
 object's `metadata.uid` and creation timestamp are unchanged from before the
