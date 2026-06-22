@@ -8,6 +8,6 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require("@assistant-ui/react-markdown/tailwindcss")],
 }
 

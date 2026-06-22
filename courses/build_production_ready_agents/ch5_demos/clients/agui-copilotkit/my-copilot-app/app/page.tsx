@@ -1,23 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { CopilotSidebar } from "@copilotkit/react-ui";
-import { useRenderToolCall } from "@copilotkit/react-core";
 
 export default function Page() {
-  useRenderToolCall({
-    name: "check_gcp_service_availability",
-    render: ({ status, args }) => {
-      return (
-        <p className="text-gray-500 mt-2">
-          {status !== "complete" && "Calling availability API..."}
-          {status === "complete" &&
-            `Called the availability API for ${args.service_name}.`}
-        </p>
-      );
-    },
-  });
-
   const services = [
     { name: "Compute Engine", icon: "🖥️", status: "Active", usage: "78%" },
     { name: "Cloud Storage", icon: "💾", status: "Active", usage: "62%" },

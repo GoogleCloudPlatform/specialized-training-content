@@ -1,5 +1,5 @@
-google-adk
-mcp
+google-adk==1.26.0
+mcp==1.26.0
 starlette
 uvicorn
 flask

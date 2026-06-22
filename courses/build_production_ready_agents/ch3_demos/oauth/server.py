@@ -14,7 +14,14 @@ Key differences from custom approach:
 import asyncio
 import json
 import os
+import warnings
 from typing import AsyncIterator
+
+# Quiet ADK's [EXPERIMENTAL] UserWarnings and the ADC quota-project warning.
+# ADK emits these via a feature decorator, so filter on the message text rather
+# than the module path. They are harmless for this demo.
+warnings.filterwarnings("ignore", message=r".*\[EXPERIMENTAL\].*", category=UserWarning)
+warnings.filterwarnings("ignore", message=r".*end user credentials from Google Cloud SDK.*", category=UserWarning)
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
@@ -22,12 +29,22 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, StreamingResponse
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.auth.auth_tool import AuthConfig
+from google.adk.auth.credential_service.in_memory_credential_service import \
+    InMemoryCredentialService
 from google.adk.events import Event
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
 load_dotenv()
+
+# Set DEBUG=1 in the environment (or .env) to see the verbose [DEBUG] trace.
+DEBUG = os.getenv("DEBUG", "").lower() in ("1", "true", "yes")
+
+
+def debug(msg: str) -> None:
+    if DEBUG:
+        print(msg)
 
 # ============================================================================
 # Agent Configuration (from the blog article example)
@@ -79,7 +96,7 @@ def get_oauth2_mcp_tool():
 
 # Create the agent
 root_agent = LlmAgent(
-    model='gemini-3-flash-preview',
+    model='gemini-3.5-flash',
     name='bigquery_analyst',
     description='Data analyst with BigQuery access',
     instruction='''You are a helpful data analyst with access to BigQuery.
@@ -98,10 +115,25 @@ When users ask about data:
 # ============================================================================
 
 session_service = InMemorySessionService()
+
+# A credential service is what makes OAuth a ONE-TIME event per session.
+#
+# The BigQuery toolset is a remote, OAuth-protected MCP server. To create the
+# toolset, ADK must connect to that server and list its tools, and that
+# connection requires OAuth. This happens at the start of the FIRST agent turn
+# (before the LLM decides anything), which is why auth appears in response to
+# the very first message - this is expected for a connect-time protected toolset.
+#
+# Without a credential_service, ADK has nowhere to store the token it exchanges,
+# so it would re-prompt on every turn. Registering InMemoryCredentialService lets
+# ADK cache the exchanged credential and reuse it for the rest of the session.
+credential_service = InMemoryCredentialService()
+
 runner = Runner(
     app_name="bigquery_agent",
     agent=root_agent,
-    session_service=session_service
+    session_service=session_service,
+    credential_service=credential_service,
 )
 
 # ============================================================================
@@ -208,8 +240,8 @@ async def chat(request: Request):
         session_id = body.get("session_id")
         message = body.get("message")
         
-        print(f"\n[DEBUG] Received chat request - user_id: {user_id}, session_id: {session_id}")
-        print(f"[DEBUG] Message type: {type(message)}, content: {str(message)[:200]}")
+        debug(f"\n[DEBUG] Received chat request - user_id: {user_id}, session_id: {session_id}")
+        debug(f"[DEBUG] Message type: {type(message)}, content: {str(message)[:200]}")
         
         # Check if this is an auth response (FunctionResponse message)
         is_auth_response = (
@@ -220,9 +252,9 @@ async def chat(request: Request):
             and "function_response" in message["parts"][0]
         )
         
-        print(f"[DEBUG] is_auth_response: {is_auth_response}")
+        debug(f"[DEBUG] is_auth_response: {is_auth_response}")
     except Exception as e:
-        print(f"[DEBUG] Error parsing request: {e}")
+        debug(f"[DEBUG] Error parsing request: {e}")
         import traceback
         traceback.print_exc()
         return {"error": str(e)}, 400
@@ -236,9 +268,9 @@ async def chat(request: Request):
                 state={}
             )
             session_id = session.id
-            print(f"[DEBUG] Created new session: {session_id}")
+            debug(f"[DEBUG] Created new session: {session_id}")
         except Exception as e:
-            print(f"[DEBUG] Error creating session: {e}")
+            debug(f"[DEBUG] Error creating session: {e}")
             import traceback
             traceback.print_exc()
             return {"error": f"Session creation failed: {str(e)}"}, 500
@@ -251,9 +283,9 @@ async def chat(request: Request):
             )
             if not session:
                 return {"error": "Session not found"}, 404
-            print(f"[DEBUG] Retrieved existing session: {session_id}")
+            debug(f"[DEBUG] Retrieved existing session: {session_id}")
         except Exception as e:
-            print(f"[DEBUG] Error retrieving session: {e}")
+            debug(f"[DEBUG] Error retrieving session: {e}")
             import traceback
             traceback.print_exc()
             return {"error": f"Session retrieval failed: {str(e)}"}, 500
@@ -263,16 +295,16 @@ async def chat(request: Request):
         if is_auth_response:
             # Client is sending back auth response - reconstruct Content
             content = types.Content(**message)
-            print(f"[DEBUG] Constructed auth response Content")
+            debug(f"[DEBUG] Constructed auth response Content")
         else:
             # Normal text message
             content = types.Content(
                 role="user",
                 parts=[types.Part(text=message)]
             )
-            print(f"[DEBUG] Constructed text message Content")
+            debug(f"[DEBUG] Constructed text message Content")
     except Exception as e:
-        print(f"[DEBUG] Error constructing Content: {e}")
+        debug(f"[DEBUG] Error constructing Content: {e}")
         import traceback
         traceback.print_exc()
         return {"error": f"Content construction failed: {str(e)}"}, 400
@@ -287,31 +319,53 @@ async def chat(request: Request):
             # Notify client of session
             yield f"data: {json.dumps({'type': 'session', 'session_id': session_id})}\n\n"
             
-            accumulated_text = ""
+            # `streamed_text` is the text we've already sent to the client for the
+            # CURRENT model response. ADK streams a response as a series of partial
+            # events whose text grows cumulatively, followed by a final non-partial
+            # event carrying the complete text. We emit only the new delta each time,
+            # and reset whenever a final event closes out a response - so a tool turn
+            # that produces an intermediate message AND a final answer streams both
+            # correctly instead of swallowing or duplicating the second one.
+            streamed_text = ""
             has_streamed_content = False
-            
-            print(f"\n[DEBUG] Starting agent run - is_auth_response: {is_auth_response}")
+
+            # Set once an auth request has been seen and relayed to the client.
+            # We must NOT `break` out of `runner.run_async(...)` here: abandoning
+            # the async generator mid-iteration leaves ADK's MCP session / context
+            # scopes open, and their later teardown injects GeneratorExit at the
+            # wrong suspension point - which raises cancel-scope / context errors on
+            # current ADK. Instead we let the generator run to natural completion and
+            # simply stop emitting once auth is pending, so ADK closes its own scopes
+            # in the task that opened them.
+            auth_pending = False
+
+            debug(f"\n[DEBUG] Starting agent run - is_auth_response: {is_auth_response}")
             if is_auth_response:
-                print(f"[DEBUG] Auth response content: {content}")
-            
+                debug(f"[DEBUG] Auth response content: {content}")
+
             # Run the agent
             async for event in runner.run_async(
                 user_id=user_id,
                 session_id=session_id,
                 new_message=content
             ):
-                print(f"[DEBUG] Event received - partial: {event.partial}, has_content: {bool(event.content)}")
-                
+                debug(f"[DEBUG] Event received - partial: {event.partial}, final: {event.is_final_response()}, has_content: {bool(event.content)}")
+
+                # Once auth is pending the run is logically suspended waiting on the
+                # human; drain any remaining events without emitting anything more.
+                if auth_pending:
+                    continue
+
                 # Check if this is an auth request event
                 if is_auth_request_event(event):
-                    print("[DEBUG] Auth request detected")
+                    debug("[DEBUG] Auth request detected")
                     # Extract auth details
                     function_call_id = get_function_call_id(event)
                     auth_config = get_auth_config(event)
-                    
+
                     # Get the authorization URL
                     auth_uri = auth_config.exchanged_auth_credential.oauth2.auth_uri
-                    
+
                     # Send auth request to client
                     auth_request_data = {
                         "type": "auth_required",
@@ -320,44 +374,39 @@ async def chat(request: Request):
                         "auth_config": auth_config.model_dump(mode='json')
                     }
                     yield f"data: {json.dumps(auth_request_data)}\n\n"
-                    
-                    # Don't process more events - wait for auth response
-                    break
-                
-                # Process content from events (both partial and non-partial)
+
+                    # Don't emit further events - drain the generator to completion
+                    # so ADK can tear down its MCP/context scopes cleanly.
+                    auth_pending = True
+                    continue
+
+                # Extract any text on this event (parts may also be tool calls /
+                # tool responses, which carry no text and are skipped).
+                event_text = ""
                 if event.content and event.content.parts:
-                    for part in event.content.parts:
-                        if hasattr(part, 'text') and part.text:
-                            chunk_text = part.text
-                            print(f"[DEBUG] Text chunk: {chunk_text[:50]}...")
-                            
-                            # For partial events, send only new text
-                            if event.partial:
-                                # Calculate new text by removing accumulated text
-                                new_text = chunk_text[len(accumulated_text):]
-                                if new_text:
-                                    accumulated_text = chunk_text
-                                    chunk_data = {
-                                        "type": "response_chunk",
-                                        "text": new_text,
-                                        "is_final": False
-                                    }
-                                    yield f"data: {json.dumps(chunk_data)}\n\n"
-                                    has_streamed_content = True
-                            else:
-                                # Non-partial event - might be complete response
-                                # Send the full text if we haven't streamed anything yet
-                                if not has_streamed_content:
-                                    chunk_data = {
-                                        "type": "response_chunk",
-                                        "text": chunk_text,
-                                        "is_final": False
-                                    }
-                                    yield f"data: {json.dumps(chunk_data)}\n\n"
-                                    accumulated_text = chunk_text
-                                    has_streamed_content = True
-            
-            print(f"[DEBUG] Event loop finished - has_streamed_content: {has_streamed_content}")
+                    event_text = "".join(
+                        part.text for part in event.content.parts
+                        if getattr(part, "text", None)
+                    )
+
+                if event_text:
+                    # Emit only the portion not already sent for this response.
+                    # Partial events carry the cumulative text so far; the final
+                    # event repeats the full text, so the delta is naturally "".
+                    new_text = event_text[len(streamed_text):]
+                    if new_text:
+                        debug(f"[DEBUG] Streaming delta: {new_text[:50]}...")
+                        yield f"data: {json.dumps({'type': 'response_chunk', 'text': new_text, 'is_final': False})}\n\n"
+                        has_streamed_content = True
+                    streamed_text = event_text
+
+                # A final (non-partial) response closes out the current message.
+                # Reset so a subsequent message in the same turn (e.g. the answer
+                # produced after a tool call) streams from scratch.
+                if event.is_final_response():
+                    streamed_text = ""
+
+            debug(f"[DEBUG] Event loop finished - has_streamed_content: {has_streamed_content}")
             
             # Send completion signal
             if has_streamed_content:
@@ -369,7 +418,7 @@ async def chat(request: Request):
                 yield f"data: {json.dumps(completion_data)}\n\n"
                 
         except Exception as e:
-            print(f"[DEBUG] Error in event_generator: {e}")
+            debug(f"[DEBUG] Error in event_generator: {e}")
             import traceback
             traceback.print_exc()
             error_data = {

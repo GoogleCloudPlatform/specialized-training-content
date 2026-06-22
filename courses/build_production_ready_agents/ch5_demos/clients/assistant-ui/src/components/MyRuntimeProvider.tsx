@@ -28,7 +28,8 @@ const MyModelAdapter: ChatModelAdapter = {
         }),
       });
       const sessionData = await sessionResponse.json();
-      sessionId = sessionData.session_id;
+      sessionId = sessionData.session_id as string | undefined ?? null;
+      if (!sessionId) throw new Error("No session_id returned from backend");
       sessionStorage.setItem("adk_session_id", sessionId);
     }
 

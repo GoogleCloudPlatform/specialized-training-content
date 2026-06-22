@@ -2,6 +2,7 @@
 
 import { Thread } from "@assistant-ui/react";
 import { MyRuntimeProvider } from "@/components/MyRuntimeProvider";
+import { MarkdownText } from "@/components/MarkdownText";
 
 export default function Home() {
   return (
@@ -13,7 +14,9 @@ export default function Home() {
           </h1>
         </header>
         <div className="flex-1 overflow-hidden">
-          <Thread />
+          <Thread
+            assistantMessage={{ components: { Text: MarkdownText } }}
+          />
         </div>
       </div>
     </MyRuntimeProvider>
