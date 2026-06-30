@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab Notes — Config Connector with GKE</title>
+  <style>
+    /* Light editorial: off-white canvas, white panel, hairline borders, flat
+       4px radii, uppercase letter-spaced section header, blue accent. */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #fafafa;
+      --panel: #ffffff;
+      --header-bg: #ffffff;
+      --section-head-bg: #fafafa;
+      --ink: #1a1a1a;
+      --muted: #666;
+      --faint: #999;
+      --line: #e0e0e0;
+      --line-soft: #f0f0f0;
+      --accent: #4285f4;
+      --data: #1558d6;  /* entered values — a deeper, readable blue */
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .header {
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--line);
+      padding: 24px 0;
+    }
+    .header .inner { max-width: 920px; margin: 0 auto; padding: 0 40px; }
+    .header h1 { font-size: 40px; font-weight: 300; letter-spacing: -0.5px; }
+    .header p { font-size: 17px; color: var(--muted); margin-top: 4px; }
+
+    .wrap { max-width: 920px; margin: 0 auto; padding: 32px 40px 80px; display: flex; flex-direction: column; gap: 24px; }
+
+    .section { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--ink); border-radius: 4px; overflow: hidden; }
+    .section-header {
+      padding: 16px 24px;
+      background: var(--section-head-bg);
+      border-bottom: 1px solid var(--line-soft);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .section-header .title {
+      font-size: 17px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .section-header .sub { font-size: 16px; color: var(--muted); margin-top: 4px; text-transform: none; letter-spacing: 0; font-weight: 400; max-width: 620px; }
+
+    .rows { padding: 8px 24px 16px; }
+    .row {
+      display: flex; align-items: baseline;
+      padding: 16px 0; border-bottom: 1px solid var(--line-soft);
+    }
+    .row:last-child { border-bottom: none; }
+    /* The label column is fixed at the width of the 1.4 table's RESOURCE column
+       (card inner width minus the READY+STATUS columns, 110+200=310px), so the
+       value column begins exactly where READY begins. The value then spans the
+       remaining horizontal space (the combined READY+STATUS area). */
+    .row .label-col { flex: 0 0 calc(100% - 310px); min-width: 0; padding: 0 12px; }
+    .row .label { font-size: 18px; font-weight: 500; }
+    .row .help { font-size: 15px; color: var(--muted); margin-top: 3px; }
+    .row .value {
+      flex: 1; min-width: 0; padding: 0 12px;
+      font-size: 16px; word-break: break-word;
+    }
+    .value.set { color: var(--data); }
+    .value.empty { color: var(--faint); }
+
+    /* Column header for generic cards, mirroring the 1.4 table's <thead>. */
+    .row.row-head { padding: 8px 0; border-bottom: 1px solid var(--line); align-items: center; }
+    .row .value-head { flex: 1; min-width: 0; padding: 0 12px; }
+    .col-label {
+      font-size: 13px; font-weight: 500; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    /* Table layout (Task 1.4) — one row per resource, READY + STATUS columns. */
+    .state-table { width: 100%; border-collapse: collapse; font-size: 16px; }
+    .state-table th {
+      text-align: left; font-size: 13px; font-weight: 500; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 8px 12px; border-bottom: 1px solid var(--line);
+    }
+    .state-table th.col-ready { width: 110px; }
+    .state-table th.col-status { width: 200px; }
+    .state-table td { padding: 12px; border-bottom: 1px solid var(--line-soft); vertical-align: baseline; }
+    .state-table tr:last-child td { border-bottom: none; }
+    .state-table .res-kind { display: block; font-weight: 500; }
+    .state-table .res-name { display: block; font-size: 14px; color: var(--muted); margin-top: 2px; word-break: break-all; }
+    .state-table .cell-ready .value, .state-table .cell-status .value { font-size: 16px; }
+
+    button {
+      padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;
+      font-size: 17px; transition: background .2s, border-color .2s;
+    }
+    button.primary { background: var(--ink); color: #fff; }
+    button.primary:hover { background: #333; }
+    button.secondary { background: var(--panel); color: #333; border: 1px solid var(--line); }
+    button.secondary:hover { background: var(--bg); }
+    button.edit { background: var(--ink); color: #fff; border: 1px solid var(--ink); padding: 8px 18px; }
+    button.edit:hover { background: #333; }
+
+    /* Modal */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.4);
+      display: none; align-items: center; justify-content: center; padding: 24px; z-index: 50;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+      width: 100%; max-width: 520px; max-height: 86vh; overflow: auto; padding: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.12);
+    }
+    .modal h3 { font-size: 22px; font-weight: 500; }
+    .modal .msub { font-size: 17px; color: var(--muted); margin: 6px 0 18px; }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 17px; font-weight: 500; margin-bottom: 6px; }
+    .field .help { font-size: 15px; color: var(--muted); margin: -2px 0 6px; }
+    .field input[type=text] {
+      width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 4px;
+      font-size: 18px; font-family: inherit;
+    }
+    .field input[type=text]:focus { outline: none; border-color: var(--accent); }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+    /* Table-edit modal — wider, with a control per cell. */
+    .modal:has(.modal-table) { max-width: 720px; }
+    .modal-table { width: 100%; border-collapse: collapse; }
+    .modal-table th {
+      text-align: left; font-size: 13px; font-weight: 500; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 6px 10px; border-bottom: 1px solid var(--line);
+    }
+    .modal-table th.col-ready { width: 110px; }
+    .modal-table th.col-status { width: 240px; }
+    .modal-table td { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    .modal-table tr:last-child td { border-bottom: none; }
+    .modal-table .res-kind { display: block; font-weight: 500; font-size: 15px; }
+    .modal-table .res-name { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; word-break: break-all; }
+    .modal-table select, .modal-table input[type=text] {
+      width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px;
+      font-size: 16px; font-family: inherit; background: var(--panel);
+    }
+    .modal-table select:focus, .modal-table input[type=text]:focus { outline: none; border-color: var(--accent); }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(16px);
+      background: var(--ink); color: #fff; font-size: 17px; padding: 12px 22px; border-radius: 4px;
+      opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; z-index: 60;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="inner">
+      <h1>Lab Notes</h1>
+      <p>Deploying and using Config Connector with GKE — jot down details the lab asks you to note.</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    {% for section in sections %}
+    <div class="section" data-section="{{ section.id }}">
+      <div class="section-header">
+        <div>
+          <div class="title">{{ section.title }}</div>
+          <div class="sub">{{ section.subtitle }}</div>
+        </div>
+        <button class="edit" onclick="openModal('{{ section.id }}')">Edit</button>
+      </div>
+      {% if section.layout == 'table' %}
+      <div class="rows">
+        <table class="state-table">
+          <thead>
+            <tr><th>Resource</th><th class="col-ready">READY</th><th class="col-status">STATUS</th></tr>
+          </thead>
+          <tbody>
+            {% for r in section.rows %}
+            <tr data-row="{{ r.key }}">
+              <td class="res">
+                <span class="res-kind">{{ r.kind }}</span>
+                <span class="res-name">{{ r.name }}</span>
+              </td>
+              <!-- Rendered empty; hydrated from localStorage by JS on load. -->
+              <td class="cell-ready"><span class="value empty">—</span></td>
+              <td class="cell-status"><span class="value empty">—</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="rows">
+        <div class="row row-head">
+          <div class="label-col"><span class="col-label">Property</span></div>
+          <div class="value-head"><span class="col-label">Value</span></div>
+        </div>
+        {% for field in section.fields %}
+        <div class="row" data-key="{{ field.key }}">
+          <div class="label-col">
+            <div class="label">{{ field.label }}</div>
+            {% if field.help %}<div class="help">{{ field.help }}</div>{% endif %}
+          </div>
+          <!-- Rendered empty; hydrated from localStorage by JS on load. -->
+          <div class="value empty">—</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <h3 id="modal-title"></h3>
+      <p class="msub" id="modal-sub"></p>
+      <form id="modal-form" onsubmit="return saveModal(event)">
+        <div id="modal-fields"></div>
+        <div class="modal-actions">
+          <button type="button" class="secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Saved</div>
+
+  <script>
+    const SECTIONS = {{ sections | tojson }};
+    const BY_ID = Object.fromEntries(SECTIONS.map(s => [s.id, s]));
+
+    // Notes live entirely in the browser. localStorage is scoped to this
+    // service's origin and persists for the whole lab session (same browser),
+    // independent of how Cloud Run scales or recycles instances.
+    const STORAGE_KEY = 'ccl000-notes';
+
+    function loadNotes() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const data = raw ? JSON.parse(raw) : {};
+        return (data && typeof data === 'object') ? data : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function persistNotes() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(NOTES));
+      } catch (e) {
+        // Storage full or blocked (e.g. private mode with no quota) — the page
+        // still works for the current session; warn so it's diagnosable.
+        console.warn('Could not save notes to localStorage:', e);
+      }
+    }
+
+    let NOTES = loadNotes();
+
+    function openModal(sectionId) {
+      const section = BY_ID[sectionId];
+      document.getElementById('modal-title').textContent = section.title;
+      document.getElementById('modal-sub').textContent = section.subtitle;
+      const host = document.getElementById('modal-fields');
+      host.replaceChildren();
+      if (section.layout === 'table') { buildTableModal(section, host); return openOverlay(); }
+      for (const f of section.fields) {
+        const wrap = document.createElement('div');
+        wrap.className = 'field';
+        const label = document.createElement('label');
+        label.textContent = f.label;
+        wrap.appendChild(label);
+        if (f.help) {
+          const help = document.createElement('div');
+          help.className = 'help';
+          help.textContent = f.help;
+          wrap.appendChild(help);
+        }
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.dataset.key = f.key;
+        input.value = NOTES[f.key] ? String(NOTES[f.key]) : '';
+        wrap.appendChild(input);
+        host.appendChild(wrap);
+      }
+      openOverlay();
+    }
+
+    function openOverlay() { document.getElementById('overlay').classList.add('open'); }
+
+    function makeSpan(cls, text) {
+      const s = document.createElement('span');
+      s.className = cls;
+      s.textContent = text;
+      return s;
+    }
+
+    // A standard <select> bound to a storage key. A leading blank "—" option lets
+    // the cell be left unset; the current stored value is preselected.
+    function makeSelect(key, options) {
+      const sel = document.createElement('select');
+      sel.dataset.key = key;
+      const blank = document.createElement('option');
+      blank.value = '';
+      blank.textContent = '—';
+      sel.appendChild(blank);
+      for (const opt of (options || [])) {
+        const o = document.createElement('option');
+        o.value = opt;
+        o.textContent = opt;
+        sel.appendChild(o);
+      }
+      sel.value = NOTES[key] || '';
+      return sel;
+    }
+
+    // Build the edit UI for a table-layout section: one row per resource with a
+    // READY and a STATUS dropdown (standard <select>). Each control is tagged with
+    // its per-cell storage key so saveModal() picks it up generically.
+    function buildTableModal(section, host) {
+      const table = document.createElement('table');
+      table.className = 'modal-table';
+      const thead = document.createElement('thead');
+      const htr = document.createElement('tr');
+      htr.appendChild(makeTh('Resource', ''));
+      htr.appendChild(makeTh('READY', 'col-ready'));
+      htr.appendChild(makeTh('STATUS', 'col-status'));
+      thead.appendChild(htr);
+      table.appendChild(thead);
+
+      const tbody = document.createElement('tbody');
+      for (const r of section.rows) {
+        const tr = document.createElement('tr');
+
+        const res = document.createElement('td');
+        res.className = 'res';
+        res.appendChild(makeSpan('res-kind', r.kind));
+        res.appendChild(makeSpan('res-name', r.name));
+        tr.appendChild(res);
+
+        const readyTd = document.createElement('td');
+        readyTd.appendChild(makeSelect(r.key + '_ready', section.ready_options));
+        tr.appendChild(readyTd);
+
+        const statusTd = document.createElement('td');
+        statusTd.appendChild(makeSelect(r.key + '_status', section.status_options));
+        tr.appendChild(statusTd);
+
+        tbody.appendChild(tr);
+      }
+      table.appendChild(tbody);
+      host.appendChild(table);
+    }
+
+    function makeTh(text, cls) {
+      const th = document.createElement('th');
+      if (cls) th.className = cls;
+      th.textContent = text;
+      return th;
+    }
+
+    function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+
+    function saveModal(e) {
+      e.preventDefault();
+      document.querySelectorAll('#modal-fields [data-key]').forEach(el => {
+        NOTES[el.dataset.key] = el.value.trim();
+      });
+      persistNotes();
+      renderRows();
+      closeModal();
+      showToast();
+      return false;
+    }
+
+    function setValueEl(v, val) {
+      if (val) { v.className = 'value set'; v.textContent = val; }
+      else { v.className = 'value empty'; v.textContent = '—'; }
+    }
+
+    function renderRows() {
+      for (const section of SECTIONS) {
+        if (section.layout === 'table') {
+          for (const r of section.rows) {
+            const tr = document.querySelector(`tr[data-row="${r.key}"]`);
+            if (!tr) continue;
+            setValueEl(tr.querySelector('.cell-ready .value'), NOTES[r.key + '_ready']);
+            setValueEl(tr.querySelector('.cell-status .value'), NOTES[r.key + '_status']);
+          }
+          continue;
+        }
+        for (const f of section.fields) {
+          const row = document.querySelector(`.row[data-key="${f.key}"]`);
+          if (!row) continue;
+          setValueEl(row.querySelector('.value'), NOTES[f.key]);
+        }
+      }
+    }
+
+    let toastTimer;
+    function showToast() {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // Hydrate the page from localStorage on load (server renders all rows empty).
+    renderRows();
+
+    // Keep multiple tabs on this origin in sync when one of them saves.
+    window.addEventListener('storage', e => {
+      if (e.key === STORAGE_KEY) { NOTES = loadNotes(); renderRows(); }
+    });
+  </script>
+</body>
+</html>

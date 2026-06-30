@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+.venv/
+venv/
+*.md
+notes.json
