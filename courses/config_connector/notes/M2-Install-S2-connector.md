@@ -2,6 +2,10 @@
 
 # M2 - Install stage 2: the ConfigConnector resource (and its architecture)
 
+---
+
+## Overview
+
 Stage 1 ([M2-Install-S1-operator](M2-Install-S1-operator.md)) installed the operator — a small idle
 bootstrap. **Stage 2 turns Config Connector on:** you apply a **ConfigConnector**
 resource (and, in namespaced mode, a **ConfigConnectorContext** per namespace), the
@@ -13,18 +17,7 @@ This note has two parts:
 
 - **[Part A — Installation procedure](#part-a--installation-procedure)** — the ordered steps to run, in dependency order.
 - **[Part B — What it creates & how it works](#part-b--what-it-creates--how-it-works)** — the architecture the procedure produces, for reference.
-
-```mermaid
-flowchart LR
-    U["Platform Engineer"] -->|kubectl apply| CC["ConfigConnector<br/>(configconnector.yaml)"]
-    CC --> OP["operator<br/>(already running)"]
-    OP -->|deploys| WL["controllers in cnrm-system<br/>+ ~200 Google-resource CRDs"]
-```
-
----
-
-## Overview
-
+- 
 A few things to fix in your head before the steps:
 
 - **One resource flips the switch.** Applying a ConfigConnector object is the whole
@@ -321,10 +314,6 @@ controller Pod  →  runs as KSA  →  (workloadIdentityUser binding)  →  GSA 
 - **The project annotation** on each namespace (step 2) is a separate axis: it tells
   the controller *which project* to create resources in, independent of *which
   identity* it authenticates as.
-
-A mismatch in the step-4 member string — wrong namespace, wrong KSA name, wrong pool
-project — is the most common reason a freshly-installed Config Connector sits there
-unable to create anything.
 
 > **Config Connector uses the impersonation pattern, not direct resource access.**
 > GKE now supports a newer Workload Identity style — *direct resource access* — where
