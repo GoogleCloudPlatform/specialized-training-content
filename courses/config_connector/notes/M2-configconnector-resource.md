@@ -88,42 +88,43 @@ kubectl wait -n cnrm-system \
 
 ---
 
-## What the operator installs
+## What the apply creates
 
-| Workload                       | Kind            | Role                                         |
-| ------------------------------ | --------------- | -------------------------------------------- |
-| `cnrm-controller-manager`      | **StatefulSet** | the reconcilers — the core engine            |
-| `cnrm-webhook-manager`         | **Deployment**  | admission webhooks (validation + defaulting) |
-| `cnrm-deletiondefender`        | **StatefulSet** | guards against unintended deletions          |
-| `cnrm-resource-stats-recorder` | **Deployment**  | emits resource-count metrics                 |
+A single `kubectl apply` of the ConfigConnector object doesn't just start some
+pods — the operator lays down a whole set of cluster objects and reconciles all of
+it for you. Here's the full inventory, grouped by kind of thing.
 
+### The workloads
 
+The visible part — the controllers that do the work. Each is detailed in
+[The workloads in detail](#the-workloads-in-detail) below.
 
-### Namespaced mode → per-namespace controllers, plus an extra workload
+| Workload                       | Kind        | Mode                | Role                          |
+| ------------------------------ | ----------- | ------------------- | ----------------------------- |
+| `cnrm-controller-manager`      | StatefulSet | both                | the reconcilers — core engine |
+| `cnrm-webhook-manager`         | Deployment  | both                | admission webhooks            |
+| `cnrm-deletiondefender`        | StatefulSet | both                | guards against deletions      |
+| `cnrm-resource-stats-recorder` | Deployment  | both                | resource-count metrics        |
+| `cnrm-unmanaged-detector`      | StatefulSet | **namespaced only** | drift signal                  |
 
-Namespaced mode differs in two ways:
+Expanded from the source (`cmd/*` + `pkg/controller/*`), so the roles are precise.
 
-- **The controller becomes per-namespace.** Instead of one shared
-  `cnrm-controller-manager`, each ConfigConnectorContext makes the operator stand up
-  a **dedicated** `cnrm-controller-manager-${NAMESPACE}` StatefulSet, so each
-  namespace reconciles under its own identity.
-- **An extra shared workload appears:** `cnrm-unmanaged-detector` (StatefulSet),
-  which is deployed **only in namespaced mode**. The `cnrm-webhook-manager`,
-  `cnrm-resource-stats-recorder`, and `cnrm-deletiondefender` remain shared.
+### The supporting resources
+
+The plumbing the workloads need — created once, rarely thought about again.
+
+| What's created | Detail |
+| -------------- | ------ |
+| **The `cnrm-system` namespace** | Every workload, ServiceAccount, and Service lives here. It's created by the operator, not by you — you don't `kubectl create namespace` it. |
+| **~212 Google-resource CRDs** | The **StorageBucket**, **ComputeAddress**, **PubSubTopic**, … kinds you'll actually author. These are **not** the operator's own 8 management CRDs ([[M2-operator-crds]]) — they arrive *now*, at this apply, not at operator install. |
+| **A ServiceAccount per workload** | One per workload above. The controller's KSA is the one **bound to your Google Service Account via Workload Identity** — the link that lets in-cluster pods authenticate as the GSA from your manifest. |
+| **Cluster-wide RBAC** | ClusterRoles + ClusterRoleBindings (and a couple of namespaced Roles/RoleBindings) granting each workload the API access it needs — e.g. the controller's permission to watch every managed-resource CRD across all namespaces. |
+| **Services** | `cnrm-controller-manager-service`, `cnrm-resource-stats-recorder-service`, and the webhook Service — stable addresses fronting the pods (the first two are the metrics endpoints, see [[M4-monitoring]]). |
+| **Webhook configurations** | The cluster-wide **ValidatingWebhookConfiguration** + **MutatingWebhookConfiguration** that route every apply through `cnrm-webhook-manager`. The workload runs the webhook; *these* objects are what wire it into the API server's admission chain. |
 
 ---
 
-## Deployed workloads
-
-| Workload                       | Kind        | Mode                |
-| ------------------------------ | ----------- | ------------------- |
-| `cnrm-controller-manager`      | StatefulSet | both                |
-| `cnrm-webhook-manager`         | Deployment  | both                |
-| `cnrm-deletiondefender`        | StatefulSet | both                |
-| `cnrm-resource-stats-recorder` | Deployment  | both                |
-| `cnrm-unmanaged-detector`      | StatefulSet | **namespaced only** |
-
-Expanded from the source (`cmd/*` + `pkg/controller/*`), so the roles are precise.
+## The workloads in detail
 
 ### `cnrm-controller-manager` — the engine (StatefulSet)
 
@@ -172,3 +173,21 @@ through. All fail-closed (`FailurePolicy: Fail`).
 - This is what turns "I applied a resource but nothing happened" into a visible
   signal: *"No controller is managing this resource. Check if a ConfigConnectorContext
   exists for the namespace."*
+
+---
+
+## Cluster vs. namespaced — what differs
+
+Everything in [What the apply creates](#what-the-apply-creates) is shared
+cluster-wide **except** the controller and its identity. The mode you chose on the
+ConfigConnector spec changes only these:
+
+| Concern | Cluster mode | Namespaced mode |
+| ------- | ------------ | --------------- |
+| **The controller** | One shared `cnrm-controller-manager` StatefulSet for the whole cluster. | A **dedicated** `cnrm-controller-manager-${NAMESPACE}` StatefulSet per namespace, stood up when you apply that namespace's ConfigConnectorContext. |
+| **Identity binding** | One controller ServiceAccount, bound once to the GSA on the ConfigConnector spec. | Bound later and **per-namespace** — each ConfigConnectorContext binds its controller to *that* namespace's GSA ([[M2-operator-crds]]). |
+| **`cnrm-unmanaged-detector`** | Not deployed — it has nothing to do. | Deployed (shared) — flags resources in namespaces that have no controller. |
+
+The CRDs, webhook configs, `cnrm-webhook-manager`, `cnrm-deletiondefender`,
+`cnrm-resource-stats-recorder`, and the `cnrm-system` namespace are the same in
+both modes.
