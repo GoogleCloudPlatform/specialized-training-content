@@ -5,18 +5,19 @@
 
 ![Deploying and Using Config Connector with GKE](_assets/course-banner.png)
 
-# M2 - Installing the Config Connector operator
+# M2 - Install stage 1: the operator (and its architecture)
 
 Installing Config Connector is a **two-stage** process, and this note is about
-**stage one: installing the operator.** The operator is a small bootstrap workload
-that knows how to install and configure everything else — it does *not* manage any
+**stage one: installing the operator** — what you apply, what lands in the cluster,
+and the small architecture it stands up. The operator is a bootstrap workload that
+knows how to install and configure everything else — it does *not* manage any
 Google Cloud resources itself.
 
 - **Stage 1 (this note):** apply the operator manifest → a handful of Kubernetes
   resources + 8 management CRDs land in the cluster.
-- **Stage 2 (later):** you apply a **ConfigConnector** resource, and *the operator*
-  reacts by standing up the controllers and the Google-resource CRDs. See
-  [[M2-operator-crds]].
+- **Stage 2 ([M2-Install-S2-connector](M2-Install-S2-connector.md)):** you apply a **ConfigConnector**
+  resource, and *the operator* reacts by standing up the controllers and the
+  Google-resource CRDs.
 
 ---
 
@@ -76,7 +77,7 @@ Applying it creates the following, all in a **new namespace**
 | Its identity | `ServiceAccount` | `configconnector-operator` |
 | Its network endpoint | `Service` | `configconnector-operator-service` |
 | Cluster-wide permissions | `ClusterRole` ×3 + `ClusterRoleBinding` ×2 | `manager-role`, `cnrm-viewer`, … |
-| Management CRDs | `CustomResourceDefinition` ×8 | see [[M2-operator-crds]] |
+| Management CRDs | `CustomResourceDefinition` ×8 | see [M2-operator-crds](M2-operator-crds.md) |
 
 That's the whole footprint of stage 1 — a single-replica controller, its RBAC, a
 service, and 8 CRDs. Small on purpose.
@@ -85,7 +86,7 @@ service, and 8 CRDs. Small on purpose.
 > They're `ConfigConnector`, `ConfigConnectorContext`, and the six `customize.…`
 > tuning CRDs. The ~200 Google-resource CRDs (ComputeAddress, StorageBucket, …) are
 > **not** installed here — the operator lays those down in stage 2. Full breakdown
-> in [[M2-operator-crds]].
+> in [M2-operator-crds](M2-operator-crds.md).
 
 ---
 

@@ -1,11 +1,12 @@
 ![Deploying and Using Config Connector with GKE](_assets/course-banner.png)
 
-# M2 - Applying the ConfigConnector resource (stage 2)
+# M2 - Install stage 2: the ConfigConnector resource (and its architecture)
 
-Stage 1 ([[M2-operator-install]]) installed the operator — a small idle bootstrap.
-**Stage 2 turns Config Connector on:** you apply a single **ConfigConnector**
-resource, and the operator reacts by deploying the actual controllers and the
-Google-resource CRDs into a new `cnrm-system` namespace.
+Stage 1 ([M2-Install-S1-operator](M2-Install-S1-operator.md)) installed the operator — a small idle
+bootstrap. **Stage 2 turns Config Connector on:** you apply a single
+**ConfigConnector** resource, and the operator reacts by deploying the actual
+controllers and the Google-resource CRDs into a new `cnrm-system` namespace — the
+runtime architecture this note walks through.
 
 ```mermaid
 flowchart LR
@@ -56,7 +57,7 @@ spec:
 ```
 
 Note there is **no `googleServiceAccount`** here — in namespaced mode you supply the
-identity later, per namespace, via a **ConfigConnectorContext** ([[M2-operator-crds]]):
+identity later, per namespace, via a **ConfigConnectorContext** ([M2-operator-crds](M2-operator-crds.md)):
 
 ```yaml
 apiVersion: core.cnrm.cloud.google.com/v1beta1
@@ -116,10 +117,10 @@ The plumbing the workloads need — created once, rarely thought about again.
 | What's created | Detail |
 | -------------- | ------ |
 | **The `cnrm-system` namespace** | Every workload, ServiceAccount, and Service lives here. It's created by the operator, not by you — you don't `kubectl create namespace` it. |
-| **~212 Google-resource CRDs** | The **StorageBucket**, **ComputeAddress**, **PubSubTopic**, … kinds you'll actually author. These are **not** the operator's own 8 management CRDs ([[M2-operator-crds]]) — they arrive *now*, at this apply, not at operator install. |
+| **~212 Google-resource CRDs** | The **StorageBucket**, **ComputeAddress**, **PubSubTopic**, … kinds you'll actually author. These are **not** the operator's own 8 management CRDs ([M2-operator-crds](M2-operator-crds.md)) — they arrive *now*, at this apply, not at operator install. |
 | **A ServiceAccount per workload** | One per workload above. The controller's KSA is the one **bound to your Google Service Account via Workload Identity** — the link that lets in-cluster pods authenticate as the GSA from your manifest. |
 | **Cluster-wide RBAC** | ClusterRoles + ClusterRoleBindings (and a couple of namespaced Roles/RoleBindings) granting each workload the API access it needs — e.g. the controller's permission to watch every managed-resource CRD across all namespaces. |
-| **Services** | `cnrm-controller-manager-service`, `cnrm-resource-stats-recorder-service`, and the webhook Service — stable addresses fronting the pods (the first two are the metrics endpoints, see [[M4-monitoring]]). |
+| **Services** | `cnrm-controller-manager-service`, `cnrm-resource-stats-recorder-service`, and the webhook Service — stable addresses fronting the pods (the first two are the metrics endpoints, see [M4-monitoring](M4-monitoring.md)). |
 | **Webhook configurations** | The cluster-wide **ValidatingWebhookConfiguration** + **MutatingWebhookConfiguration** that route every apply through `cnrm-webhook-manager`. The workload runs the webhook; *these* objects are what wire it into the API server's admission chain. |
 
 ---
@@ -144,7 +145,7 @@ through. All fail-closed (`FailurePolicy: Fail`).
 | Webhook type   | What it does              | Examples                                                                                                         |
 | -------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | **Validating** | rejects bad applies       | immutable-field changes, unknown fields, IAM resources, per-resource validation, `state-into-spec` annotation    |
-| **Mutating**   | fills things in on create | container annotations (project/folder/org), IAM defaults, management-conflict annotation, generic field defaults |
+| **Mutating**   | fills things in on create | container annotations (project/folder/org), IAM defaults, management-conflict annotation |
 
 ### `cnrm-deletiondefender` — safe deletion (StatefulSet)
 
@@ -161,7 +162,7 @@ through. All fail-closed (`FailurePolicy: Fail`).
 - On an interval (~60s) it walks every managed resource, reads each one's **Ready
   condition**, and aggregates counts per namespace / kind / condition.
 - Exposes them as a **Prometheus** metric (`applied_resources_total`). Pure
-  observability — see [[M4-monitoring]].
+  observability — see [M4-monitoring](M4-monitoring.md).
 
 ### `cnrm-unmanaged-detector` — drift signal, **namespaced mode only** (StatefulSet)
 
@@ -185,9 +186,124 @@ ConfigConnector spec changes only these:
 | Concern | Cluster mode | Namespaced mode |
 | ------- | ------------ | --------------- |
 | **The controller** | One shared `cnrm-controller-manager` StatefulSet for the whole cluster. | A **dedicated** `cnrm-controller-manager-${NAMESPACE}` StatefulSet per namespace, stood up when you apply that namespace's ConfigConnectorContext. |
-| **Identity binding** | One controller ServiceAccount, bound once to the GSA on the ConfigConnector spec. | Bound later and **per-namespace** — each ConfigConnectorContext binds its controller to *that* namespace's GSA ([[M2-operator-crds]]). |
+| **Identity binding** | One controller ServiceAccount, bound once to the GSA on the ConfigConnector spec. | Bound later and **per-namespace** — each ConfigConnectorContext binds its controller to *that* namespace's GSA ([M2-operator-crds](M2-operator-crds.md)). |
 | **`cnrm-unmanaged-detector`** | Not deployed — it has nothing to do. | Deployed (shared) — flags resources in namespaces that have no controller. |
 
 The CRDs, webhook configs, `cnrm-webhook-manager`, `cnrm-deletiondefender`,
 `cnrm-resource-stats-recorder`, and the `cnrm-system` namespace are the same in
 both modes.
+
+---
+
+## The remaining setup — wiring up identity
+
+Applying the ConfigConnector resource stands up the controllers, but they can't
+touch Google Cloud yet. A controller reconciles resources by calling Google Cloud
+APIs, and to do that it has to *authenticate as some Google identity*. Nothing so
+far has connected the in-cluster controllers to a real GSA. That wiring is the
+admin's job, and it's the same shape in both modes — only the multiplicity differs
+(one identity cluster-wide vs. one per namespace).
+
+The mechanism is **Workload Identity**: a Kubernetes ServiceAccount (KSA) in the
+cluster is allowed to *impersonate* a Google Service Account (GSA), so pods running
+under that KSA get the GSA's permissions without any exported key.
+
+### 0. The controller KSAs are created for you
+
+You don't create the controller's KSA — the operator does, as part of standing up
+each controller. In cluster mode it's a single KSA named `cnrm-controller-manager`
+in `cnrm-system`; in namespaced mode each ConfigConnectorContext gets a
+`cnrm-controller-manager-${NAMESPACE}` KSA (also in `cnrm-system`). The operator
+also stamps the Workload Identity annotation
+(`iam.gke.io/gcp-service-account: <GSA email>`) onto that KSA for you, derived from
+the `googleServiceAccount` you specified. So of the four pieces of the WI binding,
+the two on the Kubernetes side are automatic; the two on the Google Cloud side
+(steps 1–3 below) are what the admin still has to do.
+
+### 1. Create the namespaces and annotate them (namespaced mode)
+
+In namespaced mode, resources live in ordinary Kubernetes namespaces you create —
+one per team/tenant. Each namespace that will hold Config Connector resources needs
+a **project annotation** telling Config Connector which Google Cloud project its
+resources belong to:
+
+```bash
+kubectl create namespace team-a
+kubectl annotate namespace team-a \
+  cnrm.cloud.google.com/project-id=my-team-a-project
+```
+
+Without this annotation, Config Connector doesn't know which project to create the
+resources in (there are analogous `folder-id` / `organization-id` annotations for
+folder- and org-scoped resources). In cluster mode this step collapses to the
+default project on the resources themselves, but the per-namespace annotation is the
+idiomatic namespaced-mode setup. (The ConfigConnectorContext itself, which supplies
+the *identity* for the namespace, is covered in [M2-operator-crds](M2-operator-crds.md).)
+
+### 2. Create the GSAs and grant them roles
+
+The GSA is the identity Config Connector actually authenticates as when it calls
+Google Cloud — so it needs whatever roles the resources you'll manage require
+(e.g. `roles/storage.admin` to manage buckets, `roles/compute.admin` for networking,
+or more scoped roles). The admin creates the GSA and grants it project roles:
+
+```bash
+gcloud iam service-accounts create cnrm-team-a \
+  --project my-team-a-project
+
+gcloud projects add-iam-policy-binding my-team-a-project \
+  --member "serviceAccount:cnrm-team-a@my-team-a-project.iam.gserviceaccount.com" \
+  --role "roles/storage.admin"
+```
+
+In cluster mode there's one GSA for the whole cluster; in namespaced mode you
+typically create one GSA per namespace, each scoped to just that tenant's project
+and roles. That per-namespace GSA is exactly the isolation namespaced mode buys you.
+
+### 3. Bind the KSA to the GSA (the Workload Identity policy binding)
+
+This is the step that actually lets the in-cluster controller act as the GSA. You
+grant the controller's KSA the `roles/iam.workloadIdentityUser` role **on the GSA**,
+with the KSA named as the member:
+
+```bash
+gcloud iam service-accounts add-iam-policy-binding \
+  cnrm-team-a@my-team-a-project.iam.gserviceaccount.com \
+  --role "roles/iam.workloadIdentityUser" \
+  --member "serviceAccount:HOST_PROJECT.svc.id.goog[cnrm-system/cnrm-controller-manager-team-a]"
+```
+
+The member string is the crux. It names the KSA via the cluster's **workload
+identity pool** (`HOST_PROJECT.svc.id.goog`) followed by `[namespace/ksa-name]` —
+here `cnrm-system` and the per-namespace controller KSA from step 0. In cluster mode
+the KSA is just `cnrm-system/cnrm-controller-manager`.
+
+> **Config Connector uses the impersonation pattern, not direct resource access.**
+> This is worth calling out because GKE now supports a newer Workload Identity
+> style — *direct resource access* — where you skip the GSA entirely and grant roles
+> straight to the KSA principal
+> (`principal://iam.googleapis.com/projects/…/subject/ns/cnrm-system/…`). Config
+> Connector does **not** use that. It uses the **original GSA-impersonation** model:
+> a real GSA holds the roles, and the KSA is bound to it via
+> `roles/iam.workloadIdentityUser`. This is baked into the operator — it stamps the
+> `iam.gke.io/gcp-service-account` annotation onto the controller KSA
+> (`operator/pkg/k8s/constants.go`), which is precisely the impersonation-path
+> annotation. There is no option to point a controller at a bare `principal://` KSA
+> binding; you always go through a GSA.
+
+### Putting the four pieces together
+
+The WI binding is a chain, and all four links must line up or the controller's API
+calls fail with permission errors:
+
+```
+controller Pod  →  runs as KSA  →  (workloadIdentityUser binding)  →  GSA  →  holds project roles
+   (operator)      (operator, step 0)         (admin, step 3)      (admin, step 2)
+```
+
+- **Steps 0** (KSA + WI annotation) are automatic — the operator does them.
+- **Steps 1–3** (namespace annotation, GSA + roles, WI policy binding) are the
+  admin's manual setup, per project/namespace.
+- A mismatch in the step-3 member string — wrong namespace, wrong KSA name, wrong
+  pool project — is the most common reason a freshly-installed Config Connector sits
+  there unable to create anything.
