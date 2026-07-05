@@ -12,8 +12,12 @@ the usual top-level fields: `apiVersion`, `kind`, `metadata`, `spec` (and
 `status` at runtime). A surprising amount of KCC behavior is driven not by
 `spec` but by **annotations and labels inside `metadata`**.
 
-The annotation/label names below are taken from the KCC source of truth,
-[`pkg/k8s/constants.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/k8s/constants.go).
+Most of the annotation/label names below are taken from the KCC source of truth,
+[`pkg/k8s/constants.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/k8s/constants.go)
+(where they are built through `FormatAnnotation("...")`). A few live elsewhere —
+notably the management-conflict prevention policy, defined as a hardcoded string
+literal in
+[`pkg/managementconflict/annotations.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/managementconflict/annotations.go).
 
 ---
 
@@ -185,7 +189,10 @@ metadata:
 
 `cnrm.cloud.google.com/management-conflict-prevention-policy` (`none` /
 `resource`). Uses leasing to stop two KCC instances from fighting over the same
-GCP resource.
+GCP resource. Unlike the other annotations here, this one is *not* defined in
+`pkg/k8s/constants.go`; it is a hardcoded string literal (`FullyQualifiedAnnotation`)
+in
+[`pkg/managementconflict/annotations.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/managementconflict/annotations.go).
 
 ```yaml
 metadata:
