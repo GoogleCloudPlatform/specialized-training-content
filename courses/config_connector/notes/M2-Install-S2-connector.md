@@ -220,9 +220,13 @@ The plumbing the workloads need — created once, rarely thought about again.
   create / update / delete the real resource so it matches the spec.
 - It runs in one of two shapes, by mode:
   - **Cluster mode** — one workload, one identity for the whole cluster.
-  - **Namespaced mode** — one workload *per* namespace
-    (`cnrm-controller-manager-${NAMESPACE}`), each scoped to its namespace with its
-    own identity.
+  - **Namespaced mode** — one workload *per* namespace, each scoped to its
+    namespace with its own identity. The StatefulSet is named
+    `cnrm-controller-manager-<id>` and its Service `cnrm-manager-<id>`, where
+    `<id>` is a stable, randomly generated per-namespace identifier (persisted in
+    the `namespace-id` ConfigMap in `configconnector-operator-system`) — the
+    namespace's ServiceAccount, by contrast, is named literally
+    `cnrm-controller-manager-<namespace>`.
 
 #### `cnrm-webhook-manager` — admission control (Deployment)
 

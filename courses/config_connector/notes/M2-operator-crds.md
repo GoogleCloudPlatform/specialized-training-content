@@ -71,8 +71,14 @@ Key `spec` fields:
 - **Used only in `namespaced` mode.** You create one in each namespace you want
   Config Connector active in.
 - **What it triggers:** applying one makes the operator **stand up a dedicated
-  controller manager for that namespace** — a StatefulSet named
-  `cnrm-controller-manager-${NAMESPACE}`
+  controller manager for that namespace**. Per namespace you get a
+  ServiceAccount named `cnrm-controller-manager-<namespace>` (the literal
+  namespace), plus a StatefulSet `cnrm-controller-manager-<id>` and a Service
+  `cnrm-manager-<id>`, where `<id>` is a stable, randomly generated per-namespace
+  identifier the operator persists in the `namespace-id` ConfigMap in the
+  `configconnector-operator-system` namespace. (The `<id>`, not the namespace
+  name, is what appears in the StatefulSet/Service names — and note the Service
+  drops `controller-` from its prefix.)
 
 Key `spec` fields:
 
