@@ -146,6 +146,7 @@ metadata:
   namespace: team-a
 spec:
   googleServiceAccount: "cnrm-team-a@my-team-a-project.iam.gserviceaccount.com"
+  requestProjectPolicy: RESOURCE_PROJECT
   stateIntoSpec: Absent
 ```
 
