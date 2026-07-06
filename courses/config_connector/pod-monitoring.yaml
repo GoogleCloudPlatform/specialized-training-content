@@ -1,0 +1,25 @@
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: cnrm-manager-metrics
+  namespace: cnrm-system
+spec:
+  selector:
+    matchLabels:
+      cnrm.cloud.google.com/component: cnrm-controller-manager
+  endpoints:
+    - port: 8888
+      interval: 30s
+---
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: cnrm-recorder-metrics
+  namespace: cnrm-system
+spec:
+  selector:
+    matchLabels:
+      cnrm.cloud.google.com/component: cnrm-resource-stats-recorder
+  endpoints:
+    - port: 48797
+      interval: 30s

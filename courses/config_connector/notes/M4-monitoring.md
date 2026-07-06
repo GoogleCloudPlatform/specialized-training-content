@@ -78,9 +78,8 @@ These are the Config Connector-authored metrics (all prefixed `configconnector_`
 - `configconnector_build_info`
 
 > There are also lower-level `gcp_api_*` request counters exposed on the same
-> pods, but they're an internal detail — not in the public metrics table and not
-> forwarded to Cloud Monitoring (see §5). Treat the list above as the supported
-> surface.
+> pods, but they're an internal detail — not in the public metrics table. Treat the
+> list above as the supported surface.
 
 ---
 
@@ -122,8 +121,7 @@ ways to tell Prometheus to scrape them.
 
 > This whole section is what the official
 > [Monitoring with Prometheus how-to](https://docs.cloud.google.com/config-connector/docs/how-to/monitoring-prometheus#scraping_metrics)
-> documents. **When you scrape directly, no whitelist applies — you see the full set
-> of metrics.**
+> documents. **When you scrape directly, you see the full set of metrics.**
 
 ---
 
@@ -138,7 +136,7 @@ different.
 ### How you enable it
 
 - `gcloud container clusters update … --enable-managed-prometheus`, or the checkbox
-  in the cluster-creation dialog.
+  in the cluster-creation dialog (this is the default setting).
 - This starts the collectors and scrapes GKE's own system metrics automatically.
 
 ### It does **not** reuse §3's mechanisms
@@ -155,75 +153,181 @@ different.
 - They work like a `ServiceMonitor` (label selector + named port + interval) but
   target **pods** directly.
 
-**So to get Config Connector metrics into GMP,** you author a `PodMonitoring` in
-`cnrm-system` selecting Config Connector's pods on the `metrics` port. Config
-Connector does **not** ship one — this is a manual step you add yourself.
+**So to get Config Connector metrics into GMP,** you author `PodMonitoring`
+object(s) in `cnrm-system` selecting Config Connector's pods. Config Connector does
+**not** ship one — this is a manual step you add yourself.
 
+### The `PodMonitoring` configuration
+
+```yaml
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: cnrm-manager-metrics
+  namespace: cnrm-system
+spec:
+  selector:
+    matchLabels:
+      cnrm.cloud.google.com/component: cnrm-controller-manager
+  endpoints:
+    - port: 8888
+      interval: 30s
 ---
-
-## 5. Shipping metrics to Cloud Monitoring with the sidecar
-
-This path is for people who **don't** run Prometheus at all but still want Config
-Connector's key numbers in **Cloud Monitoring**. It's the piece most people don't
-know exists.
-
-### What a sidecar is
-
-- A second container that runs *inside the same pod* as the main one.
-- Containers in a pod share a network namespace, so the sidecar reaches the main
-  container at `localhost`.
-
-```mermaid
-flowchart LR
-    subgraph pod["Config Connector pod"]
-        CC["CC container<br/>serves metrics on<br/>localhost:8888"]
-        SD["prom-to-sd container<br/>(scrapes localhost)"]
-        CC -->|scrape| SD
-    end
-    SD -->|push| CM["Cloud Monitoring<br/>kubernetes.io/internal/addons"]
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: cnrm-recorder-metrics
+  namespace: cnrm-system
+spec:
+  selector:
+    matchLabels:
+      cnrm.cloud.google.com/component: cnrm-resource-stats-recorder
+  endpoints:
+    - port: 48797
+      interval: 30s
 ```
 
-### What this one does
+Two things that trip people up here — both a consequence of `PodMonitoring`
+scraping the **pod/container** directly, not the Service:
 
-- The image is **`prometheus-to-sd`** ("Prometheus **to** **S**tack**d**river" —
-  Stackdriver is the old name for Cloud Monitoring).
-- It scrapes the pod-local Prometheus endpoint and **pushes** the results to Cloud
-  Monitoring via the API.
-- Config Connector still only *exposes* metrics — the sidecar is what pushes.
+- **You need two objects, one per component, because they serve on different
+  container ports.** The manager container serves on **8888**, but the recorder
+  *container* serves on **48797** (recall from §2 that only its *Service* remaps
+  that to 8888). `PodMonitoring` bypasses the Service, so it must target each real
+  container port — you can't cover both with one endpoint. Select each component by
+  its `cnrm.cloud.google.com/component` **pod** label.
+- **Select on a pod label, and use the numeric port.** The
+  `cnrm.cloud.google.com/monitored: "true"` label and the `metrics` port name live
+  on the *Service*, not the pods, so a selector using them matches nothing (the
+  `PodMonitoring` will still report `ConfigurationCreateSuccess` — that only means
+  the config is valid, not that it matched any pods). Use the numeric container port
+  as shown.
 
-### The key limitation — the whitelist
-
-Unlike §3/§4, the sidecar forwards only an explicit allow-list, named in its
-`--source` argument:
-
-- **manager sidecar:** `reconcile_requests_total`,
-  `reconcile_request_duration_seconds`, `reconcile_workers_total`,
-  `reconcile_occupied_workers_total`, `internal_errors_total`
-- **recorder sidecar:** `applied_resources_total`
-
-Everything else on the endpoint (e.g. the `gcp_api_*` metrics) stays in the pod.
-
-> **Why does this exist if GMP is available?** It predates the convenient GMP path
-> and is bundled into the operator's install, so a standard GKE install gets Config
-> Connector's core health metrics into Cloud Monitoring out of the box, with no
-> Prometheus to run yourself.
+> If you only want the reconcile metrics (rate/latency/errors/workers) and don't
+> need `applied_resources_total`, the manager `PodMonitoring` alone is enough — drop
+> the recorder object.
 
 ---
 
-## 6. Putting it together
+## 5. Putting it together
 
-All three paths consume the **same** `:8888` Prometheus endpoint — there is no
-separate direct-to-Cloud-Monitoring push inside Config Connector.
+Both paths consume the **same** `:8888` Prometheus endpoint — there is no
+separate direct-to-Cloud-Monitoring push inside Config Connector. Something always
+has to scrape the endpoint; the only question is whether you run that scraper (§3)
+or Google runs it (§4).
 
 ```mermaid
 flowchart TD
     M["configconnector_* metrics<br/>(in memory)"] --> EP["HTTP endpoint :8888<br/>the single source of truth"]
-    EP --> P3["§3 self-managed Prometheus<br/>ALL metrics<br/>(you run Prometheus)"]
-    EP --> P4["§4 GMP (PodMonitoring)<br/>ALL metrics<br/>(Google runs it)"]
-    EP --> P5["§5 prom-to-sd sidecar<br/>WHITELISTED subset<br/>→ Cloud Monitoring"]
+    EP --> P3["§3 self-managed Prometheus<br/>(you run Prometheus)"]
+    EP --> P4["§4 GMP (PodMonitoring)<br/>(Google runs it)"]
 ```
 
-- **§3 and §4** (you or Google scrape it) are **unrestricted** — you get every
-  metric on the endpoint.
-- **§5** (the sidecar) is the only path filtered to a **whitelist**, and the only
-  one that requires no scraper of your own.
+- **§3 and §4** both give you the **full set** of metrics on the endpoint — you get
+  every metric, with no whitelist.
+- Either way you must set up the scrape yourself: Config Connector does not ship a
+  `PodMonitoring`/`ServiceMonitor`, and enabling GMP alone does not scrape Config
+  Connector until you add one.
+
+---
+
+## 6. Queries worth running
+
+Once the metrics are in Cloud Monitoring (via §4) or your own Prometheus (§3),
+these six queries cover the questions you'll actually ask. Run them in **Metrics
+Explorer → PromQL**, or drop them onto a dashboard. They combine the official
+[Monitoring with Prometheus](https://docs.cloud.google.com/config-connector/docs/how-to/monitoring-prometheus)
+examples with a few refinements (rates and percentiles) that make them useful over
+time rather than as instantaneous counts.
+
+### 1. Reconcile error rate by kind
+
+```promql
+sum by (group_version_kind) (
+  rate(configconnector_reconcile_requests_total{status="ERROR"}[5m])
+)
+```
+
+- **Watches:** resources that are failing to converge on Google Cloud.
+- **Why it helps:** the single most valuable signal — a rising line for one kind
+  almost always means one shared cause (a missing IAM permission, an unresolvable
+  dependency, a 429) is hitting every resource of that kind. Using `rate()` instead
+  of the raw counter shows failures *happening now*, not the all-time total.
+
+### 2. Reconcile error *ratio* by kind
+
+```promql
+sum by (group_version_kind) (rate(configconnector_reconcile_requests_total{status="ERROR"}[5m]))
+/
+sum by (group_version_kind) (rate(configconnector_reconcile_requests_total[5m]))
+```
+
+- **Watches:** what fraction of reconciles are failing, normalized for how busy a
+  kind is.
+- **Why it helps:** a kind reconciling thousands of times will out-scale a rare
+  kind on raw error count even when it's healthier. The ratio (0–1) is the fairer
+  signal and the better basis for an alert threshold.
+
+### 3. p95 reconcile latency by kind
+
+```promql
+histogram_quantile(0.95,
+  sum by (le, group_version_kind) (
+    rate(configconnector_reconcile_request_duration_seconds_bucket[5m])
+  ))
+```
+
+- **Watches:** reconciles that succeed but are getting *slow*.
+- **Why it helps:** catches the "not failing, just dragging" state — often the first
+  sign of quota throttling or an overloaded controller — before it turns into
+  errors or missed reconciles.
+
+### 4. Worker saturation
+
+```promql
+sum(configconnector_reconcile_occupied_workers_total)
+/
+sum(configconnector_reconcile_workers_total)
+```
+
+- **Watches:** whether the controller's reconcile worker pool is maxed out.
+- **Why it helps:** as this ratio approaches **1.0**, every worker is busy and new
+  reconcile requests queue — the controller is throughput-bound. This is the signal
+  that you need to tune the controller (more workers / resources) rather than the
+  cluster.
+
+### 5. Resources under management
+
+```promql
+sum(configconnector_applied_resources_total)
+```
+
+- **Watches:** the total size of the fleet Config Connector is managing.
+- **Why it helps:** growth here drives everything else — API quota pressure,
+  reconcile load, controller memory. A steady climb is your early warning to plan
+  capacity. Add `by (group_version_kind)` or filter by `namespace` to see *where*
+  the growth is.
+
+### 6. Top 5 kinds by error volume
+
+```promql
+topk(5,
+  sum by (group_version_kind) (
+    rate(configconnector_reconcile_requests_total{status="ERROR"}[5m])
+  ))
+```
+
+- **Watches:** which resource types are the noisiest right now.
+- **Why it helps:** a fast triage view — when something is wrong, this immediately
+  ranks the failing kinds so you know where to look first, without scanning every
+  series.
+
+### Turning these into alerts
+
+Queries tell you when you look; **alerts tell you when you're not looking.** The
+strongest candidates to promote to alerting policies are the *error ratio* (#2) and
+*worker saturation* (#4) — both are normalized (0–1), so a threshold is meaningful
+regardless of fleet size. Wrap them with a sustained duration (fire after several
+minutes, not on a single spike) so a transient blip doesn't page anyone. Sustained
+reconcile errors are the most direct signal that your declared state and reality
+have diverged — the best alert to add from Config Connector's own metrics.

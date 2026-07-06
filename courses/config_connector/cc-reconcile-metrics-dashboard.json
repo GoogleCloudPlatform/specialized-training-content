@@ -1,0 +1,128 @@
+{
+  "displayName": "Config Connector — Reconcile Metrics",
+  "mosaicLayout": {
+    "columns": 12,
+    "tiles": [
+      {
+        "width": 6,
+        "height": 4,
+        "xPos": 0,
+        "yPos": 0,
+        "widget": {
+          "title": "Reconcile error rate by kind",
+          "xyChart": {
+            "yAxis": { "label": "errors/sec", "scale": "LINEAR" },
+            "dataSets": [
+              {
+                "plotType": "LINE",
+                "timeSeriesQuery": {
+                  "prometheusQuery": "sum by (group_version_kind) (rate(configconnector_reconcile_requests_total{status=\"ERROR\"}[5m]))"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "width": 6,
+        "height": 4,
+        "xPos": 6,
+        "yPos": 0,
+        "widget": {
+          "title": "Reconcile error ratio by kind",
+          "xyChart": {
+            "yAxis": { "label": "fraction (0-1)", "scale": "LINEAR" },
+            "dataSets": [
+              {
+                "plotType": "LINE",
+                "timeSeriesQuery": {
+                  "prometheusQuery": "sum by (group_version_kind) (rate(configconnector_reconcile_requests_total{status=\"ERROR\"}[5m])) / sum by (group_version_kind) (rate(configconnector_reconcile_requests_total[5m]))"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "width": 6,
+        "height": 4,
+        "xPos": 0,
+        "yPos": 4,
+        "widget": {
+          "title": "p95 reconcile latency by kind",
+          "xyChart": {
+            "yAxis": { "label": "seconds", "scale": "LINEAR" },
+            "dataSets": [
+              {
+                "plotType": "LINE",
+                "timeSeriesQuery": {
+                  "prometheusQuery": "histogram_quantile(0.95, sum by (le, group_version_kind) (rate(configconnector_reconcile_request_duration_seconds_bucket[5m])))"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "width": 6,
+        "height": 4,
+        "xPos": 6,
+        "yPos": 4,
+        "widget": {
+          "title": "Worker saturation (occupied / total)",
+          "xyChart": {
+            "yAxis": { "label": "fraction (0-1)", "scale": "LINEAR" },
+            "dataSets": [
+              {
+                "plotType": "LINE",
+                "timeSeriesQuery": {
+                  "prometheusQuery": "sum(configconnector_reconcile_occupied_workers_total) / sum(configconnector_reconcile_workers_total)"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "width": 6,
+        "height": 4,
+        "xPos": 0,
+        "yPos": 8,
+        "widget": {
+          "title": "Resources under management",
+          "xyChart": {
+            "yAxis": { "label": "resources", "scale": "LINEAR" },
+            "dataSets": [
+              {
+                "plotType": "LINE",
+                "timeSeriesQuery": {
+                  "prometheusQuery": "sum(configconnector_applied_resources_total)"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "width": 6,
+        "height": 4,
+        "xPos": 6,
+        "yPos": 8,
+        "widget": {
+          "title": "Top 5 kinds by error volume",
+          "xyChart": {
+            "yAxis": { "label": "errors/sec", "scale": "LINEAR" },
+            "dataSets": [
+              {
+                "plotType": "LINE",
+                "timeSeriesQuery": {
+                  "prometheusQuery": "topk(5, sum by (group_version_kind) (rate(configconnector_reconcile_requests_total{status=\"ERROR\"}[5m])))"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

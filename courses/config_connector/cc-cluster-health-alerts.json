@@ -1,0 +1,125 @@
+[
+  {
+    "displayName": "CC — controller crashlooping",
+    "combiner": "OR",
+    "conditions": [
+      {
+        "displayName": "cnrm-system pod restarting >= 3 in 10m",
+        "conditionPrometheusQueryLanguage": {
+          "query": "sum by (pod) (increase(kube_pod_container_status_restarts_total{namespace=\"cnrm-system\"}[10m])) >= 3",
+          "duration": "0s",
+          "evaluationInterval": "60s"
+        }
+      }
+    ],
+    "documentation": {
+      "content": "A Config Connector controller pod has restarted 3+ times in 10 minutes (likely OOMKilled or crashlooping). Reconciliation for its namespace(s) is stalled. Check pod memory vs. limit and controller logs.",
+      "mimeType": "text/markdown"
+    },
+    "notificationChannels": []
+  },
+  {
+    "displayName": "CC — controller memory > 90% of limit",
+    "combiner": "OR",
+    "conditions": [
+      {
+        "displayName": "used / limit > 0.9 for 10m",
+        "conditionThreshold": {
+          "filter": "metric.type=\"kubernetes.io/container/memory/used_bytes\" resource.type=\"k8s_container\" resource.label.\"namespace_name\"=\"cnrm-system\" resource.label.\"pod_name\"=monitoring.regex.full_match(\"cnrm-controller-manager.*\")",
+          "denominatorFilter": "metric.type=\"kubernetes.io/container/memory/limit_bytes\" resource.type=\"k8s_container\" resource.label.\"namespace_name\"=\"cnrm-system\" resource.label.\"pod_name\"=monitoring.regex.full_match(\"cnrm-controller-manager.*\")",
+          "comparison": "COMPARISON_GT",
+          "thresholdValue": 0.9,
+          "duration": "600s",
+          "aggregations": [
+            {
+              "alignmentPeriod": "60s",
+              "perSeriesAligner": "ALIGN_MEAN",
+              "crossSeriesReducer": "REDUCE_MEAN",
+              "groupByFields": ["resource.label.\"pod_name\""]
+            }
+          ],
+          "denominatorAggregations": [
+            {
+              "alignmentPeriod": "60s",
+              "perSeriesAligner": "ALIGN_MEAN",
+              "crossSeriesReducer": "REDUCE_MEAN",
+              "groupByFields": ["resource.label.\"pod_name\""]
+            }
+          ],
+          "trigger": { "count": 1 }
+        }
+      }
+    ],
+    "documentation": {
+      "content": "A cnrm-controller-manager pod is using more than 90% of its memory limit. An OOMKill is likely imminent, which will crashloop the controller and stall reconciliation. Raise the memory limit (ControllerResource customization) or add node capacity.",
+      "mimeType": "text/markdown"
+    },
+    "notificationChannels": []
+  },
+  {
+    "displayName": "CC — pods pending / unschedulable",
+    "combiner": "OR",
+    "conditions": [
+      {
+        "displayName": "cnrm-system pod Pending > 10m",
+        "conditionPrometheusQueryLanguage": {
+          "query": "sum(kube_pod_status_phase{namespace=\"cnrm-system\", phase=\"Pending\"}) > 0",
+          "duration": "600s",
+          "evaluationInterval": "60s"
+        }
+      }
+    ],
+    "documentation": {
+      "content": "One or more Config Connector pods have been Pending for over 10 minutes — the scheduler cannot place them. Common after scaling controller replicas or increasing pod resource requests. Check node capacity and pod resource requests; add or resize nodes.",
+      "mimeType": "text/markdown"
+    },
+    "notificationChannels": []
+  },
+  {
+    "displayName": "CC — node allocatable utilization > 90%",
+    "combiner": "OR",
+    "conditions": [
+      {
+        "displayName": "node CPU allocatable util > 90% for 15m",
+        "conditionThreshold": {
+          "filter": "metric.type=\"kubernetes.io/node/cpu/allocatable_utilization\" resource.type=\"k8s_node\"",
+          "comparison": "COMPARISON_GT",
+          "thresholdValue": 0.9,
+          "duration": "900s",
+          "aggregations": [
+            {
+              "alignmentPeriod": "60s",
+              "perSeriesAligner": "ALIGN_MEAN",
+              "crossSeriesReducer": "REDUCE_MAX",
+              "groupByFields": ["resource.label.\"node_name\""]
+            }
+          ],
+          "trigger": { "count": 1 }
+        }
+      },
+      {
+        "displayName": "node memory allocatable util > 90% for 15m",
+        "conditionThreshold": {
+          "filter": "metric.type=\"kubernetes.io/node/memory/allocatable_utilization\" resource.type=\"k8s_node\"",
+          "comparison": "COMPARISON_GT",
+          "thresholdValue": 0.9,
+          "duration": "900s",
+          "aggregations": [
+            {
+              "alignmentPeriod": "60s",
+              "perSeriesAligner": "ALIGN_MEAN",
+              "crossSeriesReducer": "REDUCE_MAX",
+              "groupByFields": ["resource.label.\"node_name\""]
+            }
+          ],
+          "trigger": { "count": 1 }
+        }
+      }
+    ],
+    "documentation": {
+      "content": "A node hosting Config Connector is above 90% CPU or memory allocatable utilization for 15 minutes. Controllers may be throttled even without restarts, slowing reconciliation. Add nodes or move to larger machine types.",
+      "mimeType": "text/markdown"
+    },
+    "notificationChannels": []
+  }
+]
