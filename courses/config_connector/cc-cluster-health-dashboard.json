@@ -18,7 +18,7 @@
             },
             "dataSets": [
               {
-                "legendTemplate": "used - ${resource.label.pod_name}",
+                "legendTemplate": "used - ${resource.labels.pod_name}",
                 "minAlignmentPeriod": "60s",
                 "plotType": "LINE",
                 "targetAxis": "Y1",
@@ -67,7 +67,7 @@
               {
                 "breakdowns": [],
                 "dimensions": [],
-                "legendTemplate": "used - ${resource.label.pod_name}",
+                "legendTemplate": "used - ${resource.labels.pod_name}",
                 "measures": [],
                 "plotType": "LINE",
                 "sort": [],
@@ -89,7 +89,7 @@
               {
                 "breakdowns": [],
                 "dimensions": [],
-                "legendTemplate": "request - ${resource.label.pod_name}",
+                "legendTemplate": "request - ${resource.labels.pod_name}",
                 "measures": [],
                 "plotType": "LINE",
                 "sort": [],
@@ -111,7 +111,7 @@
               {
                 "breakdowns": [],
                 "dimensions": [],
-                "legendTemplate": "limit - ${resource.label.pod_name}",
+                "legendTemplate": "limit - ${resource.labels.pod_name}",
                 "measures": [],
                 "plotType": "LINE",
                 "sort": [],
@@ -225,7 +225,7 @@
               {
                 "breakdowns": [],
                 "dimensions": [],
-                "legendTemplate": "${metadata.system_labels.top_level_controller_name}",
+                "legendTemplate": "${resource.labels.pod_name}",
                 "measures": [],
                 "plotType": "LINE",
                 "sort": [],
@@ -237,7 +237,7 @@
                       "alignmentPeriod": "60s",
                       "crossSeriesReducer": "REDUCE_SUM",
                       "groupByFields": [
-                        "metadata.system_labels.\"top_level_controller_name\""
+                        "resource.label.\"pod_name\""
                       ],
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
@@ -271,7 +271,7 @@
               {
                 "breakdowns": [],
                 "dimensions": [],
-                "legendTemplate": "${metadata.system_labels.top_level_controller_name}",
+                "legendTemplate": "${resource.labels.pod_name}",
                 "measures": [],
                 "plotType": "LINE",
                 "sort": [],
@@ -283,7 +283,7 @@
                       "alignmentPeriod": "60s",
                       "crossSeriesReducer": "REDUCE_SUM",
                       "groupByFields": [
-                        "metadata.system_labels.\"top_level_controller_name\""
+                        "resource.label.\"pod_name\""
                       ],
                       "perSeriesAligner": "ALIGN_RATE"
                     },
@@ -316,7 +316,7 @@
               {
                 "breakdowns": [],
                 "dimensions": [],
-                "legendTemplate": "cpu - ${resource.label.node_name}",
+                "legendTemplate": "cpu - ${resource.labels.node_name}",
                 "measures": [],
                 "plotType": "LINE",
                 "sort": [],
@@ -337,7 +337,7 @@
               {
                 "breakdowns": [],
                 "dimensions": [],
-                "legendTemplate": "memory - ${resource.label.node_name}",
+                "legendTemplate": "memory - ${resource.labels.node_name}",
                 "measures": [],
                 "plotType": "LINE",
                 "sort": [],
