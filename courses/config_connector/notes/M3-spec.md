@@ -5,17 +5,17 @@
 
 ![Deploying and Using Config Connector with GKE](_assets/course-banner.png)
 
-# M3 - Spec & Schemas
+# M3 - Spec and Schemas
 
 The `spec` section is where you define **many, though not all, of the parameters
-that configure the object under management** — its settings, the project and
+that configure the object under management**—its settings, the project and
 location it lives in, references to other resources, and any secrets it needs.
 Some configuration lives elsewhere: identity and KCC's operational controls sit
 in `metadata` (see [M3 - Metadata](M3-metadata.md)), and some behavior is left to
 GCP's own server-side defaults rather than expressed in `spec` at all.
 
-The notes below cover the fields and patterns you'll use most, and — just as
-important — where the schema will catch a mistake for you and where it won't.
+The notes below cover the fields and patterns you'll use most, and—just as
+important—where the schema will catch a mistake for you and where it won't.
 
 ---
 
@@ -35,12 +35,12 @@ spec:
 ```
 
 Two reasons to set it: (a) your desired GCP name isn't a valid K8s name, or (b)
-you want to **acquire an existing** GCP resource — set `resourceID` to its ID
+you want to **acquire an existing** GCP resource—set `resourceID` to its ID
 and KCC adopts it instead of creating a new one. It is **immutable** once set
 (see #9). This is the `spec` half of the naming story from
 [M3 - Metadata](M3-metadata.md).
 
-### 2. The location field's *name* varies by resource — always check
+### 2. The location field's *name* varies by resource—always check
 
 There is no single `location` convention. Region/zone/global is spelled
 differently per resource, and guessing wrong is a common authoring error:
@@ -56,7 +56,7 @@ Global vs regional is expressed by the **value** (`location: US` vs `location:
 us-central1`) and sometimes by which field exists at all. Whatever it's called,
 it's **immutable** (see #9), so pick it carefully the first time.
 
-### 3. Reference another resource with `*Ref` — by `name` or by `external`
+### 3. Reference another resource with `*Ref`—by `name` or by `external`
 
 Whenever a field points at another GCP resource (a network, a KMS key, a
 project), it's a `*Ref` object with two mutually-exclusive ways to fill it in:
@@ -76,7 +76,7 @@ spec:
 - **`external`** is the literal GCP identifier (Cloud Asset Inventory format, no
   service domain). Use this to reference something KCC doesn't manage.
 
-Set **one, not both** — the CRD enforces this as a `oneOf`. Ref struct defined in
+Set **one, not both**—the CRD enforces this as a `oneOf`. Ref struct defined in
 [`apis/refs/project_reference.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/apis/refs/project_reference.go#L34).
 
 ### 4. Tell KCC which project with `spec.projectRef` (or fall back to the namespace)
@@ -91,8 +91,8 @@ spec:
     # or: name: my-managed-project
 ```
 
-> **Gotcha:** not every resource has `spec.projectRef`. Several common ones —
-> `StorageBucket`, `PubSubTopic`, `ComputeInstance`, `SQLInstance` — don't expose
+> **Gotcha:** not every resource has `spec.projectRef`. Several common ones—
+> `StorageBucket`, `PubSubTopic`, `ComputeInstance`, `SQLInstance`—don't expose
 > it at all, and instead take their project from the `cnrm.cloud.google.com/project-id`
 > annotation. KCC looks for that annotation **on the object first, then on the
 > object's namespace**, and finally falls back to the namespace name (see
@@ -108,15 +108,15 @@ there is no Organization CRD to name).
 
 ### 5. Supply secrets with `valueFrom.secretKeyRef`, never inline plaintext
 
-When a field holds a sensitive value — a database password, an encryption key —
-you don't put the literal string in your manifest. Instead you store the secret
+When a field holds a sensitive value—a database password, an encryption key—you
+don't put the literal string in your manifest. Instead you store the secret
 in an ordinary Kubernetes `Secret` object, and the `spec` field points at it by
 name and key. That way the secret never lives in the resource YAML you commit or
 apply.
 
 These fields aren't plain strings; they're a small nested object that names a
-Secret and a key within it. The secret value is created and managed separately —
-it never appears in the resource manifest. For example, put the password into a
+Secret and a key within it. The secret value is created and managed separately—it
+never appears in the resource manifest. For example, put the password into a
 Secret with no YAML at all:
 
 ```bash
@@ -153,7 +153,7 @@ won't reconcile.
 ### 6. Some string fields only accept a fixed set of values (enums)
 
 Newer resources constrain string fields to an allowed list, enforced by the API
-server **at apply time** — a wrong value is rejected immediately, before any GCP
+server **at apply time**—a wrong value is rejected immediately, before any GCP
 call. Example, MetastoreService
 ([`apis/metastore/v1alpha1/metastoreservice_types.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/apis/metastore/v1alpha1/metastoreservice_types.go#L114)):
 
@@ -172,7 +172,7 @@ tier:
 
 Apply a manifest with `spec.tier: PREMIUM` and the API server rejects it
 outright — `Unsupported value: "PREMIUM": supported values: "DEVELOPER",
-"ENTERPRISE"` — before KCC ever calls GCP.
+"ENTERPRISE"`—before KCC ever calls GCP.
 
 ### 7. Most fields you omit are defaulted by *GCP*, not by KCC
 
@@ -182,7 +182,7 @@ lets the Google API apply its own server-side default
 So "what happens if I leave this out?" is usually answered by the GCP docs, not
 the KCC schema.
 
-The exceptions — where the **schema** fills a value in for you — are rare and
+The exceptions—where the **schema** fills a value in for you—are rare and
 mostly in Storage:
 
 - `StorageBucket.spec.location` defaults to `US`
@@ -207,11 +207,11 @@ Role string `json:"role"`
 ```
 
 A malformed `role:` value fails at `kubectl apply`. Numeric bounds
-(`Minimum`/`Maximum`) and item counts are essentially unused on GCP resources —
-so don't expect numeric range checks in the schema; those, again, come from GCP
+(`Minimum`/`Maximum`) and item counts are essentially unused on GCP resources—so
+don't expect numeric range checks in the schema; those, again, come from GCP
 at reconcile time.
 
-### 9. Immutable fields make `kubectl apply` *fail* — GCP won't be recreated
+### 9. Immutable fields make `kubectl apply` *fail*—GCP won't be recreated
 
 Many fields can't change after creation. If you try, a KCC validating webhook
 rejects the update with a 403 and a message like:
@@ -219,17 +219,17 @@ rejects the update with a 403 and a message like:
 > `cannot make changes to immutable field(s): [spec.location]; please refer to our troubleshooting doc: …`
 
 ([`pkg/webhook/immutable_fields_validator.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/webhook/immutable_fields_validator.go)).
-Your `apply` fails and the resource is left untouched — unlike Terraform, KCC
+Your `apply` fails and the resource is left untouched—unlike Terraform, KCC
 will **not** silently destroy and recreate the resource. Reliably-immutable
 fields to plan around:
 
-- **`spec.resourceID`** — always.
-- **`spec.location`** (and `region`/`zone`) — it's part of the GCP URL, so it
+- **`spec.resourceID`** – always.
+- **`spec.location`** (and `region`/`zone`) – it's part of the GCP URL, so it
   can't move.
 - **Parent references** like `projectRef`.
 
-On newer resources these are marked right in the schema (e.g. every
-IAMPolicyMember field — `resourceRef`, `member`, `role`, `condition` — is
+On newer resources these are marked right in the schema (e.g., every
+IAMPolicyMember field—`resourceRef`, `member`, `role`, `condition`—is
 individually immutable,
 [`policymember_types.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/apis/iam/v1beta1/policymember_types.go#L29)).
 Design your manifests knowing these are "set once."
@@ -242,11 +242,11 @@ Design your manifests knowing these are "set once."
   ([`partialpolicy_types.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/apis/iam/v1beta1/partialpolicy_types.go#L57)).
   Prefer `memberFrom` with a `serviceAccountRef` over pasting an email.
 - **Deprecated fields still appear in the schema.** You'll see fields you
-  shouldn't use, e.g. `StorageBucket.spec.bucketPolicyOnly` (use
+  shouldn't use, e.g., `StorageBucket.spec.bucketPolicyOnly` (use
   `uniformBucketLevelAccess` instead) and `ComputeInstance…networkIp` (use
   `networkIpRef`). The doc comment / `kubectl explain` will say "DEPRECATED."
 - **Re-send full lists.** Kubernetes treats a list of objects as atomic;
-  re-applying a partial list (e.g. IAM `bindings`) can drop entries. Always
+  re-applying a partial list (e.g., IAM `bindings`) can drop entries. Always
   apply the complete list you want.
 - **`apiVersion` (alpha vs beta) changes what's available.** Newer resources
   land as `v1alpha1` first, and only the newer "direct" ones carry the strong
@@ -271,8 +271,8 @@ kubectl get crd sqlinstances.sql.cnrm.cloud.google.com -o yaml   # enums, patter
 > **Not all Config Connector resources are built the same way**, and that
 > changes how much the schema protects you.
 >
-> Many resources — `StorageBucket`, `PubSubTopic`, `ComputeInstance`,
-> `SQLInstance`, `ContainerCluster` — are older, generated with Terraform/DCL
+> Many resources—`StorageBucket`, `PubSubTopic`, `ComputeInstance`,
+> `SQLInstance`, `ContainerCluster`—are older, generated with Terraform/DCL
 > providers, and carry **very few** built-in validations. Many wrong values on
 > those resources aren't caught at `kubectl apply` time; they fail later at the
 > GCP API and show up as an error in `status`. Newer "direct" resources (many
