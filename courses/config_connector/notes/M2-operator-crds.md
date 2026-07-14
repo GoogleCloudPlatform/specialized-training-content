@@ -8,11 +8,11 @@
 # M2 - The operator's own CRDs
 
 Installing the **Config Connector operator** adds exactly **8 CRDs** to the
-cluster. These are the operator's *management* CRDs — the knobs you use to install,
+cluster. These are the operator's *management* CRDs—the knobs you use to install,
 configure, and tune Config Connector itself.
 
 > **Not to be confused with** the couple hundred Google-resource CRDs
-> (ComputeAddress, StorageBucket, …) — roughly **~212** on a typical GKE add-on
+> (ComputeAddress, StorageBucket, …)—roughly **~212** on a typical GKE add-on
 > install (mostly stable + beta; most alpha resources aren't shipped there). Those
 > are **not** installed by the operator; the operator lays them down *later*, when
 > you apply a **ConfigConnector** resource and it stands up the controllers. This
@@ -40,7 +40,7 @@ All 8 live in two API groups and are defined under
 | **MutatingWebhookConfigurationCustomization** | customize | Cluster | Tune the mutating admission webhooks |
 
 > **Reading the scope column:** *Cluster*-scoped objects have no namespace and are
-> effectively cluster singletons; *Namespaced* ones live in — and act on — a single
+> effectively cluster singletons; *Namespaced* ones live in—and act on—a single
 > namespace. This split mirrors Config Connector's two run modes (see
 > **ConfigConnector** below).
 
@@ -95,7 +95,7 @@ Key `spec` fields:
 
 ## Customization CRDs (`customize` group)
 
-These are all optional. You apply them only when the defaults don't fit — they tune
+These are all optional. You apply them only when the defaults don't fit—they tune
 the workloads the operator already deployed. They come in **cluster-mode** and
 **namespaced-mode** pairs that mirror the two run modes.
 
@@ -118,9 +118,9 @@ Key `spec` fields:
 >
 > **On `replicas`:** rarely needed. The webhook manager already ships with a
 > HorizontalPodAutoscaler (min 2, max 20, scaling on 70% CPU/memory), so it grows
-> under load on its own. Setting `replicas` here doesn't pin a fixed count — the
+> under load on its own. Setting `replicas` here doesn't pin a fixed count—the
 > operator uses it to raise the HPA's **minReplicas** (the floor). You'd do that to
-> guarantee more warm replicas for HA, not to "add capacity" — the HPA handles
+> guarantee more warm replicas for HA, not to "add capacity"—the HPA handles
 > capacity. There's no published webhooks/sec-per-replica figure; scaling is driven
 > by CPU/memory utilization, not request rate.
 
@@ -136,7 +136,7 @@ Key `spec` fields:
 
 > **When you'd use it:** you're hitting Google Cloud API quota (or overwhelming the
 > API server) during large reconciles, so you *lower* qps/burst to throttle the
-> controller — or *raise* them to speed up reconciliation on a cluster with quota
+> controller—or *raise* them to speed up reconciliation on a cluster with quota
 > headroom to spare.
 
 ### NamespacedControllerResource — same, per namespace
@@ -148,7 +148,7 @@ Key `spec` fields:
   controller independently.
 
 > **When you'd use it:** in namespaced mode, one team's namespace manages far more
-> resources than the others — you give *that* namespace's controller more
+> resources than the others—you give *that* namespace's controller more
 > CPU/memory without inflating every other namespace's controller.
 
 ### NamespacedControllerReconciler — same, per namespace
@@ -158,7 +158,7 @@ Key `spec` fields:
   `rateLimit` (`qps` / `burst`) tuning for one namespace's controller.
 
 > **When you'd use it:** one namespace's project keeps hitting API quota during
-> reconciles — you throttle just that namespace's controller, leaving the others at
+> reconciles—you throttle just that namespace's controller, leaving the others at
 > full speed.
 
 ---
@@ -202,7 +202,7 @@ Key `spec` fields:
 
 ---
 
-## Cluster vs. namespaced — how the pairs line up
+## Cluster vs. namespaced—how the pairs line up
 
 The customization CRDs come in mirrored pairs; which one you use depends on the
 `mode` you chose on **ConfigConnector**.
