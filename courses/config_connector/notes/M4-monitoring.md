@@ -1,6 +1,6 @@
 <!-- =====================================================================
   Deploying and Using Config Connector with GKE
-  Reference notes for instructors & students
+  Reference notes for instructors and students
 ===================================================================== -->
 
 ![Deploying and Using Config Connector with GKE](_assets/course-banner.png)
@@ -10,7 +10,7 @@
 Config Connector runs a set of controllers in your cluster that constantly
 reconcile Kubernetes objects into Google Cloud resources. Like any busy
 controller, it's useful to know **how hard it's working and whether it's
-healthy** — how many reconciles it's doing, how long they take, how many errors
+healthy**—how many reconciles it's doing, how long they take, how many errors
 it hits. Those numbers are its **metrics**.
 
 ---
@@ -19,7 +19,7 @@ it hits. Those numbers are its **metrics**.
 
 The most important thing to understand: **Config Connector does not push its
 metrics anywhere by itself.** Each Config Connector process keeps counters in memory and
-publishes them at an HTTP endpoint — a plain web page of numbers in Prometheus
+publishes them at an HTTP endpoint—a plain web page of numbers in Prometheus
 text format. That's it. Something *else* has to come along and read that page.
 
 This is the standard **Prometheus pull model**:
@@ -31,7 +31,7 @@ flowchart LR
 ```
 
 If nothing scrapes the endpoint, the numbers simply sit there and get
-overwritten. Config Connector keeps reconciling regardless — **metrics are
+overwritten. Config Connector keeps reconciling regardless—**metrics are
 observability, not a dependency.**
 
 ---
@@ -78,7 +78,7 @@ These are the Config Connector-authored metrics (all prefixed `configconnector_`
 - `configconnector_build_info`
 
 > There are also lower-level `gcp_api_*` request counters exposed on the same
-> pods, but they're an internal detail — not in the public metrics table. Treat the
+> pods, but they're an internal detail—not in the public metrics table. Treat the
 > list above as the supported surface.
 
 ---
@@ -86,11 +86,11 @@ These are the Config Connector-authored metrics (all prefixed `configconnector_`
 ## 3. Consuming metrics with self-managed Prometheus
 
 If you run your **own** Prometheus, you point it at the two Services from the §2
-table — `cnrm-controller-manager-service` and `cnrm-resource-stats-recorder-service`
-— and you get **everything** on the endpoint (no filtering). There are two common
+table—`cnrm-controller-manager-service` and `cnrm-resource-stats-recorder-service`—and
+you get **everything** on the endpoint (no filtering). There are two common
 ways to tell Prometheus to scrape them.
 
-### Option A — annotation-based scraping
+### Option A: Annotation-based scraping
 
 - **Prometheus does the discovering.** Configured with **Kubernetes service
   discovery** (`kubernetes_sd_config`), it asks the Kubernetes API for all
@@ -102,7 +102,7 @@ ways to tell Prometheus to scrape them.
 - **Catch:** this only works if *your* Prometheus has that annotation-honoring
   relabel rule. A bare Prometheus without it ignores the annotations entirely.
 
-### Option B — a `ServiceMonitor` (Prometheus Operator)
+### Option B: A `ServiceMonitor` (Prometheus Operator)
 
 - **The Operator generates the scrape config for you.** Instead of hand-editing
   Prometheus config, you create `ServiceMonitor` objects (a CRD the Operator adds)
@@ -130,7 +130,7 @@ ways to tell Prometheus to scrape them.
 **GMP is Google's hosted, drop-in replacement for running Prometheus yourself.** You
 enable **managed collection** and Google runs the collectors for you (in the
 `gmp-system` namespace), storing metrics in Cloud Monitoring. Conceptually it's
-still §3's model — something scrapes the same `:8888` endpoints — but the *how* is
+still §3's model—something scrapes the same `:8888` endpoints—but the *how* is
 different.
 
 ### How you enable it
@@ -148,14 +148,14 @@ different.
 
 ### Instead, GMP uses its own CRDs
 
-- **`PodMonitoring`** — namespaced; scrape pods in one namespace.
-- **`ClusterPodMonitoring`** — cluster-wide.
+- **`PodMonitoring`** – namespaced; scrape pods in one namespace.
+- **`ClusterPodMonitoring`** – cluster-wide.
 - They work like a `ServiceMonitor` (label selector + named port + interval) but
   target **pods** directly.
 
 **So to get Config Connector metrics into GMP,** you author `PodMonitoring`
 object(s) in `cnrm-system` selecting Config Connector's pods. Config Connector does
-**not** ship one — this is a manual step you add yourself.
+**not** ship one—this is a manual step you add yourself.
 
 ### The `PodMonitoring` configuration
 
@@ -194,24 +194,24 @@ scraping the **pod/container** directly, not the Service:
   container ports.** The manager container serves on **8888**, but the recorder
   *container* serves on **48797** (recall from §2 that only its *Service* remaps
   that to 8888). `PodMonitoring` bypasses the Service, so it must target each real
-  container port — you can't cover both with one endpoint. Select each component by
+  container port—you can't cover both with one endpoint. Select each component by
   its `cnrm.cloud.google.com/component` **pod** label.
 - **Select on a pod label, and use the numeric port.** The
   `cnrm.cloud.google.com/monitored: "true"` label and the `metrics` port name live
   on the *Service*, not the pods, so a selector using them matches nothing (the
-  `PodMonitoring` will still report `ConfigurationCreateSuccess` — that only means
+  `PodMonitoring` will still report `ConfigurationCreateSuccess`—that only means
   the config is valid, not that it matched any pods). Use the numeric container port
   as shown.
 
 > If you only want the reconcile metrics (rate/latency/errors/workers) and don't
-> need `applied_resources_total`, the manager `PodMonitoring` alone is enough — drop
+> need `applied_resources_total`, the manager `PodMonitoring` alone is enough—drop
 > the recorder object.
 
 ---
 
 ## 5. Putting it together
 
-Both paths consume the **same** `:8888` Prometheus endpoint — there is no
+Both paths consume the **same** `:8888` Prometheus endpoint—there is no
 separate direct-to-Cloud-Monitoring push inside Config Connector. Something always
 has to scrape the endpoint; the only question is whether you run that scraper (§3)
 or Google runs it (§4).
@@ -223,7 +223,7 @@ flowchart TD
     EP --> P4["§4 GMP (PodMonitoring)<br/>(Google runs it)"]
 ```
 
-- **§3 and §4** both give you the **full set** of metrics on the endpoint — you get
+- **§3 and §4** both give you the **full set** of metrics on the endpoint—you get
   every metric, with no whitelist.
 - Either way you must set up the scrape yourself: Config Connector does not ship a
   `PodMonitoring`/`ServiceMonitor`, and enabling GMP alone does not scrape Config
@@ -249,7 +249,7 @@ sum by (group_version_kind) (
 ```
 
 - **Watches:** resources that are failing to converge on Google Cloud.
-- **Why it helps:** the single most valuable signal — a rising line for one kind
+- **Why it helps:** the single most valuable signal—a rising line for one kind
   almost always means one shared cause (a missing IAM permission, an unresolvable
   dependency, a 429) is hitting every resource of that kind. Using `rate()` instead
   of the raw counter shows failures *happening now*, not the all-time total.
@@ -278,8 +278,8 @@ histogram_quantile(0.95,
 ```
 
 - **Watches:** reconciles that succeed but are getting *slow*.
-- **Why it helps:** catches the "not failing, just dragging" state — often the first
-  sign of quota throttling or an overloaded controller — before it turns into
+- **Why it helps:** catches the "not failing, just dragging" state—often the first
+  sign of quota throttling or an overloaded controller—before it turns into
   errors or missed reconciles.
 
 ### 4. Worker saturation
@@ -292,7 +292,7 @@ sum(configconnector_reconcile_workers_total)
 
 - **Watches:** whether the controller's reconcile worker pool is maxed out.
 - **Why it helps:** as this ratio approaches **1.0**, every worker is busy and new
-  reconcile requests queue — the controller is throughput-bound. This is the signal
+  reconcile requests queue—the controller is throughput-bound. This is the signal
   that you need to tune the controller (more workers / resources) rather than the
   cluster.
 
@@ -303,7 +303,7 @@ sum(configconnector_applied_resources_total)
 ```
 
 - **Watches:** the total size of the fleet Config Connector is managing.
-- **Why it helps:** growth here drives everything else — API quota pressure,
+- **Why it helps:** growth here drives everything else—API quota pressure,
   reconcile load, controller memory. A steady climb is your early warning to plan
   capacity. Add `by (group_version_kind)` or filter by `namespace` to see *where*
   the growth is.
@@ -318,7 +318,7 @@ topk(5,
 ```
 
 - **Watches:** which resource types are the noisiest right now.
-- **Why it helps:** a fast triage view — when something is wrong, this immediately
+- **Why it helps:** a fast triage view— hen something is wrong, this immediately
   ranks the failing kinds so you know where to look first, without scanning every
   series.
 
@@ -326,8 +326,8 @@ topk(5,
 
 Queries tell you when you look; **alerts tell you when you're not looking.** The
 strongest candidates to promote to alerting policies are the *error ratio* (#2) and
-*worker saturation* (#4) — both are normalized (0–1), so a threshold is meaningful
+*worker saturation* (#4)—both are normalized (0–1), so a threshold is meaningful
 regardless of fleet size. Wrap them with a sustained duration (fire after several
 minutes, not on a single spike) so a transient blip doesn't page anyone. Sustained
 reconcile errors are the most direct signal that your declared state and reality
-have diverged — the best alert to add from Config Connector's own metrics.
+have diverged—the best alert to add from Config Connector's own metrics.
