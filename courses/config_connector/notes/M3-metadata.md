@@ -63,7 +63,7 @@ places, and this is the historical progression:
 metadata:
   name: my-database                 # clean K8s name
 spec:
-  resourceID: "My_Actual_Google Cloud-Name"  # the real Google Cloud identifier (preferred field)
+  resourceID: "My_Actual_Google_Cloud_Name"  # the real Google Cloud identifier (preferred field)
 ```
 
 > **Immutable:** once the resource is created, `spec.resourceID` (and the
