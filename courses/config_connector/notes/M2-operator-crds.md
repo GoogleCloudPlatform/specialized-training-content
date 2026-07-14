@@ -48,9 +48,9 @@ All 8 live in two API groups and are defined under
 
 ## Install-config CRDs (`core` group)
 
-### ConfigConnector — the cluster-wide install config
+### ConfigConnector – the cluster-wide install config
 
-- **Scope:** Cluster. **Singleton** — the only accepted name is
+- **Scope:** Cluster. **Singleton** – the only accepted name is
   `configconnector.core.cnrm.cloud.google.com`.
 - **What it does:** you apply exactly one of these to turn Config Connector on and
   choose how it runs. Applying it is what makes the operator deploy the controllers
@@ -58,15 +58,15 @@ All 8 live in two API groups and are defined under
 
 Key `spec` fields:
 
-- **`mode`** — `cluster` or `namespaced`. **Defaults to `namespaced`.**
-- **`googleServiceAccount`** — the GSA to authenticate with, via Workload Identity.
+- **`mode`** – `cluster` or `namespaced`. **Defaults to `namespaced`.**
+- **`googleServiceAccount`** – the GSA to authenticate with, via Workload Identity.
   **Cluster mode only.**
-- **`actuationMode`** — `Reconciling` (default) or `Paused`.
+- **`actuationMode`** – `Reconciling` (default) or `Paused`.
 
 
-### ConfigConnectorContext — the per-namespace install config
+### ConfigConnectorContext – the per-namespace install config
 
-- **Scope:** Namespaced. **Singleton per namespace** — the only accepted name is
+- **Scope:** Namespaced. **Singleton per namespace**—the only accepted name is
   `configconnectorcontext.core.cnrm.cloud.google.com`.
 - **Used only in `namespaced` mode.** You create one in each namespace you want
   Config Connector active in.
@@ -82,13 +82,13 @@ Key `spec` fields:
 
 Key `spec` fields:
 
-- **`googleServiceAccount`** *(required)* — the GSA this namespace's resources
+- **`googleServiceAccount`** *(required)* – the GSA this namespace's resources
   authenticate as.
-- **`requestProjectPolicy`** — which project pays for / gates the API calls:
+- **`requestProjectPolicy`** – which project pays for / gates the API calls:
   `SERVICE_ACCOUNT_PROJECT` (default), `RESOURCE_PROJECT`, or `BILLING_PROJECT`.
-- **`billingProject`** — the project to bill, when `requestProjectPolicy` is
+- **`billingProject`** – the project to bill, when `requestProjectPolicy` is
   `BILLING_PROJECT`.
-- **`actuationMode`** / **`stateIntoSpec`** — same meaning as on ConfigConnector;
+- **`actuationMode`** / **`stateIntoSpec`** – same meaning as on ConfigConnector;
   when set here, the **namespaced value wins** over the cluster-wide one.
 
 ---
@@ -99,7 +99,7 @@ These are all optional. You apply them only when the defaults don't fit—they t
 the workloads the operator already deployed. They come in **cluster-mode** and
 **namespaced-mode** pairs that mirror the two run modes.
 
-### ControllerResource — size the cluster-mode controllers
+### ControllerResource – size the cluster-mode controllers
 
 - **Scope:** Cluster.
 - **What it does:** override **CPU / memory** (and, for the webhook, **replica
@@ -107,10 +107,10 @@ the workloads the operator already deployed. They come in **cluster-mode** and
 
 Key `spec` fields:
 
-- **`containers[]`** — per-container resource overrides. The container `name` must
+- **`containers[]`** – per-container resource overrides. The container `name` must
   be one of: `manager`, `webhook`, `deletiondefender`, `prom-to-sd`, `recorder`,
   `unmanageddetector`. Each takes standard `resources.limits` / `resources.requests`.
-- **`replicas`** — desired replica count; **only takes effect for
+- **`replicas`** – desired replica count; **only takes effect for
   `cnrm-webhook-manager`.**
 
 > **When you'd use it:** the `manager` pod is getting OOMKilled while reconciling
@@ -124,14 +124,14 @@ Key `spec` fields:
 > capacity. There's no published webhooks/sec-per-replica figure; scaling is driven
 > by CPU/memory utilization, not request rate.
 
-### ControllerReconciler — tune the cluster-mode reconciler
+### ControllerReconciler – tune the cluster-mode reconciler
 
-- **Scope:** Cluster. **Singleton** — must be named `cnrm-controller-manager`.
+- **Scope:** Cluster. **Singleton** – must be named `cnrm-controller-manager`.
 - **What it does:** tune reconciler behavior for the cluster-mode controller.
 
 Key `spec` fields:
 
-- **`rateLimit`** — the token-bucket rate limit on the reconciler's Kubernetes
+- **`rateLimit`** – the token-bucket rate limit on the reconciler's Kubernetes
   client: **`qps`** and **`burst`**. Default is qps 20, burst 30.
 
 > **When you'd use it:** you're hitting Google Cloud API quota (or overwhelming the
@@ -139,7 +139,7 @@ Key `spec` fields:
 > controller—or *raise* them to speed up reconciliation on a cluster with quota
 > headroom to spare.
 
-### NamespacedControllerResource — same, per namespace
+### NamespacedControllerResource – same, per namespace
 
 - **Scope:** Namespaced.
 - **What it does:** identical to **ControllerResource**, but scoped to a single
@@ -151,10 +151,10 @@ Key `spec` fields:
 > resources than the others—you give *that* namespace's controller more
 > CPU/memory without inflating every other namespace's controller.
 
-### NamespacedControllerReconciler — same, per namespace
+### NamespacedControllerReconciler – same, per namespace
 
 - **Scope:** Namespaced. Must be named `cnrm-controller-manager`.
-- **What it does:** the namespaced-mode counterpart to **ControllerReconciler** —
+- **What it does:** the namespaced-mode counterpart to **ControllerReconciler** –
   `rateLimit` (`qps` / `burst`) tuning for one namespace's controller.
 
 > **When you'd use it:** one namespace's project keeps hitting API quota during
@@ -177,14 +177,14 @@ revert manual edits).
 
 Key `spec` fields:
 
-- **`webhooks[]`** — per-webhook overrides, selected by `name`. Valid names include
+- **`webhooks[]`** – per-webhook overrides, selected by `name`. Valid names include
   `deny-immutable-field-updates`, `deny-unknown-fields`, `iam-validation`,
   `resource-validation`, `abandon-on-uninstall`, and others.
-- **`timeoutSeconds`** — customize the webhook timeout, **1–30s** (Kubernetes
+- **`timeoutSeconds`** – customize the webhook timeout, **1–30s** (Kubernetes
   default is 10s).
 
 > **When you'd use it:** `kubectl apply` intermittently fails with webhook timeout
-> errors under load — you raise `timeoutSeconds` on the validating webhook to give
+> errors under load—you raise `timeoutSeconds` on the validating webhook to give
 > it more headroom.
 
 ### MutatingWebhookConfigurationCustomization
@@ -193,7 +193,7 @@ Key `spec` fields:
 - **What it does:** exactly the same, for the **mutating** admission webhooks
   (the defaulters — e.g. `generic-defaulter`, `iam-defaulter`,
   `container-annotation-handler`, `management-conflict-annotation-defaulter`).
-- Same `webhooks[]` / `timeoutSeconds` shape as the validating version — the two
+- Same `webhooks[]` / `timeoutSeconds` shape as the validating version—the two
   share one underlying schema.
 
 > **When you'd use it:** the mutating (defaulter) webhook is timing out and blocking
