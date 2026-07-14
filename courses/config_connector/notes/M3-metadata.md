@@ -14,8 +14,7 @@ the usual top-level fields: `apiVersion`, `kind`, `metadata`, `spec` (and
 
 Most of the annotation/label names below are taken from the KCC source of truth,
 [`pkg/k8s/constants.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/k8s/constants.go)
-(where they are built through `FormatAnnotation("...")`). A few live elsewhere —
-notably the management-conflict prevention policy, defined as a hardcoded string
+(where they are built through `FormatAnnotation("...")`). A few live elsewhere—notably the management-conflict prevention policy, defined as a hardcoded string
 literal in
 [`pkg/managementconflict/annotations.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/managementconflict/annotations.go).
 
@@ -23,7 +22,7 @@ literal in
 
 ## Things controlled via `metadata`
 
-### 1. GCP resource identity — which cloud resource this maps to
+### 1. GCP resource identity – which cloud resource this maps to
 
 **By default, `metadata.name` *is* the GCP resource's name.** If you set nothing
 else, KCC uses the object's Kubernetes name as the ID (or `name`) of the GCP
@@ -41,7 +40,7 @@ underscores, spaces, characters, or simply names longer than K8s permits. When
 the desired GCP name isn't a legal K8s name, you can't express it through
 `metadata.name` at all.
 
-**Best practice — decouple the two names.** Rather than forcing the K8s object
+**Best practice – decouple the two names.** Rather than forcing the K8s object
 name to match GCP, give the object a clean K8s-friendly `metadata.name` and
 specify the real GCP identifier separately. Decoupling also lets you **acquire
 (adopt)** a pre-existing GCP resource: point a new K8s object at an ID that
@@ -53,7 +52,7 @@ places, and this is the historical progression:
 - **Original: the `cnrm.cloud.google.com/resource-id` annotation** (in
   `metadata`). This was the first mechanism and still works.
 - **Preferred today: the `spec.resourceID` field.** KCC now reads
-  `spec.resourceID` and, when unset, falls back to `metadata.name` — see the
+  `spec.resourceID` and, when unset, falls back to `metadata.name`—see the
   canonical fallback at
   [`pkg/resourceoverrides/privateca_capool.go:97`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/resourceoverrides/privateca_capool.go#L97)
   (`spec.resourceID` if present, else `r.GetName()`). The generated API docs
@@ -68,11 +67,11 @@ spec:
 ```
 
 > **Immutable:** once the resource is created, `spec.resourceID` (and the
-> annotation) can't be changed — it identifies a specific GCP resource for the
+> annotation) can't be changed—it identifies a specific GCP resource for the
 > object's lifetime. Prefer `spec.resourceID` for new manifests; treat the
 > annotation as legacy.
 
-### 2. Labels — Kubernetes metadata that may also reach GCP
+### 2. Labels – Kubernetes metadata that may also reach GCP
 
 `metadata.labels` behave a little differently in KCC than on a typical Kubernetes
 object, because a label can live in **two places**: on the Kubernetes object, and
@@ -81,7 +80,7 @@ object, because a label can live in **two places**: on the Kubernetes object, an
 #### Standard Kubernetes labels
 
 Any label you put in `metadata.labels` works exactly as it does for any
-Kubernetes object — it's available for `kubectl` selection, grouping, and
+Kubernetes object—it's available for `kubectl` selection, grouping, and
 tooling, regardless of what GCP does with it.
 
 ```yaml
@@ -106,7 +105,7 @@ through
 
 Two things happen during that copy:
 
-- **Prefixed labels are stripped.** Any label key containing a `/` — the
+- **Prefixed labels are stripped.** Any label key containing a `/`—the
   KRM-style `prefix/name` form, such as `cnrm.cloud.google.com/…` or
   `app.kubernetes.io/name` — is **not** sent to GCP
   ([`removeLabelsWithKRMPrefix`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/label/label.go#L56)).
@@ -134,23 +133,23 @@ metadata:
 
 These live **only on the K8s object** (they come from the CRD definition, not
 from you) and, being prefixed, are exactly the labels the propagation step above
-strips — so they never reach GCP.
+strips—so they never reach GCP.
 
 #### Not every GCP resource can carry labels
 
 A crucial caveat: **many GCP resources have no labels field at all.** IAM
 bindings, Pub/Sub *schemas*, and various hierarchy/project-level resources simply
 don't support labels in their API. For those, `metadata.labels` still works as
-normal Kubernetes metadata — you can select on it with `kubectl` — but KCC has
+normal Kubernetes metadata — you can select on it with `kubectl`—but KCC has
 nowhere to put it on the GCP side, so it's **silently not propagated**. There's
 no error; the labels just stay Kubernetes-only.
 
 > Whether a given resource propagates labels depends on the underlying GCP API,
 > not on Config Connector. If you need a label to appear on the cloud resource,
-> confirm that resource type actually supports labels — don't assume
+> confirm that resource type actually supports labels—don't assume
 > `metadata.labels` always reaches GCP.
 
-### 3. Project / folder / org placement — the container hierarchy
+### 3. Project / folder / org placement – the container hierarchy
 
 The `ContainerAnnotations` in KCC: `project-id`, `folder-id`,
 `organization-id`. A resource is placed into a GCP container via annotation
@@ -163,7 +162,7 @@ metadata:
     # or cnrm.cloud.google.com/folder-id / organization-id
 ```
 
-### 4. Deletion behavior — what happens on `kubectl delete`
+### 4. Deletion behavior—what happens on `kubectl delete`
 
 `cnrm.cloud.google.com/deletion-policy` with values `abandon` or `delete`.
 `abandon` removes the Kubernetes object but leaves the GCP resource intact.
@@ -174,7 +173,7 @@ metadata:
     cnrm.cloud.google.com/deletion-policy: "abandon"
 ```
 
-### 5. Reconcile frequency — how often KCC re-syncs with GCP
+### 5. Reconcile frequency—how often KCC re-syncs with GCP
 
 `cnrm.cloud.google.com/reconcile-interval-in-seconds`. Set to `0` to disable
 periodic drift correction for a resource.
@@ -185,7 +184,7 @@ metadata:
     cnrm.cloud.google.com/reconcile-interval-in-seconds: "0"
 ```
 
-### 6. Management-conflict prevention — who "owns" the resource
+### 6. Management-conflict prevention—who "owns" the resource
 
 `cnrm.cloud.google.com/management-conflict-prevention-policy` (`none` /
 `resource`). Uses leasing to stop two KCC instances from fighting over the same
@@ -200,11 +199,11 @@ metadata:
     cnrm.cloud.google.com/management-conflict-prevention-policy: "resource"
 ```
 
-### 7. Deletion protection — guarding against accidental destruction
+### 7. Deletion protection—guarding against accidental destruction
 
 The `cnrm.cloud.google.com/deletion-defender` finalizer, plus resource-specific
-guards like `cnrm.cloud.google.com/delete-contents-on-destroy` (e.g. BigQuery
-datasets — whether to delete non-empty contents) and `disable-on-destroy`.
+guards like `cnrm.cloud.google.com/delete-contents-on-destroy` (e.g., BigQuery
+datasets—whether to delete non-empty contents) and `disable-on-destroy`.
 
 ```yaml
 metadata:
@@ -212,7 +211,7 @@ metadata:
     cnrm.cloud.google.com/delete-contents-on-destroy: "false"
 ```
 
-### 8. Update semantics for specific resources — allowing disruptive updates
+### 8. Update semantics for specific resources—allowing disruptive updates
 
 Resource-specific annotations like
 `cnrm.cloud.google.com/allow-stopping-for-update` (Compute instances — permit
