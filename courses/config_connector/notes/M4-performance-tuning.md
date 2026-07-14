@@ -286,16 +286,16 @@ If those charts are calm, you have K8s-side headroom.
 K8s side isn't the whole story — the limit Config Connector hits first is often
 **Google Cloud API quota downstream**, not the kube-apiserver. If latency is high but
 **nothing in-cluster is saturated** (workers, CPU, memory, API server all fine), the
-bottleneck is GCP-side and no in-cluster knob fixes it—check quota and the reconcile
+bottleneck is Google Cloud-side and no in-cluster knob fixes it—check quota and the reconcile
 error status.
 
 > **⚠️ Raising qps/burst speeds up *two* things, not one.** The limit is on the
 > Kubernetes client, but reconciling faster also makes the controller call **Google
 > Cloud APIs** faster—every create/update/GET on the real resource. So a higher
 > qps/burst clears the K8s-side queue **and** raises the rate of Google Cloud API
-> calls in lock-step. If your actual bottleneck was **GCP quota**, raising qps/burst
+> calls in lock-step. If your actual bottleneck was **Google Cloud quota**, raising qps/burst
 > pushes you into quota errors *sooner*, not later. Raise it only when the queue is on
-> the **K8s side** and GCP quota has room; if you're seeing quota errors, do the
+> the **K8s side** and Google Cloud quota has room; if you're seeing quota errors, do the
 > opposite.
 
 

@@ -11,14 +11,14 @@ The `status` section is the half of the object you **read, but never write**.
 Where `spec` is your desired state (see [M3 - Spec & Schemas](M3-spec.md)) and
 `metadata` can affect location, name, management, etc. (see [M3 - Metadata](M3-metadata.md)),
 `status` is the controller's report back to you: whether the resource
-reconciled, why it is or isn't, and what values GCP actually assigned to your resource. Config
+reconciled, why it is or isn't, and what values Google Cloud actually assigned to your resource. Config
 Connector owns this section entirely—it overwrites it on every reconcile,
 so any edit you make there is discarded.
 
 `status` is a Kubernetes **subresource**, which is why `kubectl apply` never
 touches it and why your `spec` changes bump `metadata.generation` but a
 controller writing `status` does not. Treat it as a read-only dashboard: it's
-how you (and any automation) tell whether the GCP world matches your manifest
+how you (and any automation) tell whether the Google Cloud world matches your manifest
 yet.
 
 The notes below cover the fields you'll actually look at and how to use them.
@@ -50,12 +50,12 @@ The `reason` tells you *which* state you're in—the common ones
 
 | `status` | `reason` | Meaning |
 |---|---|---|
-| `True` | `UpToDate` | Reconciled; GCP matches your `spec`. |
-| `False` | `Updating` | A change is in flight (GCP call running). |
-| `False` | `UpdateFailure` | The GCP call failed — read `message` for why. |
+| `True` | `UpToDate` | Reconciled; Google Cloud matches your `spec`. |
+| `False` | `Updating` | A change is in flight (Google Cloud call running). |
+| `False` | `UpdateFailure` | The Google Cloud call failed — read `message` for why. |
 | `False` | `DependencyNotReady` | A referenced resource isn't ready yet. |
 
-The `message` is where the actual GCP error text lands — it's the first thing to
+The `message` is where the actual Google Cloud error text lands — it's the first thing to
 read when a resource is stuck.
 
 ### 2. `observedGeneration` tells you if status is *current*
@@ -76,11 +76,11 @@ kubectl get sqlinstance my-db \
   -o jsonpath='{.metadata.generation} vs {.status.observedGeneration}'
 ```
 
-### 3. `observedState` gives you the values GCP actually assigned
+### 3. `observedState` gives you the values Google Cloud actually assigned
 
 Output-only fields—server-generated IDs, IP addresses, timestamps, computed
 endpoints—don't belong in `spec` (you didn't ask for them), so Config Connector surfaces
-them under `status.observedState`. This is where you read back what GCP decided:
+them under `status.observedState`. This is where you read back what Google Cloud decided:
 
 ```yaml
 status:
@@ -94,14 +94,14 @@ allocated IP or a generated connection name—rather than guessing them. Not
 every resource populates it; older Terraform/DCL-based resources often expose
 such fields directly under `status` instead of a nested `observedState`.
 
-### 4. `status.externalRef` is the durable link to the GCP resource
+### 4. `status.externalRef` is the durable link to the Google Cloud resource
 
-For newer "direct" resources, `status.externalRef` holds the fully-qualified GCP
+For newer "direct" resources, `status.externalRef` holds the fully-qualified Google Cloud
 identifier Config Connector uses to find, update, and delete the resource—it's assigned when
 the object is first created or acquired. You don't set it, but it's worth knowing
-it exists: it's how Config Connector remembers *which* GCP resource this object owns, which
+it exists: it's how Config Connector remembers *which* Google Cloud resource this object owns, which
 matters for acquisition and for understanding drift. If you're debugging whether
-two objects point at the same GCP resource, this is the field to compare.
+two objects point at the same Google Cloud resource, this is the field to compare.
 
 ### 5. `kubectl get` already surfaces the important bits
 
@@ -131,7 +131,7 @@ kubectl wait --for=condition=Ready sqlinstance/my-db --timeout=600s
 
 ## Practical strategies
 
-- **Read `message` first when stuck**—the GCP error text lives there; the
+- **Read `message` first when stuck**—the Google Cloud error text lives there; the
   `reason` only categorizes it.
 - **`kubectl wait --for=condition=Ready`** is the scriptable way to block until a
   resource is done, instead of polling YAML.

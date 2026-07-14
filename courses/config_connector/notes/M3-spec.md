@@ -12,7 +12,7 @@ that configure the object under management**—its settings, the project and
 location it lives in, references to other resources, and any secrets it needs.
 Some configuration lives elsewhere: identity and KCC's operational controls sit
 in `metadata` (see [M3 - Metadata](M3-metadata.md)), and some behavior is left to
-GCP's own server-side defaults rather than expressed in `spec` at all.
+Google Cloud's own server-side defaults rather than expressed in `spec` at all.
 
 The notes below cover the fields and patterns you'll use most, and—just as
 important—where the schema will catch a mistake for you and where it won't.
@@ -21,9 +21,9 @@ important—where the schema will catch a mistake for you and where it won't.
 
 ## Things controlled via `spec`
 
-### 1. `spec.resourceID` sets the GCP name independently of `metadata.name`
+### 1. `spec.resourceID` sets the Google Cloud name independently of `metadata.name`
 
-The Kubernetes object name and the GCP resource name are separate.
+The Kubernetes object name and the Google Cloud resource name are separate.
 `spec.resourceID` is **optional**; if you omit it, it **defaults to
 `metadata.name`**:
 
@@ -31,11 +31,11 @@ The Kubernetes object name and the GCP resource name are separate.
 metadata:
   name: my-topic-object       # the K8s object name
 spec:
-  resourceID: prod-events     # the actual Pub/Sub topic name in GCP (optional)
+  resourceID: prod-events     # the actual Pub/Sub topic name in Google Cloud (optional)
 ```
 
-Two reasons to set it: (a) your desired GCP name isn't a valid K8s name, or (b)
-you want to **acquire an existing** GCP resource—set `resourceID` to its ID
+Two reasons to set it: (a) your desired Google Cloud name isn't a valid K8s name, or (b)
+you want to **acquire an existing** Google Cloud resource—set `resourceID` to its ID
 and KCC adopts it instead of creating a new one. It is **immutable** once set
 (see #9). This is the `spec` half of the naming story from
 [M3 - Metadata](M3-metadata.md).
@@ -58,7 +58,7 @@ it's **immutable** (see #9), so pick it carefully the first time.
 
 ### 3. Reference another resource with `*Ref`—by `name` or by `external`
 
-Whenever a field points at another GCP resource (a network, a KMS key, a
+Whenever a field points at another Google Cloud resource (a network, a KMS key, a
 project), it's a `*Ref` object with two mutually-exclusive ways to fill it in:
 
 ```yaml
@@ -67,13 +67,13 @@ spec:
     name: my-network        # a ComputeNetwork object you manage in this cluster
   # --- OR ---
   networkRef:
-    external: projects/my-project/global/networks/my-network   # a literal GCP ID
+    external: projects/my-project/global/networks/my-network   # a literal Google Cloud ID
 ```
 
 - **`name`** (+ optional `namespace`) points at another KCC object. KCC resolves
   it and **waits for it to be ready** before creating yours. Use this when KCC
   manages both.
-- **`external`** is the literal GCP identifier (Cloud Asset Inventory format, no
+- **`external`** is the literal Google Cloud identifier (Cloud Asset Inventory format, no
   service domain). Use this to reference something KCC doesn't manage.
 
 Set **one, not both**—the CRD enforces this as a `oneOf`. Ref struct defined in
@@ -153,7 +153,7 @@ won't reconcile.
 ### 6. Some string fields only accept a fixed set of values (enums)
 
 Newer resources constrain string fields to an allowed list, enforced by the API
-server **at apply time**—a wrong value is rejected immediately, before any GCP
+server **at apply time**—a wrong value is rejected immediately, before any Google Cloud
 call. Example, MetastoreService
 ([`apis/metastore/v1alpha1/metastoreservice_types.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/apis/metastore/v1alpha1/metastoreservice_types.go#L114)):
 
@@ -172,14 +172,14 @@ tier:
 
 Apply a manifest with `spec.tier: PREMIUM` and the API server rejects it
 outright — `Unsupported value: "PREMIUM": supported values: "DEVELOPER",
-"ENTERPRISE"`—before KCC ever calls GCP.
+"ENTERPRISE"`—before KCC ever calls Google Cloud.
 
-### 7. Most fields you omit are defaulted by *GCP*, not by KCC
+### 7. Most fields you omit are defaulted by *Google Cloud*, not by KCC
 
 KCC deliberately does **not** fill in most optional fields — it omits them and
 lets the Google API apply its own server-side default
 ([`validations.md`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/docs/develop-resources/api-conventions/validations.md)).
-So "what happens if I leave this out?" is usually answered by the GCP docs, not
+So "what happens if I leave this out?" is usually answered by the Google Cloud docs, not
 the KCC schema.
 
 The exceptions—where the **schema** fills a value in for you—are rare and
@@ -191,8 +191,8 @@ mostly in Storage:
 - `spec.resourceID` defaults to `metadata.name` (see #1).
 - Project defaults from the namespace (see #4).
 
-Practical rule: for an omitted field, the default is GCP's, and you won't see it
-in the KCC schema or CRD — check the GCP resource's own documentation to know
+Practical rule: for an omitted field, the default is Google Cloud's, and you won't see it
+in the KCC schema or CRD — check the Google Cloud resource's own documentation to know
 what value you'll actually get.
 
 ### 8. Format constraints (`pattern`, `maxLength`) are validated at apply time
@@ -207,11 +207,11 @@ Role string `json:"role"`
 ```
 
 A malformed `role:` value fails at `kubectl apply`. Numeric bounds
-(`Minimum`/`Maximum`) and item counts are essentially unused on GCP resources—so
-don't expect numeric range checks in the schema; those, again, come from GCP
+(`Minimum`/`Maximum`) and item counts are essentially unused on Google Cloud resources—so
+don't expect numeric range checks in the schema; those, again, come from Google Cloud
 at reconcile time.
 
-### 9. Immutable fields make `kubectl apply` *fail*—GCP won't be recreated
+### 9. Immutable fields make `kubectl apply` *fail*—Google Cloud won't be recreated
 
 Many fields can't change after creation. If you try, a KCC validating webhook
 rejects the update with a 403 and a message like:
@@ -224,7 +224,7 @@ will **not** silently destroy and recreate the resource. Reliably-immutable
 fields to plan around:
 
 - **`spec.resourceID`** – always.
-- **`spec.location`** (and `region`/`zone`) – it's part of the GCP URL, so it
+- **`spec.location`** (and `region`/`zone`) – it's part of the Google Cloud URL, so it
   can't move.
 - **Parent references** like `projectRef`.
 
@@ -275,6 +275,6 @@ kubectl get crd sqlinstances.sql.cnrm.cloud.google.com -o yaml   # enums, patter
 > `SQLInstance`, `ContainerCluster`—are older, generated with Terraform/DCL
 > providers, and carry **very few** built-in validations. Many wrong values on
 > those resources aren't caught at `kubectl apply` time; they fail later at the
-> GCP API and show up as an error in `status`. Newer "direct" resources (many
+> Google Cloud API and show up as an error in `status`. Newer "direct" resources (many
 > IAM types, GKEHub, newer Storage subtypes) validate much more at apply time.
 > Knowing which you're holding tells you where your mistakes will surface.
