@@ -17,7 +17,7 @@ This note has two parts:
 
 - **[Part A: Installation procedure](#part-a--installation-procedure)**—the ordered steps to run, in dependency order.
 - **[Part B: What it creates and how it works](#part-b--what-it-creates--how-it-works)**—the architecture the procedure produces, for reference.
-- 
+  
 A few things to fix in your head before the steps:
 
 - **One resource flips the switch.** Applying a ConfigConnector object is the whole
@@ -72,8 +72,7 @@ spec:
 
 ### Step 2: Create and annotate the resource namespaces (namespaced mode)
 
-In namespaced mode, resources live in ordinary Kubernetes namespaces you create—
-one per team/tenant. Each needs a **project annotation** telling Config Connector
+In namespaced mode, resources live in ordinary Kubernetes namespaces you create—one per team/tenant. Each needs a **project annotation** telling Config Connector
 which Google Cloud project its resources belong to:
 
 ```bash
@@ -205,22 +204,22 @@ The plumbing the workloads need—created once, rarely thought about again.
 
 | What's created | Detail |
 | -------------- | ------ |
-| **The `cnrm-system` namespace** | Every workload, ServiceAccount, and Service lives here. It's created by the operator, not by you — you don't `kubectl create namespace` it. |
-| **~212 Google-resource CRDs** | The **StorageBucket**, **ComputeAddress**, **PubSubTopic**, … kinds you'll actually author. These are **not** the operator's own 8 management CRDs ([M2-operator-crds](M2-operator-crds.md)) — they arrive *now*, at this apply, not at operator install. |
-| **A ServiceAccount per workload** | One per workload above. The controller's KSA is the one **bound to your Google Service Account via Workload Identity** — the link that lets in-cluster pods authenticate as the GSA from your manifest. |
-| **Cluster-wide RBAC** | ClusterRoles + ClusterRoleBindings (and a couple of namespaced Roles/RoleBindings) granting each workload the API access it needs — e.g. the controller's permission to watch every managed-resource CRD across all namespaces. |
-| **Services** | `cnrm-controller-manager-service`, `cnrm-resource-stats-recorder-service`, and the webhook Service — stable addresses fronting the pods (the first two are the metrics endpoints, see [M4-monitoring](M4-monitoring.md)). |
+| **The `cnrm-system` namespace** | Every workload, ServiceAccount, and Service lives here. It's created by the operator, not by you—you don't `kubectl create namespace` it. |
+| **~212 Google-resource CRDs** | The **StorageBucket**, **ComputeAddress**, **PubSubTopic**, … kinds you'll actually author. These are **not** the operator's own 8 management CRDs ([M2-operator-crds](M2-operator-crds.md))—they arrive *now*, at this apply, not at operator install. |
+| **A ServiceAccount per workload** | One per workload above. The controller's KSA is the one **bound to your Google Service Account via Workload Identity**—the link that lets in-cluster pods authenticate as the GSA from your manifest. |
+| **Cluster-wide RBAC** | ClusterRoles + ClusterRoleBindings (and a couple of namespaced Roles/RoleBindings) granting each workload the API access it needs—e.g., the controller's permission to watch every managed-resource CRD across all namespaces. |
+| **Services** | `cnrm-controller-manager-service`, `cnrm-resource-stats-recorder-service`, and the webhook Service—stable addresses fronting the pods (the first two are the metrics endpoints, see [M4-monitoring](M4-monitoring.md)). |
 | **Webhook configurations** | The cluster-wide **ValidatingWebhookConfiguration** + **MutatingWebhookConfiguration** that route every apply through `cnrm-webhook-manager`. The workload runs the webhook; *these* objects are what wire it into the API server's admission chain. |
 
 ### The workloads in detail
 
-#### `cnrm-controller-manager`—the engine (StatefulSet)
+#### `cnrm-controller-manager` – the engine (StatefulSet)
 
 - The **reconciler**: for every managed object, it makes Google Cloud API calls to
   create / update / delete the real resource so it matches the spec.
 - It runs in one of two shapes, by mode:
-  - **Cluster mode** — one workload, one identity for the whole cluster.
-  - **Namespaced mode** — one workload *per* namespace, each scoped to its
+  - **Cluster mode** – one workload, one identity for the whole cluster.
+  - **Namespaced mode** – one workload *per* namespace, each scoped to its
     namespace with its own identity. The StatefulSet is named
     `cnrm-controller-manager-<id>` and its Service `cnrm-manager-<id>`, where
     `<id>` is a stable, randomly generated per-namespace identifier (persisted in
@@ -228,7 +227,7 @@ The plumbing the workloads need—created once, rarely thought about again.
     namespace's ServiceAccount, by contrast, is named literally
     `cnrm-controller-manager-<namespace>`.
 
-#### `cnrm-webhook-manager` — admission control (Deployment)
+#### `cnrm-webhook-manager` – admission control (Deployment)
 
 Runs the **validating + mutating admission webhooks**—the gate every apply passes
 through. All fail-closed (`FailurePolicy: Fail`).
@@ -248,14 +247,14 @@ through. All fail-closed (`FailurePolicy: Fail`).
   Connector does **not** cascade-delete your real Google Cloud resources. Otherwise, it
   releases the finalizer and lets the controller delete normally.
 
-#### `cnrm-resource-stats-recorder` — metrics (Deployment)
+#### `cnrm-resource-stats-recorder` – metrics (Deployment)
 
 - On an interval (~60s) it walks every managed resource, reads each one's **Ready
   condition**, and aggregates counts per namespace / kind / condition.
 - Exposes them as a **Prometheus** metric (`applied_resources_total`). Pure
   observability — see [M4-monitoring](M4-monitoring.md).
 
-#### `cnrm-unmanaged-detector` — drift signal, **namespaced mode only** (StatefulSet)
+#### `cnrm-unmanaged-detector` – drift signal, **namespaced mode only** (StatefulSet)
 
 - Deployed **only in namespaced mode**—it has nothing to do in cluster mode.
 - It watches managed resources and, for any resource in a namespace that has **no
@@ -280,17 +279,17 @@ namespace's resources reconcile under *that* namespace's identity.
 
 Key `spec` fields (from `configconnectorcontext_types.go`):
 
-- **`googleServiceAccount`** *(required)* — the GSA this namespace's resources
+- **`googleServiceAccount`** *(required)* – the GSA this namespace's resources
   authenticate as.
-- **`requestProjectPolicy`** — which project gates/pays for the API calls:
+- **`requestProjectPolicy`** – which project gates/pays for the API calls:
   `SERVICE_ACCOUNT_PROJECT` (default), `RESOURCE_PROJECT`, or `BILLING_PROJECT`.
-- **`billingProject`** — the project to bill, when `requestProjectPolicy` is
+- **`billingProject`** – the project to bill, when `requestProjectPolicy` is
   `BILLING_PROJECT`.
-- **`stateIntoSpec`** / **`actuationMode`** — same meaning as on ConfigConnector;
+- **`stateIntoSpec`** / **`actuationMode`** – same meaning as on ConfigConnector;
   set here, the **namespaced value wins** over the cluster-wide one.
 
 > **A namespace without a CCC gets no controller.** That's the exact condition
-> `cnrm-unmanaged-detector` flags — resources sit **Unmanaged** until you apply the
+> `cnrm-unmanaged-detector` flags—resources sit **Unmanaged** until you apply the
 > CCC.
 
 ### Identity and Workload Identity
