@@ -143,7 +143,7 @@ different.
 
 - ❌ Does **not** honor the `prometheus.io/scrape` annotation convention.
 - ❌ Does **not** use the Prometheus Operator's `ServiceMonitor`.
-- ❌ Is **not** automatic for Config Connector — enabling managed collection gets you
+- ❌ Is **not** automatic for Config Connector—enabling managed collection gets you
   system metrics, but nothing scrapes Config Connector until you tell it to.
 
 ### Instead, GMP uses its own CRDs
@@ -187,7 +187,7 @@ spec:
       interval: 30s
 ```
 
-Two things that trip people up here — both a consequence of `PodMonitoring`
+Two things that trip people up here—both a consequence of `PodMonitoring`
 scraping the **pod/container** directly, not the Service:
 
 - **You need two objects, one per component, because they serve on different
@@ -318,7 +318,7 @@ topk(5,
 ```
 
 - **Watches:** which resource types are the noisiest right now.
-- **Why it helps:** a fast triage view— hen something is wrong, this immediately
+- **Why it helps:** a fast triage view—when something is wrong, this immediately
   ranks the failing kinds so you know where to look first, without scanning every
   series.
 
