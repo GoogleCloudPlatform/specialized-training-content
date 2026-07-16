@@ -1,4 +1,4 @@
-# Day-2 Update: A change request lands
+# Day-2 Update: a change request lands
 
 > **Marketing now wants a `utm_campaign` field on every event, and wants raw
 > events kept 30 days longer for a seasonal analysis.**
