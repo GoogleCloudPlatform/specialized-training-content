@@ -218,7 +218,7 @@ that defaults to **qps 20, burst 30** (`controllerreconciler_types.go`).
 **① CC config—raise the reconciler rate limit.** Use `ControllerReconciler`
 (cluster mode, 1.125+) or `NamespacedControllerReconciler` (namespaced mode, 1.119+).
 The name **must** be `cnrm-controller-manager`. Raise the limit to speed up
-reconciliation — but only when the backlog is genuinely on the *Kubernetes* side and
+reconciliation—but only when the backlog is genuinely on the *Kubernetes* side and
 you have headroom on both the K8s and Google Cloud sides (checked just below):
 
 ```yaml
@@ -252,7 +252,7 @@ isn't already the constraint. The easiest way is the GKE **Observability** dashb
 in the Cloud console—but the control-plane charts only appear if you've enabled
 control-plane metrics.
 
-**One-time setup — turn on control-plane (API server) metrics.** They're off by
+**One-time setup—turn on control-plane (API server) metrics.** They're off by
 default. Enable them with:
 
 ```bash
@@ -269,21 +269,21 @@ Managed Prometheus.
 Observability tab → Control Plane**. You're looking for whether the API server is
 comfortable or saturated:
 
-- **Request latency** (`apiserver_request_duration_seconds`)—Google's suggested
+- **Request latency** (`apiserver_request_duration_seconds`) – Google's suggested
   upper bounds are **~1s for single-resource calls, ~30s for LIST calls**. Latency
   sitting well under those and flat under load = headroom. Latency climbing as you
   apply more = the API server is the constraint, and raising qps/burst will only make
   it worse.
-- **Request rate & errors** (`apiserver_request_total`) — a rising share of **4xx/5xx**
+- **Request rate & errors** (`apiserver_request_total`) – a rising share of **4xx/5xx**
   responses (especially **429 Too Many Requests**) means you're already being
   throttled; don't raise qps/burst.
-- **In-flight requests** (`apiserver_current_inflight_requests`)—sustained high
+- **In-flight requests** (`apiserver_current_inflight_requests`) – sustained high
   concurrency is another saturation signal.
 
 If those charts are calm, you have K8s-side headroom.
 
 **② Source / environment—mind the downstream Google Cloud API.** Headroom on the
-K8s side isn't the whole story — the limit Config Connector hits first is often
+K8s side isn't the whole story—the limit Config Connector hits first is often
 **Google Cloud API quota downstream**, not the kube-apiserver. If latency is high but
 **nothing in-cluster is saturated** (workers, CPU, memory, API server all fine), the
 bottleneck is Google Cloud-side and no in-cluster knob fixes it—check quota and the reconcile
@@ -373,7 +373,7 @@ spec:
 ```
 
 Namespaced mode is the same on `NamespacedControllerResource` (with the namespace,
-e.g. `config-control`). The **one hard rule** the CRD enforces:
+e.g., `config-control`). The **one hard rule** the CRD enforces:
 `verticalPodAutoscalerMode: Enabled` is **mutually exclusive with a non-empty
 `containers`**—you either size by hand *or* delegate to VPA, not both. Set
 `containers: []` when enabling VPA.
