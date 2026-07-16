@@ -97,14 +97,14 @@ spec:
 > annotation. KCC looks for that annotation **on the object first, then on the
 > object's namespace**, and finally falls back to the namespace name (see
 > [M3 - Metadata](M3-metadata.md)). Resources that *do* expose `projectRef`
-> (e.g. `IAMDenyPolicy`, `StorageFolder`, `ComputeNodeGroup`) still honor the
+> (e.g., `IAMDenyPolicy`, `StorageFolder`, `ComputeNodeGroup`) still honor the
 > same annotation fallback when the field is left unset. Either way, if KCC can't
 > determine a project from any source, the resource errors with *"cannot find
 > project id."*
 
 For non-project parents there are sibling refs: `folderRef` (`external:
-folders/123…`) and `organizationRef` (`external: organizations/123…` only —
-there is no Organization CRD to name).
+folders/123…`) and `organizationRef` (`external: organizations/123…` only—there
+is no Organization CRD to name).
 
 ### 5. Supply secrets with `valueFrom.secretKeyRef`, never inline plaintext
 
@@ -126,7 +126,7 @@ kubectl create secret generic sql-root-password \
 
 Then `SQLInstance.spec.rootPassword`
 ([`apis/sql/v1beta1/instance_types.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/apis/sql/v1beta1/instance_types.go#L490))
-points at it — the manifest you commit contains only a reference:
+points at it—the manifest you commit contains only a reference:
 
 ```yaml
 apiVersion: sql.cnrm.cloud.google.com/v1beta1
@@ -142,7 +142,7 @@ spec:
         key: password            # which key inside it
 ```
 
-The field technically also accepts an inline `value:` (e.g.
+The field technically also accepts an inline `value:` (e.g.,
 `rootPassword.value: sup3r-s3cret`), but that puts the secret right back into the
 manifest — so use `valueFrom.secretKeyRef` for anything real. Two rules to
 remember: you may set `value` **or** `valueFrom`, never both (KCC errors *"only
@@ -171,12 +171,12 @@ tier:
 ```
 
 Apply a manifest with `spec.tier: PREMIUM` and the API server rejects it
-outright — `Unsupported value: "PREMIUM": supported values: "DEVELOPER",
+outright—`Unsupported value: "PREMIUM": supported values: "DEVELOPER",
 "ENTERPRISE"`—before KCC ever calls Google Cloud.
 
 ### 7. Most fields you omit are defaulted by *Google Cloud*, not by KCC
 
-KCC deliberately does **not** fill in most optional fields — it omits them and
+KCC deliberately does **not** fill in most optional fields—it omits them and
 lets the Google API apply its own server-side default
 ([`validations.md`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/docs/develop-resources/api-conventions/validations.md)).
 So "what happens if I leave this out?" is usually answered by the Google Cloud docs, not
@@ -192,7 +192,7 @@ mostly in Storage:
 - Project defaults from the namespace (see #4).
 
 Practical rule: for an omitted field, the default is Google Cloud's, and you won't see it
-in the KCC schema or CRD — check the Google Cloud resource's own documentation to know
+in the KCC schema or CRD—check the Google Cloud resource's own documentation to know
 what value you'll actually get.
 
 ### 8. Format constraints (`pattern`, `maxLength`) are validated at apply time
