@@ -237,7 +237,7 @@ through. All fail-closed (`FailurePolicy: Fail`).
 | **Validating** | rejects bad applies       | immutable-field changes, unknown fields, IAM resources, per-resource validation, `state-into-spec` annotation    |
 | **Mutating**   | fills things in on create | container annotations (project/folder/org), IAM defaults, management-conflict annotation |
 
-#### `cnrm-deletiondefender` — safe deletion (StatefulSet)
+#### `cnrm-deletiondefender` – safe deletion (StatefulSet)
 
 - A **finalizer-based safety mechanism** . It holds the
   `deletion-defender` finalizer on managed objects so a delete can't complete until
@@ -252,7 +252,7 @@ through. All fail-closed (`FailurePolicy: Fail`).
 - On an interval (~60s) it walks every managed resource, reads each one's **Ready
   condition**, and aggregates counts per namespace / kind / condition.
 - Exposes them as a **Prometheus** metric (`applied_resources_total`). Pure
-  observability — see [M4-monitoring](M4-monitoring.md).
+  observability—see [M4-monitoring](M4-monitoring.md).
 
 #### `cnrm-unmanaged-detector` – drift signal, **namespaced mode only** (StatefulSet)
 
@@ -309,7 +309,7 @@ controller Pod  →  runs as KSA  →  (workloadIdentityUser binding)  →  GSA 
 ```
 
 - **The KSA and its WI annotation are automatic.** You don't create the controller's
-  KSA — the operator does, and it stamps the annotation
+  KSA—the operator does, and it stamps the annotation
   (`iam.gke.io/gcp-service-account: <GSA email>`) onto it, derived from the
   `googleServiceAccount` you gave. Cluster mode: one KSA `cnrm-controller-manager`.
   Namespaced mode: one `cnrm-controller-manager-${NAMESPACE}` per CCC. Both in
@@ -340,8 +340,8 @@ ConfigConnector spec changes only these:
 | Concern | Cluster mode | Namespaced mode |
 | ------- | ------------ | --------------- |
 | **The controller** | One shared `cnrm-controller-manager` StatefulSet for the whole cluster. | A **dedicated** `cnrm-controller-manager-${NAMESPACE}` StatefulSet per namespace, stood up when you apply that namespace's ConfigConnectorContext. |
-| **Identity binding** | One controller ServiceAccount, bound once to the GSA on the ConfigConnector spec. | Bound later and **per-namespace** — each ConfigConnectorContext binds its controller to *that* namespace's GSA ([M2-operator-crds](M2-operator-crds.md)). |
-| **`cnrm-unmanaged-detector`** | Not deployed — it has nothing to do. | Deployed (shared)—flags resources in namespaces that have no controller. |
+| **Identity binding** | One controller ServiceAccount, bound once to the GSA on the ConfigConnector spec. | Bound later and **per-namespace**—each ConfigConnectorContext binds its controller to *that* namespace's GSA ([M2-operator-crds](M2-operator-crds.md)). |
+| **`cnrm-unmanaged-detector`** | Not deployed—it has nothing to do. | Deployed (shared)—flags resources in namespaces that have no controller. |
 
 The CRDs, webhook configs, `cnrm-webhook-manager`, `cnrm-deletiondefender`,
 `cnrm-resource-stats-recorder`, and the `cnrm-system` namespace are the same in
