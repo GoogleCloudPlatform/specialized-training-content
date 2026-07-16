@@ -1,0 +1,60 @@
+# Solution Manifests — Creating, Acquiring, and Deleting Resources With Config Connector
+# Task 2 — First resource: a minimal Pub/Sub topic
+apiVersion: pubsub.cnrm.cloud.google.com/v1beta1
+kind: PubSubTopic
+metadata:
+  name: first-topic             # project-scoped name → this IS the cloud topic name
+---
+# Task 3 — Labels, reconcile interval, explicit (host) project
+# Make sure to manually replace the project and region placeholders
+apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
+kind: BigQueryDataset
+metadata:
+  name: lab-dataset             # RFC-1123 K8s object name (hyphen)
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "30"
+    cnrm.cloud.google.com/project-id: ${HOST_PROJECT_ID}
+  labels:
+    team: platform
+    purpose: lab
+spec:
+  resourceID: lab_dataset       # real cloud dataset id (underscore — illegal in metadata.name)
+  location: ${REGION}
+  description: Managed by Config Connector   # drifted/restored in Task 5
+---
+# Task 4 — Resource references (a network chain)
+# Make sure to manually replace the region placeholders
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeNetwork
+metadata:
+  name: lab-network
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "20"
+spec:
+  autoCreateSubnetworks: false
+  routingMode: REGIONAL
+---
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeSubnetwork
+metadata:
+  name: lab-subnet
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "20"
+spec:
+  region: ${REGION}
+  ipCidrRange: 10.10.0.0/24
+  networkRef:
+    name: lab-network
+---
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeAddress
+metadata:
+  name: lab-internal-ip
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "20"
+spec:
+  location: ${REGION}
+  addressType: INTERNAL          # NOTE: addressType is IMMUTABLE — reused in Task 6
+  subnetworkRef:
+    name: lab-subnet
+---

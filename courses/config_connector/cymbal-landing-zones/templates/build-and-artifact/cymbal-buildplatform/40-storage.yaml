@@ -1,0 +1,19 @@
+# Build artifacts: non-image outputs (test reports, SBOMs, signed bundles).
+# Versioned so a given build's artifacts are recoverable after overwrite.
+apiVersion: storage.cnrm.cloud.google.com/v1beta1
+kind: StorageBucket
+metadata:
+  name: build-artifacts
+  namespace: cymbal-buildplatform
+  labels:
+    cymbal.dev/template: build-and-artifact
+    cymbal.dev/tenant: buildplatform
+  annotations:
+    cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+spec:
+  resourceID: "${BUILD_PROJECT_ID}-build-artifacts"
+  location: "${REGION}"
+  uniformBucketLevelAccess: true
+  publicAccessPrevention: "enforced"
+  versioning:
+    enabled: true

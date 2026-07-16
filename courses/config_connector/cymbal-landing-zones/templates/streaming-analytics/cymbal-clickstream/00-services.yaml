@@ -1,0 +1,60 @@
+# OPTIONAL / UNUSED — API enablement via Config Connector.
+#
+# The lab assumes all required APIs are already enabled on every project by
+# lab provisioning (see README §7.2). You do NOT need to apply this file.
+#
+# It is shipped, commented out, to document the Config-Connector-managed
+# alternative: have CC own API enablement as desired state, just like every
+# other resource. To use it, uncomment and apply — BUT note this requires the
+# Config Connector controller identity to additionally hold
+#   roles/serviceusage.serviceUsageAdmin
+# on this project.
+#
+# Note: query these with `kubectl get gcpservice` — the short name `service`
+# collides with the Kubernetes core Service kind.
+#
+# ---
+# apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
+# kind: Service
+# metadata:
+#   name: pubsub.googleapis.com
+#   namespace: cymbal-clickstream
+#   labels:
+#     cymbal.dev/template: streaming-analytics
+#     cymbal.dev/tenant: clickstream
+#   annotations:
+#     cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+# spec:
+#   resourceID: pubsub.googleapis.com
+#   projectRef:
+#     external: ${CLICKSTREAM_PROJECT_ID}
+# ---
+# apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
+# kind: Service
+# metadata:
+#   name: bigquery.googleapis.com
+#   namespace: cymbal-clickstream
+#   labels:
+#     cymbal.dev/template: streaming-analytics
+#     cymbal.dev/tenant: clickstream
+#   annotations:
+#     cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+# spec:
+#   resourceID: bigquery.googleapis.com
+#   projectRef:
+#     external: ${CLICKSTREAM_PROJECT_ID}
+# ---
+# apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
+# kind: Service
+# metadata:
+#   name: storage.googleapis.com
+#   namespace: cymbal-clickstream
+#   labels:
+#     cymbal.dev/template: streaming-analytics
+#     cymbal.dev/tenant: clickstream
+#   annotations:
+#     cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+# spec:
+#   resourceID: storage.googleapis.com
+#   projectRef:
+#     external: ${CLICKSTREAM_PROJECT_ID}

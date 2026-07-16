@@ -1,0 +1,60 @@
+# OPTIONAL / UNUSED — API enablement via Config Connector.
+#
+# The lab assumes all required APIs are already enabled on every project by
+# lab provisioning (see README §7.2). You do NOT need to apply this file.
+#
+# It is shipped, commented out, to document the Config-Connector-managed
+# alternative: have CC own API enablement as desired state. To use it,
+# uncomment and apply — BUT note this requires the Config Connector controller
+# identity to additionally hold
+#   roles/serviceusage.serviceUsageAdmin
+# on this project.
+#
+# Note: query these with `kubectl get gcpservice` — the short name `service`
+# collides with the Kubernetes core Service kind.
+#
+# ---
+# apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
+# kind: Service
+# metadata:
+#   name: artifactregistry.googleapis.com
+#   namespace: cymbal-buildplatform
+#   labels:
+#     cymbal.dev/template: build-and-artifact
+#     cymbal.dev/tenant: buildplatform
+#   annotations:
+#     cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+# spec:
+#   resourceID: artifactregistry.googleapis.com
+#   projectRef:
+#     external: ${BUILD_PROJECT_ID}
+# ---
+# apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
+# kind: Service
+# metadata:
+#   name: pubsub.googleapis.com
+#   namespace: cymbal-buildplatform
+#   labels:
+#     cymbal.dev/template: build-and-artifact
+#     cymbal.dev/tenant: buildplatform
+#   annotations:
+#     cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+# spec:
+#   resourceID: pubsub.googleapis.com
+#   projectRef:
+#     external: ${BUILD_PROJECT_ID}
+# ---
+# apiVersion: serviceusage.cnrm.cloud.google.com/v1beta1
+# kind: Service
+# metadata:
+#   name: storage.googleapis.com
+#   namespace: cymbal-buildplatform
+#   labels:
+#     cymbal.dev/template: build-and-artifact
+#     cymbal.dev/tenant: buildplatform
+#   annotations:
+#     cnrm.cloud.google.com/reconcile-interval-in-seconds: "60"
+# spec:
+#   resourceID: storage.googleapis.com
+#   projectRef:
+#     external: ${BUILD_PROJECT_ID}
