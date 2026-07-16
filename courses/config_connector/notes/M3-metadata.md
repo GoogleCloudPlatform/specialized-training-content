@@ -34,19 +34,19 @@ metadata:
 ```
 
 **When `metadata.name` can't be the Google Cloud name.** Kubernetes object names are
-restricted — lowercase RFC-1123 (letters, digits, `-`, `.`), max 253 chars.
+restricted—lowercase RFC-1123 (letters, digits, `-`, `.`), max 253 chars.
 Many Google Cloud resources allow names that violate those rules: uppercase letters,
 underscores, spaces, characters, or simply names longer than K8s permits. When
 the desired Google Cloud name isn't a legal K8s name, you can't express it through
 `metadata.name` at all.
 
-**Best practice – decouple the two names.** Rather than forcing the K8s object
+**Best practice—decouple the two names.** Rather than forcing the K8s object
 name to match Google Cloud, give the object a clean K8s-friendly `metadata.name` and
 specify the real Google Cloud identifier separately. Decoupling also lets you **acquire
 (adopt)** a pre-existing Google Cloud resource: point a new K8s object at an ID that
 already exists, and KCC manages it instead of creating a new one.
 
-**Two mechanisms — and which one to use.** The identifier lives in two possible
+**Two mechanisms—and which one to use.** The identifier lives in two possible
 places, and this is the historical progression:
 
 - **Original: the `cnrm.cloud.google.com/resource-id` annotation** (in
@@ -107,21 +107,21 @@ Two things happen during that copy:
 
 - **Prefixed labels are stripped.** Any label key containing a `/`—the
   KRM-style `prefix/name` form, such as `cnrm.cloud.google.com/…` or
-  `app.kubernetes.io/name` — is **not** sent to Google Cloud
+  `app.kubernetes.io/name`—is **not** sent to Google Cloud
   ([`removeLabelsWithKRMPrefix`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/label/label.go#L56)).
   Only plain keys (`team`, `env`) propagate. This is intentional: those prefixed
   labels are Kubernetes-domain metadata that Google Cloud has no use for.
 - **KCC adds its own management label.** Every Google Cloud resource KCC manages gets
   `managed-by-cnrm: "true"` stamped on it
   ([`pkg/label/const.go`](https://github.com/GoogleCloudPlatform/k8s-config-connector/blob/master/pkg/label/const.go#L17)).
-  You'll see it on the cloud resource even if you set no labels of your own —
-  it's how you can tell in the Google Cloud console which resources are under Config
+  You'll see it on the cloud resource even if you set no labels of your own—it's
+  how you can tell in the Google Cloud console which resources are under Config
   Connector's control.
 
 #### Labels Config Connector puts on the *Kubernetes* object
 
 Separately, every KCC custom resource is stamped with `cnrm.cloud.google.com/…`
-labels that describe the resource type itself — for example, on a StorageBucket:
+labels that describe the resource type itself—for example, on a StorageBucket:
 
 ```yaml
 metadata:
@@ -140,7 +140,7 @@ strips—so they never reach Google Cloud.
 A crucial caveat: **many Google Cloud resources have no labels field at all.** IAM
 bindings, Pub/Sub *schemas*, and various hierarchy/project-level resources simply
 don't support labels in their API. For those, `metadata.labels` still works as
-normal Kubernetes metadata — you can select on it with `kubectl`—but KCC has
+normal Kubernetes metadata—you can select on it with `kubectl`—but KCC has
 nowhere to put it on the Google Cloud side, so it's **silently not propagated**. There's
 no error; the labels just stay Kubernetes-only.
 
@@ -214,7 +214,7 @@ metadata:
 ### 8. Update semantics for specific resources—allowing disruptive updates
 
 Resource-specific annotations like
-`cnrm.cloud.google.com/allow-stopping-for-update` (Compute instances — permit
+`cnrm.cloud.google.com/allow-stopping-for-update` (Compute instances—permit
 KCC to stop a VM to apply a field change) and `ignore-warnings`.
 
 ```yaml
