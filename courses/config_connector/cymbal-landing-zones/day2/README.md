@@ -1,4 +1,4 @@
-# Day-2 Update — a change request lands
+# Day-2 Update: A change request lands
 
 > **Marketing now wants a `utm_campaign` field on every event, and wants raw
 > events kept 30 days longer for a seasonal analysis.**
@@ -6,7 +6,7 @@
 This is the headline moment of the lab. You'll make two edits in the
 `cymbal-clickstream` namespace and re-apply them with the **same `kubectl apply`
 verb you used to create the resources**. Config Connector mutates the **existing**
-table and bucket **in place** — neither is recreated, and the table's data
+table and bucket **in place**—neither is recreated, and the table's data
 survives.
 
 Both edits are already baked into the `*.updated.yaml` files in this directory,
@@ -16,7 +16,7 @@ or just **apply this directory**.
 
 ---
 
-## Edit 1 — add a nullable column to `BigQueryTable.events`
+## Edit 1: Add a nullable column to `BigQueryTable.events`
 
 Append one column to the table's `spec.schema` JSON array. A **`NULLABLE`** column
 is an allowed in-place patch: Config Connector ALTERs the existing table, and
@@ -51,7 +51,7 @@ existing rows simply get `NULL` for the new column.
 
 ---
 
-## Edit 2 — extend retention on `StorageBucket.clickstream-raw`
+## Edit 2: Extend retention on `StorageBucket.clickstream-raw`
 
 Change the lifecycle rule's `condition.age` from `30` to `60`. Also a pure
 in-place reconfiguration of the **same** bucket.
@@ -90,7 +90,7 @@ in-place reconfiguration of the **same** bucket.
 kubectl apply -f day2/
 ```
 
-You'll see `configured` (not `created`) for both objects — proof you patched
+You'll see `configured` (not `created`) for both objects—proof you patched
 existing resources rather than making new ones:
 
 ```
@@ -140,12 +140,12 @@ kubectl get bigquerytable/events       -n cymbal-clickstream -o jsonpath='{.meta
 kubectl get storagebucket/clickstream-raw -n cymbal-clickstream -o jsonpath='{.metadata.uid} {.metadata.creationTimestamp}{"\n"}'
 ```
 
-(Compare against the values you'd capture before applying — they match. The
+(Compare against the values you'd capture before applying—they match. The
 resource changed; it was not replaced.)
 
 ---
 
-## Optional extension — watch an immutable field reject the patch
+## Optional extension: Watch an immutable field reject the patch
 
 *Not part of the happy path.* For contrast, try a change Config Connector
 **cannot** apply in place, and watch it fail honestly instead of recreating the
@@ -169,7 +169,7 @@ kubectl describe bigquerydataset/clickstream -n cymbal-clickstream
 ```
 
 The object goes to an `UpdateFailed` / non-`Ready` condition with a message about
-an immutable field — Config Connector will **not** silently destroy and rebuild
+an immutable field—Config Connector will **not** silently destroy and rebuild
 the dataset to satisfy the edit. One mutable change (Edit 1/2) beside one
 immutable change is the honest picture of the reconciliation model.
 
