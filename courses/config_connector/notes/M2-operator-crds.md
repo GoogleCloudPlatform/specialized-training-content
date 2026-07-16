@@ -21,8 +21,8 @@ configure, and tune Config Connector itself.
 All 8 live in two API groups and are defined under
 [`operator/config/crd/bases/`](https://github.com/GoogleCloudPlatform/k8s-config-connector/tree/master/operator/config/crd/bases):
 
-- **`core.cnrm.cloud.google.com`** — the two install-config CRDs.
-- **`customize.core.cnrm.cloud.google.com`** — the six tuning/customization CRDs.
+- **`core.cnrm.cloud.google.com`** – the two install-config CRDs.
+- **`customize.core.cnrm.cloud.google.com`** – the six tuning/customization CRDs.
 
 ---
 
@@ -77,7 +77,7 @@ Key `spec` fields:
   `cnrm-manager-<id>`, where `<id>` is a stable, randomly generated per-namespace
   identifier the operator persists in the `namespace-id` ConfigMap in the
   `configconnector-operator-system` namespace. (The `<id>`, not the namespace
-  name, is what appears in the StatefulSet/Service names — and note the Service
+  name, is what appears in the StatefulSet/Service names—and note the Service
   drops `controller-` from its prefix.)
 
 Key `spec` fields:
@@ -191,13 +191,13 @@ Key `spec` fields:
 
 - **Scope:** Cluster.
 - **What it does:** exactly the same, for the **mutating** admission webhooks
-  (the defaulters — e.g. `generic-defaulter`, `iam-defaulter`,
+  (the defaulters—e.g., `generic-defaulter`, `iam-defaulter`,
   `container-annotation-handler`, `management-conflict-annotation-defaulter`).
 - Same `webhooks[]` / `timeoutSeconds` shape as the validating version—the two
   share one underlying schema.
 
 > **When you'd use it:** the mutating (defaulter) webhook is timing out and blocking
-> applies — you raise its `timeoutSeconds`, the same fix as above but for the
+> applies—you raise its `timeoutSeconds`, the same fix as above but for the
 > mutating side.
 
 ---
@@ -212,7 +212,7 @@ The customization CRDs come in mirrored pairs; which one you use depends on the
 | Install / identity | ConfigConnector | ConfigConnector + a ConfigConnectorContext per namespace |
 | Controller sizing | ControllerResource | NamespacedControllerResource |
 | Reconciler tuning | ControllerReconciler | NamespacedControllerReconciler |
-| Webhook tuning | Validating/Mutating…Customization | *(same — webhooks are cluster-wide)* |
+| Webhook tuning | Validating/Mutating…Customization | *(same—webhooks are cluster-wide)* |
 
 > The webhook-customization CRDs have no namespaced counterpart because the
 > admission webhooks are a single cluster-wide set regardless of run mode.
