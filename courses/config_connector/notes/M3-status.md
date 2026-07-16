@@ -52,10 +52,10 @@ The `reason` tells you *which* state you're in—the common ones
 |---|---|---|
 | `True` | `UpToDate` | Reconciled; Google Cloud matches your `spec`. |
 | `False` | `Updating` | A change is in flight (Google Cloud call running). |
-| `False` | `UpdateFailure` | The Google Cloud call failed — read `message` for why. |
+| `False` | `UpdateFailure` | The Google Cloud call failed—read `message` for why. |
 | `False` | `DependencyNotReady` | A referenced resource isn't ready yet. |
 
-The `message` is where the actual Google Cloud error text lands — it's the first thing to
+The `message` is where the actual Google Cloud error text lands—it's the first thing to
 read when a resource is stuck.
 
 ### 2. `observedGeneration` tells you if status is *current*
