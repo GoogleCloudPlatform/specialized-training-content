@@ -10,7 +10,7 @@ Each course is organized as its own folder. Inside each course, every play has a
 	- Template for creating new courses and plays.
 - `1-gemini-for-image-video-and-audio-analysis/`
 - `2-gemini-enterprise-tools-workshop/`
-- `3-streamlining-workflows-with-notebooklm/`
+- `3-streamlining-workflows-with-gemini-notebook/`
 - `4-building-agents-for-gemini-enterprise/`
 - `5-vibe-coding-for-instant-deployable-apps/`
 
