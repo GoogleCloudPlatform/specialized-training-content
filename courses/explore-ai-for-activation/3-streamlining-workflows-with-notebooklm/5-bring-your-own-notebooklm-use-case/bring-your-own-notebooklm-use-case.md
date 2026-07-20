@@ -1,13 +1,13 @@
-# Bring Your Own NotebookLM Use Case
+# Bring Your Own Gemini Notebook Use Case
 
 ## Time Required
 45 minutes
 
 ## Overview
-In this lab, you will apply everything you have learned across the course to a NotebookLM challenge of your own design. You choose the topic, the sources, the questions, and the output format. This is your opportunity to take NotebookLM out of a structured training scenario and directly into a problem you care about.
+In this lab, you will apply everything you have learned across the course to a Gemini Notebook challenge of your own design. You choose the topic, the sources, the questions, and the output format. This is your opportunity to take Gemini Notebook out of a structured training scenario and directly into a problem you care about.
 
 ### You learn how to:
-- Identify a real information challenge that NotebookLM is well-suited to solve.
+- Identify a real information challenge that Gemini Notebook is well-suited to solve.
 - Select and add the right mix of source types for your use case.
 - Design questions that require multi-source synthesis.
 - Choose and customize the right Studio output for your audience.
@@ -16,7 +16,7 @@ In this lab, you will apply everything you have learned across the course to a N
 
 ### Task 1: Define your use case
 
-Before opening NotebookLM, spend 5 minutes thinking through your scenario using the questions below. There are no right answers—the goal is to arrive at a focused, specific challenge rather than a vague topic.
+Before opening Gemini Notebook, spend 5 minutes thinking through your scenario using the questions below. There are no right answers—the goal is to arrive at a focused, specific challenge rather than a vague topic.
 
 1. **What is the information challenge?**
    Describe the situation. What do you need to understand, decide, or communicate, and what is making it hard?
@@ -37,7 +37,7 @@ Before opening NotebookLM, spend 5 minutes thinking through your scenario using 
 
 ### Task 2: Build your Notebook
 
-1. Open [NotebookLM](https://notebooklm.google.com/) and create a new notebook. Give it a descriptive name that reflects your use case.
+1. Open [Gemini Notebook](https://notebooklm.google.com/) and create a new notebook. Give it a descriptive name that reflects your use case.
 
 2. Add your sources. Use the source type that best fits each one:
    - **PDF**—drag or upload the file
@@ -50,7 +50,7 @@ Before opening NotebookLM, spend 5 minutes thinking through your scenario using 
 4. With your sources loaded, spend a moment reading through the auto-generated **Notebook Guide**. Does it accurately reflect the scope of your use case? If something important is missing from the summary, that may signal you need an additional source.
 
 > [!NOTE]
-> NotebookLM works best when sources are complementary — each one adds something the others don't have. If all your sources say the same thing, the cross-source analysis will be less useful. Aim for variety: official/regulatory, internal/operational, external/market, or primary/secondary.
+> Gemini Notebook works best when sources are complementary — each one adds something the others don't have. If all your sources say the same thing, the cross-source analysis will be less useful. Aim for variety: official/regulatory, internal/operational, external/market, or primary/secondary.
 
 ### Task 3: Ask your questions and refine
 
@@ -95,7 +95,7 @@ Before opening NotebookLM, spend 5 minutes thinking through your scenario using 
 
 3. Based on their feedback, make at least one improvement: add a missing source, refine a Studio output with better instructions, or add a clarifying note.
 
-4. Discuss with your colleague: for which kinds of information work in your role would NotebookLM be genuinely useful? Where would it not be the right tool?
+4. Discuss with your colleague: for which kinds of information work in your role would Gemini Notebook be genuinely useful? Where would it not be the right tool?
 
 ## Congratulations!
 

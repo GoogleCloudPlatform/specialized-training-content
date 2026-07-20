@@ -1,10 +1,10 @@
-# NotebookLM Studio
+# Gemini Notebook Studio
 
 ## Time Required
 30 minutes
 
 ## Overview
-In this lab, you will explore NotebookLM's Studio panel—a set of tools for transforming research into polished, shareable outputs. Starting from the competitive intelligence notebook built in Lab 3, you will generate an Audio Overview, create a structured investor presentation, build a Mind Map, and produce Flashcards and a written Report—each one grounded in your notebook's sources.
+In this lab, you will explore Gemini Notebook's Studio panel—a set of tools for transforming research into polished, shareable outputs. Starting from the competitive intelligence notebook built in Lab 3, you will generate an Audio Overview, create a structured investor presentation, build a Mind Map, and produce Flashcards and a written Report—each one grounded in your notebook's sources.
 
 ### You learn how to:
 - Generate an Audio Overview and customize it for a specific audience.
