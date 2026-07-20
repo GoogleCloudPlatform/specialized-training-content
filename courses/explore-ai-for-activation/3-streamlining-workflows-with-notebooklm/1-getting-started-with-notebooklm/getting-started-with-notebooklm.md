@@ -1,15 +1,15 @@
-# Getting Started with NotebookLM
+# Getting Started with Gemini Notebook
 
 ## Time Required
 20 minutes
 
 ## Overview
-In this lab, you will create your first NotebookLM notebook and explore its core features: uploading a source document, reviewing the automatically generated Notebook Guide, and asking targeted questions that are grounded in your source. Every answer NotebookLM provides includes a citation that links directly back to the relevant passage—so you can verify every claim in seconds.
+In this lab, you will create your first notebook in Gemini Notebook and explore its core features: uploading a source document, reviewing the automatically generated Notebook Guide, and asking targeted questions that are grounded in your source. Every answer Gemini provides includes a citation that links directly back to the relevant passage—so you can verify every claim in seconds.
 
 ### You learn how to:
-- Create a new notebook in NotebookLM.
+- Create a new notebook in Gemini Notebook.
 - Upload a PDF as a source document.
-- Use NotebookLM to get an instant structured overview of a complex document.
+- Use Gemini to get an instant structured overview of a complex document.
 - Ask targeted questions and follow up on specific citations.
 - Add notes to capture your own analysis alongside the AI-generated content.
 
@@ -23,20 +23,20 @@ You are a Senior Research Scientist in Cymbal Pharma's Early-Stage Drug Discover
 
 A critical, *Initial Safety and Toxicity Report* has just arrived from the lab. You only have an hour before a stakeholder meeting where you must identify the high-risk data points and recommend a path forward. Studying the full report would leave no time for preparation—but with the right tool, it doesn't have to.
 
-In this lab, you will use NotebookLM as a triage tool: uploading the report, getting an instant overview, and extracting the exact findings that matter before the meeting starts.
+In this lab, you will use Gemini Notebook as a triage tool: uploading the report, getting an instant overview, and extracting the exact findings that matter before the meeting starts.
 
 
 ## Lab Instructions
 
 ### Task 1: Create a Notebook and upload the Report
 
-1. Open [NotebookLM](https://notebooklm.google.com/) in your browser. Sign in with your Google account if prompted.
+1. Open [Gemini Notebook](https://notebooklm.google.com/) in your browser. Sign in with your Google account if prompted.
 
-2. On the NotebookLM home page, click **New notebook**.
+2. On the Gemini Notebook home page, click **New notebook**.
 
    <p align="left">
-     <img src="images/new-notebook.png" width="50%" alt="NotebookLM home page showing New notebook button" />
-     <br><em>The New notebook button on the NotebookLM home page</em>
+     <img src="images/new-notebook.png" width="50%" alt="Gemini Notebook home page showing New notebook button" />
+     <br><em>The New notebook button on the Gemini Notebook home page</em>
    </p>
 
 3. A new, empty notebook opens. The __Add Sources__ screen will open. 
@@ -58,14 +58,14 @@ https://drive.google.com/file/d/1XUM3q8Jf1D6EGuOCkZPykwzayA0YrG3z/view?usp=drive
    </p>
 
 
-5. Wait a few seconds while NotebookLM processes the document. The source appears in the Sources panel when it is ready.
+5. Wait a few seconds while Gemini processes the document. The source appears in the Sources panel when it is ready.
 
 > [!NOTE]
-> NotebookLM reads and indexes the full document during this step. The richer and more structured the source, the better the quality of answers and citations you will receive.
+> Gemini reads and indexes the full document during this step. The richer and more structured the source, the better the quality of answers and citations you will receive.
 
 ### Task 2: Explore the Notebook Guide
 
-Once a source is added, NotebookLM automatically generates a **Notebook Guide**—a structured overview of the document's key topics, themes, and suggested questions.
+Once a source is added, Gemini automatically generates a **Notebook Guide**—a structured overview of the document's key topics, themes, and suggested questions.
 
 1. In the chat panel, click **Notebook Guide**.
 
@@ -74,19 +74,19 @@ Once a source is added, NotebookLM automatically generates a **Notebook Guide**�
      <br><em>The Notebook Guide provides an instant overview of your source</em>
    </p>
 
-2. Read through the generated summary. NotebookLM should have identified:
+2. Read through the generated summary. Gemini should have identified:
    - The compound under study (CPH-412) and its intended therapeutic area
    - The test groups, dosage ranges, and study design
    - The key safety signals identified in the report
 
-3. Scroll to the **Suggested questions** at the bottom of the guide. These are questions NotebookLM has surfaced as important based on the document's content. Take note of them before moving to the next task.
+3. Scroll to the **Suggested questions** at the bottom of the guide. These are questions Gemini has surfaced as important based on the document's content. Take note of them before moving to the next task.
 
 > [!NOTE]
 > The Notebook Guide is generated automatically but is not saved. If you want to keep it, click the **Save to note** icon (📌) before closing or scrolling past it.
 
 ### Task 3: Ask targeted questions
 
-You want three specific answers before the stakeholder meeting. Ask each of the following questions in the chat and evaluate the response—paying close attention to the citations NotebookLM provides.
+You want three specific answers before the stakeholder meeting. Ask each of the following questions in the chat and evaluate the response—paying close attention to the citations Gemini Notebook provides.
 
 **Question 1: Identify the high-risk dosage group**
 
@@ -109,7 +109,7 @@ What was the exact dosage of CPH-412 given to the group that showed elevated liv
 Does the report recommend any alternative dosing schedules to mitigate the liver enzyme risk?
 ```
 
-- This question requires NotebookLM to synthesize across multiple sections. Check whether it cites more than one part of the document.
+- This question requires Gemini to synthesize across multiple sections. Check whether it cites more than one part of the document.
 - Verify that the answer references at least two distinct alternative schedules.
 
 **Question 3: Understand the biological mechanism**
@@ -152,7 +152,7 @@ Based on the report, what additional safety data would the lab need to collect t
 
 ### Bonus Task 5: Challenge the Summary
 
-Use these prompts to test NotebookLM's boundaries and sharpen your instincts for working with cited AI tools.
+Use these prompts to test Gemini Notebook's boundaries and sharpen your instincts for working with cited AI tools.
 
 1. Ask a question the report cannot answer—for example:
 
@@ -166,7 +166,7 @@ What were CPH-412's Phase 2 trial results?
    How did the low-dose group's results differ from the high-dose group's results across all measured safety markers?
    ```
 
-3. Ask NotebookLM to reformat information into a table:
+3. Ask Gemini to reformat information into a table:
 
    ```text
    List all dosage groups tested, the CPH-412 dose each received in milligrams, and their most significant finding — formatted as a table.
@@ -176,12 +176,12 @@ What were CPH-412's Phase 2 trial results?
 
 ### Bonus Task 6: Try it with your own document
 
-Create a new notebook and upload a long document from your own work—a report, a policy, a research paper, or a lengthy email thread. Ask NotebookLM three questions that would normally take you significant time to answer manually. Note how long it takes compared to reading the document yourself.
+Create a new notebook and upload a long document from your own work—a report, a policy, a research paper, or a lengthy email thread. Ask Gemini three questions that would normally take you significant time to answer manually. Note how long it takes compared to reading the document yourself.
 
 ## Congratulations!
 
 In this lab, you have:
-- Created a NotebookLM notebook and uploaded a source document.
+- Created a notebook in Gemini Notebook and uploaded a source document.
 - Used the Notebook Guide to get an instant structured overview of a complex technical report.
 - Asked targeted questions and verified answers using citations linked to the source.
 - Added a note to capture your own analysis alongside the AI-generated content.
