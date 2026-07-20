@@ -10,8 +10,8 @@ This course uses Cymbal Pharma, where teams must synthesize dense scientific and
 
 | # | Lab | Description |
 |---|-----|-------------|
-| 1 | [Getting Started with Gemini Notebook](1-getting-started-with-gemini-notebook/getting-started-with-notebooklm.md) | Create a notebook from a single PDF, explore the Notebook Guide, ask grounded questions with citations, and save key findings as a note. |
-| 2 | [Complex Data Analysis with Gemini Notebook](2-complex-data-analysis-with-gemini-notebook/complex-data-analysis-with-notebooklm.md) | Load three source types — a live FDA regulation URL, an internal protocol, and a raw field log — then cross-reference them to identify compliance violations. |
+| 1 | [Getting Started with Gemini Notebook](1-getting-started-with-gemini-notebook/getting-started-with-gemini-notebook.md) | Create a notebook from a single PDF, explore the Notebook Guide, ask grounded questions with citations, and save key findings as a note. |
+| 2 | [Complex Data Analysis with Gemini Notebook](2-complex-data-analysis-with-gemini-notebook/complex-data-analysis-with-gemini-notebook.md) | Load three source types — a live FDA regulation URL, an internal protocol, and a raw field log — then cross-reference them to identify compliance issues. |
 | 3 | [Search the Web for Sources](3-search-the-web-for-sources/search-the-web-for-sources.md) | Use Gemini Notebook's built-in web search (Fast Research and Deep Research modes) to find and add live competitor intelligence alongside private internal data. |
-| 4 | [Gemini Notebook Studio](4-gemini-notebook-studio/notebooklm-studio.md) | Transform research into polished outputs using the Studio panel: Audio Overview, Presentation, Mind Map, Flashcards, and Report. |
-| 5 | [Bring Your Own Gemini Notebook Use Case](5-bring-your-own-gemini-notebook-use-case/bring-your-own-notebooklm-use-case.md) | Apply the full Gemini Notebook workflow independently to an information challenge of your own design. |
+| 4 | [Gemini Notebook Studio](4-gemini-notebook-studio/gemini-notebook-studio.md) | Transform research into polished outputs using the Studio panel: Audio Overview, Presentation, Mind Map, Flashcards, and Report. |
+| 5 | [Bring Your Own Gemini Notebook Use Case](5-bring-your-own-gemini-notebook-use-case/bring-your-own-gemini-notebook-use-case.md) | Apply the full Gemini Notebook workflow independently to an information challenge of your own design. |
