@@ -1,10 +1,10 @@
-# Complex Data Analysis with NotebookLM
+# Complex Data Analysis with Gemini Notebook
 
 ## Time Required
 30 minutes
 
 ## Overview
-In this lab, you will load three diverse source types into a single NotebookLM notebook—a real regulatory document added via URL, an internal protocol added as copied text, and a raw field log added as copied text. You will then ask questions that require synthesizing all three simultaneously, and use source deselection to isolate and compare different information subsets. NotebookLM's cited answers make it uniquely suited for compliance work: every finding traces back to a specific document and section.
+In this lab, you will load three diverse source types into a single notebook in Gemini Notebook—a real regulatory document added via URL, an internal protocol added as copied text, and a raw field log added as copied text. You will then ask questions that require synthesizing all three simultaneously, and use source deselection to isolate and compare different information subsets. Gemini Notebook's cited answers make it uniquely suited for compliance work: every finding traces back to a specific document and section.
 
 ### You learn how to:
 - Add multiple source types to a single notebook (URL, and copied text).
@@ -26,13 +26,13 @@ You have three documents: the actual FDA safety reporting regulation, Cymbal's i
 
 ## Before You Begin
 
-Two of the three sources in this lab are provided below as text you will paste directly into NotebookLM. Source 1 is a real, publicly available FDA regulation that you will add via URL. Have the text for Sources 2 and 3 ready to copy before you begin.
+Two of the three sources in this lab are provided below as text you will paste directly into Gemini Notebook. Source 1 is a real, publicly available FDA regulation that you will add via URL. Have the text for Sources 2 and 3 ready to copy before you begin.
 
 ## Lab Instructions
 
 ### Task 1: Create the Notebook and add all three sources
 
-1. Open [NotebookLM](https://notebooklm.google.com/) and create a **New notebook**. Close the __Add sources__ screen, and then name the notebook `CPH-412 SAE Compliance Review`.
+1. Open [Gemini Notebook](https://notebooklm.google.com/) and create a **New notebook**. Close the __Add sources__ screen, and then name the notebook `CPH-412 SAE Compliance Review`.
 
    <p align="left">
      <img src="images/new-notebook.png" width="55%" alt="The CPH-412 SAE Compliance Review notebook" />
@@ -48,7 +48,7 @@ Two of the three sources in this lab are provided below as text you will paste d
    ```
 
  > [!NOTE]
- > This is a live, publicly available FDA regulation (21 CFR § 312.32). NotebookLM will index the full text. If the URL is unreachable, search for "21 CFR 312.32" on [ecfr.gov](https://www.ecfr.gov) and add the result.
+ > This is a live, publicly available FDA regulation (21 CFR § 312.32). Gemini Notebook will index the full text. If the URL is unreachable, search for "21 CFR 312.32" on [ecfr.gov](https://www.ecfr.gov) and add the result.
 
 3. **Add Source 2—Cymbal CPH-412 Clinical Trial Protocol (via copied text)**
 
@@ -108,7 +108,7 @@ Two of the three sources in this lab are provided below as text you will paste d
 
 ### Task 2: Cross-reference the sources
 
-With all three sources active, NotebookLM can answer questions that require reading across all of them simultaneously.
+With all three sources active, Gemini can answer questions that require reading across all of them simultaneously.
 
 1. Start with a broad compliance question:
 
@@ -127,7 +127,7 @@ With all three sources active, NotebookLM can answer questions that require read
    How many days passed between Subject 1411's ALT spike and the notification to Cymbal QA? Does that timeline comply with the Cymbal protocol and FDA regulation?
    ```
 
-3. Ask NotebookLM to enumerate every specific violation:
+3. Ask Gemini to enumerate every specific violation:
 
    ```text
    List every specific action the investigator took—or failed to take—that constitutes a protocol deviation or regulatory violation. For each one, cite the exact source document and section.
@@ -138,7 +138,7 @@ With all three sources active, NotebookLM can answer questions that require read
 
 ### Task 3: Isolate sources to test reasoning
 
-One of NotebookLM's most powerful features is source deselection. Turning off individual sources lets you ask the same question with different information available—revealing how much each source contributes to the answer.
+One of Gemini Notebook's most powerful features is source deselection. Turning off individual sources lets you ask the same question with different information available—revealing how much each source contributes to the answer.
 
 1. In the **Sources** panel, uncheck the first source you added (the FDA regulation) to deactivate it. Only the Cymbal protocol and the investigator log are now active.
 
@@ -165,7 +165,7 @@ One of NotebookLM's most powerful features is source deselection. Turning off in
 
 ### Task 4: Generate a Compliance Risk Memo
 
-1. With all sources active, ask NotebookLM to draft a formal internal memo:
+1. With all sources active, ask Gemini Notebook to draft a formal internal memo:
 
    ```text
    Draft a Compliance Risk Memo addressed to the Cymbal VP of Clinical Operations. The memo should: 
@@ -185,7 +185,7 @@ One of NotebookLM's most powerful features is source deselection. Turning off in
 
 ### Bonus Task 5: Stress-test the sources
 
-1. Ask NotebookLM a question it cannot fully answer from the available sources:
+1. Ask Gemini Notebook a question it cannot fully answer from the available sources:
 
    ```text
    What was Subject 1411's baseline ALT level before the trial started?
@@ -201,7 +201,7 @@ One of NotebookLM's most powerful features is source deselection. Turning off in
    Proposed amendment to Section 5.2(c): Notification to Cymbal QA should occur within 48 hours of an abnormal result, revised upward from the current 24-hour requirement to reduce administrative burden on site investigators.
    ```
 
-3. Now ask the timing compliance question again. Does NotebookLM surface the conflict between Protocol v3.1 and the draft amendment? How does it handle the discrepancy?
+3. Now ask the timing compliance question again. Does Gemini surface the conflict between Protocol v3.1 and the draft amendment? How does it handle the discrepancy?
 
 ### Bonus Task 6: Try it with your own multi-source problem
 
@@ -210,7 +210,7 @@ Create a new notebook around a real situation where you have multiple documents 
 ## Congratulations!
 
 In this lab, you have:
-- Added three diverse source types to a single NotebookLM notebook.
+- Added three diverse source types to a single notebook in Gemini Notebook.
 - Asked cross-source questions that required synthesizing regulatory, procedural, and field log data simultaneously.
 - Used source deselection to isolate and compare answers from different information subsets.
 - Generated a compliance risk memo grounded entirely in cited source material.

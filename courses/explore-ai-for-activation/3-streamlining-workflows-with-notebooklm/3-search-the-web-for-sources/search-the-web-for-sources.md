@@ -4,11 +4,11 @@
 30 minutes
 
 ## Overview
-In this lab, you will use NotebookLM's built-in web search feature to find and add live sources from the internet directly into your notebook—no copy-pasting from a browser required. This turns NotebookLM into a competitive intelligence workspace where your private internal data and real-world external research sit side by side, and every answer cites exactly where it came from.
+In this lab, you will use Gemini Notebook's built-in web search feature to find and add live sources from the internet directly into your notebook—no copy-pasting from a browser required. This turns Gemini Notebook into a competitive intelligence workspace where your private internal data and real-world external research sit side by side, and every answer cites exactly where it came from.
 
 ### You learn how to:
 - Add internal data to a notebook as copied text.
-- Use the Notebook LM web search to find and add live sources.
+- Use the Gemini Notebook web search to find and add live sources.
 - Choose between Fast Research and Deep Research modes.
 - Ask analytical questions that combine private internal data with public external sources.
 
@@ -22,16 +22,16 @@ You are the Director of Business Development and Investor Relations at Cymbal Ph
 
 To convince investors, you need to prove that Cymbal's market positioning is strong—and that the opportunity in Alzheimer's disease is real and large. You have Cymbal's internal pipeline and financial data, but also need real-world competitor intelligence: recent FDA approvals, drug pricing, pipeline updates, and market size forecasts for the Alzheimer's space.
 
-In this lab, you will load Cymbal's internal data into a notebook and then use NotebookLM's web search to pull in live competitor intelligence—building a research workspace that can answer the hard investor questions.
+In this lab, you will load Cymbal's internal data into a notebook and then use Gemini Notebook's web search to pull in live competitor intelligence—building a research workspace that can answer the hard investor questions.
 
 ## Lab Instructions
 
 ### Task 1: Create the Notebook and add Cymbal's internal data
 
-1. Open [NotebookLM](https://notebooklm.google.com/) and click **Create new notebook**. Close the __Add sources__ screen, and then name the notebook `CPH-412 Series B Pitch Research`.
+1. Open [Gemini Notebook](https://notebooklm.google.com/) and click **Create new notebook**. Close the __Add sources__ screen, and then name the notebook `CPH-412 Series B Pitch Research`.
 
    <p align="left">
-     <img src="images/new-notebook.png" width="55%" alt="he CPH-412 Series B Pitch Research notebook" />
+     <img src="images/new-notebook2.png" width="55%" alt="he CPH-412 Series B Pitch Research notebook" />
      <br><em>The CPH-412 Series B Pitch Research notebook</em>
    </p>
 
@@ -71,11 +71,11 @@ In this lab, you will load Cymbal's internal data into a notebook and then use N
 3. After the source is added, click the action menu and select __Rename source__. give it the title `Cymbal Pharma — Internal Pipeline & Financial Brief`, 
 
 > [!NOTE]
-> With only this source loaded, NotebookLM knows everything about Cymbal—but nothing about the competitive landscape. That changes in the next task.
+> With only this source loaded, Gemini knows about Cymbal—but nothing about the competitive landscape. That changes in the next task.
 
 ### Task 2: Search the web for competitor sources
 
-NotebookLM can search the internet and add live pages directly to your notebook as sources.
+Gemini Notebook can search the internet and add live pages directly to your notebook as sources.
 
 1. In the **Sources** panel, locate the **Search the web for new sources** box at the top.
 
@@ -169,7 +169,7 @@ With internal and external sources in the same notebook, you can ask questions t
    ```
 
 > [!NOTE]
-> This last question is deliberately open-ended. A question that NotebookLM cannot fully answer from the available sources points to a gap you would need to address in the pitch deck itself.
+> This last question is deliberately open-ended. A question that Gemini Notebook cannot fully answer from the available sources points to a gap you would need to address in the pitch deck itself.
 
 5. Use source deselection to verify which sources are driving specific answers. Deselect the Cymbal internal brief and re-ask Question 2. Does the answer change in a meaningful way?
 
@@ -189,7 +189,7 @@ With internal and external sources in the same notebook, you can ask questions t
    Does the addition of Pfizer's pipeline change the competitive risk assessment for CPH-412? How?
    ```
 
-3. Ask NotebookLM to generate a one-paragraph **Competitive Landscape Summary** suitable for the executive summary page of the investor pitch deck. Save it as a note.
+3. Ask Gemini Notebook to generate a one-paragraph **Competitive Landscape Summary** suitable for the executive summary page of the investor pitch deck. Save it as a note.
 
 ### Bonus Task 5: Try it with your own topic
 
@@ -198,7 +198,7 @@ Create a new notebook, add a short internal document or memo as copied text, the
 ## Congratulations!
 
 In this lab, you have:
-- Loaded internal company data as a private source in NotebookLM.
+- Loaded internal company data as a private source in Gemini Notebook.
 - Used the web search feature in Deep Research mode to find and add live sources.
 - Combined private internal data and public external sources to answer competitive intelligence questions.
 - Identified a gap in Cymbal's positioning that the available data cannot yet address.
