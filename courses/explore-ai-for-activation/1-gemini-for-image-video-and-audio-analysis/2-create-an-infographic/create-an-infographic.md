@@ -25,7 +25,7 @@ Cymbal Mart's Marketing team needs a campaign infographic for the **Back-to-Scho
 
 1. Open **Gemini Enterprise** in your browser and create a new chat. 
 
-2. In the chat bar, select the **Tools** icon and choose **Generate images**.
+2. In the chat bar, select the **Tools** icon and choose the images tool. 
 
 3. Copy and paste the image below of the Cymbal Mart logo into the chat:
 

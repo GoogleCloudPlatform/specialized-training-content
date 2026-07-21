@@ -28,7 +28,7 @@ Cymbal Mart's Social Media team needs a **10-second holiday ad** for Instagram a
 
 1. Open [Gemini](https://gemini.google.com/app) in your browser, and create a new chat.
 
-2. In the chat bar, select the **Tools** icon and choose **Create video**.
+2. In the chat bar, select the **Tools** icon and choose the create video tool.
 
    <p align="left">
      <img src="images/create_video.png" width="55%" alt="Create video tool in Gemini" />

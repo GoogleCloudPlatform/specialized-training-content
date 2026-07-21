@@ -52,7 +52,7 @@ A meta-prompt asks Gemini to generate a prompt for another task—in this case, 
 
 1. Click **New chat** to open a fresh session.
 
-2. In the chat bar, select the **Tools** icon and choose **Generate images**.
+2. In the chat bar, select the **Tools** icon and choose the images tool. 
 
 3. Paste the prompt from Task 1 into the chat, but don't run it yet. 
 
