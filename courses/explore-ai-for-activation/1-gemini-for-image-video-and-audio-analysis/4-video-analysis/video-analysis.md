@@ -46,7 +46,7 @@ https://drive.google.com/file/d/1_yZkzZPBTEk1rUE32SmW4aAJPIXUdR4J/view?usp=drive
 https://drive.google.com/file/d/1EjJBPXl52D2EkqStgVRq18Kl0OtUXVRG/view?usp=sharing
 ```
 
-3. Copy and paste the following prompt into the chat, then press ENTER:
+4. Copy and paste the following prompt into the chat, then press ENTER:
 
    ```text
    Role: You are the Primary Safety and Compliance Manager for Cymbal Mart, conducting a formal virtual audit of Store number 114.
@@ -63,7 +63,7 @@ https://drive.google.com/file/d/1EjJBPXl52D2EkqStgVRq18Kl0OtUXVRG/view?usp=shari
    3. Operational Recommendations — brief, actionable suggestions for the Store Manager to prevent recurrence of each violation type.
    ```
 
-4. Review the output. Verify that each cited standards section actually corresponds to the violation described—this is a good way to test the grounding quality of the analysis.
+5. Review the output. Verify that each cited standards section actually corresponds to the violation described—this is a good way to test the grounding quality of the analysis.
 
 ### Task 2: Drill down on a specific violation
 
