@@ -25,12 +25,12 @@ Cymbal Mart is running an internal employee spotlight campaign. The Social Media
 
 1. Open **Gemini Enterprise** in your browser.
 
-2. In the chat bar, select the **Tools** icon and choose **Generate images**.
+2. In the chat bar, select the **Tools** icon and choose the create images tool.
 
    <p align="left">
       <img src="images/generate-images.png" width="50%" alt="Generate Images" />
       <br>
-      <em>Generate images tool</em>
+      <em>Create images tool</em>
    </p>
 
 3. Click **+ Add files** and select **Upload files**. In the dialog, upload a photo of yourself, and click **Open**. __Note:__ if it is easier, just copy a picture of yourself to the clipboard and paste it in the chat box. 

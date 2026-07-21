@@ -232,7 +232,7 @@ Start with the existing application (Don't rewrite the whole thing), and update 
 Update the UI when data is loaded, also add a Refresh button to the header that refreshes calculations. 
 ```
 
-5. **Test it:** Paste the data into the app again and click load. You should see a populated grid, a Total Fleet Value (exceeding $2 million), and a Fleet Utilization percentage dynamically extracted from the statuses.
+5. **Test it:** Paste the data into the app again and click the load data button. You should see a populated grid, a Total Fleet Value (exceeding $2 million), and a Fleet Utilization percentage dynamically extracted from the statuses.
 
 > [!NOTE] 
 > The KPIs on your Dashboard should now be calculated based on the data imported. 

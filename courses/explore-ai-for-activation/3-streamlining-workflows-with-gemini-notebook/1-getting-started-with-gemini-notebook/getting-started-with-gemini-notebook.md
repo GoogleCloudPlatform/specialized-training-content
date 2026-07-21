@@ -32,7 +32,7 @@ In this lab, you will use Gemini Notebook as a triage tool: uploading the report
 
 1. Open [Gemini Notebook](https://notebooklm.google.com/) in your browser. Sign in with your Google account if prompted.
 
-2. On the Gemini Notebook home page, click **New notebook**.
+2. On the Gemini Notebook home page, and click the button to create a new notebook. 
 
    <p align="left">
      <img src="images/new-notebook.png" width="50%" alt="Gemini Notebook home page showing New notebook button" />
