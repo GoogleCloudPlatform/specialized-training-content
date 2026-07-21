@@ -43,7 +43,7 @@ https://drive.google.com/file/d/1_yZkzZPBTEk1rUE32SmW4aAJPIXUdR4J/view?usp=drive
 3. Repeat step 2, but this time with the URL below. This is a video file of a store walk through. 
 
 ```text
-https://drive.google.com/file/d/1J3Xyq90oJzBGFPMRdgX_18mRKXknmdSD/view?usp=sharing
+https://drive.google.com/file/d/1EjJBPXl52D2EkqStgVRq18Kl0OtUXVRG/view?usp=sharing
 ```
 
 3. Copy and paste the following prompt into the chat, then press ENTER:
