@@ -26,7 +26,7 @@ This lab analyzes a video of a store walk through, comparing it against a PDF do
 [Cymbal Mart Store Safety Standards](https://drive.google.com/file/d/1_yZkzZPBTEk1rUE32SmW4aAJPIXUdR4J/view?usp=drive_link)
 
 
-[Store Walk Through](https://drive.google.com/file/d/1J3Xyq90oJzBGFPMRdgX_18mRKXknmdSD/view?usp=sharing)
+[Store Walk Through](https://drive.google.com/file/d/1EjJBPXl52D2EkqStgVRq18Kl0OtUXVRG/view?usp=sharing)
 
 ## Lab Instructions
 
