@@ -33,7 +33,9 @@ Cymbal Mart is running an internal employee spotlight campaign. The Social Media
       <em>Create images tool</em>
    </p>
 
-3. Click **+ Add files** and select **Upload files**. In the dialog, upload a photo of yourself, and click **Open**. __Note:__ if it is easier, just copy a picture of yourself to the clipboard and paste it in the chat box. 
+3. Click **+ Add files** and select **Upload files**. In the dialog, upload a photo of yourself, and click **Open**.
+
+__Note:__ if it is easier, just copy a picture of yourself to the clipboard and paste it in the chat box. 
 
 4. Copy and paste the following prompt into the chat, then press ENTER:
 

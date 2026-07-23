@@ -67,7 +67,7 @@ Return:
 
 Now add a different type of evidence so Gemini can combine narrative and numbers.
 
-1. Keep the same chat open, and add the file`traction-metrics.xlsx` from your computer.
+1. Keep the same chat open, and add the file `traction-metrics.xlsx` from your computer.
 
 2. Ask Gemini to compare the two files:
 

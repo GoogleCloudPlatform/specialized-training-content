@@ -79,7 +79,7 @@ Once a source is added, Gemini automatically generates a **Notebook Guide**—a 
    - The test groups, dosage ranges, and study design
    - The key safety signals identified in the report
 
-3. Scroll to the **Suggested questions** at the bottom of the guide. These are questions Gemini has surfaced as important based on the document's content. Take note of them before moving to the next task.
+3. Scroll to the suggested questions at the bottom of the guide. These are questions Gemini has surfaced as important based on the document's content. Take note of them before moving to the next task.
 
 > [!NOTE]
 > The Notebook Guide is generated automatically but is not saved. If you want to keep it, click the **Save to note** icon (📌) before closing or scrolling past it.

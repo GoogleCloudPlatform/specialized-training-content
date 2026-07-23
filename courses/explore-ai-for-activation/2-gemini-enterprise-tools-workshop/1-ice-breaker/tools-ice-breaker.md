@@ -33,7 +33,9 @@ Cymbal Capital Partners is running an internal leadership spotlight campaign. Th
      <em>Create Images</em>
    </p>
 
-3. Click **+ Add files** and select **Upload files**. In the dialog, upload a photo of yourself, and click **Open**. __Note:__ if it is easier, just copy a picture of yourself to the clipboard and paste it in the chat box.
+3. Click **+ Add files** and select **Upload files**. In the dialog, upload a photo of yourself, and click **Open**.
+
+__Note:__ if it is easier, just copy a picture of yourself to the clipboard and paste it in the chat box.
 
 4. Copy the Cymbal Capital Partners logo from above and past it in the chat box.
 
