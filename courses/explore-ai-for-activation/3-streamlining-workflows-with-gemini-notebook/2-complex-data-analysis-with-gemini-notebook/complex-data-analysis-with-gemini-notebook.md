@@ -193,7 +193,7 @@ One of Gemini Notebook's most powerful features is source deselection. Turning o
 
    Observe how it handles missing information. It should acknowledge the gap rather than guess.
 
-2. Test what happens when sources conflict. Add a new copied text source with a slightly different rule:
+2. Test what happens when sources conflict. Add a new __Copied text__ source with a slightly different rule:
 
    ```text
    CYMBAL PHARMA — CPH-412 PROTOCOL AMENDMENT v3.2 (DRAFT)

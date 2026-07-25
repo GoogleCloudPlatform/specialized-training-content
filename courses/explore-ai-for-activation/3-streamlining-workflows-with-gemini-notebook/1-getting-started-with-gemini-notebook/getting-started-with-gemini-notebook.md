@@ -67,17 +67,16 @@ https://drive.google.com/file/d/1XUM3q8Jf1D6EGuOCkZPykwzayA0YrG3z/view?usp=drive
 
 Once a source is added, Gemini automatically generates a **Notebook Guide**—a structured overview of the document's key topics, themes, and suggested questions.
 
-1. In the chat panel, click **Notebook Guide**.
-
-   <p align="left">
-     <img src="images/notebook-guide.png" width="70%" alt="Notebook Guide in the chat panel" />
-     <br><em>The Notebook Guide provides an instant overview of your source</em>
-   </p>
-
-2. Read through the generated summary. Gemini should have identified:
+1. In the chat panel, read through the generated summary. Gemini should have identified:
    - The compound under study (CPH-412) and its intended therapeutic area
    - The test groups, dosage ranges, and study design
    - The key safety signals identified in the report
+
+   <p align="left">
+     <img src="images/notebook-guide.png" width="70%" alt="Notebookchat panel" />
+     <br><em>The Chat panel provides an instant overview of your source</em>
+   </p>
+
 
 3. Scroll to the suggested questions at the bottom of the guide. These are questions Gemini has surfaced as important based on the document's content. Take note of them before moving to the next task.
 

@@ -113,17 +113,13 @@ The video needs a voiceover that fits the 10-second runtime precisely.
    [Sample Audio File](https://drive.google.com/file/d/1zXwfVMEppsvtdTfup9ZKNLJAaY_3CtV-/view?usp=sharing)
 
 
-### Bonus Task 4: Assemble the full ad concept
+> [!NOTE]
+> You have three AI-generated components. In a real-world scenario, you would use a video editing tool like Camtasia or Canva to combine them and do the final editing. 
 
-1. You have three AI-generated components, in a new chat, ask Gemini to bring them together into a brief creative brief document that describes:
-   - The target platform (Instagram Reels, TikTok, YouTube Shorts)
-   - The video description and what it shows
-   - The voiceover script with timestamp markers
-   - Notes on how the audio and video are synchronized
 
-2. Share the video, script, and brief with the group. Discuss: what would a human creative team need to do to take these AI-generated assets to a final, publishable state?
+7. Share the video, script, and brief with the group. Discuss: what would a human creative team need to do to take these AI-generated assets to a final, publishable state?
 
-### Bonus Task 5: Try with your own use case
+### Bonus Task 4: Try with your own use case
 
 1. Create a video clip, script, and voiceover for something relevant for your own work or personal use. 
 
@@ -133,5 +129,4 @@ In this lab, you have:
 - Generated a branded holiday video clip using Gemini's video creation tool.
 - Written a synchronized 10-second voiceover script timed to the video.
 - Generated an audio track from the script using Google AI Studio.
-- Assembled the components into a complete AI-generated promotional asset concept.
 
