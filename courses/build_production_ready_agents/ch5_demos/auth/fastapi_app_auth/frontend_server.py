@@ -19,8 +19,9 @@ API_URL = os.environ.get("API_URL", "http://localhost:8000")
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse(
+        request,
         "index.html",
-        {"request": request, "client_id": CLIENT_ID, "api_url": API_URL},
+        {"client_id": CLIENT_ID, "api_url": API_URL},
     )
 
 
