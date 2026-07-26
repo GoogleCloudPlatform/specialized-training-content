@@ -1,16 +1,12 @@
 import os
 
-from fastapi.openapi.models import (OAuth2, OAuthFlowAuthorizationCode,
-                                    OAuthFlows)
 from google.adk.agents.llm_agent import Agent
-from google.adk.auth.auth_credential import (AuthCredential,
-                                             AuthCredentialTypes, OAuth2Auth)
 from google.adk.tools.mcp_tool import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import \
     StreamableHTTPConnectionParams
 
 root_agent = Agent(
-    model='gemini-3-flash-preview',
+    model='gemini-3.5-flash',
     name='root_agent',
     description='Friendly helper agent.',
     instruction="""
@@ -21,7 +17,10 @@ root_agent = Agent(
     tools=[
         McpToolset(
             connection_params=StreamableHTTPConnectionParams(
-                url='http://127.0.0.1:8000/mcp')
+                url='http://127.0.0.1:8001/mcp'),
+            # Without this, only the server's tools are exposed to the agent;
+            # this adds a load_mcp_resource tool so it can read api_docs too.
+            use_mcp_resources=True,
         )
     ],
 )
