@@ -4,15 +4,31 @@ A Flask-based echo service demonstrating **Google Cloud Identity-Aware Proxy (IA
 
 ## Table of Contents
 
-- [1. Run/Demo on Cloud Run](#1-rundemo-on-cloud-run)
-- [2. Key Features](#2-key-features)
-- [3. Authentication Flow Overview](#3-authentication-flow-overview)
-- [4. How IAP Authentication Works](#4-how-iap-authentication-works)
-  - [4.1 Infrastructure-Level Authentication](#41-infrastructure-level-authentication)
-  - [4.2 Client-Side Process](#42-client-side-process)
-  - [4.3 Server-Side Process](#43-server-side-process)
-- [5. Architecture Diagrams](#5-architecture-diagrams)
-- [6. Additional Resources](#6-additional-resources)
+- [Flask Echo Service with Identity-Aware Proxy (IAP) Authentication](#flask-echo-service-with-identity-aware-proxy-iap-authentication)
+  - [Table of Contents](#table-of-contents)
+  - [1. Run/Demo on Cloud Run](#1-rundemo-on-cloud-run)
+      - [1.1 Deploy to Cloud Run](#11-deploy-to-cloud-run)
+      - [1.2 Enable IAP](#12-enable-iap)
+      - [1.3 (Optional) Allow users outside your organization](#13-optional-allow-users-outside-your-organization)
+      - [1.4 Test](#14-test)
+  - [2. Key Features](#2-key-features)
+  - [3. Authentication Flow Overview](#3-authentication-flow-overview)
+  - [4. How IAP Authentication Works](#4-how-iap-authentication-works)
+    - [4.1 Infrastructure-Level Authentication](#41-infrastructure-level-authentication)
+    - [4.2 Client-Side Process](#42-client-side-process)
+      - [4.2.1 No Authentication Code Needed](#421-no-authentication-code-needed)
+      - [4.2.2 Regular API Calls](#422-regular-api-calls)
+      - [4.2.3 Getting User Information](#423-getting-user-information)
+    - [4.3 Server-Side Process](#43-server-side-process)
+      - [4.3.1 Read User Headers](#431-read-user-headers)
+      - [4.3.2 Handle Requests Normally](#432-handle-requests-normally)
+      - [4.3.3 Optional: Advanced Validation](#433-optional-advanced-validation)
+  - [5. Architecture Diagrams](#5-architecture-diagrams)
+      - [5.1 Component Architecture](#51-component-architecture)
+      - [5.2 Authentication State Flow](#52-authentication-state-flow)
+      - [5.3 Request Flow Comparison](#53-request-flow-comparison)
+      - [5.4 Network Flow](#54-network-flow)
+  - [6. Additional Resources](#6-additional-resources)
 
 ## 1. Run/Demo on Cloud Run
 
@@ -33,7 +49,20 @@ gcloud run deploy iap-echo-service \
 2. Go to security page, disable IAM, enable IAP
 3. Edit policy and add your user and save
 
-#### 1.3 Test
+**Note:** Adding a user to the policy is only sufficient for accounts **inside** your project's organization. If the policy dialog shows **Out-of-org user access: Disabled**, any external account will be rejected with **You don't have access** even if it is listed as a principal. To allow external users, complete section 1.3 first.
+
+#### 1.3 (Optional) Allow users outside your organization
+
+By default, IAP for Cloud Run uses a Google-managed OAuth client that only permits users in your organization. To admit external accounts, switch the service to a custom OAuth client:
+
+1. Go to **Security > Identity-Aware Proxy** at the project level
+2. On the **Applications** tab, find your service row and click **More options > Settings** in the **Actions** column (you may need to scroll the table right or close the info panel to see it)
+3. In the Settings dialog, select **Custom OAuth**
+4. If prompted, click **Configure consent screen**, set the audience to **External**, and publish the app to production (in **Testing** mode only listed test users can sign in)
+5. Click **Auto Generate Credentials**, then **Save**
+6. After a minute or two, reopen the access policy dialog and confirm it shows out-of-org access enabled; external principals you added in section 1.2 will now be honored
+
+#### 1.4 Test
 
 It will take 1-2 minutes for IAP to settle. Once it has...
 1. Visit your Cloud Run URL in an incognito mode window.

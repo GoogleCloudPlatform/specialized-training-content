@@ -109,14 +109,6 @@ complete and both servers are running.
 5. **Walk the code live** using [§5](#5-code-walk-through), ideally alongside the numbered
    diagram in [§4](#4-authentication-flow-overview).
 
-#### 2.5 Discussion Prompts
-
-- **"How would you make auth fire only when a data tool actually runs?"** → wrap the call in
-  a custom `FunctionTool`, so the auth decision moves *inside* the tool body instead of
-  happening at connect time.
-- **"What changes for production?"** → persisted (not in-memory) credential storage, and
-  pinning CORS and the `postMessage` target origin.
-
 ## 3. Key Features
 
 - **Consuming a remote, OAuth-protected MCP toolset.** The BigQuery tools are not local
