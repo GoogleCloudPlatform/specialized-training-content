@@ -56,7 +56,7 @@ Adjust the image using the attached logo on the vest.
    <p align="left">
       <img src="images/image-gen-result.png" width="50%" alt="Generate Image Result" />
       <br>
-      <em>Example of a generated image.</em>
+      <em>Example of a generated image</em>
    </p>
 
 
@@ -74,7 +74,7 @@ Adjust the image using the attached logo on the vest.
    <p align="left">
       <img src="images/image-gen-result2.png" width="50%" alt="Generate Image Result" />
       <br>
-      <em>Example of a generated image.</em>
+      <em>Example of a generated image</em>
    </p>
 
 ## Congratulations!
