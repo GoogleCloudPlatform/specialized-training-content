@@ -4,7 +4,7 @@
 20 minutes
 
 ## Overview
-In this lab, you will use a **meta-prompt**—asking Gemini to write an image generation prompt for you—and then use that AI-generated prompt to produce the actual image. This technique is especially useful for complex, high-production-value assets where precise prompt structure matters but the technical vocabulary of image generation is unfamiliar.
+In this lab, you use a **meta-prompt**—asking Gemini to write an image generation prompt for you—and then use that AI-generated prompt to produce the actual image. This technique is especially useful for complex, high-production-value assets where precise prompt structure matters but the technical vocabulary of image generation is unfamiliar.
 
 ### You learn how to:
 - Use a meta-prompt to transform a plain-language brief into a structured, technical image generation prompt.
@@ -67,7 +67,7 @@ A meta-prompt asks Gemini to generate a prompt for another task—in this case, 
    <p align="left">
      <img src="images/headshot.png" width="50%" alt="Model Headshot" />
      <br>
-     <em>Model Headshot</em>
+     <em>Model headshot</em>
    </p>
 
 5. Copy and paste your model into the chat. Now, your chat should look similar to the screenshot below. 
@@ -85,7 +85,7 @@ A meta-prompt asks Gemini to generate a prompt for another task—in this case, 
     <p align="left">
      <img src="images/image-gen-results.png" width="50%" alt="Gemerated image example" />
      <br>
-     <em>Gemerated image example</em>
+     <em>Generated image example</em>
    </p>
 
 ### Task 3: Evaluate the meta-prompt technique
@@ -100,7 +100,7 @@ A meta-prompt asks Gemini to generate a prompt for another task—in this case, 
 
 3. Generate the image with the produced prompt. Share both the meta-prompt output and the resulting image with the group.
 
-### Bonus Task 4: Try your own example
+### Bonus Task: Try your own example
 
 1. Start a new chat. Come up with an example relevant to your work or your company. Experiment with meta-prompting to have Gemini create the prompts to generate an ad campaign, a company promotion, a graphic for a social media post, or anything else. 
 
