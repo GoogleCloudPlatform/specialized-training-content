@@ -4,7 +4,7 @@
 20 minutes
 
 ## Overview
-In this lab, you will create a promotional infographic for Cymbal Mart's Back-to-School sale using Gemini's image generation model. You will start with a strong baseline prompt, then practice prompt engineering techniques—adding context, refining details, and iterating—to improve the output.
+In this lab, you create a promotional infographic for Cymbal Mart's Back-to-School sale using Gemini's image generation model. You will start with a strong baseline prompt, then practice prompt engineering techniques—adding context, refining details, and iterating—to improve the output.
 
 ### You learn how to:
 - Construct a detailed image generation prompt with role framing, visual metaphors, and specific copy.
@@ -32,7 +32,7 @@ Cymbal Mart's Marketing team needs a campaign infographic for the **Back-to-Scho
 <p align="left">
   <img src="images/cymbal-mart-logo.png" width="50%" alt="Cymbal-Mart Logo" />
   <br>
-  <em>Cymbal-Mart Logo</em>
+  <em>Cymbal Mart Logo</em>
 </p>
 
 
