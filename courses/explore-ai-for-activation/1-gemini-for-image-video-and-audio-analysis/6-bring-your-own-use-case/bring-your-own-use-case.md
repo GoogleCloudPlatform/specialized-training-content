@@ -55,7 +55,7 @@ Review your output critically:
 
 Make at least one refinement, then share your final output and the prompt that produced it with the group. Be ready to explain what worked, what surprised you, and what you would do differently next time.
 
-### Bonus Task 4: Extend it
+### Bonus Task: Extend it
 
 Take your asset one step further:
 - If you generated an image, use the meta-prompting technique to ask Gemini to improve your original prompt, then regenerate and compare.
