@@ -35,7 +35,7 @@ Cymbal Mart is running an internal employee spotlight campaign. The Social Media
 
 3. Click **+ Add files** and select **Upload files**. In the dialog, upload a photo of yourself, and click **Open**.
 
-    __Note:__ if it is easier, just copy a picture of yourself to the clipboard and paste it in the chat box. 
+    __Note:__ If it is easier, just copy a picture of yourself to the clipboard and paste it in the chat box. 
 
 4. Copy and paste the following prompt into the chat, then press ENTER:
 
@@ -62,7 +62,7 @@ Adjust the image using the attached logo on the vest.
 
 6. Review the generated image. If the likeness or setting is not quite right, see the Bonus Task below for refinement techniques.
 
-### Bonus Task 2: Refine and experiment
+### Bonus Task: Refine and experiment
 
 1. Try swapping the setting. Ask Gemini to regenerate the same portrait but place you **on the floor of a busy Cymbal Mart retail store** instead of the warehouse—surrounded by product displays, customers, and branded signage.
 
