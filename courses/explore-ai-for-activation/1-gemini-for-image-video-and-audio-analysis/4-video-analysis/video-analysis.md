@@ -4,7 +4,7 @@
 20 minutes
 
 ## Overview
-In this lab, you will upload a store walk-through video alongside a PDF standards document and ask Gemini to cross-reference them—identifying compliance violations, citing specific policy sections, and providing exact timestamps. This is a practical example of multimodal analysis: Gemini reads the document and watches the video simultaneously to produce a grounded, timestamped audit.
+In this lab, you upload a store walk-through video alongside a PDF standards document and ask Gemini to cross-reference them—identifying compliance violations, citing specific policy sections, and providing exact timestamps. This is a practical example of multimodal analysis: Gemini reads the document and watches the video simultaneously to produce a grounded, timestamped audit.
 
 ### You learn how to:
 - Upload and analyze a video file with Gemini.
@@ -34,7 +34,7 @@ This lab analyzes a video of a store walk through, comparing it against a PDF do
 
 1. Open **Gemini Enterprise** in your browser, and start a new chat. 
 
-2. Click **+ Add files** → **Add from Drive**. In the __Search__ box at the top paste the URL below, then press ENTER and select then __Insert__ the resulting file into your chat. This is the Cymbal Store Standards PDF file. 
+2. Click **+ Add files** → **Add from Drive**. In the __Search__ box at the top, paste the URL below, then press ENTER and then __Insert__ the resulting file into your chat. This is the Cymbal Store Standards PDF file. 
 
 ```text
 https://drive.google.com/file/d/1_yZkzZPBTEk1rUE32SmW4aAJPIXUdR4J/view?usp=drive_link
@@ -79,7 +79,7 @@ https://drive.google.com/file/d/1EjJBPXl52D2EkqStgVRq18Kl0OtUXVRG/view?usp=shari
    Re-rank all the violations by estimated customer safety risk rather than chronological order. Which three are most likely to cause a customer injury if not addressed today?
    ```
 
-### Bonus Task 3: Write the manager's corrective action email
+### Bonus Task: Write the manager's corrective action email
 
 1. Ask Gemini to draft a formal corrective action email:
 
@@ -89,7 +89,7 @@ https://drive.google.com/file/d/1EjJBPXl52D2EkqStgVRq18Kl0OtUXVRG/view?usp=shari
 
 2. Review the draft. Would you send it as-is, or does it need edits? What information from the audit report is missing or could be added to make the email more useful?
 
-### Bonus Task 4: Process your own video
+### Bonus Task: Process your own video
 
 1. You might have to do this one later. Grab your phone file film a video of your home, your office, or anywhere else for that matter. Upload it to Gemini and try asking some questions.
 
