@@ -373,6 +373,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -420,7 +421,6 @@
     <script>
         // Configuration
         const API_URL = 'http://localhost:8000';
-        const REDIRECT_URI = 'http://localhost:8000/oauth-callback.html'; // Must match OAuth config!
         
         // State
         let userId = 'user_' + Math.random().toString(36).substr(2, 9);
@@ -459,11 +459,11 @@
 
         // Render markdown into an agent message bubble and keep the chat scrolled
         // to the bottom. `marked` is loaded from the CDN <script> in <head>.
-        // NOTE: this is a localhost teaching demo, so model output is rendered
-        // directly without sanitizing. In production, sanitize the HTML (e.g.
-        // DOMPurify.sanitize(marked.parse(text))) before inserting it.
+        // Model output can contain arbitrary HTML (including via data returned
+        // by tools), so the parsed markdown is sanitized with DOMPurify before
+        // being inserted into the DOM.
         function renderMarkdown(contentDiv, text) {
-            contentDiv.innerHTML = marked.parse(text);
+            contentDiv.innerHTML = DOMPurify.sanitize(marked.parse(text));
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
@@ -494,8 +494,9 @@
             authPrompt.className = 'auth-prompt';
             authPrompt.id = 'auth-prompt';
             
-            // Construct full auth URL with redirect_uri
-            const fullAuthUrl = authUri + `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+            // The auth URL from the server already contains the redirect_uri
+            // (OAUTH_REDIRECT_URI in .env, applied in server.py's OAuth2Auth)
+            const fullAuthUrl = authUri;
             
             authPrompt.innerHTML = `
                 <h3>One-time sign-in to connect the BigQuery tools</h3>
@@ -512,7 +513,7 @@
                 <a href="#" class="auth-button" id="login-button">Login with Google</a>
                 <p style="margin-top: 15px; font-size: 12px; color: #666;">
                     Or manually paste callback URL:<br>
-                    <input type="text" id="manual-callback" placeholder="https://localhost:8000/oauth-callback.html?code=...">
+                    <input type="text" id="manual-callback" placeholder="http://localhost:8000/auth/callback?code=...">
                     <button class="submit-auth" id="submit-manual-auth">Submit</button>
                 </p>
             `;
@@ -597,10 +598,10 @@
             
             addMessage('✓ Authorization received, continuing...', 'system');
             
-            // Update auth config with callback URL
+            // Update auth config with callback URL. The redirect_uri is already
+            // present in the config — the server set it in OAuth2Auth.
             const authConfig = currentAuthContext.authConfig;
             authConfig.exchanged_auth_credential.oauth2.auth_response_uri = callbackUrl;
-            authConfig.exchanged_auth_credential.oauth2.redirect_uri = REDIRECT_URI;
             
             // Send FunctionResponse back to ADK
             sendAuthResponse(

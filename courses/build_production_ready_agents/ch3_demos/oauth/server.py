@@ -59,8 +59,9 @@ from google.adk.tools.mcp_tool.mcp_session_manager import \
     StreamableHTTPConnectionParams
 
 # OAuth configuration - matches the blog article
-OAUTH_CLIENT_ID = os.getenv('OAUTH_CLIENT_ID')
-OAUTH_CLIENT_SECRET = os.getenv('OAUTH_CLIENT_SECRET')
+OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
+OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
+OAUTH_REDIRECT_URI = os.getenv('OAUTH_REDIRECT_URI', 'http://localhost:8000/oauth-callback.html')
 
 def get_oauth2_mcp_tool():
     """Create BigQuery MCP tool with OAuth - ADK will handle the flow"""
@@ -80,7 +81,10 @@ def get_oauth2_mcp_tool():
         auth_type=AuthCredentialTypes.OAUTH2,
         oauth2=OAuth2Auth(
             client_id=OAUTH_CLIENT_ID,
-            client_secret=OAUTH_CLIENT_SECRET
+            client_secret=OAUTH_CLIENT_SECRET,
+            # Setting redirect_uri here means ADK includes it in the auth_uri
+            # it generates, so the client doesn't have to build the URL itself.
+            redirect_uri=OAUTH_REDIRECT_URI
         ),
     )
     
@@ -217,8 +221,10 @@ async def serve_client():
     """
 
 @app.get("/oauth-callback.html", response_class=HTMLResponse)
+@app.get("/auth/callback", response_class=HTMLResponse)
 async def serve_oauth_callback():
-    """Serve the OAuth callback page"""
+    """Serve the OAuth callback page (both paths, so the registered
+    redirect URI can use either)"""
     with open("oauth-callback.html", "r") as f:
         return f.read()
 
