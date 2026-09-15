@@ -6,6 +6,8 @@ mcp = FastMCP("Enterprise Support API")
 @mcp.tool
 def create_support_ticket(customer_id, issue, priority):
     return "submitted"
+
+    # in production, you would call the real bug filing API, e.g.:
     response = requests.post(
         "https://buganizer.internal/posts",
         json={"customer_id": customer_id, "issue": issue, "priority": priority})
