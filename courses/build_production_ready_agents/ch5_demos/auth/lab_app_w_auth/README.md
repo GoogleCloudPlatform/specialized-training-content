@@ -230,6 +230,8 @@ async def validate_token(authorization: Optional[str]) -> Optional[dict]:
     id_info = id_token.verify_oauth2_token(
         token, google_requests.Request(), CLIENT_ID
     )
+    if not id_info.get("email_verified"):
+        raise ValueError("Email address is not verified.")
     return id_info  # Contains email, sub, etc.
 ```
 

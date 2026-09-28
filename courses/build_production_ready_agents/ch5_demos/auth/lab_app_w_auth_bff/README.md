@@ -158,6 +158,8 @@ async def auth_callback(request: Request):
     # ... validate state (CSRF), read code ...
     tokens = await exchange_code_for_tokens(code)      # server-side, uses client secret
     userinfo = await fetch_userinfo(tokens["access_token"])
+    if not userinfo.get("email_verified"):
+        raise HTTPException(status_code=401, detail="Unauthorized. Email address is not verified.")
 
     sid = secrets.token_urlsafe(32)
     session_store[sid] = {
