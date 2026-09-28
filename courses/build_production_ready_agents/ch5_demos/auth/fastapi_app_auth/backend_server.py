@@ -52,6 +52,8 @@ async def validate_token(authorization: Optional[str]) -> Optional[dict]:
         # Verify the token with Google
         # This checks the signature, expiration, and audience (CLIENT_ID)
         id_info = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+        if not id_info.get("email_verified"):
+            raise ValueError("Email address is not verified.")
         return id_info
     except (ValueError, IndexError) as e:
         # Invalid token

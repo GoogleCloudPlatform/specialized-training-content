@@ -325,6 +325,9 @@ async def auth_callback(request: Request):
         logger.error(f"OAuth exchange failed: {e}", exc_info=True)
         raise HTTPException(status_code=502, detail="OAuth exchange failed.")
 
+    if not userinfo.get("email_verified"):
+        raise HTTPException(status_code=401, detail="Unauthorized. Email address is not verified.")
+
     sid = secrets.token_urlsafe(32)
     session_store[sid] = {
         "email": userinfo.get("email"),

@@ -232,6 +232,8 @@ async def validate_token(authorization: str) -> dict:
         requests.Request(),
         CLIENT_ID
     )
+    if not id_info.get("email_verified"):
+        raise ValueError("Email address is not verified.")
 
     return id_info  # Contains email, sub, etc.
 ```
