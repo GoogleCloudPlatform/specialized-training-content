@@ -22,8 +22,8 @@ curl -X POST --data '{"OwnerName": "Doug", "PetName": "Noir", "PetType": "Dog", 
 curl -X POST --data '{"OwnerName": "Doug", "PetName": "Bree", "PetType": "Dog", "Breed": "Mutt"}'  http://localhost:8080/pets
 curl -X POST --data '{"OwnerName": "Joey", "PetName": "Felix", "PetType": "Cat", "Breed": "Tabby"}'  http://localhost:8080/pets
 
-# This will delete everything
-curl -X DELETE http://localhost:8080/pets
+# This will delete everything (requires Bearer token authentication)
+curl -X DELETE -H "Authorization: Bearer $(gcloud auth print-identity-token)" http://localhost:8080/pets
 
 
 ### To Test the API from Cloud Run change "http://localhost:8080" with your Cloud Run URL
@@ -38,6 +38,6 @@ curl -X POST --data '{"OwnerName": "Doug", "PetName": "Noir", "PetType": "Dog", 
 curl -X POST --data '{"OwnerName": "Doug", "PetName": "Bree", "PetType": "Dog", "Breed": "Mutt"}'  https://spanner-pets-api-3ga5oruw5a-uc.a.run.app/pets
 curl -X POST --data '{"OwnerName": "Joey", "PetName": "Felix", "PetType": "Cat", "Breed": "Tabby"}'  https://spanner-pets-api-3ga5oruw5a-uc.a.run.app/pets
 
-# This will delete everything
-curl -X DELETE https://spanner-pets-api-3ga5oruw5a-uc.a.run.app/pets
+# This will delete everything (requires Bearer token authentication)
+curl -X DELETE -H "Authorization: Bearer $(gcloud auth print-identity-token)" https://spanner-pets-api-3ga5oruw5a-uc.a.run.app/pets
 

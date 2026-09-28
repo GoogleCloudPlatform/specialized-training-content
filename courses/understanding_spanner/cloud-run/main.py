@@ -12,10 +12,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from google.auth.transport import requests as google_requests
 from google.cloud import spanner
+from google.oauth2 import id_token
 from flask import Flask, request
 from flask_restful import Resource, Api
 from flask import jsonify
+import hmac
 import uuid
 import os
  
@@ -124,6 +127,8 @@ class PetsList(Resource):
         return "{} record(s) inserted.".format(row_ct), 201
 
     def delete(self):
+        if not _is_authorized_request():
+            return {"error": "Unauthorized"}, 401
 
         # This delete all the Owners and Pets
         # Uses Cascading Delete on interleaved Pets table
@@ -136,6 +141,29 @@ class PetsList(Resource):
 
         row_ct = database.run_in_transaction(delete_owners)
         return "{} record(s) deleted.".format(row_ct), 201
+
+
+def _is_authorized_request() -> bool:
+    """Validate Bearer token for destructive operations."""
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        return False
+    token = auth_header.split(" ", 1)[1].strip()
+    if not token:
+        return False
+
+    admin_token = os.environ.get("ADMIN_API_TOKEN")
+    if admin_token and hmac.compare_digest(token, admin_token):
+        return True
+
+    try:
+        audience = os.environ.get("OAUTH_CLIENT_ID") or None
+        claims = id_token.verify_oauth2_token(
+            token, google_requests.Request(), audience=audience
+        )
+        return bool(claims and claims.get("email_verified"))
+    except ValueError:
+        return False
         
 class Pet(Resource):
     def get(self, pet_id):
@@ -191,4 +219,4 @@ def server_error(e):
     return 'An internal error occurred.', 500
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='127.0.0.1', port=int(os.environ.get('PORT', 8080)), debug=False)
