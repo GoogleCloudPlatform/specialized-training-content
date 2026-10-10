@@ -1,5 +1,5 @@
 google-cloud-aiplatform==1.139.0
-google-adk==1.26.0
+google-adk==1.28.1
 fastapi==0.124.1
 uvicorn==0.34.0
 python-dotenv==1.2.2
