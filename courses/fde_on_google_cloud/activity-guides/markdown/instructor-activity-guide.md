@@ -102,11 +102,11 @@ That leaves 2 minutes of buffer under the 15-minute cap.
 
 | Exhibit | Failure mode | Root cause | Fix | Owner |
 |---|---|---|---|---|
-| 1. Lost parcel | Tool-calling & integration failure that surfaces as a hallucination | The tool returns an empty string on a 504, and the model fills the gap | Tool wrapper with a short timeout that returns a typed error (for example, `UPSTREAM_TIMEOUT`); fall back to a human handoff | FDE squad, co-built with Cymbal developers |
-| 2. Early refund | Instruction breakdown | A rule held only in the prompt erodes in long sessions | `before_tool_callback` that blocks `issue_instant_refund` unless the status is **DELIVERED**; add an eval case for it | FDE squad |
-| 3. Overnight drop | Model & input drift | An auto-updating model alias picked up a new version | Pin the model version; reproduce in a minimal test; clarify the prompt or add a callback; send the repro upstream; remove the workaround when fixed | FDE triages; platform team fixes the model behavior |
+| 1. Lost parcel | Tool-Calling and Integration Failure that surfaces as a hallucination | The tool returns an empty string on a 504, and the model fills the gap | Tool wrapper with a short timeout that returns a typed error (for example, `UPSTREAM_TIMEOUT`); fall back to a human handoff | FDE squad, co-built with Cymbal developers |
+| 2. Early refund | Instruction Breakdown | A rule held only in the prompt erodes in long sessions | `before_tool_callback` that blocks `issue_instant_refund` unless the status is **DELIVERED**; add an eval case for it | FDE squad |
+| 3. Overnight drop | Model and Input Drift | An auto-updating model alias picked up a new version | Pin the model version; reproduce in a minimal test; clarify the prompt or add a callback; send the repro upstream; remove the workaround when fixed | FDE triages; platform team fixes the model behavior |
 | 4. $600 eval cases | Not a model failure | The eval cases encode an old $750 policy; the agent is correct | Correct the eval set; the business SME signs off on the expected outcomes | Cymbal business SME (owns business truth), with FDE help |
-| 5. Friendlier prompt | Instruction breakdown caused by a process gap | Direct push to main, with no review and no eval gate | Branch protection; run the eval suite on every PR | Cymbal developers and FDE squad jointly |
+| 5. Friendlier prompt | Instruction Breakdown caused by a process gap | Direct push to main, with no review and no eval gate | Branch protection; run the eval suite on every PR | Cymbal developers and FDE squad jointly |
 
 **Listen for:** teams that stop at "the model hallucinated" (push on the cause), and Exhibit 4 teams that find the "bad data" claim was partly true, just not in the way anyone meant it.
 

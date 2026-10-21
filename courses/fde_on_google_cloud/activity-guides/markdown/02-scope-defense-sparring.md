@@ -49,7 +49,7 @@ The FDE lead uses the three-step pushback:
 ## SCOPE.md excerpt
 
 ```markdown
-# SCOPE.md: Cymbal Order & Shipment Support Agent (Sprint 1)
+# SCOPE.md: Cymbal Order and Shipment Support Agent (Sprint 1)
 
 ## In scope
 - Chat agent for order status, shipment tracking, reroutes, and damaged-parcel claims

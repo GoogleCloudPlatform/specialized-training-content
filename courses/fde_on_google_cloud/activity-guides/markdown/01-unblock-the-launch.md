@@ -10,7 +10,7 @@
 
 Cymbal Logistics is in **Week 6 of an 8-week sprint**. Production launch is two weeks away.
 
-- The Order & Shipment Support Agent passes **68%** of its eval cases. The launch gate is **90%**.
+- The Order and Shipment Support Agent passes **68%** of its eval cases. The launch gate is **90%**.
 - Cymbal's leadership says the model is unreliable.
 - The account team says Cymbal's data is bad.
 - Nobody has looked at the evidence.
@@ -49,7 +49,7 @@ The **A1 Unblock the Launch** tab of the class worksheet has one row per exhibit
 | Column | What to write |
 |---|---|
 | Symptom | What a user or the eval suite saw |
-| Failure mode | One of: Model & Input Drift · Instruction Breakdown · Tool-Calling & Integration Failure · Hallucination · Not a model failure |
+| Failure mode | One of: Model and Input Drift · Instruction Breakdown · Tool-Calling and Integration Failure · Hallucination · Not a model failure |
 | Root cause | The real cause, in one line |
 | Fix | Prompt change, tool change, callback, eval set change, process change, or escalation |
 | Owner | FDE squad · Cymbal developers · Cymbal business SME · Platform team (or a pair of these) |
