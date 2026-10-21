@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scope Defense Sparring</title>
+<style>
+  :root {
+    --accent: #188038;
+    --tint: #E6F4EA;
+    --text: #202124;
+    --muted: #5F6368;
+    --line: #DADCE0;
+    --page: #F8F9FA;
+    --card: #FFFFFF;
+    --code-bg: #F1F3F4;
+    --sans: "Google Sans", "Google Sans Text", "Product Sans", Roboto, "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "Google Sans Code", "Roboto Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font: 16px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 880px;
+    margin: 32px auto;
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(60,64,67,.15), 0 2px 8px rgba(60,64,67,.08);
+    overflow: hidden;
+  }
+  header {
+    padding: 36px 44px 28px;
+    border-top: 8px solid var(--accent);
+    background: linear-gradient(180deg, var(--tint) 0%, var(--card) 100%);
+  }
+  .badge {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--card);
+    background: var(--accent);
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; font-weight: 600; }
+  .tagline { font-size: 20px; color: var(--accent); margin: 0 0 4px; font-weight: 500; }
+  .eyebrow { font-size: 14px; color: var(--muted); margin: 0; }
+  main { padding: 8px 44px 40px; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 20px 0 8px;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .sv { font-size: 18px; font-weight: 600; line-height: 1.3; }
+  .sl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  section { margin-top: 34px; }
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    padding-left: 14px;
+    border-left: 5px solid var(--accent);
+    line-height: 1.25;
+  }
+  h3 { font-size: 17px; font-weight: 600; margin: 26px 0 8px; color: var(--accent); }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin: 4px 0; }
+  ol li::marker { color: var(--accent); font-weight: 600; }
+  strong { font-weight: 600; }
+  code {
+    font-family: var(--mono);
+    font-size: .88em;
+    background: var(--code-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 0 0 14px;
+    font: 13.5px/1.5 var(--mono);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  blockquote {
+    margin: 0 0 14px;
+    padding: 12px 18px;
+    background: var(--tint);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    font-size: 16.5px;
+  }
+  .tw { overflow-x: auto; margin: 0 0 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    border-bottom: 2px solid var(--line);
+  }
+  td.blank {
+    min-width: 90px;
+    width: 45%;
+    height: 56px;
+    background: #FBFBFC;
+    border: 1px solid var(--line);
+    outline: none;
+    cursor: text;
+    transition: background .12s, box-shadow .12s;
+  }
+  td.blank:hover { background: var(--tint); }
+  td.blank:focus { background: var(--card); box-shadow: inset 0 0 0 2px var(--accent); }
+  td.blank:empty:hover::before { content: "Click to type"; color: #9AA0A6; font-size: 13px; }
+  table.grid { table-layout: fixed; }
+  table.grid td.blank { width: auto; }
+  table.grid td:not(.blank) { font-weight: 500; vertical-align: middle; }
+  table.timeline td:first-child {
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    width: 80px;
+  }
+  section.report {
+    background: var(--tint);
+    border: 1px solid var(--accent);
+    border-radius: 14px;
+    padding: 22px 24px 10px;
+  }
+  section.report h2 { border-left: none; padding-left: 0; }
+  section.report h2::before { content: "\1F4E3  "; }
+  section.report table { background: var(--card); border-radius: 8px; }
+  section.report blockquote { background: var(--card); }
+  section.reminder {
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    padding: 20px 24px 8px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  section.reminder h2 { border-left: none; padding-left: 0; font-size: 17px; color: var(--text); }
+  section.reminder strong { color: var(--text); }
+  hr.divider { border: none; border-top: 1px solid var(--line); margin: 40px 0 0; }
+  footer { padding: 0 44px 28px; font-size: 13px; color: var(--muted); }
+  @media screen and (min-width: 1200px) {
+    html { zoom: 1.25; }
+  }
+  @media (max-width: 640px) {
+    .page { margin: 0; border-radius: 0; }
+    header, main, footer { padding-left: 16px; padding-right: 16px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 28px; }
+  }
+  @media print {
+    body { background: #fff; font-size: 12.5px; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    header { padding: 20px 0 16px; }
+    main, footer { padding-left: 0; padding-right: 0; }
+    section, pre, table, blockquote { break-inside: avoid; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <span class="badge">Discussion 2</span>
+  <h1>Discussion 2: Scope Defense Sparring</h1>
+  <p class="tagline">Absorb, defer, or route?</p>
+  <p class="eyebrow">Forward Deployed Engineering on Google Cloud · Team activity</p>
+</header>
+<main>
+<div class="stats"><div class="stat"><div class="sv">13 minutes</div><div class="sl">Total time</div></div><div class="stat"><div class="sv">8 minutes</div><div class="sl">Your work time</div></div><div class="stat"><div class="sv">3–4 people, sparring in pairs</div><div class="sl">Team size</div></div><div class="stat"><div class="sv">A call on each request, on the class worksheet</div><div class="sl">Your team produces</div></div></div>
+<section class=""><h2>The situation</h2>
+<p>Cymbal Logistics is in <strong>Week 3 of an 8-week sprint</strong>. The Week 3 demo went well: the agent handles order status, tracking, and damaged-parcel claims.</p>
+<p>Then Cymbal's executive sponsor says:</p>
+<blockquote>"This is fantastic. Our CEO wants this agent negotiating <strong>ocean freight contracts by voice</strong> in time for investor day, three weeks from now. And our UI team is behind, so we need your engineers to <strong>build the React screens</strong> for our customer portal."</blockquote>
+<p>You need to protect the sprint without damaging the relationship.</p>
+</section>
+<section class=""><h2>Your task</h2>
+<p>Spar in <strong>pairs</strong>. One person plays the <strong>Cymbal sponsor</strong> and the other plays the <strong>FDE lead</strong>. Swap after Round 1. In a team of 3, the third person observes with the scorecard and takes the FDE lead role in Round 2.</p>
+<p>The FDE lead uses the three-step pushback:</p>
+<ol><li><strong>Acknowledge.</strong> Say why the idea has real value to Cymbal.</li><li><strong>Quantify.</strong> Use the fact card to name the cost to this sprint.</li><li><strong>Re-anchor and redirect.</strong> Point to SCOPE.md, then say where the request goes: absorb it with a written trade-off, defer it to the Sprint 2 backlog, or route it to another team.</li></ol>
+</section>
+<section class=""><h2>How to run it</h2>
+<div class="tw"><table class="timeline"><thead><tr><th>Clock</th><th>Step</th></tr></thead><tbody><tr><td>0:00</td><td>Form pairs, pick a <strong>Scribe</strong> and a <strong>Reporter</strong>, and read the fact card and SCOPE.md (1 minute)</td></tr><tr><td>1:00</td><td><strong>Round 1</strong> (3 minutes): the sponsor asks for voice negotiation and the React screens</td></tr><tr><td>4:00</td><td><strong>Swap roles. Round 2</strong> (3 minutes): the new sponsor adds the EDI request and pushes back on any deferral</td></tr><tr><td>7:00</td><td>As a team, agree on your call for each request; the Scribe records it on the class worksheet (1 minute)</td></tr><tr><td>8:00</td><td>Stop</td></tr></tbody></table></div>
+</section>
+<section class=""><h2>Fact card (illustrative estimates)</h2>
+<p><strong>Squad:</strong> a tech lead, 2 FDE builders, and a delivery lead, paired with 3 Cymbal developers. Build and hill climbing run through Week 6, and the 90% launch gate must be met before Weeks 7–8 (readiness and handover).</p>
+<div class="tw"><table class=""><thead><tr><th>Request</th><th>Estimate</th><th>What it touches</th></tr></thead><tbody><tr><td>Voice negotiation of ocean freight contracts</td><td>About 6 weeks</td><td>New telephony integration, a new domain, an eval set rebuilt from zero</td></tr><tr><td>React portal screens</td><td>About 16 engineer-days</td><td>Frontend work only; nothing to do with the agent</td></tr><tr><td>Support the EDI carrier status format (Round 2 only)</td><td>About 4 engineer-days, plus new eval cases</td><td>The tracking tool the agent already uses</td></tr></tbody></table></div>
+</section>
+<section class=""><h2>SCOPE.md excerpt</h2>
+<pre data-lang="markdown"><code># SCOPE.md: Cymbal Order &amp; Shipment Support Agent (Sprint 1)
+
+## In scope
+- Chat agent for order status, shipment tracking, reroutes, and damaged-parcel claims
+- Instant refunds up to $500; larger claims escalate to a human
+- Tracking, reroute, and claims APIs called as tools from ADK
+
+## Out of scope
+- Voice and telephony channels
+- Frontend or UI development (Cymbal&#x27;s web team owns the portal)
+- Ocean freight and contract negotiation
+- Manual data cleanup or ETL of legacy systems
+
+## Exit criteria
+- At least 90% pass rate on the golden eval set
+- Cymbal&#x27;s team ships to production and runs a game day unassisted</code></pre>
+</section>
+<section class=""><h2>Role cards</h2>
+<p><strong>Cymbal sponsor.</strong> You are excited, under pressure from your CEO, and used to getting a yes. Lines to use:</p>
+<ul><li>"The CEO has already mentioned this to the board."</li><li>"You're Google. Can't you add more engineers?"</li><li>"If you can't do voice, what are we paying for?"</li><li>(Round 2) "The EDI change is tiny. Just squeeze it in."</li></ul>
+<p><strong>FDE lead.</strong> Never say "that's not my job." Every answer ends by saying who will handle the request and what happens next.</p>
+</section>
+<section class=""><h2>Observer scorecard</h2>
+<div class="tw"><table class=""><thead><tr><th>Did the FDE lead...</th><th>Yes / No</th></tr></thead><tbody><tr><td>Acknowledge the value before saying no?</td><td class="blank" contenteditable="true"></td></tr><tr><td>Use a number from the fact card?</td><td class="blank" contenteditable="true"></td></tr><tr><td>Point to a line in SCOPE.md?</td><td class="blank" contenteditable="true"></td></tr><tr><td>Instead of stopping at "no," say who will handle the request and when? (For example: the Sprint 2 backlog, a telephony specialist team, Cymbal's web team, or an implementation partner)</td><td class="blank" contenteditable="true"></td></tr><tr><td>Get a written trade-off before absorbing anything?</td><td class="blank" contenteditable="true"></td></tr></tbody></table></div>
+</section>
+<section class=""><h2>Team worksheet</h2>
+<p>Your <strong>Scribe</strong> fills in your team's rows on the <strong>D2 Scope Defense</strong> tab of the <strong>class worksheet</strong>. The instructor posts the link in chat at the start of class. If you don't have it, write in this table.</p>
+<div class="tw"><table class="grid"><thead><tr><th>Request</th><th>Your call: absorb, defer, or route</th><th>Who handles it, and what the sponsor agreed to</th></tr></thead><tbody><tr><td>Voice negotiation of ocean freight</td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td></tr><tr><td>React portal screens</td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td></tr><tr><td>EDI carrier status format</td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td></tr></tbody></table></div>
+</section>
+<section class="report"><h2>Report-out (2 minutes for the whole class)</h2>
+<p>When the instructor calls time, each Reporter answers <strong>the item for their team number</strong> in one or two sentences:</p>
+<div class="tw"><table class=""><thead><tr><th>Team</th><th>Report this</th></tr></thead><tbody><tr><td>1</td><td>The strongest sentence your FDE lead used on the voice request</td></tr><tr><td>2</td><td>Where the React screens should go, and why</td></tr><tr><td>3</td><td>Did you absorb the EDI request? If so, what did the sponsor agree to give up?</td></tr><tr><td>4</td><td>The sponsor line that was hardest to answer, and how you answered it</td></tr><tr><td>5</td><td>Which SCOPE.md line or qualification criterion did the most work</td></tr><tr><td>6+</td><td>Start again at item 1</td></tr></tbody></table></div>
+</section>
+<section class="reminder"><h2>Reminder from the slides</h2>
+<ul><li><strong>Operating modes:</strong> Build (co-develop), Consult (advise), Triage (route to the right team).</li><li><strong>Intake routing:</strong> unvalidated ideas go to pre-sales discovery. Staff augmentation goes to PSO or an implementation partner.</li><li><strong>SCOPE.md</strong> lives in the Git root, so people and AI coding tools work from the same boundaries.</li></ul>
+</section>
+</main>
+<footer>Forward Deployed Engineering on Google Cloud · Case thread: Cymbal Logistics</footer>
+</div>
+</body>
+</html>

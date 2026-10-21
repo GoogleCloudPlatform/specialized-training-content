@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pilot Autopsy</title>
+<style>
+  :root {
+    --accent: #1A73E8;
+    --tint: #E8F0FE;
+    --text: #202124;
+    --muted: #5F6368;
+    --line: #DADCE0;
+    --page: #F8F9FA;
+    --card: #FFFFFF;
+    --code-bg: #F1F3F4;
+    --sans: "Google Sans", "Google Sans Text", "Product Sans", Roboto, "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "Google Sans Code", "Roboto Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font: 16px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 880px;
+    margin: 32px auto;
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(60,64,67,.15), 0 2px 8px rgba(60,64,67,.08);
+    overflow: hidden;
+  }
+  header {
+    padding: 36px 44px 28px;
+    border-top: 8px solid var(--accent);
+    background: linear-gradient(180deg, var(--tint) 0%, var(--card) 100%);
+  }
+  .badge {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--card);
+    background: var(--accent);
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; font-weight: 600; }
+  .tagline { font-size: 20px; color: var(--accent); margin: 0 0 4px; font-weight: 500; }
+  .eyebrow { font-size: 14px; color: var(--muted); margin: 0; }
+  main { padding: 8px 44px 40px; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 20px 0 8px;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .sv { font-size: 18px; font-weight: 600; line-height: 1.3; }
+  .sl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  section { margin-top: 34px; }
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    padding-left: 14px;
+    border-left: 5px solid var(--accent);
+    line-height: 1.25;
+  }
+  h3 { font-size: 17px; font-weight: 600; margin: 26px 0 8px; color: var(--accent); }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin: 4px 0; }
+  ol li::marker { color: var(--accent); font-weight: 600; }
+  strong { font-weight: 600; }
+  code {
+    font-family: var(--mono);
+    font-size: .88em;
+    background: var(--code-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 0 0 14px;
+    font: 13.5px/1.5 var(--mono);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  blockquote {
+    margin: 0 0 14px;
+    padding: 12px 18px;
+    background: var(--tint);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    font-size: 16.5px;
+  }
+  .tw { overflow-x: auto; margin: 0 0 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    border-bottom: 2px solid var(--line);
+  }
+  td.blank {
+    min-width: 90px;
+    width: 45%;
+    height: 56px;
+    background: #FBFBFC;
+    border: 1px solid var(--line);
+    outline: none;
+    cursor: text;
+    transition: background .12s, box-shadow .12s;
+  }
+  td.blank:hover { background: var(--tint); }
+  td.blank:focus { background: var(--card); box-shadow: inset 0 0 0 2px var(--accent); }
+  td.blank:empty:hover::before { content: "Click to type"; color: #9AA0A6; font-size: 13px; }
+  table.grid { table-layout: fixed; }
+  table.grid td.blank { width: auto; }
+  table.grid td:not(.blank) { font-weight: 500; vertical-align: middle; }
+  table.timeline td:first-child {
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    width: 80px;
+  }
+  section.report {
+    background: var(--tint);
+    border: 1px solid var(--accent);
+    border-radius: 14px;
+    padding: 22px 24px 10px;
+  }
+  section.report h2 { border-left: none; padding-left: 0; }
+  section.report h2::before { content: "\1F4E3  "; }
+  section.report table { background: var(--card); border-radius: 8px; }
+  section.report blockquote { background: var(--card); }
+  section.reminder {
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    padding: 20px 24px 8px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  section.reminder h2 { border-left: none; padding-left: 0; font-size: 17px; color: var(--text); }
+  section.reminder strong { color: var(--text); }
+  hr.divider { border: none; border-top: 1px solid var(--line); margin: 40px 0 0; }
+  footer { padding: 0 44px 28px; font-size: 13px; color: var(--muted); }
+  @media screen and (min-width: 1200px) {
+    html { zoom: 1.25; }
+  }
+  @media (max-width: 640px) {
+    .page { margin: 0; border-radius: 0; }
+    header, main, footer { padding-left: 16px; padding-right: 16px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 28px; }
+  }
+  @media print {
+    body { background: #fff; font-size: 12.5px; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    header { padding: 20px 0 16px; }
+    main, footer { padding-left: 0; padding-right: 0; }
+    section, pre, table, blockquote { break-inside: avoid; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <span class="badge">Discussion 1</span>
+  <h1>Discussion 1: Pilot Autopsy</h1>
+  <p class="tagline">Who owns the fix?</p>
+  <p class="eyebrow">Forward Deployed Engineering on Google Cloud · Team activity</p>
+</header>
+<main>
+<div class="stats"><div class="stat"><div class="sv">13 minutes</div><div class="sl">Total time</div></div><div class="stat"><div class="sv">8 minutes</div><div class="sl">Your work time</div></div><div class="stat"><div class="sv">3–4 people</div><div class="sl">Team size</div></div><div class="stat"><div class="sv">One completed worksheet row</div><div class="sl">Your team produces</div></div></div>
+<section class=""><h2>The situation</h2>
+<p>Cymbal Logistics is in <strong>Week 6 of an 8-week sprint</strong>. Production launch is two weeks away.</p>
+<ul><li>The Order &amp; Shipment Support Agent passes <strong>68%</strong> of its golden eval cases. The launch gate is <strong>90%</strong>.</li><li>Cymbal's leadership says the model is unreliable.</li><li>The account team says Cymbal's data is bad.</li><li>Nobody has looked at the evidence.</li></ul>
+<p>You are the FDE squad. Your job is to replace blame with a diagnosis.</p>
+</section>
+<section class=""><h2>Your task</h2>
+<p>Your team gets <strong>one exhibit</strong>, based on your team number:</p>
+<div class="tw"><table class=""><thead><tr><th>Team</th><th>Exhibit</th></tr></thead><tbody><tr><td>1</td><td>Exhibit 1: The lost parcel</td></tr><tr><td>2</td><td>Exhibit 2: The early refund</td></tr><tr><td>3</td><td>Exhibit 3: The overnight drop</td></tr><tr><td>4</td><td>Exhibit 4: The $600 goldens</td></tr><tr><td>5</td><td>Exhibit 5: The friendlier prompt</td></tr><tr><td>6+</td><td>Start again at Exhibit 1</td></tr></tbody></table></div>
+<p>Read your exhibit, then your Scribe fills in <strong>your exhibit's row</strong> on the <strong>D1 Pilot Autopsy</strong> tab of the <strong>class worksheet</strong>. The instructor posts the class worksheet link in chat at the start of class. If you don't have it, write in the worksheet table in this guide.</p>
+</section>
+<section class=""><h2>How to run it</h2>
+<div class="tw"><table class="timeline"><thead><tr><th>Clock</th><th>Step</th></tr></thead><tbody><tr><td>0:00</td><td>Pick roles (30 seconds): <strong>Timekeeper</strong>, <strong>Scribe</strong>, <strong>Reporter</strong></td></tr><tr><td>0:30</td><td>Read your exhibit on your own (2 minutes)</td></tr><tr><td>2:30</td><td>Discuss; the Scribe fills in your row on the class worksheet (4 minutes)</td></tr><tr><td>6:30</td><td>Reporter rehearses the one-sentence report-out (1 minute)</td></tr><tr><td>7:30</td><td>Buffer; stop at 8:00</td></tr></tbody></table></div>
+</section>
+<section class=""><h2>Worksheet</h2>
+<p>The <strong>D1 Pilot Autopsy</strong> tab of the class worksheet has one row per exhibit, with the columns below. Fill in only your exhibit's row.</p>
+<div class="tw"><table class=""><thead><tr><th>Column</th><th>What to write</th></tr></thead><tbody><tr><td>Symptom</td><td>What a user or the eval suite saw</td></tr><tr><td>Failure mode</td><td>One of: Model &amp; Input Drift · Instruction Breakdown · Tool-Calling &amp; Integration Failure · Hallucination · Not a model failure</td></tr><tr><td>Root cause</td><td>The real cause, in one line</td></tr><tr><td>Fix</td><td>Prompt change, tool change, callback, eval set change, process change, or escalation</td></tr><tr><td>Owner</td><td>FDE squad · Cymbal developers · Cymbal business SME · Platform team (or a pair of these)</td></tr></tbody></table></div>
+<div class="tw"><table class="grid"><thead><tr><th>Exhibit</th><th>Symptom</th><th>Failure mode</th><th>Root cause</th><th>Fix</th><th>Owner</th></tr></thead><tbody><tr><td>1. The lost parcel</td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td></tr><tr><td>2. The early refund</td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td></tr><tr><td>3. The overnight drop</td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td></tr><tr><td>4. The $600 goldens</td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td></tr><tr><td>5. The friendlier prompt</td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td><td class="blank" contenteditable="true"></td></tr></tbody></table></div>
+</section>
+<section class=""><h2>The exhibits</h2>
+<h3>Exhibit 1: The lost parcel</h3>
+<p>A customer asked about parcel <strong>CYM-4471</strong>. Excerpt from the request trace:</p>
+<pre data-lang="text"><code>span  tool_call  verify_tracking_status(tracking_id=&quot;CYM-4471&quot;)
+      upstream   GET /v2/status/CYM-4471 -&gt; 504 Gateway Timeout (8,003 ms)
+      result     &quot;&quot;                       # empty string returned to the model
+span  model_response
+      &quot;I&#x27;m sorry, parcel CYM-4471 appears to be lost in transit.
+       I&#x27;ve opened a lost-parcel claim for you.&quot;</code></pre>
+<p>Fact: the parcel was delivered on time. The tracking API was slow during a nightly batch job.</p>
+<h3>Exhibit 2: The early refund</h3>
+<p>Excerpt from a 9-turn session log. The prompt's <code>&lt;constraints&gt;</code> block says: <em>"Never call issue_instant_refund until status is DELIVERED."</em></p>
+<pre data-lang="text"><code>turn 1   user   &quot;Hi, my parcel arrived damaged&quot;
+...
+turn 6   user   &quot;It&#x27;s CYM-2290, the box was crushed, I need a refund&quot;
+turn 7   tool   issue_instant_refund(tracking_id=&quot;CYM-2290&quot;, amount=180)
+turn 8   tool   verify_tracking_status(tracking_id=&quot;CYM-2290&quot;) -&gt; IN_TRANSIT
+turn 9   agent  &quot;I&#x27;ve issued a $180.00 refund.&quot;</code></pre>
+<p>Fact: in short sessions this never happens. In sessions longer than 6 turns, it happens in 7% of cases.</p>
+<h3>Exhibit 3: The overnight drop</h3>
+<pre data-lang="text"><code>Golden eval pass rate
+  Fri   77%
+  Mon   77%
+  Tue   68%     # 41 cases newly failing
+
+git log since Friday:   no commits to prompts, tools, or config
+Model setting:          auto-updating model alias
+Platform release notes: new model version rolled out Monday night</code></pre>
+<p>Example of a newly failing case. The prompt says <em>"Ask only one clarifying question at a time."</em></p>
+<pre data-lang="text"><code>Before:  &quot;What&#x27;s your tracking number?&quot;
+After:   &quot;What&#x27;s your tracking number, and can you upload photos of the damage?&quot;</code></pre>
+<h3>Exhibit 4: The $600 goldens</h3>
+<p>Breakdown of the 96 failing golden cases:</p>
+<div class="tw"><table class=""><thead><tr><th>Category</th><th>Failing cases</th><th>Notes</th></tr></thead><tbody><tr><td>Expect <code>issue_instant_refund</code> for claims of $520–$650</td><td>40</td><td>Agent escalates instead of refunding</td></tr><tr><td>Tracking and reroute flows</td><td>31</td><td>Mixed causes</td></tr><tr><td>Other</td><td>25</td><td>Mixed causes</td></tr></tbody></table></div>
+<p>Facts:</p>
+<ul><li>Cymbal's refund policy caps instant refunds at <strong>$500</strong>. ADR-004 enforces the cap in the Python tool.</li><li>Cymbal's operations team wrote the goldens from historical tickets, when the cap was <strong>$750</strong>.</li></ul>
+<h3>Exhibit 5: The friendlier prompt</h3>
+<pre data-lang="text"><code>commit 9f3e1c2   author: cymbal-dev   branch: main (direct push, no PR)
+message: &quot;Make the tone friendlier&quot;
+
+- &lt;format&gt;Short, plain sentences. No markdown or JSON.&lt;/format&gt;
++ &lt;format&gt;Be warm and friendly, and lay out details clearly.&lt;/format&gt;</code></pre>
+<p>Facts:</p>
+<ul><li>Since this commit, 22% of replies contain markdown tables. The chat widget shows them as raw <code>|</code> characters.</li><li>Branch protection is off, and the eval suite runs nightly, not on each pull request.</li></ul>
+</section>
+<section class="report"><h2>Report-out (2 minutes for the whole class)</h2>
+<p>When the instructor calls time, each Reporter says <strong>one sentence</strong> in team order, about 20 seconds each:</p>
+<blockquote>"Exhibit <strong>N</strong> is a <strong>[failure mode]</strong> problem. The fix is <strong>[fix]</strong>, and <strong>[owner]</strong> owns it."</blockquote>
+<p>No slides and no role-play. The instructor may ask one follow-up question.</p>
+</section>
+<section class="reminder"><h2>Reminder from the slides</h2>
+<ul><li><strong>Systematic debugging:</strong> read the trace, reproduce the failure as a test, fix the cause.</li><li><strong>Frontier workarounds:</strong> reproduce in a minimal test, unblock with a wrapper or callback, send the repro upstream, remove the wrapper when the fix ships.</li><li><strong>Enforce hard rules in code</strong>, not in longer prompts.</li></ul>
+</section>
+</main>
+<footer>Forward Deployed Engineering on Google Cloud · Case thread: Cymbal Logistics</footer>
+</div>
+</body>
+</html>
