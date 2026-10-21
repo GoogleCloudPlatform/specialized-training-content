@@ -12,7 +12,7 @@ import os
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-HERE = Path(__file__).parent
+HTML_DIR = Path(__file__).parent / "html"
 
 GUIDES = [
     ("01-pilot-autopsy", "Pilot Autopsy", "Who owns the fix?", "#1A73E8"),
@@ -80,8 +80,8 @@ def build_pages():
     )
     pages = {"": HOME.replace("{cards}", cards).encode()}
     for slug, *_ in GUIDES:
-        pages[slug] = (HERE / f"{slug}.html").read_bytes()
-    pages["instructor-activity-guide"] = (HERE / "instructor-activity-guide.html").read_bytes()
+        pages[slug] = (HTML_DIR / f"{slug}.html").read_bytes()
+    pages["instructor-activity-guide"] = (HTML_DIR / "instructor-activity-guide.html").read_bytes()
     return pages
 
 

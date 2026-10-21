@@ -13,7 +13,7 @@ SERVICE="${SERVICE:-fde-activity-guides}"
 cd "$(dirname "$0")"
 
 echo "Regenerating HTML from Markdown..."
-python3 build/md2html.py 0*.md instructor-activity-guide.md
+python3 build/md2html.py markdown/*.md
 
 echo "Enabling required APIs in $PROJECT_ID..."
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com \

@@ -46,7 +46,7 @@ Instructor guide:       https://fde-activity-guides-xxxx.a.run.app/instructor-ac
 
 ### Update after editing a guide
 
-From the same `activity-guides` folder, run `git pull` to get the latest guides (or edit the `.md` files yourself), then rerun the same command. The script regenerates the HTML before deploying, and both URLs stay the same.
+From the same `activity-guides` folder, run `git pull` to get the latest guides (or edit the `.md` files in `markdown/` yourself), then rerun the same command. The script regenerates the HTML in `html/` before deploying, and both URLs stay the same.
 
 ### Good to know
 

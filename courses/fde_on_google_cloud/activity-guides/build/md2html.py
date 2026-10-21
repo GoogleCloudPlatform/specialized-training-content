@@ -1,12 +1,14 @@
 """Convert the activity-guide Markdown subset into styled, self-contained HTML.
 
-Usage (from activity-guides/): python3 build/md2html.py 0*.md instructor-activity-guide.md
-Each .md is written as a .html next to it, using build/template.html.
+Usage (from activity-guides/): python3 build/md2html.py markdown/*.md
+Each .md is written as a .html in html/, using build/template.html.
 """
 import html
 import re
 import sys
 from pathlib import Path
+
+HTML_DIR = Path(__file__).parent.parent / "html"
 
 ACCENTS = {
     "01": ("#1A73E8", "#E8F0FE", "1"),
@@ -175,5 +177,6 @@ def convert(md, key):
 if __name__ == "__main__":
     for path in map(Path, sys.argv[1:]):
         key = path.name[:2]
-        path.with_suffix(".html").write_text(convert(path.read_text(), key))
-        print("wrote", path.with_suffix(".html"))
+        out = HTML_DIR / f"{path.stem}.html"
+        out.write_text(convert(path.read_text(), key))
+        print("wrote", out)
