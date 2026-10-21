@@ -19,7 +19,7 @@ The [Instructor Activity Guide](markdown/instructor-activity-guide.md) covers cl
 
 Teams record their answers in a shared Google Sheet, one tab per activity. Before each class:
 
-1. Open the [FDE Class Worksheet template](https://docs.google.com/spreadsheets/d/1GZmg37wHlTLvun-izFNTiFDZtsaennhkFPS_DOoX0K8/edit) and select **File > Make a copy**. The template is view-only.
+1. Open the [FDE Class Worksheet template](https://www.roi-links.com/fde-activities) and select **File > Make a copy**. The template is view-only.
 2. Share your copy: **Share > General access > Anyone with the link > Editor**.
 3. Create a short URL for your copy (for example, at tinyurl.com).
 4. Post the short URL in the class chat for students.

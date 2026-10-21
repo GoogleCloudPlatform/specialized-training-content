@@ -30,7 +30,7 @@ Your team gets **one exhibit**, based on your team number:
 | 5 | Exhibit 5: The friendlier prompt |
 | 6+ | Start again at Exhibit 1 |
 
-Read your exhibit, then your Scribe fills in **your exhibit's row** on the **A1 Unblock the Launch** tab of the **class worksheet**. The instructor posts the class worksheet link in chat at the start of class. If you don't have it, write in the worksheet table in this guide.
+Read your exhibit, then your Scribe fills in **your team's row** on the **A1 Unblock the Launch** tab of the **class worksheet**. The instructor posts the class worksheet link in chat at the start of class. If you don't have it, write in the worksheet table in this guide.
 
 ## How to run it
 
@@ -44,7 +44,7 @@ Read your exhibit, then your Scribe fills in **your exhibit's row** on the **A1 
 
 ## Worksheet
 
-The **A1 Unblock the Launch** tab of the class worksheet has one row per exhibit, with the columns below. Fill in only your exhibit's row.
+The **A1 Unblock the Launch** tab of the class worksheet has one row per team, with your exhibit already filled in. Fill in only your team's row.
 
 | Column | What to write |
 |---|---|

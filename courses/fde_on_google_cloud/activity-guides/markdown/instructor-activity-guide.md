@@ -61,7 +61,7 @@ From the same `activity-guides` folder, run `git pull` to get the latest guides 
 
 Teams record their answers in **one class worksheet** (a Google Sheet) with one tab per activity. During each activity, Scribes type on that activity's tab; during the report-out, you share your screen on the same tab, so the class sees every team's answers without anyone presenting.
 
-Start from the [FDE Class Worksheet template](https://docs.google.com/spreadsheets/d/1GZmg37wHlTLvun-izFNTiFDZtsaennhkFPS_DOoX0K8/edit). The template is view-only, so work in your own copy:
+Start from the [FDE Class Worksheet template](https://www.roi-links.com/fde-activities). The template is view-only, so work in your own copy:
 
 1. Open the template and select **File > Make a copy**.
 2. In your copy, select **Share**, then set **General access** to **Anyone with the link** with the **Editor** role.
