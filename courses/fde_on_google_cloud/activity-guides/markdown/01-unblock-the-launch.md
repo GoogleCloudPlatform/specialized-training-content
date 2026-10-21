@@ -1,4 +1,4 @@
-# Discussion 1: Pilot Autopsy
+# Discussion 1: Unblock the Launch
 
 **Who owns the fix?** · Forward Deployed Engineering on Google Cloud · Team activity
 
@@ -30,7 +30,7 @@ Your team gets **one exhibit**, based on your team number:
 | 5 | Exhibit 5: The friendlier prompt |
 | 6+ | Start again at Exhibit 1 |
 
-Read your exhibit, then your Scribe fills in **your exhibit's row** on the **D1 Pilot Autopsy** tab of the **class worksheet**. The instructor posts the class worksheet link in chat at the start of class. If you don't have it, write in the worksheet table in this guide.
+Read your exhibit, then your Scribe fills in **your exhibit's row** on the **D1 Unblock the Launch** tab of the **class worksheet**. The instructor posts the class worksheet link in chat at the start of class. If you don't have it, write in the worksheet table in this guide.
 
 ## How to run it
 
@@ -44,7 +44,7 @@ Read your exhibit, then your Scribe fills in **your exhibit's row** on the **D1 
 
 ## Worksheet
 
-The **D1 Pilot Autopsy** tab of the class worksheet has one row per exhibit, with the columns below. Fill in only your exhibit's row.
+The **D1 Unblock the Launch** tab of the class worksheet has one row per exhibit, with the columns below. Fill in only your exhibit's row.
 
 | Column | What to write |
 |---|---|

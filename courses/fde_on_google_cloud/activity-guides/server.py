@@ -2,7 +2,7 @@
 
 Routes:
   /                    home page linking to the four team guides
-  /<guide>             a team guide, e.g. /01-pilot-autopsy
+  /<guide>             a team guide, e.g. /01-unblock-the-launch
   /instructor-activity-guide   the Instructor Activity Guide (not linked from the home page)
 
 Env var: PORT (set by Cloud Run, default 8080).
@@ -15,7 +15,7 @@ from pathlib import Path
 HTML_DIR = Path(__file__).parent / "html"
 
 GUIDES = [
-    ("01-pilot-autopsy", "Pilot Autopsy", "Who owns the fix?", "#1A73E8"),
+    ("01-unblock-the-launch", "Unblock the Launch", "Who owns the fix?", "#1A73E8"),
     ("02-scope-defense-sparring", "Scope Defense Sparring", "Absorb, defer, or route?", "#188038"),
     ("03-trick-question-to-eval-case", "Trick Question to Eval Case", "Turn a scary anecdote into a permanent test", "#B06000"),
     ("04-escalation-triage-under-load", "Escalation Triage Under Load", "Defect, or working as designed?", "#C5221F"),

@@ -8,7 +8,7 @@ Each activity runs 13 minutes in teams of 3–4 and follows the Cymbal Logistics
 
 | # | Activity | Question it asks |
 |---|---|---|
-| 1 | Pilot Autopsy | Who owns the fix? |
+| 1 | Unblock the Launch | Who owns the fix? |
 | 2 | Scope Defense Sparring | Absorb, defer, or route? |
 | 3 | Trick Question to Eval Case | How do you turn a scary anecdote into a permanent test? |
 | 4 | Escalation Triage Under Load | Defect, or working as designed? |
@@ -64,3 +64,21 @@ The script regenerates `html/`, enables the required APIs, and deploys a public 
 For prerequisites, update steps, and cleanup, see "Setup 1: Deploy the guide site" in the [Instructor Activity Guide](markdown/instructor-activity-guide.md).
 
 > **Note:** The instructor page isn't linked from the home page, but it isn't access controlled. Anyone with the URL can open it.
+
+## Fallback: read the guides on GitHub
+
+If you can't deploy the Cloud Run service, or students can't reach it, have students read the guides on GitHub instead. GitHub renders the Markdown in `markdown/` as readable pages, so no deploy is needed.
+
+Post these four links in the class chat:
+
+- [Discussion 1: Unblock the Launch](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/01-unblock-the-launch.md)
+- [Discussion 2: Scope Defense Sparring](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/02-scope-defense-sparring.md)
+- [Discussion 3: Trick Question to Eval Case](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/03-trick-question-to-eval-case.md)
+- [Discussion 4: Escalation Triage Under Load](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/04-escalation-triage-under-load.md)
+
+Keep these points in mind:
+
+- **Link to the files, not the folder.** The Instructor Activity Guide and its answer keys are in the same `markdown/` folder.
+- **Teams record answers on the class worksheet.** On GitHub, the worksheet tables in the guides are read-only, so teams can't fill them in.
+- **Formatting is plainer.** The summary at the top of each guide shows as a regular table instead of cards. The content is the same.
+- **The links point to the `main` branch.** They work only after these guides are merged to `main`.

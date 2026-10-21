@@ -55,6 +55,7 @@ From the same `activity-guides` folder, run `git pull` to get the latest guides 
 - **Cost:** the service scales to zero when idle, so a class costs pennies.
 - **Remove after class:** `gcloud run services delete fde-activity-guides --project your-project-id --region us-central1`
 - **Preview locally:** run `python3 server.py`, then open `http://localhost:8080`. The instructor guide is at `/instructor-activity-guide`.
+- **Fallback if Cloud Run isn't available:** if you can't deploy, or students can't reach the site, post GitHub links to the four team guides in `markdown/` instead. The README in `activity-guides/` lists the links. Link to the individual files, not the folder, because this guide is in the same folder. Teams record their answers on the class worksheet, because the tables on GitHub can't be edited.
 
 ## Setup 2: Create the class worksheet
 
@@ -62,7 +63,7 @@ Create **one class worksheet** (a Google Sheet) with one tab per discussion acti
 
 | Tab | Layout | Copy the columns from |
 |---|---|---|
-| D1 Pilot Autopsy | One row per exhibit (1–5); columns: Exhibit, Team, Symptom, Failure mode, Root cause, Fix, Owner. With 6+ teams, add a second row per exhibit | The guide's **Worksheet** section |
+| D1 Unblock the Launch | One row per exhibit (1–5); columns: Exhibit, Team, Symptom, Failure mode, Root cause, Fix, Owner. With 6+ teams, add a second row per exhibit | The guide's **Worksheet** section |
 | D2 Scope Defense | One block of 3 rows per team (voice, React, EDI); columns: Team, Request, Call, Who handles it / what the sponsor agreed to | The guide's **Team worksheet** section |
 | D3 Eval Case | One row per team; columns: Team, Eval case (expected tool_uses and final response), Judge criterion 1, 2, 3, Fix chosen, Proof | The guide's **Your task** section |
 | D4 Escalation Triage | One row per team; columns: Team, Evidence (A/B), Q1–Q5 | The guide's **Your task: five short answers** table |
@@ -95,7 +96,7 @@ That leaves 2 minutes of buffer under the 15-minute cap.
 
 ---
 
-## Discussion 1: Pilot Autopsy
+## Discussion 1: Unblock the Launch
 
 **Answer key**
 
