@@ -59,16 +59,26 @@ From the same `activity-guides` folder, run `git pull` to get the latest guides 
 
 ## Setup 2: Create the class worksheet
 
-Create **one class worksheet** (a Google Sheet) with one tab per activity, and set sharing to "anyone with the link can edit". During each activity, Scribes type on that activity's tab; during the report-out, you share your screen on the same tab, so the class sees every team's answers without anyone presenting.
+Teams record their answers in **one class worksheet** (a Google Sheet) with one tab per activity. During each activity, Scribes type on that activity's tab; during the report-out, you share your screen on the same tab, so the class sees every team's answers without anyone presenting.
 
-| Tab | Layout | Copy the columns from |
+Start from the [FDE Class Worksheet template](https://docs.google.com/spreadsheets/d/1GZmg37wHlTLvun-izFNTiFDZtsaennhkFPS_DOoX0K8/edit). The template is view-only, so work in your own copy:
+
+1. Open the template and select **File > Make a copy**.
+2. In your copy, select **Share**, then set **General access** to **Anyone with the link** with the **Editor** role.
+3. Create a short URL for your copy (for example, at tinyurl.com).
+4. Post the short URL for students (see "At the start of class").
+
+The template has these tabs:
+
+| Tab | Rows | Columns |
 |---|---|---|
-| A1 Unblock the Launch | One row per exhibit (1–5); columns: Exhibit, Team, Symptom, Failure mode, Root cause, Fix, Owner. With 6+ teams, add a second row per exhibit | The guide's **Worksheet** section |
-| A2 Scope Defense | One block of 3 rows per team (voice, React, EDI); columns: Team, Request, Call, Who handles it / what the sponsor agreed to | The guide's **Team worksheet** section |
-| A3 Eval Case | One row per team; columns: Team, Eval case (expected tool_uses and final response), Judge criterion 1, 2, 3, Fix chosen, Proof | The guide's **Your task** section |
-| A4 Escalation Triage | One row per team; columns: Team, Evidence (A/B), Q1–Q5 | The guide's **Your task: five short answers** table |
+| Start here | The setup steps above, plus how teams use the tabs | Instructions only |
+| A1 Unblock the Launch | One row per team, with the Exhibit prefilled (teams 6–8 start again at Exhibit 1) | Team, Exhibit, Symptom, Failure mode (dropdown), Root cause, Fix, Owner |
+| A2 Scope Defense | Three rows per team, one per request (voice, React, EDI) | Team, Request, Your call (dropdown: Absorb, Defer, Route), Who handles it and what the sponsor agreed to |
+| A3 Eval Case | One row per team | Team, Eval case (expected tool_uses and final response), Judge criterion 1, 2, 3, Fix chosen, Proof |
+| A4 Escalation Triage | One row per team, with the Evidence prefilled (odd = A, even = B) | Team, Evidence, Q1–Q5 |
 
-Prefill the Team column (and Activity 4's Evidence column: odd = A, even = B) so Scribes find their row instantly. In person without laptops, print the guides; each has the same worksheet table to write on.
+Teams 1–8 are prefilled on every tab, so Scribes find their row instantly. Delete the rows for teams you don't have, or copy rows for more teams. In person without laptops, print the guides; each has the same worksheet table to write on.
 
 ## Setup 3: Assign teams
 
@@ -78,7 +88,7 @@ Prefill the Team column (and Activity 4's Evidence column: odd = A, even = B) so
 ## At the start of class
 
 - Post the guide site's home page link in chat. Teams open each guide from there. Printed guides also work; each one is self-contained.
-- Post the class worksheet link in chat, and pin both links if your platform allows.
+- Post the short URL for your class worksheet copy in chat, and pin both links if your platform allows.
 
 ---
 

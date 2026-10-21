@@ -15,6 +15,17 @@ Each activity runs 13 minutes in teams of 3–4 and follows the Cymbal Logistics
 
 The [Instructor Activity Guide](markdown/instructor-activity-guide.md) covers class setup, the shared 13-minute run sheet, and an answer key with takeaways for each activity. It is for the instructor only.
 
+## Class worksheet
+
+Teams record their answers in a shared Google Sheet, one tab per activity. Before each class:
+
+1. Open the [FDE Class Worksheet template](https://docs.google.com/spreadsheets/d/1GZmg37wHlTLvun-izFNTiFDZtsaennhkFPS_DOoX0K8/edit) and select **File > Make a copy**. The template is view-only.
+2. Share your copy: **Share > General access > Anyone with the link > Editor**.
+3. Create a short URL for your copy (for example, at tinyurl.com).
+4. Post the short URL in the class chat for students.
+
+For the tab layouts, see "Setup 2: Create the class worksheet" in the [Instructor Activity Guide](markdown/instructor-activity-guide.md).
+
 ## Layout
 
 ```text
@@ -39,7 +50,7 @@ Run every command below from this folder.
 
 3. Commit the Markdown and HTML changes together, so `html/` always matches `markdown/`.
 
-`md2html.py` supports only the Markdown the guides use: headings, paragraphs, lists, tables, block quotes, and fenced code. The first table before any `##` heading renders as stat cards. Empty table cells render as editable cells that teams can fill in.
+`md2html.py` supports only the Markdown the guides use: headings, paragraphs, lists, tables, block quotes, fenced code, and `https://` links. The first table before any `##` heading renders as stat cards. Empty table cells render as editable cells that teams can fill in.
 
 ## Preview locally
 
