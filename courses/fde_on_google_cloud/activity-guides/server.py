@@ -1,4 +1,4 @@
-"""Serve the FDE discussion activity guides.
+"""Serve the FDE team activity guides.
 
 Routes:
   /                    home page linking to the four team guides
@@ -26,7 +26,7 @@ HOME = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FDE Discussion Activities</title>
+<title>FDE Team Activities</title>
 <style>
   body { margin: 0; background: #F8F9FA; color: #202124;
          font: 16px/1.55 "Google Sans", Roboto, "Segoe UI", system-ui, sans-serif; }
@@ -53,7 +53,7 @@ HOME = """<!doctype html>
 <body>
 <div class="page">
 <header>
-  <h1>Discussion Activities</h1>
+  <h1>Team Activities</h1>
   <p class="sub">Forward Deployed Engineering on Google Cloud · Open the guide your instructor names.</p>
 </header>
 <main class="grid">
@@ -66,7 +66,7 @@ HOME = """<!doctype html>
 """
 
 CARD = """<a class="card" style="--c:{color}" href="/{slug}">
-  <div class="num">Discussion {n}</div>
+  <div class="num">Activity {n}</div>
   <h2>{title}</h2>
   <p class="tag">{tagline}</p>
   <span class="go">Open guide &rarr;</span>

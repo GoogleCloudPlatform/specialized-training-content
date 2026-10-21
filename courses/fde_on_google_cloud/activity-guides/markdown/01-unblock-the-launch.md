@@ -1,4 +1,4 @@
-# Discussion 1: Unblock the Launch
+# Activity 1: Unblock the Launch
 
 **Who owns the fix?** · Forward Deployed Engineering on Google Cloud · Team activity
 
@@ -10,7 +10,7 @@
 
 Cymbal Logistics is in **Week 6 of an 8-week sprint**. Production launch is two weeks away.
 
-- The Order & Shipment Support Agent passes **68%** of its golden eval cases. The launch gate is **90%**.
+- The Order & Shipment Support Agent passes **68%** of its eval cases. The launch gate is **90%**.
 - Cymbal's leadership says the model is unreliable.
 - The account team says Cymbal's data is bad.
 - Nobody has looked at the evidence.
@@ -26,11 +26,11 @@ Your team gets **one exhibit**, based on your team number:
 | 1 | Exhibit 1: The lost parcel |
 | 2 | Exhibit 2: The early refund |
 | 3 | Exhibit 3: The overnight drop |
-| 4 | Exhibit 4: The $600 goldens |
+| 4 | Exhibit 4: The $600 eval cases |
 | 5 | Exhibit 5: The friendlier prompt |
 | 6+ | Start again at Exhibit 1 |
 
-Read your exhibit, then your Scribe fills in **your exhibit's row** on the **D1 Unblock the Launch** tab of the **class worksheet**. The instructor posts the class worksheet link in chat at the start of class. If you don't have it, write in the worksheet table in this guide.
+Read your exhibit, then your Scribe fills in **your exhibit's row** on the **A1 Unblock the Launch** tab of the **class worksheet**. The instructor posts the class worksheet link in chat at the start of class. If you don't have it, write in the worksheet table in this guide.
 
 ## How to run it
 
@@ -44,7 +44,7 @@ Read your exhibit, then your Scribe fills in **your exhibit's row** on the **D1 
 
 ## Worksheet
 
-The **D1 Unblock the Launch** tab of the class worksheet has one row per exhibit, with the columns below. Fill in only your exhibit's row.
+The **A1 Unblock the Launch** tab of the class worksheet has one row per exhibit, with the columns below. Fill in only your exhibit's row.
 
 | Column | What to write |
 |---|---|
@@ -59,7 +59,7 @@ The **D1 Unblock the Launch** tab of the class worksheet has one row per exhibit
 | 1. The lost parcel | | | | | |
 | 2. The early refund | | | | | |
 | 3. The overnight drop | | | | | |
-| 4. The $600 goldens | | | | | |
+| 4. The $600 eval cases | | | | | |
 | 5. The friendlier prompt | | | | | |
 
 ## The exhibits
@@ -97,7 +97,7 @@ Fact: in short sessions this never happens. In sessions longer than 6 turns, it 
 ### Exhibit 3: The overnight drop
 
 ```text
-Golden eval pass rate
+Eval pass rate
   Fri   77%
   Mon   77%
   Tue   68%     # 41 cases newly failing
@@ -114,9 +114,9 @@ Before:  "What's your tracking number?"
 After:   "What's your tracking number, and can you upload photos of the damage?"
 ```
 
-### Exhibit 4: The $600 goldens
+### Exhibit 4: The $600 eval cases
 
-Breakdown of the 96 failing golden cases:
+Breakdown of the 96 failing eval cases:
 
 | Category | Failing cases | Notes |
 |---|---|---|
@@ -127,7 +127,7 @@ Breakdown of the 96 failing golden cases:
 Facts:
 
 - Cymbal's refund policy caps instant refunds at **$500**. ADR-004 enforces the cap in the Python tool.
-- Cymbal's operations team wrote the goldens from historical tickets, when the cap was **$750**.
+- Cymbal's operations team wrote these eval cases from historical tickets, when the cap was **$750**.
 
 ### Exhibit 5: The friendlier prompt
 

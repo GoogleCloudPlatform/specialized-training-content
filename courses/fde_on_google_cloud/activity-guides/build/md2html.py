@@ -159,8 +159,8 @@ def convert(md, key):
         out.append("</section>")
 
     accent, tint, badge = ACCENTS[key]
-    head_title = re.sub(r"^Discussion \d+: ", "", title)
-    eyebrow_label = f"Discussion {badge}" if badge != "Instructor" else "Instructor only"
+    head_title = re.sub(r"^Activity \d+: ", "", title)
+    eyebrow_label = f"Activity {badge}" if badge != "Instructor" else "Instructor only"
     tpl = Path(__file__).with_name("template.html").read_text()
     return (
         tpl.replace("{{TITLE}}", html.escape(head_title))

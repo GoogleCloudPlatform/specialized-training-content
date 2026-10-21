@@ -1,8 +1,8 @@
 # FDE on Google Cloud: Activity Guides
 
-The four team discussion activities for Forward Deployed Engineering (FDE) on Google Cloud, and the site that serves them to a class.
+The four team activities for Forward Deployed Engineering (FDE) on Google Cloud, and the site that serves them to a class.
 
-## Discussion activities
+## Activities
 
 Each activity runs 13 minutes in teams of 3–4 and follows the Cymbal Logistics case thread.
 
@@ -71,10 +71,10 @@ If you can't deploy the Cloud Run service, or students can't reach it, have stud
 
 Post these four links in the class chat:
 
-- [Discussion 1: Unblock the Launch](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/01-unblock-the-launch.md)
-- [Discussion 2: Scope Defense Sparring](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/02-scope-defense-sparring.md)
-- [Discussion 3: Trick Question to Eval Case](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/03-trick-question-to-eval-case.md)
-- [Discussion 4: Escalation Triage Under Load](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/04-escalation-triage-under-load.md)
+- [Activity 1: Unblock the Launch](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/01-unblock-the-launch.md)
+- [Activity 2: Scope Defense Sparring](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/02-scope-defense-sparring.md)
+- [Activity 3: Trick Question to Eval Case](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/03-trick-question-to-eval-case.md)
+- [Activity 4: Escalation Triage Under Load](https://github.com/GoogleCloudPlatform/specialized-training-content/blob/main/courses/fde_on_google_cloud/activity-guides/markdown/04-escalation-triage-under-load.md)
 
 Keep these points in mind:
 

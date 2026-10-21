@@ -1,4 +1,4 @@
-# Discussion 3: Trick Question to Eval Case
+# Activity 3: Trick Question to Eval Case
 
 **Turn a scary anecdote into a permanent test** · Forward Deployed Engineering on Google Cloud · Team activity
 
@@ -8,7 +8,7 @@
 
 ## The situation
 
-The Cymbal agent passes **91% of 300 golden eval cases**. Hill climbing is on track.
+The Cymbal agent passes **91% of its 300 eval cases**. Hill climbing is on track.
 
 On Sunday night, Cymbal's **Chief Risk Officer** tries three trick questions about hazardous cargo in the staging environment. Two answers are fine. One is not. Monday morning, leadership receives this email:
 
@@ -29,7 +29,7 @@ agent  "Yes, damaged-parcel claims cover cleanup costs up to $500.
 
 ## Your task
 
-Produce three short answers. Your Scribe writes them in your team's row on the **D3 Eval Case** tab of the **class worksheet**. The instructor posts the link in chat at the start of class. If you don't have it, write in this guide (the template and tables below).
+Produce three short answers. Your Scribe writes them in your team's row on the **A3 Eval Case** tab of the **class worksheet**. The instructor posts the link in chat at the start of class. If you don't have it, write in this guide (the template and tables below).
 
 1. **Eval case.** Write the eval case for this conversation, using the template below.
 2. **Judge criteria.** Write three pass/fail statements an LLM judge can score.

@@ -59,16 +59,16 @@ From the same `activity-guides` folder, run `git pull` to get the latest guides 
 
 ## Setup 2: Create the class worksheet
 
-Create **one class worksheet** (a Google Sheet) with one tab per discussion activity, and set sharing to "anyone with the link can edit". During each activity, Scribes type on that activity's tab; during the report-out, you share your screen on the same tab, so the class sees every team's answers without anyone presenting.
+Create **one class worksheet** (a Google Sheet) with one tab per activity, and set sharing to "anyone with the link can edit". During each activity, Scribes type on that activity's tab; during the report-out, you share your screen on the same tab, so the class sees every team's answers without anyone presenting.
 
 | Tab | Layout | Copy the columns from |
 |---|---|---|
-| D1 Unblock the Launch | One row per exhibit (1–5); columns: Exhibit, Team, Symptom, Failure mode, Root cause, Fix, Owner. With 6+ teams, add a second row per exhibit | The guide's **Worksheet** section |
-| D2 Scope Defense | One block of 3 rows per team (voice, React, EDI); columns: Team, Request, Call, Who handles it / what the sponsor agreed to | The guide's **Team worksheet** section |
-| D3 Eval Case | One row per team; columns: Team, Eval case (expected tool_uses and final response), Judge criterion 1, 2, 3, Fix chosen, Proof | The guide's **Your task** section |
-| D4 Escalation Triage | One row per team; columns: Team, Evidence (A/B), Q1–Q5 | The guide's **Your task: five short answers** table |
+| A1 Unblock the Launch | One row per exhibit (1–5); columns: Exhibit, Team, Symptom, Failure mode, Root cause, Fix, Owner. With 6+ teams, add a second row per exhibit | The guide's **Worksheet** section |
+| A2 Scope Defense | One block of 3 rows per team (voice, React, EDI); columns: Team, Request, Call, Who handles it / what the sponsor agreed to | The guide's **Team worksheet** section |
+| A3 Eval Case | One row per team; columns: Team, Eval case (expected tool_uses and final response), Judge criterion 1, 2, 3, Fix chosen, Proof | The guide's **Your task** section |
+| A4 Escalation Triage | One row per team; columns: Team, Evidence (A/B), Q1–Q5 | The guide's **Your task: five short answers** table |
 
-Prefill the Team column (and D4's Evidence column: odd = A, even = B) so Scribes find their row instantly. In person without laptops, print the guides; each has the same worksheet table to write on.
+Prefill the Team column (and Activity 4's Evidence column: odd = A, even = B) so Scribes find their row instantly. In person without laptops, print the guides; each has the same worksheet table to write on.
 
 ## Setup 3: Assign teams
 
@@ -96,16 +96,16 @@ That leaves 2 minutes of buffer under the 15-minute cap.
 
 ---
 
-## Discussion 1: Unblock the Launch
+## Activity 1: Unblock the Launch
 
 **Answer key**
 
 | Exhibit | Failure mode | Root cause | Fix | Owner |
 |---|---|---|---|---|
 | 1. Lost parcel | Tool-calling & integration failure that surfaces as a hallucination | The tool returns an empty string on a 504, and the model fills the gap | Tool wrapper with a short timeout that returns a typed error (for example, `UPSTREAM_TIMEOUT`); fall back to a human handoff | FDE squad, co-built with Cymbal developers |
-| 2. Early refund | Instruction breakdown | A rule held only in the prompt erodes in long sessions | `before_tool_callback` that blocks `issue_instant_refund` unless the status is **DELIVERED**; add a golden case for it | FDE squad |
+| 2. Early refund | Instruction breakdown | A rule held only in the prompt erodes in long sessions | `before_tool_callback` that blocks `issue_instant_refund` unless the status is **DELIVERED**; add an eval case for it | FDE squad |
 | 3. Overnight drop | Model & input drift | An auto-updating model alias picked up a new version | Pin the model version; reproduce in a minimal test; clarify the prompt or add a callback; send the repro upstream; remove the workaround when fixed | FDE triages; platform team fixes the model behavior |
-| 4. $600 goldens | Not a model failure | Goldens encode an old $750 policy; the agent is correct | Correct the eval set; the business SME signs off on the expected outcomes | Cymbal business SME (owns business truth), with FDE help |
+| 4. $600 eval cases | Not a model failure | The eval cases encode an old $750 policy; the agent is correct | Correct the eval set; the business SME signs off on the expected outcomes | Cymbal business SME (owns business truth), with FDE help |
 | 5. Friendlier prompt | Instruction breakdown caused by a process gap | Direct push to main, with no review and no eval gate | Branch protection; run the eval suite on every PR | Cymbal developers and FDE squad jointly |
 
 **Listen for:** teams that stop at "the model hallucinated" (push on the cause), and Exhibit 4 teams that find the "bad data" claim was partly true, just not in the way anyone meant it.
@@ -114,7 +114,7 @@ That leaves 2 minutes of buffer under the 15-minute cap.
 
 ---
 
-## Discussion 2: Scope Defense Sparring
+## Activity 2: Scope Defense Sparring
 
 **Answer key**
 
@@ -130,7 +130,7 @@ That leaves 2 minutes of buffer under the 15-minute cap.
 
 ---
 
-## Discussion 3: Trick Question to Eval Case
+## Activity 3: Trick Question to Eval Case
 
 **Answer key**
 
@@ -138,7 +138,7 @@ That leaves 2 minutes of buffer under the 15-minute cap.
 - **Final response:** scored by an LLM judge, not matched word for word. The wording can vary; the behavior can't.
 - **Strong judge criteria:** fails if any coverage or payout is stated or implied; fails if a refund tool is called; passes only if the case is handed to a human and the response says the risk team will follow up; fails if the response cites a policy that doesn't exist.
 - **Fix:** **B (callback)** is the best primary fix, because a hard rule belongs in code. Pair it with a one-line **A** so the wording is good. **C (sub-agent)** is overkill for one rule; it becomes right if hazmat rules grow, which is the "too many rules for one prompt" trigger.
-- **Proof:** confirm the new case fails before the fix and passes after; rerun all 300 goldens (the merge gate); add user simulations with hazmat scenarios and save any failures as new cases.
+- **Proof:** confirm the new case fails before the fix and passes after; rerun all 300 eval cases (the merge gate); add user simulations with hazmat scenarios and save any failures as new cases.
 - **Reply to the CRO:** thank them for the catch, give the denominator (91% across 300 cases), say this failure is now a permanent test, and give a date to show the rerun results.
 
 **Optional 30-second aside (from option 3C):** fixing this by adding pages of hazmat rules to the main prompt often fixes hazmat and breaks other flows, while raising latency and token cost. That is why the fix goes into a callback.
@@ -147,7 +147,7 @@ That leaves 2 minutes of buffer under the 15-minute cap.
 
 ---
 
-## Discussion 4: Escalation Triage Under Load
+## Activity 4: Escalation Triage Under Load
 
 **Answer key**
 

@@ -1,4 +1,4 @@
-# Discussion 4: Escalation Triage Under Load
+# Activity 4: Escalation Triage Under Load
 
 **Defect, or working as designed?** · Forward Deployed Engineering on Google Cloud · Team activity
 
@@ -65,7 +65,7 @@ Traffic is steady, and the batch job has already been moved off the minute bound
 
 ## Your task: five short answers
 
-Your Scribe writes the answers in your team's row on the **D4 Escalation Triage** tab of the **class worksheet**. The instructor posts the link in chat at the start of class. If you don't have it, write in the table below.
+Your Scribe writes the answers in your team's row on the **A4 Escalation Triage** tab of the **class worksheet**. The instructor posts the link in chat at the start of class. If you don't have it, write in the table below.
 
 | # | Question | Your answer |
 |---|---|---|

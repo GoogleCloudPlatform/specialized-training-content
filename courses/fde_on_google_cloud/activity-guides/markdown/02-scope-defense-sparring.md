@@ -1,4 +1,4 @@
-# Discussion 2: Scope Defense Sparring
+# Activity 2: Scope Defense Sparring
 
 **Absorb, defer, or route?** · Forward Deployed Engineering on Google Cloud · Team activity
 
@@ -63,7 +63,7 @@ The FDE lead uses the three-step pushback:
 - Manual data cleanup or ETL of legacy systems
 
 ## Exit criteria
-- At least 90% pass rate on the golden eval set
+- At least 90% pass rate on the eval set
 - Cymbal's team ships to production and runs a game day unassisted
 ```
 
@@ -90,7 +90,7 @@ The FDE lead uses the three-step pushback:
 
 ## Team worksheet
 
-Your **Scribe** fills in your team's rows on the **D2 Scope Defense** tab of the **class worksheet**. The instructor posts the link in chat at the start of class. If you don't have it, write in this table.
+Your **Scribe** fills in your team's rows on the **A2 Scope Defense** tab of the **class worksheet**. The instructor posts the link in chat at the start of class. If you don't have it, write in this table.
 
 | Request | Your call: absorb, defer, or route | Who handles it, and what the sponsor agreed to |
 |---|---|---|
