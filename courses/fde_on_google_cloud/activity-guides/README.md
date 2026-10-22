@@ -1,4 +1,4 @@
-# FDE on Google Cloud: Activity Guides
+# Forward Deployed Engineering on Google Cloud: Activity Guides
 
 The four team activities for Forward Deployed Engineering (FDE) on Google Cloud, and the site that serves them to a class.
 
