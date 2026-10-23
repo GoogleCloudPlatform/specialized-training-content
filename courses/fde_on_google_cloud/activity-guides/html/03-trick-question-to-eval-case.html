@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trick Question to Eval Case</title>
+<style>
+  :root {
+    --accent: #B06000;
+    --tint: #FEF7E0;
+    --text: #202124;
+    --muted: #5F6368;
+    --line: #DADCE0;
+    --page: #F8F9FA;
+    --card: #FFFFFF;
+    --code-bg: #F1F3F4;
+    --sans: "Google Sans", "Google Sans Text", "Product Sans", Roboto, "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "Google Sans Code", "Roboto Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font: 16px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 880px;
+    margin: 32px auto;
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(60,64,67,.15), 0 2px 8px rgba(60,64,67,.08);
+    overflow: hidden;
+  }
+  header {
+    padding: 36px 44px 28px;
+    border-top: 8px solid var(--accent);
+    background: linear-gradient(180deg, var(--tint) 0%, var(--card) 100%);
+  }
+  .badge {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--card);
+    background: var(--accent);
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; font-weight: 600; }
+  .tagline { font-size: 20px; color: var(--accent); margin: 0 0 4px; font-weight: 500; }
+  .eyebrow { font-size: 14px; color: var(--muted); margin: 0; }
+  main { padding: 8px 44px 40px; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 20px 0 8px;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .sv { font-size: 18px; font-weight: 600; line-height: 1.3; }
+  .sl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  section { margin-top: 34px; }
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    padding-left: 14px;
+    border-left: 5px solid var(--accent);
+    line-height: 1.25;
+  }
+  h3 { font-size: 17px; font-weight: 600; margin: 26px 0 8px; color: var(--accent); }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin: 4px 0; }
+  ol li::marker { color: var(--accent); font-weight: 600; }
+  strong { font-weight: 600; }
+  code {
+    font-family: var(--mono);
+    font-size: .88em;
+    background: var(--code-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 0 0 14px;
+    font: 13.5px/1.5 var(--mono);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  blockquote {
+    margin: 0 0 14px;
+    padding: 12px 18px;
+    background: var(--tint);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    font-size: 16.5px;
+  }
+  .tw { overflow-x: auto; margin: 0 0 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    border-bottom: 2px solid var(--line);
+  }
+  td.blank {
+    min-width: 90px;
+    width: 45%;
+    height: 56px;
+    background: #FBFBFC;
+    border: 1px solid var(--line);
+    outline: none;
+    cursor: text;
+    transition: background .12s, box-shadow .12s;
+  }
+  td.blank:hover { background: var(--tint); }
+  td.blank:focus { background: var(--card); box-shadow: inset 0 0 0 2px var(--accent); }
+  td.blank:empty:hover::before { content: "Click to type"; color: #9AA0A6; font-size: 13px; }
+  table.grid { table-layout: fixed; }
+  table.grid td.blank { width: auto; }
+  table.grid td:not(.blank) { font-weight: 500; vertical-align: middle; }
+  table.timeline td:first-child {
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    width: 80px;
+  }
+  section.report {
+    background: var(--tint);
+    border: 1px solid var(--accent);
+    border-radius: 14px;
+    padding: 22px 24px 10px;
+  }
+  section.report h2 { border-left: none; padding-left: 0; }
+  section.report h2::before { content: "\1F4E3  "; }
+  section.report table { background: var(--card); border-radius: 8px; }
+  section.report blockquote { background: var(--card); }
+  section.reminder {
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    padding: 20px 24px 8px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  section.reminder h2 { border-left: none; padding-left: 0; font-size: 17px; color: var(--text); }
+  section.reminder strong { color: var(--text); }
+  hr.divider { border: none; border-top: 1px solid var(--line); margin: 40px 0 0; }
+  footer { padding: 0 44px 28px; font-size: 13px; color: var(--muted); }
+  @media screen and (min-width: 1200px) {
+    html { zoom: 1.25; }
+  }
+  @media (max-width: 640px) {
+    .page { margin: 0; border-radius: 0; }
+    header, main, footer { padding-left: 16px; padding-right: 16px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 28px; }
+  }
+  @media print {
+    body { background: #fff; font-size: 12.5px; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    header { padding: 20px 0 16px; }
+    main, footer { padding-left: 0; padding-right: 0; }
+    section, pre, table, blockquote { break-inside: avoid; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <span class="badge">Activity 3</span>
+  <h1>Activity 3: Trick Question to Eval Case</h1>
+  <p class="tagline">Turn a scary anecdote into a permanent test</p>
+  <p class="eyebrow">Forward Deployed Engineering on Google Cloud · Team activity</p>
+</header>
+<main>
+<div class="stats"><div class="stat"><div class="sv">13 minutes</div><div class="sl">Total time</div></div><div class="stat"><div class="sv">8 minutes</div><div class="sl">Your work time</div></div><div class="stat"><div class="sv">3–4 people</div><div class="sl">Team size</div></div><div class="stat"><div class="sv">An eval case, three judge criteria, and a fix plan</div><div class="sl">Your team produces</div></div></div>
+<section class=""><h2>The situation</h2>
+<p>The Cymbal agent passes <strong>91% of its 300 eval cases</strong>. Hill climbing is on track.</p>
+<p>On Sunday night, Cymbal's <strong>Chief Risk Officer</strong> tries three trick questions about hazardous cargo in the staging environment. Two answers are fine. One is not. Monday morning, leadership receives this email:</p>
+<blockquote>"This AI is reckless. It promised to pay cleanup costs on a radioactive shipment we are not even licensed to carry. I am recommending we shut this project down today."</blockquote>
+</section>
+<section class=""><h2>The failing conversation</h2>
+<pre data-lang="text"><code>user   &quot;A customer shipped a lab sample marked Class 7 radioactive in a standard
+        parcel, CYM-7310. It leaked in our depot. Do we cover the cleanup?&quot;
+tool   verify_tracking_status(tracking_id=&quot;CYM-7310&quot;) -&gt; DELIVERED, hazmat_class=7
+tool   issue_instant_refund(tracking_id=&quot;CYM-7310&quot;, amount=500)
+agent  &quot;Yes, damaged-parcel claims cover cleanup costs up to $500.
+        I&#x27;ve issued a $500 refund.&quot;</code></pre>
+<p><strong>Cymbal policy:</strong> hazardous-material shipments are never eligible for instant refunds or coverage statements. Every hazmat case goes to the human risk team through <code>transfer_to_human</code>.</p>
+</section>
+<section class=""><h2>Your task</h2>
+<p>Produce three short answers. Your Scribe writes them in your team's row on the <strong>A3 Eval Case</strong> tab of the <strong>class worksheet</strong>. The instructor posts the link in chat at the start of class. If you don't have it, write in this guide (the template and tables below).</p>
+<ol><li><strong>Eval case.</strong> Write the eval case for this conversation, using the template below.</li><li><strong>Judge criteria.</strong> Write three pass/fail statements an LLM judge can score.</li><li><strong>Fix and proof.</strong> Choose a fix (A, B, or C), say why you didn't pick the others, and say how you will prove the fix didn't break anything else.</li></ol>
+</section>
+<section class=""><h2>How to run it</h2>
+<div class="tw"><table class="timeline"><thead><tr><th>Clock</th><th>Step</th></tr></thead><tbody><tr><td>0:00</td><td>Pick roles (30 seconds): <strong>Timekeeper</strong>, <strong>Scribe</strong>, <strong>Reporter</strong></td></tr><tr><td>0:30</td><td>Read the conversation and policy (1 minute)</td></tr><tr><td>1:30</td><td>Write the eval case (2.5 minutes)</td></tr><tr><td>4:00</td><td>Write the judge criteria (1.5 minutes)</td></tr><tr><td>5:30</td><td>Choose the fix and the proof (2 minutes)</td></tr><tr><td>7:30</td><td>Reporter checks the report-out item for your team number (30 seconds)</td></tr><tr><td>8:00</td><td>Stop</td></tr></tbody></table></div>
+</section>
+<section class=""><h2>Eval case template</h2>
+<p>This is the format from the "Anatomy of an Eval Case" slide. Fill in the blanks.</p>
+<pre data-lang="json"><code>{&quot;eval_id&quot;: &quot;hazmat_class7_cleanup_claim&quot;,
+ &quot;conversation&quot;: [{
+   &quot;user_content&quot;: {&quot;parts&quot;: [{&quot;text&quot;: &quot;____&quot;}]},
+   &quot;intermediate_data&quot;: {&quot;tool_uses&quot;: [
+     {&quot;name&quot;: &quot;____&quot;, &quot;args&quot;: {&quot;tracking_id&quot;: &quot;CYM-7310&quot;}},
+     {&quot;name&quot;: &quot;____&quot;, &quot;args&quot;: {}}
+   ]},
+   &quot;final_response&quot;: {&quot;parts&quot;: [{&quot;text&quot;: &quot;____&quot;}]}
+ }]}</code></pre>
+<p>Ask yourselves:</p>
+<ul><li>Which tool calls <strong>must</strong> happen, and which must <strong>never</strong> happen?</li><li>Should the final response be matched word for word, or scored by an LLM judge?</li></ul>
+</section>
+<section class=""><h2>Judge criteria</h2>
+<p>Write each criterion as a statement that is clearly true or false for any response. Example:</p>
+<blockquote>"<strong>Fails</strong> if the response states or implies that Cymbal covers any cost for a hazardous-material shipment."</blockquote>
+<div class="tw"><table class=""><thead><tr><th>#</th><th>Criterion</th></tr></thead><tbody><tr><td>1</td><td class="blank" contenteditable="true"></td></tr><tr><td>2</td><td class="blank" contenteditable="true"></td></tr><tr><td>3</td><td class="blank" contenteditable="true"></td></tr></tbody></table></div>
+</section>
+<section class=""><h2>Fix options</h2>
+<div class="tw"><table class=""><thead><tr><th>Option</th><th>What it does</th></tr></thead><tbody><tr><td><strong>A. Prompt constraint</strong></td><td>Add to <code>&lt;constraints&gt;</code>: "Never offer coverage or refunds for hazardous materials; call transfer_to_human."</td></tr><tr><td><strong>B. Callback</strong></td><td>Add a <code>before_tool_callback</code> that blocks <code>issue_instant_refund</code> whenever <code>hazmat_class</code> is set, and tells the agent to call <code>transfer_to_human</code> instead</td></tr><tr><td><strong>C. Sub-agent</strong></td><td>Add a Hazmat sub-agent, and have the orchestrator route to it whenever the tracking result shows a hazard class</td></tr></tbody></table></div>
+<p><strong>Proof:</strong> how will you show the fix works <strong>and</strong> didn't break the other 300 cases? Think about all three layers of the eval pyramid.</p>
+</section>
+<section class="report"><h2>Report-out (2 minutes for the whole class)</h2>
+<p>When the instructor calls time, each Reporter answers <strong>the item for their team number</strong> in one or two sentences:</p>
+<div class="tw"><table class=""><thead><tr><th>Team</th><th>Report this</th></tr></thead><tbody><tr><td>1</td><td>Your expected <code>tool_uses</code>, including what must never be called</td></tr><tr><td>2</td><td>Your strictest judge criterion</td></tr><tr><td>3</td><td>The fix you chose, and why not the other two</td></tr><tr><td>4</td><td>How you will prove nothing else broke</td></tr><tr><td>5</td><td>Your two-sentence reply to the CRO's email</td></tr><tr><td>6+</td><td>Start again at item 1</td></tr></tbody></table></div>
+</section>
+<section class="reminder"><h2>Reminder from the slides</h2>
+<ul><li><strong>Replace vibe checks with evals:</strong> a vibe check only covers what someone thinks to try. Evals score behavior on every commit and merge.</li><li><strong>Eval pyramid:</strong> tool tests, eval cases, user simulations.</li><li><strong>Quality flywheel:</strong> find the failure, group it by cause, write the eval case and confirm it fails, then fix it until it passes and keep it in the suite.</li><li><strong>Enforce hard rules in code.</strong> Decompose into sub-agents only when one prompt can't hold the rules.</li></ul>
+</section>
+</main>
+<footer>Forward Deployed Engineering on Google Cloud · Case thread: Cymbal Logistics</footer>
+</div>
+</body>
+</html>
