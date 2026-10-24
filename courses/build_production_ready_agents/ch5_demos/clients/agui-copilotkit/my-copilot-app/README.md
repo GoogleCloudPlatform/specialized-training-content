@@ -150,9 +150,9 @@ my-copilot-app/
 │   ├── api/
 │   │   └── copilotkit/
 │   │       └── route.ts          # Runtime endpoint & AG-UI adapter
-│   ├── layout.tsx                # CopilotKit provider setup
-│   ├── page.tsx                  # Main chat interface
-│   └── globals.css               # Styles including CopilotKit CSS
+│   ├── layout.tsx                # CopilotKit provider + CopilotKit CSS import
+│   ├── page.tsx                  # Dashboard + CopilotSidebar + tool rendering
+│   └── globals.css               # Global styles
 ├── package.json                  # Dependencies
 └── next.config.ts                # Next.js configuration
 ```
@@ -164,9 +164,10 @@ my-copilot-app/
 1. **ADK Backend Server** - The FastAPI server must be running:
    ```bash
    cd ../
-   python server.py
+   python main.py
    ```
-   This starts the ADK agent on `http://localhost:8000/`
+   This starts the ADK agent on `http://localhost:8000/`. See the parent
+   [README](../README.md) for full backend setup (virtualenv and `.env`).
 
 ### Installation
 
@@ -325,7 +326,7 @@ Ensure:
 ## Learn More
 
 - [CopilotKit Documentation](https://docs.copilotkit.ai/)
-- [AG-UI Client](https://github.com/google/agent-ui)
+- [AG-UI Protocol](https://github.com/ag-ui-protocol/ag-ui)
 - [Next.js App Router](https://nextjs.org/docs/app)
 - [ADK (Agent Development Kit)](https://cloud.google.com/vertex-ai/generative-ai/docs/agent-builder)
 

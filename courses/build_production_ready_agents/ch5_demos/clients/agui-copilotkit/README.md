@@ -16,7 +16,8 @@ A production-ready chat client for Google ADK (Agent Development Kit) agents, bu
     - [5.1 Backend: FastAPI Server](#51-backend-fastapi-server)
     - [5.2 Backend: ADK Agent Definition](#52-backend-adk-agent-definition)
     - [5.3 Frontend: CopilotKit UI](#53-frontend-copilotkit-ui)
-    - [5.4 Frontend: Runtime Bridge](#54-frontend-runtime-bridge)
+    - [5.4 Frontend: Tool Call Rendering](#54-frontend-tool-call-rendering)
+    - [5.5 Frontend: Runtime Bridge](#55-frontend-runtime-bridge)
   - [6. Project Structure](#6-project-structure)
   - [7. Dependencies](#7-dependencies)
     - [7.1 Backend](#71-backend)
@@ -78,7 +79,7 @@ Start with the live demo, then walk through the code.
 
 2. **Two-server architecture** — unlike the other clients which talk to a shared `sessions_server.py` backend, this demo runs its own FastAPI server with the ADK agent embedded directly. The AG-UI adapter (`add_adk_fastapi_endpoint`) exposes the agent as an endpoint that CopilotKit can consume. See the [4. Architecture Overview](#4-architecture-overview) diagram.
 
-3. **AG-UI as the bridge** — show the runtime bridge in `route.ts` ([5.4 Frontend: Runtime Bridge](#54-frontend-runtime-bridge)). It's just a few lines: `AgentRuntime` points at the Python backend, and `CopilotRuntime` streams responses to the frontend. This is the glue that makes CopilotKit work with any AG-UI-compatible agent.
+3. **AG-UI as the bridge** — show the runtime bridge in `route.ts` ([5.5 Frontend: Runtime Bridge](#55-frontend-runtime-bridge)). It's just a few lines: an AG-UI `HttpAgent` points at the Python backend, and `CopilotRuntime` streams responses to the frontend. This is the glue that makes CopilotKit work with any AG-UI-compatible agent.
 
 4. **CopilotKit UI components** (`page.tsx`) — the chat interface uses `<CopilotKit>` and `<CopilotSidebar>` components. Compare with the assistant-ui client which uses `<Thread />` — both give you a polished UI from a single component, but CopilotKit's sidebar pattern is designed for copilot-style experiences embedded alongside app content (as the dashboard demo illustrates). See [5.3 Frontend: CopilotKit UI](#53-frontend-copilotkit-ui).
 
@@ -90,6 +91,7 @@ Start with the live demo, then walk through the code.
 
 - **CopilotKit Integration** - Full-featured chat interface with built-in UI components
 - **AG-UI Adapter** - Bridges ADK agents with CopilotKit runtime
+- **Tool Call Rendering** - Custom in-chat UI for agent tool calls via `useRenderToolCall`
 - **Native Streaming** - Real-time streaming responses from ADK agents
 - **Session Management** - Automatic session handling via AG-UI adapter
 - **Rich UI Components** - CopilotKit's pre-built chat components
@@ -180,40 +182,94 @@ if __name__ == "__main__":
 
 ### 5.3 Frontend: CopilotKit UI
 
-`app/page.tsx` — the main chat interface using CopilotKit components:
+The `<CopilotKit>` provider is set up once in `app/layout.tsx`, wrapping the
+whole app and selecting the agent registered in the runtime:
 
 ```typescript
 import { CopilotKit } from "@copilotkit/react-core";
+import "@copilotkit/react-ui/styles.css";
+
+<CopilotKit runtimeUrl="/api/copilotkit" agent="my_agent">
+  {children}
+</CopilotKit>
+```
+
+`app/page.tsx` is a client component that renders the CoE dashboard and drops
+the `<CopilotSidebar />` alongside it:
+
+```typescript
+"use client";
+
 import { CopilotSidebar } from "@copilotkit/react-ui";
 
-export default function Home() {
+export default function Page() {
   return (
-    <CopilotKit runtimeUrl="/api/copilotkit">
-      <CopilotSidebar>
-        {/* Your app content */}
-      </CopilotSidebar>
-    </CopilotKit>
+    <div>
+      {/* dashboard content */}
+      <CopilotSidebar />
+    </div>
   );
 }
 ```
 
-### 5.4 Frontend: Runtime Bridge
+### 5.4 Frontend: Tool Call Rendering
+
+`page.tsx` also uses the `useRenderToolCall` hook to render custom UI when the
+agent calls its `check_gcp_service_availability` tool:
+
+```typescript
+import { useRenderToolCall } from "@copilotkit/react-core";
+
+useRenderToolCall({
+  name: "check_gcp_service_availability",
+  render: ({ status, args }) => (
+    <p className="text-gray-500 mt-2">
+      {status !== "complete" && "Calling availability API..."}
+      {status === "complete" &&
+        `Called the availability API for ${args.service_name}.`}
+    </p>
+  ),
+});
+```
+
+The tool itself is defined on the ADK agent in `agent.py`; asking the assistant
+whether a specific service is available triggers it.
+
+### 5.5 Frontend: Runtime Bridge
 
 `app/api/copilotkit/route.ts` — connects CopilotKit to the AG-UI backend:
 
 ```typescript
-import { CopilotRuntime } from "@copilotkit/runtime";
-import { AgentRuntime } from "@ag-ui/client";
+import {
+  CopilotRuntime,
+  ExperimentalEmptyAdapter,
+  copilotRuntimeNextJSAppRouterEndpoint,
+} from "@copilotkit/runtime";
+import { HttpAgent } from "@ag-ui/client";
+import { NextRequest } from "next/server";
 
-const agentRuntime = new AgentRuntime({
-  url: "http://localhost:8000",
+const serviceAdapter = new ExperimentalEmptyAdapter();
+
+const runtime = new CopilotRuntime({
+  agents: {
+    my_agent: new HttpAgent({ url: "http://localhost:8000/" }),
+  },
 });
 
-export const POST = async (req: Request) => {
-  const runtime = new CopilotRuntime();
-  return runtime.streamHttpServerResponse(req, agentRuntime);
+export const POST = async (req: NextRequest) => {
+  const { handleRequest } = copilotRuntimeNextJSAppRouterEndpoint({
+    runtime,
+    serviceAdapter,
+    endpoint: "/api/copilotkit",
+  });
+
+  return handleRequest(req);
 };
 ```
+
+The AG-UI `HttpAgent` points at the Python backend and is registered under the
+`my_agent` key — the same name the `<CopilotKit agent="my_agent">` provider in
+`layout.tsx` selects.
 
 ## 6. Project Structure
 
@@ -252,8 +308,8 @@ dotenv            # Environment variable management
 {
   "dependencies": {
     "@ag-ui/client": "^0.0.43",
-    "@copilotkit/react-core": "^1.51.3",
-    "@copilotkit/react-ui": "^1.51.3",
+    "@copilotkit/react-core": "1.54.1",
+    "@copilotkit/react-ui": "1.54.1",
     "@copilotkit/runtime": "^1.51.3",
     "next": "16.1.6",
     "react": "19.2.3",

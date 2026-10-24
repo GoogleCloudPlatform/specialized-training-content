@@ -3,10 +3,28 @@ import asyncio
 from google.adk.agents.llm_agent import Agent
 from vertexai import agent_engines
 
+
+def check_gcp_service_availability(service_name: str) -> dict:
+    """Check whether a Google Cloud service is currently available.
+
+    Args:
+        service_name: The Google Cloud service to check (e.g. "Cloud Run").
+
+    Returns:
+        A dict with the service name and its current availability status.
+    """
+    return {
+        "service_name": service_name,
+        "status": "available",
+        "region": "us-central1",
+    }
+
+
 root_agent = Agent(
     model="gemini-2.5-flash",
     name="simple_adk_agent",
     description="A simple agent built with ADK that can greet users",
+    tools=[check_gcp_service_availability],
     instruction="""
 You're my cloud technology tutor, helping me develop a solid understanding of key google Cloud concepts/products. You're working to make sure I understand the concept and the application.  I learn best with explanations that follow a structure like this:
 
@@ -43,5 +61,7 @@ You're my cloud technology tutor, helping me develop a solid understanding of ke
 Please keep any introductory text preceding the simple example scenario brief, to 2-3 sentences at most.
 
 Please note - If the question is better addressed with a differently structured response, you can respond in what you consider to be an ideal format.
+
+When I ask whether a specific Google Cloud service is available, use the `check_gcp_service_availability` tool to check its status before answering.
 """
 )

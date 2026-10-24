@@ -3,3 +3,4 @@ google-adk
 uvicorn
 fastapi
 dotenv
+google-cloud-aiplatform
