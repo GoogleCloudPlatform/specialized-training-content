@@ -22,6 +22,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, StreamingResponse
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.auth.auth_tool import AuthConfig
+from google.adk.auth.credential_service.in_memory_credential_service import \
+    InMemoryCredentialService
 from google.adk.events import Event
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
@@ -98,10 +100,17 @@ When users ask about data:
 # ============================================================================
 
 session_service = InMemorySessionService()
+
+# Without a credential_service, ADK discards the token it exchanges after the
+# OAuth flow, so every turn re-runs the whole flow. Keyed by (app_name, user_id),
+# so the token survives across sessions for the same user.
+credential_service = InMemoryCredentialService()
+
 runner = Runner(
     app_name="bigquery_agent",
     agent=root_agent,
-    session_service=session_service
+    session_service=session_service,
+    credential_service=credential_service
 )
 
 # ============================================================================

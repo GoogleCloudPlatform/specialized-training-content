@@ -1,0 +1,16 @@
+# ADK event-based OAuth demo.
+#   pip install -r requirements.txt
+#   python server.py
+#
+# The [mcp] extra is required. ADK carried `mcp` as a core dependency through
+# 1.16.x, but 2.0 moved it behind this extra. Without it, server.py fails with a
+# misleading "cannot import name 'McpToolset'" -- ADK's mcp_tool/__init__.py
+# swallows the real ModuleNotFoundError into a DEBUG log.
+google-adk[mcp]>=2.0,<3
+
+# Imported directly by server.py (also ADK core deps, pinned here so the demo
+# does not break if ADK drops one the way it dropped mcp).
+fastapi>=0.133,<1
+uvicorn>=0.34,<1
+python-dotenv>=1,<2
+google-genai>=2.19,<3

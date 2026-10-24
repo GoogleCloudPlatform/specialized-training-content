@@ -1,0 +1,15 @@
+# ADK agent talking to a FastMCP server.
+#   pip install -r requirements.txt
+#   python fast.py   # MCP server on :8000
+#   adk web          # agent UI
+#
+# fastmcp must stay on 3.x. fastmcp 4.x requires mcp>=2, while google-adk[mcp]
+# requires mcp<2 -- the two are strictly unsatisfiable together (uv refuses to
+# resolve; pip would silently downgrade mcp and break fastmcp). 3.4.x runs
+# fast.py unchanged and keeps mcp at the version ADK declares support for.
+google-adk[mcp]>=2.0,<3
+fastmcp>=3.4,<4
+
+# Imported directly by agent.py / fast.py (also ADK core deps).
+fastapi>=0.133,<1
+requests>=2.32,<3
