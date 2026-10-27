@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+  :root {
+    --accent: {{ACCENT}};
+    --tint: {{TINT}};
+    --text: #202124;
+    --muted: #5F6368;
+    --line: #DADCE0;
+    --page: #F8F9FA;
+    --card: #FFFFFF;
+    --code-bg: #F1F3F4;
+    --sans: "Google Sans", "Google Sans Text", "Product Sans", Roboto, "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "Google Sans Code", "Roboto Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font: 16px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 880px;
+    margin: 32px auto;
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(60,64,67,.15), 0 2px 8px rgba(60,64,67,.08);
+    overflow: hidden;
+  }
+  header {
+    padding: 36px 44px 28px;
+    border-top: 8px solid var(--accent);
+    background: linear-gradient(180deg, var(--tint) 0%, var(--card) 100%);
+  }
+  .badge {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--card);
+    background: var(--accent);
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; font-weight: 600; }
+  .tagline { font-size: 20px; color: var(--accent); margin: 0 0 4px; font-weight: 500; }
+  .eyebrow { font-size: 14px; color: var(--muted); margin: 0; }
+  main { padding: 8px 44px 40px; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 20px 0 8px;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .sv { font-size: 18px; font-weight: 600; line-height: 1.3; }
+  .sl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  section { margin-top: 34px; }
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    padding-left: 14px;
+    border-left: 5px solid var(--accent);
+    line-height: 1.25;
+  }
+  h3 { font-size: 17px; font-weight: 600; margin: 26px 0 8px; color: var(--accent); }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin: 4px 0; }
+  ol li::marker { color: var(--accent); font-weight: 600; }
+  strong { font-weight: 600; }
+  code {
+    font-family: var(--mono);
+    font-size: .88em;
+    background: var(--code-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 0 0 14px;
+    font: 13.5px/1.5 var(--mono);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  blockquote {
+    margin: 0 0 14px;
+    padding: 12px 18px;
+    background: var(--tint);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    font-size: 16.5px;
+  }
+  .tw { overflow-x: auto; margin: 0 0 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    border-bottom: 2px solid var(--line);
+  }
+  td.blank {
+    min-width: 90px;
+    width: 45%;
+    height: 56px;
+    background: #FBFBFC;
+    border: 1px solid var(--line);
+    outline: none;
+    cursor: text;
+    transition: background .12s, box-shadow .12s;
+  }
+  td.blank:hover { background: var(--tint); }
+  td.blank:focus { background: var(--card); box-shadow: inset 0 0 0 2px var(--accent); }
+  td.blank:empty:hover::before { content: "Click to type"; color: #9AA0A6; font-size: 13px; }
+  table.grid { table-layout: fixed; }
+  table.grid td.blank { width: auto; }
+  table.grid td:not(.blank) { font-weight: 500; vertical-align: middle; }
+  table.timeline td:first-child {
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    width: 80px;
+  }
+  section.report {
+    background: var(--tint);
+    border: 1px solid var(--accent);
+    border-radius: 14px;
+    padding: 22px 24px 10px;
+  }
+  section.report h2 { border-left: none; padding-left: 0; }
+  section.report h2::before { content: "\1F4E3  "; }
+  section.report table { background: var(--card); border-radius: 8px; }
+  section.report blockquote { background: var(--card); }
+  section.reminder {
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    padding: 20px 24px 8px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  section.reminder h2 { border-left: none; padding-left: 0; font-size: 17px; color: var(--text); }
+  section.reminder strong { color: var(--text); }
+  hr.divider { border: none; border-top: 1px solid var(--line); margin: 40px 0 0; }
+  footer { padding: 0 44px 28px; font-size: 13px; color: var(--muted); }
+  @media screen and (min-width: 1200px) {
+    html { zoom: 1.25; }
+  }
+  @media (max-width: 640px) {
+    .page { margin: 0; border-radius: 0; }
+    header, main, footer { padding-left: 16px; padding-right: 16px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 28px; }
+  }
+  @media print {
+    body { background: #fff; font-size: 12.5px; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    header { padding: 20px 0 16px; }
+    main, footer { padding-left: 0; padding-right: 0; }
+    section, pre, table, blockquote { break-inside: avoid; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <span class="badge">{{BADGE}}</span>
+  <h1>{{H1}}</h1>
+  <p class="tagline">{{TAGLINE}}</p>
+  <p class="eyebrow">{{EYEBROW}}</p>
+</header>
+<main>
+{{BODY}}
+</main>
+<footer>Forward Deployed Engineering on Google Cloud · Case thread: Cymbal Logistics</footer>
+</div>
+</body>
+</html>

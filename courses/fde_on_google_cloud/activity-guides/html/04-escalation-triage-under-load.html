@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escalation Triage Under Load</title>
+<style>
+  :root {
+    --accent: #C5221F;
+    --tint: #FCE8E6;
+    --text: #202124;
+    --muted: #5F6368;
+    --line: #DADCE0;
+    --page: #F8F9FA;
+    --card: #FFFFFF;
+    --code-bg: #F1F3F4;
+    --sans: "Google Sans", "Google Sans Text", "Product Sans", Roboto, "Segoe UI", system-ui, -apple-system, sans-serif;
+    --mono: "Google Sans Code", "Roboto Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font: 16px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 880px;
+    margin: 32px auto;
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(60,64,67,.15), 0 2px 8px rgba(60,64,67,.08);
+    overflow: hidden;
+  }
+  header {
+    padding: 36px 44px 28px;
+    border-top: 8px solid var(--accent);
+    background: linear-gradient(180deg, var(--tint) 0%, var(--card) 100%);
+  }
+  .badge {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--card);
+    background: var(--accent);
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  h1 { font-size: 34px; line-height: 1.2; margin: 14px 0 6px; font-weight: 600; }
+  .tagline { font-size: 20px; color: var(--accent); margin: 0 0 4px; font-weight: 500; }
+  .eyebrow { font-size: 14px; color: var(--muted); margin: 0; }
+  main { padding: 8px 44px 40px; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 20px 0 8px;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .sv { font-size: 18px; font-weight: 600; line-height: 1.3; }
+  .sl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  section { margin-top: 34px; }
+  h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    padding-left: 14px;
+    border-left: 5px solid var(--accent);
+    line-height: 1.25;
+  }
+  h3 { font-size: 17px; font-weight: 600; margin: 26px 0 8px; color: var(--accent); }
+  p { margin: 0 0 12px; }
+  ul, ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin: 4px 0; }
+  ol li::marker { color: var(--accent); font-weight: 600; }
+  strong { font-weight: 600; }
+  code {
+    font-family: var(--mono);
+    font-size: .88em;
+    background: var(--code-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 0 0 14px;
+    font: 13.5px/1.5 var(--mono);
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  blockquote {
+    margin: 0 0 14px;
+    padding: 12px 18px;
+    background: var(--tint);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    font-size: 16.5px;
+  }
+  .tw { overflow-x: auto; margin: 0 0 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    border-bottom: 2px solid var(--line);
+  }
+  td.blank {
+    min-width: 90px;
+    width: 45%;
+    height: 56px;
+    background: #FBFBFC;
+    border: 1px solid var(--line);
+    outline: none;
+    cursor: text;
+    transition: background .12s, box-shadow .12s;
+  }
+  td.blank:hover { background: var(--tint); }
+  td.blank:focus { background: var(--card); box-shadow: inset 0 0 0 2px var(--accent); }
+  td.blank:empty:hover::before { content: "Click to type"; color: #9AA0A6; font-size: 13px; }
+  table.grid { table-layout: fixed; }
+  table.grid td.blank { width: auto; }
+  table.grid td:not(.blank) { font-weight: 500; vertical-align: middle; }
+  table.timeline td:first-child {
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    width: 80px;
+  }
+  section.report {
+    background: var(--tint);
+    border: 1px solid var(--accent);
+    border-radius: 14px;
+    padding: 22px 24px 10px;
+  }
+  section.report h2 { border-left: none; padding-left: 0; }
+  section.report h2::before { content: "\1F4E3  "; }
+  section.report table { background: var(--card); border-radius: 8px; }
+  section.report blockquote { background: var(--card); }
+  section.reminder {
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    padding: 20px 24px 8px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  section.reminder h2 { border-left: none; padding-left: 0; font-size: 17px; color: var(--text); }
+  section.reminder strong { color: var(--text); }
+  hr.divider { border: none; border-top: 1px solid var(--line); margin: 40px 0 0; }
+  footer { padding: 0 44px 28px; font-size: 13px; color: var(--muted); }
+  @media screen and (min-width: 1200px) {
+    html { zoom: 1.25; }
+  }
+  @media (max-width: 640px) {
+    .page { margin: 0; border-radius: 0; }
+    header, main, footer { padding-left: 16px; padding-right: 16px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 28px; }
+  }
+  @media print {
+    body { background: #fff; font-size: 12.5px; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    header { padding: 20px 0 16px; }
+    main, footer { padding-left: 0; padding-right: 0; }
+    section, pre, table, blockquote { break-inside: avoid; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <span class="badge">Activity 4</span>
+  <h1>Activity 4: Escalation Triage Under Load</h1>
+  <p class="tagline">Defect, or working as designed?</p>
+  <p class="eyebrow">Forward Deployed Engineering on Google Cloud · Team activity</p>
+</header>
+<main>
+<div class="stats"><div class="stat"><div class="sv">13 minutes</div><div class="sl">Total time</div></div><div class="stat"><div class="sv">8 minutes</div><div class="sl">Your work time</div></div><div class="stat"><div class="sv">3–4 people</div><div class="sl">Team size</div></div><div class="stat"><div class="sv">Five short answers on the class worksheet</div><div class="sl">Your team produces</div></div></div>
+<section class=""><h2>The situation</h2>
+<p>It is <strong>48 hours before Cymbal's canary launch</strong>, which will send 10% of live traffic to the agent.</p>
+<p>The final load test shows:</p>
+<ul><li><strong>3% of model calls are rejected</strong> with <code>429 RESOURCE_EXHAUSTED</code>.</li><li>Usage averages <strong>60% of the capacity Cymbal purchased</strong>.</li><li>The client has <strong>no retries configured</strong>. Every 429 reaches the user as "Sorry, something went wrong."</li></ul>
+<p>A Cymbal developer posts this in the shared chat:</p>
+<blockquote>"URGENT!!! Gemini keeps throttling Cymbal Logistics even though we pay $1.2M a year for capacity. Full logs attached (cymbal_prod_logs.zip, 48 MB, includes customer conversations). Launch is Wednesday. FIX IT ASAP!!!"</blockquote>
+</section>
+<section class=""><h2>Your evidence</h2>
+<p>Teams look at different evidence:</p>
+<div class="tw"><table class=""><thead><tr><th>Team number</th><th>Your evidence</th></tr></thead><tbody><tr><td>Odd (1, 3, 5, ...)</td><td><strong>Evidence A</strong></td></tr><tr><td>Even (2, 4, 6, ...)</td><td><strong>Evidence B</strong></td></tr></tbody></table></div>
+<p>Both evidence sets are simplified for the exercise: purchased capacity is shown as <strong>100 requests per second</strong>.</p>
+<h3>Evidence A</h3>
+<p>One minute of the load test, one row per second (the pattern repeats every minute):</p>
+<div class="tw"><table class=""><thead><tr><th>Second</th><th>Requests sent</th><th>429 errors</th></tr></thead><tbody><tr><td>:00</td><td>150</td><td>50</td></tr><tr><td>:01</td><td>140</td><td>40</td></tr><tr><td>:02</td><td>118</td><td>18</td></tr><tr><td>:03</td><td>97</td><td>0</td></tr><tr><td>:04–:59</td><td>45–70 each second</td><td>0</td></tr><tr><td><strong>Whole minute</strong></td><td><strong>about 3,550 (59% of capacity)</strong></td><td><strong>108 (3.0%)</strong></td></tr></tbody></table></div>
+<p>The batch job that refreshes tracking for all open claims starts at <strong>:00</strong> of every minute.</p>
+<h3>Evidence B</h3>
+<p>One minute of the load test, one row per second (other minutes look similar):</p>
+<div class="tw"><table class=""><thead><tr><th>Second</th><th>Requests sent</th><th>429 errors</th></tr></thead><tbody><tr><td>:00</td><td>58</td><td>3</td></tr><tr><td>:01</td><td>61</td><td>0</td></tr><tr><td>:02</td><td>49</td><td>4</td></tr><tr><td>:03</td><td>66</td><td>2</td></tr><tr><td>:04</td><td>52</td><td>0</td></tr><tr><td>:05</td><td>47</td><td>5</td></tr><tr><td>:06–:59</td><td>45–68 each second</td><td>0–5 each second</td></tr><tr><td><strong>Whole minute</strong></td><td><strong>about 3,400 (57% of capacity)</strong></td><td><strong>102 (3.0%)</strong></td></tr></tbody></table></div>
+<p>Traffic is steady, and the batch job has already been moved off the minute boundary. Two other partner teams in the Field Gotchas catalog report the same pattern this week, on the same model and region.</p>
+</section>
+<section class=""><h2>Your task: five short answers</h2>
+<p>Your Scribe writes the answers in your team's row on the <strong>A4 Escalation Triage</strong> tab of the <strong>class worksheet</strong>. The instructor posts the link in chat at the start of class. If you don't have it, write in the table below.</p>
+<div class="tw"><table class=""><thead><tr><th>#</th><th>Question</th><th>Your answer</th></tr></thead><tbody><tr><td>1</td><td>Is this a platform defect or the platform working as designed? Which line of your evidence decided it?</td><td class="blank" contenteditable="true"></td></tr><tr><td>2</td><td>What client-side change ships <strong>before</strong> the canary?</td><td class="blank" contenteditable="true"></td></tr><tr><td>3</td><td>What priority does this get? Use the decision tree below.</td><td class="blank" contenteditable="true"></td></tr><tr><td>4</td><td>Where does each learning go: the customer repo, the Field Gotchas catalog, or the product issue tracker?</td><td class="blank" contenteditable="true"></td></tr><tr><td>5</td><td><strong>Evidence A:</strong> write a 2-line reply to the Cymbal developer. <strong>Evidence B:</strong> rewrite the chat post as a clean escalation (template below).</td><td class="blank" contenteditable="true"></td></tr></tbody></table></div>
+</section>
+<section class=""><h2>How to run it</h2>
+<div class="tw"><table class="timeline"><thead><tr><th>Clock</th><th>Step</th></tr></thead><tbody><tr><td>0:00</td><td>Pick roles (30 seconds): <strong>Timekeeper</strong>, <strong>Scribe</strong>, <strong>Reporter</strong></td></tr><tr><td>0:30</td><td>Read the situation and your evidence (1.5 minutes)</td></tr><tr><td>2:00</td><td>Answer questions 1–4 (3.5 minutes)</td></tr><tr><td>5:30</td><td>Answer question 5 (2 minutes)</td></tr><tr><td>7:30</td><td>Reporter checks the report-out item for your team number (30 seconds)</td></tr><tr><td>8:00</td><td>Stop</td></tr></tbody></table></div>
+</section>
+<section class=""><h2>Priority decision tree</h2>
+<pre data-lang="text"><code>Does it block launch?
+├── No  -&gt; File P2/P3 by impact
+└── Yes -&gt; Can the FDE deploy a client-side workaround today?
+           ├── Yes -&gt; Deploy the workaround and file P2 (customer unblocked)
+           └── No  -&gt; File P1 launch blocker (triggers core engineering triage)
+
+P0 is reserved for an active production outage or a security or data-loss incident.</code></pre>
+</section>
+<section class=""><h2>Clean escalation template</h2>
+<p>Follow the four-step protocol: <strong>scrub</strong> PII and secrets, build a <strong>minimal repro</strong>, <strong>calibrate priority</strong>, and <strong>route</strong> to the designated tracker with trace IDs.</p>
+<pre data-lang="text"><code>Title:      [component] short description of the behavior
+Impact:     failure rate %, scale, launch date, workaround status
+Repro:      standalone script or command anyone can run (describe it)
+Priority:   P0 / P1 / P2 / P3, and why
+Evidence:   trace IDs, timestamps, region, model version</code></pre>
+<p>Leave out customer names, deal sizes, and conversation content.</p>
+</section>
+<section class="report"><h2>Report-out (2 minutes for the whole class)</h2>
+<p>When the instructor calls time, each Reporter answers <strong>the item for their team number</strong> in one or two sentences:</p>
+<div class="tw"><table class=""><thead><tr><th>Team</th><th>Evidence</th><th>Report this</th></tr></thead><tbody><tr><td>1</td><td>A</td><td>Defect or working as designed, and the line of evidence that decided it</td></tr><tr><td>2</td><td>B</td><td>Defect or working as designed, and the line of evidence that decided it</td></tr><tr><td>3</td><td>A</td><td>What changes on Cymbal's side before the canary</td></tr><tr><td>4</td><td>B</td><td>Your clean escalation's title and priority</td></tr><tr><td>5</td><td>A</td><td>What goes in the Field Gotchas catalog</td></tr><tr><td>6+</td><td class="blank" contenteditable="true"></td><td>Start again at item 1</td></tr></tbody></table></div>
+</section>
+<section class="reminder"><h2>Reminder from the slides</h2>
+<ul><li><strong>Clean escalations:</strong> a sanitized repro plus the version, workaround status, and a calibrated priority gets triaged. A 50 MB raw log dump stalls.</li><li><strong>3-tier knowledge routing:</strong> customer repo (runbooks, ADRs), Field Gotchas catalog (cross-customer limits and workarounds), product issue tracker (platform defects).</li><li><strong>Upstream leverage:</strong> a fix for one customer is 1x, a practice-wide template is 10x, a platform fix is 1,000x.</li></ul>
+</section>
+</main>
+<footer>Forward Deployed Engineering on Google Cloud · Case thread: Cymbal Logistics</footer>
+</div>
+</body>
+</html>
