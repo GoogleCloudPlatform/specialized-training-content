@@ -172,7 +172,7 @@ graph TB
    re-issues the request to the Python server as an AG-UI call.
 4. **Endpoint → ADK → Vertex.** `add_adk_fastapi_endpoint` received the request
    and handed it to `ADKAgent`, which runs the ADK `root_agent`. The agent
-   calls Gemini on Vertex AI and gets back streamed tokens.
+   calls Gemini on the Gemini platform and gets back streamed tokens.
 5. **Stream back up.** As the agent produces output, `ADKAgent` translates each
    ADK event into a standard **AG-UI event** and emits the result as an **SSE
    stream**. The Next.js runtime relays that stream to the provider, which

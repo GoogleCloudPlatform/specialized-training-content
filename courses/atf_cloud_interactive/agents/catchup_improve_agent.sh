@@ -9,7 +9,7 @@
 #   4. Generates .env.deploy from .env.deploy.example with correct values
 #   5. Generates .agent_engine_config.json from template with correct service account
 #   6. Deploys the improve engagement agent to Agent Runtime
-#   7-11. Sets up Gemini Enterprise application with the deployed agent
+#   7-11. Sets up Gemini application with the deployed agent
 #
 # Prerequisites:
 #   - gcloud CLI authenticated and configured with the lab project
@@ -143,7 +143,7 @@ if [[ -z "${REASONING_ENGINE_NAME}" ]]; then
 fi
 echo "  Found: ${REASONING_ENGINE_NAME}"
 
-# --- Steps 7-11: Set up Gemini Enterprise application ---
+# --- Steps 7-11: Set up Gemini application ---
 cd "${SCRIPT_DIR}"
 python3 setup_gemini_enterprise.py \
   "${GOOGLE_CLOUD_PROJECT}" \
@@ -154,5 +154,5 @@ echo ""
 echo "============================================"
 echo "Catchup complete!"
 echo "  - Improve engagement agent deployed to Agent Engine"
-echo "  - Gemini Enterprise application configured"
+echo "  - Gemini application configured"
 echo "============================================"

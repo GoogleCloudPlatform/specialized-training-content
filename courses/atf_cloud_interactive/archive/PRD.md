@@ -28,7 +28,7 @@ This solution is the basis for a hands-on lab where students learn to build agen
 
 Students should get equal hands-on experience with:
 - **ADK agent development** — building agents, defining tools, composing multi-agent systems
-- **Agent Engine deployment** — deploying agents, managing lifecycle, publishing to Gemini Enterprise
+- **Agent Engine deployment** — deploying agents, managing lifecycle, publishing to Gemini
 - **A2A + MCP protocols** — inter-agent communication via A2A, tool integration via MCP
 
 ## 2. Architecture
@@ -37,8 +37,8 @@ Students should get equal hands-on experience with:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Gemini Enterprise                        │
-│                  (End-user interface)                         │
+│                          Gemini                             │
+│                  (End-user interface)                       │
 └─────────────────┬───────────────────────────────────────────┘
                   │
 ┌─────────────────▼───────────────────────────────────────────┐
@@ -80,7 +80,7 @@ Students should get equal hands-on experience with:
 
 #### Improve Engagement Agent
 - **Framework:** ADK
-- **Deployment:** Agent Engine, published to Gemini Enterprise
+- **Deployment:** Agent Engine, published to Gemini
 - **Role:** User-facing agent that interprets natural language requests about customer engagement, coordinates the other agents, and presents results. The Improve Engagement Agent describes *what* data it needs — it does not compose SQL or know the BigQuery schema. It delegates data questions to the Data Agent and intervention creation to the Intervention Agent.
 - **Model:** `gemini-3-flash-preview` via a `Gemini3(Gemini)` subclass that forces `location='global'` (same workaround as Data Agent — see note below)
 - **A2A client pattern:** Uses `RemoteA2aAgent` from ADK to wrap each sub-agent as an A2A client. Each client is backed by a custom `_CloudRunAuth` httpx Auth class that fetches OIDC identity tokens via `google.oauth2.id_token.fetch_id_token()` and attaches them as Bearer tokens. Auth is skipped for `localhost`/`127.0.0.1` to support local development. The httpx client uses a 10-minute timeout (`httpx.Timeout(timeout=600.0)`) to accommodate long-running BigQuery queries.
@@ -633,7 +633,7 @@ A separate service account for the Cloud Run-hosted GCS MCP server:
 | Intervention Agent → GCS MCP Server (Cloud Run) | ADK `auth_scheme`/`auth_credential` pipeline (OAuth2 clientCredentials + SERVICE_ACCOUNT)                     | Same pipeline as Data Agent → BQ MCP. Scopes: `cloud-platform` + `devstorage.read_write`. Agent SA needs `roles/run.invoker` on the Cloud Run service             |
 | Intervention Agent → Vertex AI Search           | ADC                                     | Uses `VertexAiSearchTool` from ADK; SA needs `roles/discoveryengine.editor`                      |
 | GCS MCP Server → Cloud Storage                  | ADC (automatic on Cloud Run)            | Cloud Run service account authenticates to GCS automatically                                     |
-| Gemini Enterprise → Improve Engagement Agent                | Google-managed                          | No student configuration needed                                                                  |
+| Gemini → Improve Engagement Agent                | Google-managed                          | No student configuration needed                                                                  |
 
 #### BigQuery MCP Server Configuration
 
@@ -677,22 +677,22 @@ gcloud run services add-iam-policy-binding gcs-mcp-server \
   --role="roles/run.invoker"
 ```
 
-### 6.5 Publishing to Gemini Enterprise
+### 6.5 Publishing to Gemini
 
 **Required IAM role:** `roles/discoveryengine.admin`
 
 **Process:**
 1. Deploy the orchestrator agent to Agent Engine (produces a reasoning engine resource ID)
-2. Register it with a Gemini Enterprise app via the Discovery Engine API or Cloud Console
-3. The reasoning engine region must align with the Gemini Enterprise location (e.g., `us-central1` for Gemini `us` location)
+2. Register it with a Gemini app via the Discovery Engine API or Cloud Console
+3. The reasoning engine region must align with the Gemini location (e.g., `us-central1` for Gemini `us` location)
 
-**End-user access roles for Gemini Enterprise:**
+**End-user access roles for Gemini:**
 
 | Role                                      | Who                                  |
 | ----------------------------------------- | ------------------------------------ |
 | `roles/discoveryengine.admin`             | Admins registering/managing agents   |
 | `roles/discoveryengine.agentspaceUser`    | End users interacting with the agent |
-| `roles/serviceusage.serviceUsageConsumer` | All Gemini Enterprise users          |
+| `roles/serviceusage.serviceUsageConsumer` | All Gemini users                     |
 
 ### 6.6 Student Environment
 
@@ -750,7 +750,7 @@ Dependency order (must not be parallelized):
 - Deploy Intervention Agent to Cloud Run (`agents/intervention_agent/deploy_to_run.sh` — same pattern, references Cloud Run MCP URL + Vertex AI Search datastore) — exposes A2A endpoint, `--min-instances=1`
 - Grant Improve Engagement Agent SA `roles/run.invoker` on both Cloud Run agent services
 - Deploy Improve Engagement Agent to Agent Engine (`agents/deploy_improve_agent_to_agent_engine.sh` — references Data Agent and Intervention Agent Cloud Run URLs)
-- Publish Improve Engagement Agent to Gemini Enterprise
+- Publish Improve Engagement Agent to Gemini
 
 ### 7.3 Vertex AI Search Setup Details
 
@@ -885,7 +885,7 @@ After setup, verify each component before proceeding to agent deployment:
 | RAG retrieval        | Vertex AI Search                                                                                      | Latest        |
 | Agent deployment     | Agent Engine (Vertex AI)                                                                              | Latest        |
 | MCP server hosting   | Cloud Run                                                                                             | Latest        |
-| End-user interface   | Gemini Enterprise                                                                                     | Latest        |
+| End-user interface   | Gemini                                                                                                | Latest        |
 
 ## 9. Directory Structure
 
@@ -945,7 +945,7 @@ atf_cloud_interactive/
 │   │   ├── deploy_to_run.sh                # Cloud Run deployment script
 │   │   ├── requirements.txt
 │   │   └── .env.example
-│   └── improve_engagement_agent/           # Deployed to Agent Engine, published to Gemini Enterprise
+│   └── improve_engagement_agent/           # Deployed to Agent Engine, published to Gemini
 │       ├── README.md                       # Setup, local dev, Agent Engine deployment, testing
 │       ├── __init__.py
 │       ├── agent.py                        # Improve Engagement Agent: RemoteA2aAgent clients + root_agent
@@ -968,7 +968,7 @@ atf_cloud_interactive/
 
 ## 10. Example End-to-End Flow
 
-**User prompt in Gemini Enterprise:**
+**User prompt in Gemini:**
 > "Create interventions for customers that have an engagement shortfall in scheduled meeting events"
 
 **Step 1 — Improve Engagement Agent delegates data question:**
@@ -1023,7 +1023,7 @@ The long-term goal is to deploy all three agents to Agent Engine:
 - Unified lifecycle management (versioning, rollback, scaling) through Agent Engine
 - Built-in telemetry and monitoring via Agent Engine's observability stack
 - Simplified authentication (intra-project Agent Engine calls use the caller's SA automatically)
-- Potential to publish individual agents to Gemini Enterprise independently
+- Potential to publish individual agents to Gemini independently
 - Consistent deployment pattern across all agents (`adk deploy agent_engine`)
 
 ### 11.3 Migration Path

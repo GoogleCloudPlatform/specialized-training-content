@@ -24,7 +24,7 @@ The solution is also the basis for a hands-on lab where students learn to build 
 
 | Agent                        | Deployment      | Role                                                                                                                                      |
 | ---------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Improve Engagement Agent** | Agent Engine    | User-facing coordinator. Interprets requests, delegates to sub-agents, presents results. Published to Gemini Enterprise.                  |
+| **Improve Engagement Agent** | Agent Engine    | User-facing coordinator. Interprets requests, delegates to sub-agents, presents results. Published to Gemini.                             |
 | **Data Agent**               | Cloud Run (A2A) | Domain expert on customer data. Translates natural language questions into SQL and executes against BigQuery via the BigQuery MCP server. |
 | **Intervention Agent**       | Cloud Run (A2A) | Builds branded PDF intervention documents using RAG content from Vertex AI Search, then uploads to GCS via the GCS MCP server.            |
 
@@ -69,7 +69,7 @@ For interactive testing, use the **A2A Inspector** — see [test/README.md](test
 
 ## End-to-End Flow
 
-1. **User prompt** (via Gemini Enterprise): *"Create interventions for customers with an engagement shortfall in scheduled meeting events"*
+1. **User prompt** (via Gemini): *"Create interventions for customers with an engagement shortfall in scheduled meeting events"*
 2. **Improve Engagement Agent** formulates a data question and sends it to the **Data Agent** via A2A
 3. **Data Agent** translates to SQL, executes against BigQuery via MCP, returns structured results (customers with low meeting engagement)
 4. **Improve Engagement Agent** identifies at-risk customers and sends customer context to the **Intervention Agent** via A2A
