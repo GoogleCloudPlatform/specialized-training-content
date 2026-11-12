@@ -14,7 +14,7 @@ class Gemini3(Gemini):
     gemini-3.5-flash is only served on the global endpoint, but we must NOT set
     GOOGLE_CLOUD_LOCATION=global, because that also moves the Agent Engine
     session service to 'global', whose validator rejects the slash-containing
-    session_id that Gemini Enterprise passes in. Overriding api_client pins ONLY
+    session_id that Gemini passes in. Overriding api_client pins ONLY
     the model to global, leaving the runtime location (sessions) at us-central1.
     """
 

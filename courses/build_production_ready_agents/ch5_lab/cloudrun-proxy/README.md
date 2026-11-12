@@ -1,6 +1,6 @@
 # Agent Proxy - Cloud Run Service
 
-A production-ready solution for deploying Gemini Enterprise Agent Platform agents with a React frontend, FastAPI proxy, and Identity-Aware Proxy (IAP) authentication.
+A production-ready solution for deploying Gemini platform agents with a React frontend, FastAPI proxy, and Identity-Aware Proxy (IAP) authentication.
 
 ## Architecture
 
@@ -46,8 +46,8 @@ graph TB
 1. **React Client (Browser)**: User interface running in the browser on the user's machine, handles chat interactions and displays streaming responses
 2. **Identity-Aware Proxy (IAP)**: Google Cloud's authentication layer that validates users before allowing access to the Cloud Run service
 3. **Cloud Run Service (Single Service)**: Hosts both the static React files and the FastAPI proxy endpoints in one deployment
-4. **Gemini Enterprise Agent Platform Agent Runtime**: Managed service hosting the agent (reasoning engine) with tools and capabilities
-5. **Session Management**: Maintained by Gemini Enterprise Agent Platform Agent Runtime across multiple interactions
+4. **Gemini platform Agent Runtime**: Managed service hosting the agent (reasoning engine) with tools and capabilities
+5. **Session Management**: Maintained by Gemini platform Agent Runtime across multiple interactions
 
 ## How the Client Works
 
@@ -78,7 +78,7 @@ The React client provides a simple chat interface for interacting with the Agent
 
 ## How the Proxy Works
 
-The FastAPI proxy serves as the secure bridge between the client and Gemini Enterprise Agent Platform Agent Runtime:
+The FastAPI proxy serves as the secure bridge between the client and Gemini platform Agent Runtime:
 
 1. **Static File Serving**: Serves the built React application from the `dist/` directory at the root path (`/`)
 
@@ -98,7 +98,7 @@ The FastAPI proxy serves as the secure bridge between the client and Gemini Ente
 
 5. **CORS Configuration**: Allows cross-origin requests (configured for development; restrict in production)
 
-The proxy is stateless—all session state is managed by Gemini Enterprise Agent Platform Agent Runtime, making it easy to scale horizontally on Cloud Run.
+The proxy is stateless—all session state is managed by Gemini platform Agent Runtime, making it easy to scale horizontally on Cloud Run.
 
 ## Environment Variables
 

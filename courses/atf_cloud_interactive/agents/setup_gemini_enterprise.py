@@ -1,8 +1,8 @@
-"""Set up a Gemini Enterprise application with an Agent Engine agent.
+"""Set up a Gemini application with an Agent Engine agent.
 
 Operations:
-  1. Delete any existing Gemini Enterprise engines (global location)
-  2. Create a new engine ("Cymbal Meet - Gemini Enterprise")
+  1. Delete any existing Gemini engines (global location)
+  2. Create a new engine ("Cymbal Meet - Gemini")
   3. Configure identity provider to Google Identity (GSUITE)
   4. Add the deployed Agent Engine agent
   5. Grant all users the agent user role
@@ -23,7 +23,7 @@ import requests
 
 LOCATION = "global"
 ENGINE_ID = "cymbal-meet-gemini-enterprise"
-ENGINE_DISPLAY_NAME = "Cymbal Meet - Gemini Enterprise"
+ENGINE_DISPLAY_NAME = "Cymbal Meet - Gemini"
 AGENT_DISPLAY_NAME = "Improve Engagement Agent"
 
 
@@ -49,7 +49,7 @@ def parent(project_id):
 # ---- Step 1: Delete existing engines ----------------------------------------
 
 def delete_existing_engines(project_id):
-    print("Step 7: Deleting existing Gemini Enterprise engines ...")
+    print("Step 7: Deleting existing Gemini engines ...")
     url = f"{base_url()}/{parent(project_id)}/engines"
     resp = requests.get(url, headers=get_auth_headers(project_id))
     resp.raise_for_status()
@@ -80,7 +80,7 @@ def delete_existing_engines(project_id):
 
 def create_engine(project_id, project_number):
     print()
-    print("Step 8: Creating Gemini Enterprise application ...")
+    print("Step 8: Creating Gemini application ...")
     url = f"{base_url()}/{parent(project_id)}/engines?engineId={ENGINE_ID}"
     body = {
         "displayName": ENGINE_DISPLAY_NAME,
@@ -129,7 +129,7 @@ def configure_identity_provider(project_id):
 
 def add_agent(project_id, engine_name, reasoning_engine_name):
     print()
-    print("Step 10: Adding agent to Gemini Enterprise application ...")
+    print("Step 10: Adding agent to Gemini application ...")
     url = (
         f"{base_url()}/{engine_name}"
         f"/assistants/default_assistant/agents"
@@ -174,7 +174,7 @@ def main():
     add_agent(project_id, engine_name, reasoning_engine_name)
 
     print()
-    print("Gemini Enterprise setup complete!")
+    print("Gemini setup complete!")
 
 
 if __name__ == "__main__":

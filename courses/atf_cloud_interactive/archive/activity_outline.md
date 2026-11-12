@@ -113,12 +113,12 @@
 ### 3.5 Deploy agent to Agent Engine
 1. Deploy to Agent Engine
 
-### 3.6 Create Gemini Enterprise application
-1. Enable Gemini Enterprise
+### 3.6 Create Gemini application
+1. Enable Gemini
 2. Configure identity
 3. Test application
 
-### 3.7 Deploy and test Agent Engine agent with Gemini Enterprise
+### 3.7 Deploy and test Agent Engine agent with Gemini
 1. Add Agent Engine Agent
 2. Test 
 

@@ -68,10 +68,10 @@ lint:
 	uv run mypy .
 
 # ==============================================================================
-# Gemini Enterprise Integration
+# Gemini Integration
 # ==============================================================================
 
-# Register the deployed agent to Gemini Enterprise
+# Register the deployed agent to Gemini
 # Usage: ID="projects/.../engines/xxx" make register-gemini-enterprise
 # Optional env vars: GEMINI_DISPLAY_NAME, GEMINI_DESCRIPTION, GEMINI_TOOL_DESCRIPTION, AGENT_ENGINE_ID
 register-gemini-enterprise:

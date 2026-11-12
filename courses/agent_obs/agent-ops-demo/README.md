@@ -48,7 +48,7 @@ make install && make playground
 | `make install`       | Install all required dependencies using uv                                                  |
 | `make playground`    | Launch Streamlit interface for testing agent locally and remotely |
 | `make deploy`        | Deploy agent to Agent Engine |
-| `make register-gemini-enterprise` | Register deployed agent to Gemini Enterprise ([docs](https://googlecloudplatform.github.io/agent-starter-pack/cli/register_gemini_enterprise.html)) |
+| `make register-gemini-enterprise` | Register deployed agent to Gemini ([docs](https://googlecloudplatform.github.io/agent-starter-pack/cli/register_gemini_enterprise.html)) |
 | `make test`          | Run unit and integration tests                                                              |
 | `make lint`          | Run code quality checks (codespell, ruff, mypy)                                             |
 | `make setup-dev-env` | Set up development environment resources using Terraform                         |

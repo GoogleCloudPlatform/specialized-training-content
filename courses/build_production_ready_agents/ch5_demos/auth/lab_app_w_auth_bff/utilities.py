@@ -120,7 +120,7 @@ GCP_SERVICE_REGIONS = {
         "us-central1", "us-east1", "us-west1",
         "europe-west1", "asia-east1"
     ],
-    "Gemini Enterprise": [
+    "Gemini": [
         "us-central1", "us-east1", "us-west1", "us-west4",
         "europe-west1", "europe-west4", "asia-east1",
         "asia-northeast1"
