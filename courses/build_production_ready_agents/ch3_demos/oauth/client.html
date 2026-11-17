@@ -489,7 +489,7 @@
             }
         }
         
-        function showAuthPrompt(authUri, functionCallId, authConfig) {
+        function showAuthPrompt(authUri, functionCallId) {
             const authPrompt = document.createElement('div');
             authPrompt.className = 'auth-prompt';
             authPrompt.id = 'auth-prompt';
@@ -520,10 +520,9 @@
             
             addMessage(authPrompt, 'system');
             
-            // Store auth context for later
+            // Store auth context for later (server retains AuthConfig and secrets)
             currentAuthContext = {
                 functionCallId,
-                authConfig,
                 authUri: fullAuthUrl
             };
             
@@ -598,15 +597,11 @@
             
             addMessage('✓ Authorization received, continuing...', 'system');
             
-            // Update auth config with callback URL. The redirect_uri is already
-            // present in the config — the server set it in OAuth2Auth.
-            const authConfig = currentAuthContext.authConfig;
-            authConfig.exchanged_auth_credential.oauth2.auth_response_uri = callbackUrl;
-            
-            // Send FunctionResponse back to ADK
+            // Send only the callback URL back to the server; the server retains
+            // AuthConfig and OAuth client_secret server-side.
             sendAuthResponse(
                 currentAuthContext.functionCallId,
-                authConfig
+                callbackUrl
             );
             
             currentAuthContext = null;
@@ -682,8 +677,7 @@
                             removeTypingIndicator();
                             showAuthPrompt(
                                 data.auth_uri,
-                                data.function_call_id,
-                                data.auth_config
+                                data.function_call_id
                             );
                             return; // Stop processing, wait for auth
                             
@@ -707,20 +701,23 @@
             }
         }
 
-        async function sendAuthResponse(functionCallId, authConfig) {
-            // Construct FunctionResponse message
+        async function sendAuthResponse(functionCallId, callbackUrl) {
+            // Construct FunctionResponse message carrying only the callback URL;
+            // the server re-hydrates AuthConfig (and client_secret) server-side.
             const functionResponseMessage = {
                 role: 'user',
                 parts: [{
                     function_response: {
                         id: functionCallId,
                         name: 'adk_request_credential',
-                        response: authConfig
+                        response: {
+                            auth_response_uri: callbackUrl
+                        }
                     }
                 }]
             };
             
-            console.log('[CLIENT] Sending auth response:', functionResponseMessage);
+            console.log('[CLIENT] Sending auth response for call:', functionCallId);
             
             // Show typing indicator
             const typingDiv = showTypingIndicator();

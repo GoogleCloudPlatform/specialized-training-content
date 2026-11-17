@@ -14,8 +14,9 @@ Key differences from custom approach:
 import asyncio
 import json
 import os
+import re
 import warnings
-from typing import AsyncIterator
+from typing import Any, AsyncIterator, Optional
 
 # Quiet ADK's [EXPERIMENTAL] UserWarnings and the ADC quota-project warning.
 # ADK emits these via a feature decorator, so filter on the message text rather
@@ -26,7 +27,7 @@ warnings.filterwarnings("ignore", message=r".*end user credentials from Google C
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.auth.auth_tool import AuthConfig
 from google.adk.auth.credential_service.in_memory_credential_service import \
@@ -185,19 +186,132 @@ def get_auth_config(event: Event) -> AuthConfig:
             return auth_config_dict
     raise ValueError(f'Cannot get auth config from event {event}')
 
+
+# Server-side store for pending OAuth handshakes keyed by
+# (user_id, session_id, function_call_id) -> AuthConfig.
+# Keeps OAuth client_secret strictly on the server so it is never serialized
+# to the browser over SSE (b/585276167).
+pending_auth_configs: dict[tuple[str, str, str], AuthConfig] = {}
+
+# Maps session_id -> owner user_id to prevent cross-user session hijacking.
+session_owners: dict[str, str] = {}
+
+_USER_ID_PATTERN = re.compile(r"^[A-Za-z0-9_.\-@]{1,64}$")
+
+
+def redact_auth_config(auth_config: AuthConfig) -> AuthConfig:
+    """Return a deep copy of AuthConfig with confidential OAuth secrets removed."""
+    redacted = auth_config.model_copy(deep=True)
+    for cred in (redacted.raw_auth_credential, redacted.exchanged_auth_credential):
+        if cred and getattr(cred, "oauth2", None):
+            cred.oauth2.client_secret = None
+            if hasattr(cred.oauth2, "code_verifier"):
+                cred.oauth2.code_verifier = None
+    return redacted
+
+
+def _extract_auth_response_uri(raw_response: Any) -> Optional[str]:
+    """Extract the OAuth callback URL from either a minimal or legacy FunctionResponse dict."""
+    if not isinstance(raw_response, dict):
+        return None
+    direct_uri = raw_response.get("auth_response_uri") or raw_response.get("authResponseUri")
+    if isinstance(direct_uri, str) and direct_uri.strip():
+        return direct_uri.strip()
+    exchanged = (
+        raw_response.get("exchanged_auth_credential")
+        or raw_response.get("exchangedAuthCredential")
+    )
+    if isinstance(exchanged, dict):
+        oauth2 = exchanged.get("oauth2")
+        if isinstance(oauth2, dict):
+            nested_uri = oauth2.get("auth_response_uri") or oauth2.get("authResponseUri")
+            if isinstance(nested_uri, str) and nested_uri.strip():
+                return nested_uri.strip()
+    return None
+
+
+def _find_session_auth_config(session: Any, function_call_id: str) -> Optional[AuthConfig]:
+    """Fallback lookup of the requested AuthConfig from session events."""
+    for ev in reversed(getattr(session, "events", None) or []):
+        try:
+            if is_auth_request_event(ev) and get_function_call_id(ev) == function_call_id:
+                return get_auth_config(ev)
+        except Exception:
+            continue
+    return None
+
+
+def build_hydrated_auth_response_message(
+    message: dict,
+    user_id: str,
+    session_id: str,
+    session: Any = None,
+) -> dict:
+    """Re-attach the server-side AuthConfig (including client_secret) to a client FunctionResponse."""
+    part = message["parts"][0]["function_response"]
+    function_call_id = part.get("id")
+    if not function_call_id or not isinstance(function_call_id, str):
+        raise ValueError("Missing function_response.id in auth response")
+
+    auth_response_uri = _extract_auth_response_uri(part.get("response"))
+    if not auth_response_uri:
+        raise ValueError("Missing auth_response_uri in auth response")
+
+    server_auth_config = pending_auth_configs.pop(
+        (user_id, session_id, function_call_id), None
+    )
+    if server_auth_config is None:
+        server_auth_config = _find_session_auth_config(session, function_call_id)
+    if server_auth_config is None:
+        raise ValueError(
+            f"No pending auth request found for function_call_id '{function_call_id}'"
+        )
+
+    hydrated = server_auth_config.model_copy(deep=True)
+    if hydrated.raw_auth_credential and getattr(hydrated.raw_auth_credential, "oauth2", None):
+        if OAUTH_CLIENT_SECRET:
+            hydrated.raw_auth_credential.oauth2.client_secret = OAUTH_CLIENT_SECRET
+    if hydrated.exchanged_auth_credential and getattr(
+        hydrated.exchanged_auth_credential, "oauth2", None
+    ):
+        if OAUTH_CLIENT_SECRET:
+            hydrated.exchanged_auth_credential.oauth2.client_secret = OAUTH_CLIENT_SECRET
+        hydrated.exchanged_auth_credential.oauth2.auth_response_uri = auth_response_uri
+
+    return {
+        "role": "user",
+        "parts": [
+            {
+                "function_response": {
+                    "id": function_call_id,
+                    "name": "adk_request_credential",
+                    "response": hydrated.model_dump(mode="json"),
+                }
+            }
+        ],
+    }
+
+
 # ============================================================================
 # FastAPI Setup
 # ============================================================================
 
 app = FastAPI(title="ADK Agent Server - Official Pattern", version="1.0.0")
 
+# Restrict CORS to the configured client origin rather than wildcard "*".
+CLIENT_ORIGIN = os.getenv("CLIENT_ORIGIN", "http://localhost:8080")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[CLIENT_ORIGIN],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
+
+# Optional bearer token for authenticating /chat requests in shared deployments.
+# TODO(security): For production multi-user deployments, enforce full user
+# authentication (see ch5_demos/auth/lab_app_w_auth_bff for the BFF pattern).
+API_AUTH_TOKEN = os.getenv("API_AUTH_TOKEN")
 
 # ============================================================================
 # Endpoints
@@ -225,7 +339,8 @@ async def serve_client():
 async def serve_oauth_callback():
     """Serve the OAuth callback page (both paths, so the registered
     redirect URI can use either)"""
-    with open("oauth-callback.html", "r") as f:
+    callback_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "oauth-callback.html")
+    with open(callback_path, "r") as f:
         return f.read()
 
 @app.post("/chat")
@@ -236,18 +351,24 @@ async def chat(request: Request):
     This endpoint:
     1. Runs the agent with user message
     2. Detects if auth is needed (via adk_request_credential event)
-    3. Streams auth request to client OR streams response chunks
-    4. Client handles OAuth and sends FunctionResponse back
-    5. Agent retries with valid credentials
+    3. Streams auth request (auth_uri + function_call_id only) to client OR streams response chunks
+    4. Client handles OAuth and sends FunctionResponse (with auth_response_uri) back
+    5. Server re-hydrates AuthConfig server-side and agent retries with valid credentials
     """
+    if API_AUTH_TOKEN:
+        auth_header = request.headers.get("Authorization", "") if hasattr(request, "headers") else ""
+        if auth_header != f"Bearer {API_AUTH_TOKEN}":
+            return JSONResponse(status_code=401, content={"error": "Unauthorized"})
+
     try:
         body = await request.json()
         user_id = body.get("user_id", "default_user")
+        if not isinstance(user_id, str) or not _USER_ID_PATTERN.match(user_id):
+            return JSONResponse(status_code=400, content={"error": "Invalid user_id"})
         session_id = body.get("session_id")
         message = body.get("message")
         
         debug(f"\n[DEBUG] Received chat request - user_id: {user_id}, session_id: {session_id}")
-        debug(f"[DEBUG] Message type: {type(message)}, content: {str(message)[:200]}")
         
         # Check if this is an auth response (FunctionResponse message)
         is_auth_response = (
@@ -274,6 +395,7 @@ async def chat(request: Request):
                 state={}
             )
             session_id = session.id
+            session_owners[session_id] = user_id
             debug(f"[DEBUG] Created new session: {session_id}")
         except Exception as e:
             debug(f"[DEBUG] Error creating session: {e}")
@@ -281,6 +403,9 @@ async def chat(request: Request):
             traceback.print_exc()
             return {"error": f"Session creation failed: {str(e)}"}, 500
     else:
+        owner = session_owners.get(session_id)
+        if owner is not None and owner != user_id:
+            return JSONResponse(status_code=403, content={"error": "Session user_id mismatch"})
         try:
             session = await session_service.get_session(
                 app_name="bigquery_agent",
@@ -289,6 +414,7 @@ async def chat(request: Request):
             )
             if not session:
                 return {"error": "Session not found"}, 404
+            session_owners.setdefault(session_id, user_id)
             debug(f"[DEBUG] Retrieved existing session: {session_id}")
         except Exception as e:
             debug(f"[DEBUG] Error retrieving session: {e}")
@@ -299,16 +425,23 @@ async def chat(request: Request):
     # Prepare message content
     try:
         if is_auth_response:
-            # Client is sending back auth response - reconstruct Content
-            content = types.Content(**message)
-            debug(f"[DEBUG] Constructed auth response Content")
+            # Client is sending back auth response - re-hydrate server-side AuthConfig
+            # so OAuth client_secret never needs to travel through the browser.
+            hydrated_message = build_hydrated_auth_response_message(
+                message=message,
+                user_id=user_id,
+                session_id=session_id,
+                session=session,
+            )
+            content = types.Content(**hydrated_message)
+            debug("[DEBUG] Constructed hydrated auth response Content")
         else:
             # Normal text message
             content = types.Content(
                 role="user",
                 parts=[types.Part(text=message)]
             )
-            debug(f"[DEBUG] Constructed text message Content")
+            debug("[DEBUG] Constructed text message Content")
     except Exception as e:
         debug(f"[DEBUG] Error constructing Content: {e}")
         import traceback
@@ -346,8 +479,6 @@ async def chat(request: Request):
             auth_pending = False
 
             debug(f"\n[DEBUG] Starting agent run - is_auth_response: {is_auth_response}")
-            if is_auth_response:
-                debug(f"[DEBUG] Auth response content: {content}")
 
             # Run the agent
             async for event in runner.run_async(
@@ -372,12 +503,17 @@ async def chat(request: Request):
                     # Get the authorization URL
                     auth_uri = auth_config.exchanged_auth_credential.oauth2.auth_uri
 
-                    # Send auth request to client
+                    # Keep the full AuthConfig (which contains client_secret) server-side
+                    # and send only auth_uri and function_call_id to the client (b/585276167).
+                    pending_auth_configs[(user_id, session_id, function_call_id)] = (
+                        auth_config.model_copy(deep=True)
+                    )
+
+                    # Send auth request to client without serializing AuthConfig secrets
                     auth_request_data = {
                         "type": "auth_required",
                         "function_call_id": function_call_id,
                         "auth_uri": auth_uri,
-                        "auth_config": auth_config.model_dump(mode='json')
                     }
                     yield f"data: {json.dumps(auth_request_data)}\n\n"
 
@@ -429,7 +565,7 @@ async def chat(request: Request):
             traceback.print_exc()
             error_data = {
                 "type": "error",
-                "message": str(e)
+                "message": "An internal error occurred while processing the request."
             }
             yield f"data: {json.dumps(error_data)}\n\n"
     
@@ -437,8 +573,9 @@ async def chat(request: Request):
         event_generator(),
         media_type="text/event-stream",
         headers={
-            "Cache-Control": "no-cache",
+            "Cache-Control": "no-store",
             "Connection": "keep-alive",
+            "X-Content-Type-Options": "nosniff",
         }
     )
 
@@ -451,4 +588,6 @@ async def health():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    host = os.getenv("HOST", "127.0.0.1")
+    port = int(os.getenv("PORT", "8000"))
+    uvicorn.run(app, host=host, port=port)
