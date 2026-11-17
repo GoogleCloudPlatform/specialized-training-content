@@ -292,9 +292,11 @@ A single `/chat` endpoint handles **both legs** of the handshake, because both a
 `runner.run_async` calls over the same session — only the message content differs.
 
 **Leg 1 — request (diagram steps 1-8).** As events stream, the moment `is_auth_request_event`
-matches, the server extracts the call id and `auth_uri`, sends an `auth_required` SSE
-message, and stops emitting — the run is paused, so there is nothing more to stream until
-credentials arrive ([server.py:349-375](server.py#L349-L375)):
+matches, the server extracts the call id and `auth_uri`, stores the full `AuthConfig`
+(containing `client_secret`) server-side in `pending_auth_configs`, sends an `auth_required`
+SSE message with only `function_call_id` and `auth_uri` (never exposing `client_secret` to the
+browser), and stops emitting — the run is paused, so there is nothing more to stream until
+credentials arrive:
 
 ```python
 if auth_pending:
@@ -304,7 +306,10 @@ if is_auth_request_event(event):
     function_call_id = get_function_call_id(event)
     auth_config = get_auth_config(event)
     auth_uri = auth_config.exchanged_auth_credential.oauth2.auth_uri
-    yield f"data: {json.dumps({'type': 'auth_required', ...})}\n\n"
+    pending_auth_configs[(user_id, session_id, function_call_id)] = (
+        auth_config.model_copy(deep=True)
+    )
+    yield f"data: {json.dumps({'type': 'auth_required', 'function_call_id': function_call_id, 'auth_uri': auth_uri})}\n\n"
     auth_pending = True
     continue            # drain the generator; do NOT break out of it
 ```
@@ -318,9 +323,10 @@ if is_auth_request_event(event):
 
 **Leg 2 — response (diagram steps 9-18).** After the user authorizes, the client POSTs back
 to `/chat`, but this time the message is a **`FunctionResponse`** carrying the same call id
-and completed `AuthConfig`. The endpoint detects that shape up front and rebuilds it into ADK
-`Content` rather than treating it as plain text ([server.py:251-257](server.py#L251-L257),
-[299-302](server.py#L299-L302)):
+and the captured `auth_response_uri`. The endpoint detects that shape up front, re-attaches
+the server-stored `AuthConfig` (including `client_secret`) via
+`build_hydrated_auth_response_message`, and rebuilds it into ADK `Content` rather than
+treating it as plain text:
 
 ```python
 is_auth_response = (
